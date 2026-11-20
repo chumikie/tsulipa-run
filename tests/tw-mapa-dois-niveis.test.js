@@ -61,10 +61,12 @@ function getCard(selector) {
   if (!slots.has(selector)) slots.set(selector, node(selector));
   return slots.get(selector);
 }
+const modais = [];
 const document = {
   readyState:'complete',hidden:false,
   createElement:()=>sec,addEventListener(event,handler){eventHandlers['document:'+event]=handler;},
   getElementById(id){return id==='hub'?hub:id==='hubMenu'?menu:id==='hubCards'?cards:id==='twMapa'&&sec.parentNode?sec:null;},
+  querySelectorAll(){return modais;},
   querySelector(sel) {
     return ({
       '#twMapa .tw-mapa-txt b':title,
@@ -131,6 +133,11 @@ assert.match(canvas['aria-label'],/Galeria do Brilho/);
 assert.doesNotMatch(canvas['aria-label'],/Harajuku/);
 assert.equal(pushes,2,'cada entrada em rua gera somente um pushState');
 let prevented=false;
+modais.push({getClientRects:()=>[{}]});
+eventHandlers['document:keydown']({key:'Escape',defaultPrevented:false,preventDefault(){prevented=true;}});
+assert.equal(canvas.height,760,'Esc fica com o diálogo visível');
+assert.equal(prevented,false);
+modais[0].getClientRects=()=>[];
 eventHandlers['document:keydown']({key:'Escape',defaultPrevented:false,preventDefault(){prevented=true;}});
 assert.ok(prevented,'Esc consumido enquanto a rua está aberta');
 assert.equal(canvas.height,1000,'Esc retorna ao mundo');

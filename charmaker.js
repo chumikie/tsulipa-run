@@ -44,7 +44,7 @@
     sobrancelha:'csobr', boca:'cboca', bochecha:'cbochecha', out:'cout', baixo:'cbaixo', gl:'cgl', mecha:'cstk', det:'cdet', hat:'chat'};
   function sortear(direto){
     var c = cu(); if(!c) return;
-    anterior = JSON.parse(JSON.stringify(c));
+    anterior = {c:JSON.parse(JSON.stringify(c)),a:accSel};
     var m = {hair:sorteia(PALETA), hair2:sorteia(PALETA), eye:sorteia(OLHOS), outcol:sorteia(ROUPA), legcol:sorteia(MEIAS)};
     ['back', 'front', 'olho', 'sobrancelha', 'boca', 'bochecha', 'out', 'baixo', 'gl'].forEach(function(k){ var l = livres(CAMPO_ID[k]); if(l.length) m[k] = sorteia(l); });
     var mecha = livres('cstk'); if(mecha.length) m.mecha = Math.random() < .6 ? '' : sorteia(mecha);
@@ -65,8 +65,9 @@
   }
   function desfazer(){
     var c = cu(); if(!c || !anterior) return;
-    Object.keys(c).forEach(function(k){ if(!(k in anterior)) delete c[k]; });
-    Object.keys(anterior).forEach(function(k){ c[k] = anterior[k]; });
+    Object.keys(c).forEach(function(k){ if(!(k in anterior.c)) delete c[k]; });
+    Object.assign(c,anterior.c);
+    itemVestir(anterior.a);
     anterior = null;
     if(typeof saveCu === 'function') saveCu();
     if(typeof sel !== 'undefined' && sel === 3 && typeof pick === 'function') pick(3);   // não troca o personagem do Center Run
@@ -109,25 +110,93 @@
      A cor da pele não entra: ela só muda quando a pessoa escolhe. */
   var FAV_CHAVE = 'brs48cr_favs', FAV_CAMPOS = ['hair', 'hair2', 'eye', 'outcol', 'legcol', 'back', 'front', 'mecha', 'streak', 'det', 'olho',
     'sobrancelha', 'boca', 'bochecha', 'out', 'baixo', 'gl', 'hat'];
-  function favLer(){ try{ var v = JSON.parse(localStorage.getItem(FAV_CHAVE) || '[]'); return Array.isArray(v) ? v.slice(0, 3) : []; }catch(_){ return []; } }
-  function favGravar(l){ try{ localStorage.setItem(FAV_CHAVE, JSON.stringify(l.slice(0, 3))); }catch(_){} }
+  function favChave(){
+    var conta=typeof contaJ!=='undefined'&&contaJ;
+    var id=conta&&(window.contaAuthUserId||conta.id||String(conta.nick||'').toLowerCase());
+    return FAV_CHAVE+(id?':conta:'+encodeURIComponent(id):':visitante');
+  }
+  function favLer(chave){
+    try{
+      var v=JSON.parse(localStorage.getItem(chave||favChave())||'[]');
+      return Array.isArray(v)?v.slice(0,3):[];
+    }catch(_){return [];}
+  }
+  function favGravar(l){
+    try{localStorage.setItem(favChave(),JSON.stringify(l.slice(0,3)));return true;}catch(_){return false;}
+  }
+  function favPodeImportar(){
+    return favLer(FAV_CHAVE).some(Boolean)&&favLer().filter(Boolean).length<3;
+  }
+  function favImportar(){
+    var destino=favLer(),origem=favLer(FAV_CHAVE),importados=0;
+    origem.forEach(function(f,i){
+      if(!f)return;
+      var vaga=destino[i]?Array.from({length:3},function(_,j){return j;}).find(function(j){return !destino[j];}):i;
+      if(vaga===undefined)return;
+      destino[vaga]=f;origem[i]=null;importados++;
+    });
+    if(!importados||!favGravar(destino))return false;
+    try{localStorage.setItem(FAV_CHAVE,JSON.stringify(origem));}catch(_){}
+    return true;
+  }
+  var FAV_TX={
+    pt:['Nome do look','Importar favoritos deste navegador','Provar','Vestir','Prévia usa as peças atuais em:','Nome guardado.'],
+    en:['Look name','Import favorites from this browser','Try on','Wear','Preview uses current pieces for:','Name saved.'],
+    es:['Nombre del look','Importar favoritos de este navegador','Probar','Vestir','La vista previa usa piezas actuales en:','Nombre guardado.'],
+    id:['Nama penampilan','Impor favorit dari peramban ini','Coba','Pakai','Pratinjau memakai bagian saat ini pada:','Nama tersimpan.'],
+    th:['ชื่อลุค','นำเข้าลุคโปรดจากเบราว์เซอร์นี้','ลอง','สวม','ตัวอย่างใช้ชิ้นปัจจุบันใน:','บันทึกชื่อแล้ว'],
+    ja:['コーデ名','このブラウザーのお気に入りを取り込む','試着','着る','プレビューで現在のパーツを使う箇所：','名前を保存しました。']
+  };
+  function favTexto(i){return (FAV_TX[LANG]||FAV_TX.pt)[i];}
   function favGuardar(i){
-    var c = cu(); if(!c) return; var l = favLer(), f = {};
+    var c = cu(); if(!c) return; var l = favLer(), f = {nome:l[i]&&l[i].nome||'',item:c.det==='torrada'?'torrada':accSel};
     FAV_CAMPOS.forEach(function(k){ f[k] = c[k] == null ? (k === 'streak' ? false : '') : c[k]; });   // vazio vira '' para voltar exatamente igual
     while(l.length < i) l.push(null); l[i] = f; favGravar(l);
   }
-  function favVestir(i, aoMudar){
-    var c = cu(), f = favLer()[i]; if(!c || !f) return;
-    anterior = JSON.parse(JSON.stringify(c));
+  function favVisual(i){
+    var atual=cu(),f=favLer()[i];if(!atual||!f)return null;
+    var c=Object.assign({},atual), a=accSel, trocas=[];
     FAV_CAMPOS.forEach(function(k){
-      if(f[k] === undefined) return;
+      if(f[k] === undefined || (k==='det' && f[k]==='torrada' && f.item==='torrada')) return;
       if(f[k] === null) f[k] = '';
       var id = CAMPO_ID[k];
-      if(id && $(id) && $(id).tagName === 'SELECT' && livres(id).indexOf(String(f[k])) < 0 && !(k === 'hat' && f[k] === '')) return;   // peça trancada agora: fica a atual
+      if(id && $(id) && $(id).tagName === 'SELECT' && livres(id).indexOf(String(f[k])) < 0 && !(k === 'hat' && f[k] === '')){
+        var parte=PARTES.find(function(p){return p.campo===k;});
+        trocas.push(T(parte?parte.nome:k));
+        return;
+      }
       c[k] = f[k];
     });
+    if(typeof f.item==='string'){
+      if(itemLiberado(f.item)){
+        a=f.item==='torrada'?'':f.item;
+        if(f.item==='torrada')c.det='torrada';
+        else if(c.det==='torrada')c.det='';
+      }else{
+        if(atual.det==='torrada')c.det='torrada';
+        trocas.push((FAV_ITEM[LANG]||FAV_ITEM.pt));
+      }
+    }
+    if(c.det==='torrada')a='';
     if(c.det === 'tulipa') c.hat = '';
     c.img = c.hair; c.streak = !!c.mecha;
+    return {c:c,a:a,aviso:trocas.length?favTexto(4)+' '+trocas.join(', '):''};
+  }
+  var FAV_ITEM={pt:'item de mão',en:'held item',es:'objeto de mano',id:'benda genggam',th:'สิ่งของในมือ',ja:'手持ちアイテム'};
+  function itemLiberado(item){
+    if(item==='torrada')return livres('acc').includes(item);
+    return ACC.some(function(a){return a[0]===item && bestDe(3)>=a[2];});
+  }
+  function itemVestir(a){
+    accSel=a;
+    var itens=$('acc');if(itens)itens.value=cu().det==='torrada'?'torrada':a;
+    try{localStorage.setItem('brs48cr_acc',a);}catch(e){}
+  }
+  function favVestir(i, aoMudar){
+    var c=cu(), visual=favVisual(i);
+    if(!c||!visual)return;
+    anterior={c:JSON.parse(JSON.stringify(c)),a:accSel};Object.assign(c,visual.c);
+    itemVestir(visual.a);
     if(typeof saveCu === 'function') saveCu();
     if(typeof sel !== 'undefined' && sel === 3 && typeof pick === 'function') pick(3);
     depois(); atualizarTudo();
@@ -139,13 +208,13 @@
   function aplicar(mod, campo, v){ mod[campo] = v; if(campo === 'mecha') mod.streak = !!v;
     if(campo === 'hat'){ if(v === 'tulipa'){ mod.det = 'tulipa'; mod.hat = ''; } else if(mod.det === 'tulipa') mod.det = ''; } }
   // Desenha um personagem do editor num canvas qualquer (mesmo drawChar do jogo).
-  function pintar(cv, c, S, tx, ty, ex, espelho){
+  function pintar(cv, c, S, tx, ty, ex, espelho, item){
     if(typeof perfChar !== 'function' || typeof drawChar !== 'function' || typeof perfCharContorno !== 'function') return false;
-    var x = cv.getContext('2d'), pose = typeof charPose !== 'undefined' ? charPose : '';
+    var x = cv.getContext('2d'), itemAtual=accSel, pose = typeof charPose !== 'undefined' ? charPose : '';
     x.save();
     if(espelho){ x.translate(cv.width, 0); x.scale(-1, 1); }
-    try{ charPose = ''; perfCharContorno(x, tx, ty, S, function(){ drawChar(perfChar({c:c}), 0, 0, 0, ex, false); }); }catch(e){}
-    finally{ charPose = pose; x.restore(); }
+    try{ if(item!==undefined)accSel=item; charPose = ''; perfCharContorno(x, tx, ty, S, function(){ drawChar(perfChar({c:c}), 0, 0, 0, ex, false); }); }catch(e){}
+    finally{ accSel=itemAtual; charPose = pose; x.restore(); }
     return true;
   }
   /* Um estúdio = prévia + expressões + abas + grade. Pode existir em mais de um lugar (Center Run, Montar Idol
@@ -154,21 +223,21 @@
      aoMudar(campo): avisa a tela dona (ex.: o Perfil refaz a foto). */
   function Estudio(el, chave, visivel, aoMudar, mudar){
     var st = ESTADOS[chave] || (ESTADOS[chave] = {aba:0, expr:0, virado:false, passo:0, prova:null});
-    var pedido = 0, pedidoMini = 0, eu = {};
+    var pedido = 0, pedidoMini = 0, eu = {}, provandoFavorito=null;
     function prev(){
-      var cv = el.cv, c = cu(); if(!cv || !c || !visivel()) return;
+      var cv=el.cv, visual=provandoFavorito===null?null:favVisual(provandoFavorito), c=visual?visual.c:cu(), item=visual?visual.a:undefined; if(!cv || !c || !visivel()) return;
       if(typeof twNitido === 'function') twNitido(cv);   // prévia nítida no computador (17/11/2026)
       var x = cv.getContext('2d'), W = cv.width, H = cv.height, S = 6.3, chao = H - 28;
       x.clearRect(0, 0, W, H);
-      if(celLigado()){ redoma(cv, c); return; }
+      if(celLigado()){ redoma(cv, c, item); return; }
       var bg = x.createRadialGradient(W / 2, H * .45, 10, W / 2, H * .5, W * .6);
       bg.addColorStop(0, '#ffffff'); bg.addColorStop(1, 'rgba(232,220,255,.9)');
       x.fillStyle = bg; x.fillRect(0, 0, W, H);
       x.fillStyle = 'rgba(155,48,217,.12)'; x.beginPath(); x.ellipse(W / 2, chao, 100, 16, 0, 0, Math.PI * 2); x.fill();
-      pintar(cv, c, S, W / 2 - 15 * S, chao - 44 * S, st.expr, st.virado);
+      pintar(cv, c, S, W / 2 - 15 * S, chao - 44 * S, st.expr, st.virado, item);
     }
     // A redoma: pedestal com degrau, o Idol em pé e o vidro por cima (com reflexos e brilhinhos)
-    function redoma(cv, c){
+    function redoma(cv, c, item){
       var x = cv.getContext('2d'), W = cv.width, H = cv.height, cx = W / 2, topo = H - 66, S = 5.2;
       var f = x.createLinearGradient(0, 0, 0, H); f.addColorStop(0, '#fff4fb'); f.addColorStop(1, '#ffd9ee');
       x.fillStyle = f; x.fillRect(0, 0, W, H);
@@ -178,7 +247,7 @@
       x.fillStyle = '#ffd0e8'; x.beginPath(); x.ellipse(cx, H - 46, 118, 13, 0, 0, Math.PI * 2); x.fill();
       x.fillStyle = 'rgba(255,255,255,.8)'; x.beginPath(); x.ellipse(cx - 40, H - 49, 34, 4, 0, 0, Math.PI * 2); x.fill();
       var mod = c; if(st.prova){ mod = JSON.parse(JSON.stringify(c)); aplicar(mod, st.prova.campo, st.prova.valor); }
-      pintar(cv, mod, S, cx - 15 * S, topo - 44 * S + 18, st.expr, st.virado);
+      pintar(cv, mod, S, cx - 15 * S, topo - 44 * S + 18, st.expr, st.virado, item);
       // vidro
       var R = 118, base = H - 48;
       x.save(); x.beginPath(); x.moveTo(cx - R, base); x.lineTo(cx - R, 140); x.arc(cx, 140, R, Math.PI, 0); x.lineTo(cx + R, base);
@@ -220,6 +289,7 @@
         pintar(cv, mod, S, 66 - 15 * S, 66 - meio * S, 0, false);
         b.addEventListener('click', function(){
           if(b.disabled) return;
+          provandoFavorito=null;
           if(podeProvar){ st.prova = st.prova && st.prova.campo === p.campo && st.prova.valor === o.value ? null : {campo:p.campo, valor:o.value}; eu.atualizar(); return; }
           st.prova = null;
           if(mudar) mudar(p.campo, o.value); else trocar(p.id, o.value); atualizarTudo(); });
@@ -267,20 +337,57 @@
       clearTimeout(pedidoMini); pedidoMini = setTimeout(miniaturas, 120);
     };
     function favoritos(){
-      var box = el.favs; if(!box || !visivel()) return;
-      var l = favLer(); box.innerHTML = '<span class="cmfavt">' + T('Favoritos') + '</span>';
-      for(var i = 0; i < 3; i++) (function(i){
-        var f = l[i], w = document.createElement('div'); w.className = 'cmfav';
-        var b = document.createElement('button'); b.type = 'button'; b.className = 'cmfavvestir';
-        if(f){ var cv = document.createElement('canvas'); cv.width = 96; cv.height = 96; cv.setAttribute('aria-hidden', 'true'); b.appendChild(cv);
-          b.setAttribute('aria-label', T('Vestir favorito') + ' ' + (i + 1)); pintar(cv, Object.assign({}, cu(), f), 3.2, 48 - 15 * 3.2, 48 - 13 * 3.2, 0, false);
-          b.addEventListener('click', function(){ favVestir(i, aoMudar); });
-        } else { b.textContent = '＋'; b.disabled = true; b.setAttribute('aria-label', T('Espaço vazio') + ' ' + (i + 1)); }
-        var g = document.createElement('button'); g.type = 'button'; g.className = 'cmfavguardar'; g.textContent = T('Salvar');
-        g.setAttribute('aria-label', T('Guardar visual atual no espaço') + ' ' + (i + 1));
-        g.addEventListener('click', function(){ favGuardar(i); favoritos(); });
-        w.appendChild(b); w.appendChild(g); box.appendChild(w);
+      var box=el.favs;
+      if(!box||!visivel()||box.contains(document.activeElement)&&document.activeElement.matches('input'))return;
+      var l=favLer(),dono=favChave();
+      box.innerHTML='<span class="cmfavt">'+T('Favoritos')+'</span>';
+      if(favPodeImportar()){
+        var importar=document.createElement('button');importar.type='button';importar.className='btn alt cmfav-importar';
+        importar.textContent=favTexto(1);
+        importar.onclick=function(){if(dono===favChave()&&favImportar())favoritos();};
+        box.append(importar);
+      }
+      var status=document.createElement('p');status.className='cmfav-status';status.setAttribute('role','status');status.hidden=true;
+      for(var i=0;i<3;i++)(function(i){
+        var f=l[i],w=document.createElement('div'); w.className='cmfav';
+        if(f){
+          var prova=document.createElement('button'),cv=document.createElement('canvas');
+          var visual=favVisual(i),rotulo=f.nome||T('Favoritos')+' '+(i+1);
+          cv.width=cv.height=96;cv.setAttribute('aria-hidden','true');
+          prova.type='button';prova.className='cmfavvestir';prova.append(cv);
+          prova.setAttribute('aria-label',favTexto(2)+' · '+rotulo);
+          prova.setAttribute('aria-pressed',String(provandoFavorito===i));
+          pintar(cv,visual.c,3.2,0,6,0,false,visual.a);
+          prova.onclick=function(){
+            if(dono!==favChave())return;
+            var ativo=provandoFavorito!==i;provandoFavorito=ativo?i:null;st.prova=null;
+            box.querySelectorAll('.cmfavvestir').forEach(function(b){b.setAttribute('aria-pressed',String(ativo&&b===prova));});
+            status.hidden=!ativo;status.textContent=visual.aviso||favTexto(2)+' · '+rotulo;
+            prev();
+          };
+          var nome=document.createElement('input');nome.type='text';nome.maxLength=28;nome.value=f.nome||'';nome.placeholder=favTexto(0);
+          nome.setAttribute('aria-label',favTexto(0)+' '+(i+1));
+          nome.onchange=function(){
+            if(dono!==favChave())return;
+            var atuais=favLer();if(!atuais[i])return;
+            atuais[i].nome=nome.value.trim();
+            if(favGravar(atuais)){status.textContent=favTexto(5);status.hidden=false;document.dispatchEvent(new Event('tw-visual-favoritos'));}
+          };
+          var vestir=document.createElement('button');vestir.type='button';vestir.className='cmfavguardar';vestir.textContent=favTexto(3);
+          vestir.setAttribute('aria-label',favTexto(3)+' · '+rotulo);
+          vestir.onclick=function(){if(dono===favChave()){provandoFavorito=null;favVestir(i,aoMudar);}};
+          w.append(prova,nome,vestir);
+        }
+        var g=document.createElement('button');g.type='button';g.className='cmfavguardar';g.textContent=T('Salvar');
+        g.setAttribute('aria-label',T('Guardar visual atual no espaço')+' '+(i+1));
+        g.onclick=function(){
+          if(dono!==favChave())return;
+          favGuardar(i);favoritos();
+          document.dispatchEvent(new Event('tw-visual-favoritos'));
+        };
+        w.append(g);box.append(w);
       })(i);
+      box.append(status);
     }
     var atualizarBase = eu.atualizar;
     eu.atualizar = function(){ atualizarBase(); clearTimeout(eu.tf); eu.tf = setTimeout(favoritos, 140); };
@@ -324,5 +431,5 @@
     if(d && !d.dataset.ligado){ d.dataset.ligado = '1'; d.addEventListener('click', desfazer); }
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
-  window.TW_CHARMAKER = { paleta:PALETA.slice(), sortear:sortear, desfazer:desfazer, partes:PARTES.map(function(p){ return p.campo; }), atualizar:atualizarTudo, montar:montar, favoritos:favLer };
+  window.TW_CHARMAKER = { paleta:PALETA.slice(), sortear:sortear, desfazer:desfazer, partes:PARTES.map(function(p){ return p.campo; }), atualizar:atualizarTudo, montar:montar, favoritos:function(){return favLer();}, favoritoVisual:favVisual, importarFavoritos:favImportar };
 })();

@@ -56,6 +56,6 @@ const tique=()=>new Promise(r=>setTimeout(r,5));
   // 6. não toca em chaves brs48cr_* nem em ★
   const src=fs.readFileSync(path.join(raiz,'gacha-po.js'),'utf8');
   assert.ok(!/brs48cr_|localStorage|stars/.test(src));
-  assert.match(fs.readFileSync(path.join(raiz,'index.html'),'utf8'),/album\.js\?v=\d+"><\/script>\n<script src="\.\/gacha-po\.js\?v=\d+">/);
+  assert.match(fs.readFileSync(path.join(raiz,'index.html'),'utf8'),/album\.js\?v=\d+"><\/script>\n<script (?:defer )?src="\.\/gacha-po\.js\?v=\d+">/);
   console.log('OK: pó de estrela no Álbum — escondido sem servidor, confirmação, mesma requisição, seis idiomas');
 })().catch(e=>{console.error(e);process.exit(1);});

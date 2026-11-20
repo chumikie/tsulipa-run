@@ -1,6 +1,6 @@
 # Retomada — TsuLiPa⭐World (estado de hoje)
 
-**Atualizado em 19/11/2026.** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
+**Atualizado em 20/11/2026.** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
 
 ## Como atualizar (no mesmo envio de cada PR)
 1. **Onde está:** `main`, PRs abertas e o que foi publicado.
@@ -19,8 +19,9 @@
 - Testes rápidos aqui (`node tests/run-all.js`); os de navegador ficam para o CI, salvo o que a mudança tocou.
 
 ## Onde está
-- **`main`:** `b40cb7c` (19/11), publicada na Vercel. Últimos merges: #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
-- **Outra PR aberta:** #117 (desfecho da bagunça no Idol⭐News! e ajustes de timing no Karaoke).
+- **`main`:** `9824e3e` (19/11), publicada na Vercel. Últimos merges: #119 (Início compacto), #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
+- **Outras PRs abertas:** #117 (desfecho e timing), #120 (Rua Fofa e lembranças), #121 (jogabilidade) e #122 (reencontros, pista e fotos) e #123 (cópia do Álbum, foco no Café e teste de card no Battle). A #124 integra #120–#123 e inclui a estreia sem nome, a proteção do Álbum cheio, os novos atalhos de treino e retorno e as melhorias de resultado, leitura e galeria. [Auditoria da integração](qa/auditoria-integracao-2026-11-20.md) · [Sustentabilidade e acabamento](qa/auditoria-sustentabilidade-2026-11-20.md) · [Auditoria visual](qa/auditoria-visual-2026-11-20.md) · [Auditoria das atualizações de 19 e 20/11](qa/auditoria-atualizacoes-19-20-11-2026.md).
+- **#125** (Expressão e convivência) tem como base a branch da #124. Os caminhos do Menu, o editor e a Praça têm testes próprios. A suíte principal do GitHub dispara em PRs com destino à main. [Escopo da #125](https://github.com/chumikie/tsulipa-run/pull/125)
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje
@@ -29,26 +30,30 @@
 **Como se entra:** o **visual novo** (o celular do Idol, "*Nick*Phone"; sem conta, "TsuPhone") abre sozinho no celular, tablet e computador desde 17/11. O clássico continua em Ajustes ou `?celular=0`.
 - Abertura com o trio Tsu·Li·Pa.
 - **Início.** Palco do trio, "Hoje" (desejo do dia, missões, aniversários, Encontro do dia, bagunça da semana) e portas (Jogos, Missões, Mapa, Idol⭐News!, Camarim, Calendário). A #118 permite fixar até dois atalhos neste navegador. Nesta revisão, o palco vem primeiro, a estreia cabe em uma linha compacta, e os atalhos fixados ficam junto das portas. A edição fica em Ajustes.
+- **Na #124, Esta semana** reúne o show de sábado, a festa do mapa, o jogo da semana e a retrospectiva. O Perfil ganha vitrine de favoritos e o Menu oferece recados ao trio. A opção de e-mail fica oculta até validar o envio e o cancelamento. As propostas de banco da rodada devem ser conferidas na publicação. [Economia e publicação](ECONOMIA_ESTRELAS.md)
 - **Menu:** atalhos para o resto. No PC a coluna cresce até 1360 px. Na #118, a busca reúne Idols e atividades, e Ajustes ganha volume e som geral. Café, Studio e Festival aceitam links diretos com prévias próprias.
 - **Calendário.** A #118 abre o capítulo disponível na data selecionada. O prazo do Festival aparece no fuso do aparelho e pode ser baixado em .ics.
-- **Pilotos na #118.** Duas histórias da Rua Fofa em datas de Brasília, um atendimento de Café opcional e ensaio de 20 segundos no Karaoke. Os pilotos abrem por links de teste. [Roteiro e coleta local](qa/pilotos-estreia-bairro-karaoke.md).
-- **Série de fotos na #118.** O Álbum reúne fotos guardadas explicitamente no Studio, Duo e Camarim VIP. A série fica neste navegador e é separada por conta.
+- **Pilotos na #118.** Duas histórias da Rua Fofa em datas de Brasília, um atendimento de Café opcional e ensaio de 20 segundos no Karaoke. A Rosa reconhece a contribuição da semana anterior no Mapa e no painel da Rua Fofa. Os pilotos abrem por links de teste. [Roteiro e coleta local](qa/pilotos-estreia-bairro-karaoke.md).
+- **Série de fotos na #118.** O Álbum reúne fotos guardadas explicitamente no Studio, Duo e Camarim VIP. A série fica neste navegador por conta, com 24 lugares e escolha explícita ao substituir uma foto. A série exporta uma página com três fotos ou uma comparação de duas em PNG. Uma cópia JSON permite restaurar fotos, composições e cenas do Duo em outro aparelho. As novas fotos registram a edição do piloto quando contribuem para a vitrine.
 
 ### Jogos
+
+A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, dois copos com ingredientes visíveis e um turno de treino com chegadas alternadas no Café, repetição de trecho a 75% ou 100% no Karaoke e uma bifurcação sinalizada a partir dos 75 m no Sora. O Sora guarda a melhor altura por caminho neste navegador e sugere a próxima meta. O Battle mostra os três atributos de cada card antes do show e o efeito da troca antes de confirmar no treino e na revanche.
+
 | Jogo | O que é | Prêmio | Estado | Próximo passo |
 |---|---|---|---|---|
-| Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106). A #118 identifica a colisão no resultado | — |
+| Center⭐Run! | Corrida com cartas, power-ups, Fever e Temporada 2 | ★100/dia, ranking semanal | O mais redondo; trio de perfil, pulo perdoador e metas (#106). O resultado identifica a colisão e propõe um ajuste de tempo. Há treino do obstáculo da última corrida e um desafio de quatro obstáculos alternando pulo e deslize | — |
 | Karaoke⭐Time! | Sala solo com plateia de NPCs e show de ritmo | 5 shows/dia, ranking e música da semana | Dividido em 4 arquivos e mais leve no celular (#110); piso corrigido (#116); "Ajustar timing" na sala | Medir em celular real |
-| Sora⭐Jump! | Pulo de nuvem em nuvem | ★25 aos 500 m, com confirmação do servidor (#105) | Estável | — |
-| Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115). A #118 traz aviso de urgência, feedback da entrega, treino do último erro e saudação antes dos pedidos | Ideia antiga (Raio-X): ingredientes vindos do Bloom |
-| Handshake⭐Event! | Memória com fila de fãs | ★10/dia, hora extra | Fãs com dois detalhes e "jeito" valendo | — |
-| Star⭐Gacha! | 1 giro por dia, cards de Idols | Pó de estrela e garantia | Álbum com coleções; cards usados no Battle | — |
-| Idol⭐Battle! | Cards de Idols em show, torcida de flores | Ranking semanal | Habilidades, lightsticks no ritmo | Prêmio dos lightsticks (SQL proposto, não aplicado) |
-| Bloom⭐Garden! | Jardim, flores com uso no Battle e no Studio | — | Flores desenhadas usadas no Studio (#113–#114) | — |
-| Photo⭐Studio! | Fotos com pose, cenário e tema da semana | ★3/semana no tema | Flores do Bloom e retratos refinados. Composição favorita local na #118 | — |
-| Moon⭐Duo! | Foto em dupla com outro Idol; Pedido de cena do dia | — | Jogo baixa só ao abrir (#110) | — |
-| Backstage⭐Pet! | Pet, quarto, minijogos, Camarim | ★50/dia nos minijogos | Camarim por conta e porta-retrato guardado (#113–#114) | — |
-| Zipper⭐Shop! | Loja, Look do dia, Montar Idol (charmaker) | — | Estável | — |
+| Sora⭐Jump! | Pulo de nuvem em nuvem | ★25 aos 500 m, com confirmação do servidor (#105) | A bifurcação guarda marcas por rota e o resultado permite treinar o pouso perdido. Um pouso praticado orienta a próxima subida, e o prêmio dos 500 m mantém a confirmação associada à subida | — |
+| Happy⭐Cafe! | Montar bebidas; "Dois no balcão" | ★10/dia (1ª partida 600+), Caderno na conta | Comanda e missões legíveis no celular (#115). A #118 traz aviso de urgência, feedback da entrega, treino do último erro e saudação antes dos pedidos. O turno de treino oferece três comandas da categoria que mais gerou erros. A próxima partida acompanha a categoria praticada | Ideia antiga (Raio-X): ingredientes vindos do Bloom |
+| Handshake⭐Event! | Memória com fila de fãs | ★10/dia, hora extra | Fãs com dois detalhes e "jeito" valendo, reencontro com presente novo, revisão das pistas e treino no próprio ritmo com reapresentação de uma pista confundida em outra sessão | — |
+| Star⭐Gacha! | 1 giro por dia, cards de Idols | Pó de estrela e garantia | Álbum com coleções; o card do giro pode ser comparado no Battle antes de confirmar sua entrada no trio | — |
+| Idol⭐Battle! | Cards de Idols em show, torcida de flores | Ranking semanal | Habilidades, lightsticks no ritmo e comparação da ordem do trio após derrotas | Prêmio dos lightsticks (SQL proposto, não aplicado) |
+| Bloom⭐Garden! | Jardim, flores com uso no Battle e no Studio | — | Flores desenhadas usadas no Studio, inclusive arranjos de 2 ou 3 espécies | — |
+| Photo⭐Studio! | Fotos com pose, cenário e tema da semana | ★3/semana no tema | Obturador junto da prévia, composição favorita e foto do Álbum como referência. Comparação antes/depois baixável como PNG | — |
+| Moon⭐Duo! | Foto em dupla com outro Idol; Pedido de cena do dia | — | O Pedido de cena mostra o que já combina e permite variar enquadramento e posições com a mesma dupla. Fotos novas da série permitem recriar a cena | — |
+| Backstage⭐Pet! | Pet, quarto, minijogos, Camarim | ★50/dia nos minijogos | Camarim por conta, porta-retrato e cenas do pet no sofá e junto à mesa, salváveis no Álbum | — |
+| Zipper⭐Shop! | Loja, Look do dia, Montar Idol (charmaker) | — | Provador compacto junto do catálogo, peças compradas e montagem com favoritos nomeados por conta, incluindo o item de mão e aviso de substituição antes da foto | — |
 
 ### Sistemas do mundo
 | Sistema | Estado | Próximo passo |
@@ -58,8 +63,8 @@
 | Humor, Desejo do dia, Camarim VIP | Locais, por conta (#113) | — |
 | Meu Camarim | Decoração, tour de camarins, coração por dia, porta-retrato | — |
 | Encontro do dia | Um Idol (dupla na terça, trio na sexta) dançando com recado; a cena baixa só ao abrir (#112) | — |
-| Idol⭐News! | Pódios, capítulos (um por terça); Temporada 1 trancada | Revisão das traduções e OK da Temporada 1 |
-| Calendário, Fichinhas, Álbum | Só leitura | Dia do aniversário da Lirika (ficha diz só "maio") |
+| Idol⭐News! | Pódios e capítulos no domingo, por horário de Brasília. Temporada 1 trancada | Revisão das traduções e OK da Temporada 1 |
+| Calendário, Fichinhas, Álbum | Calendário e fichas para consulta. Ler abre o capítulo exato. Álbum com filtros por origem e edição, fotos fixadas, exportação PNG e cópia JSON | Dia do aniversário da Lirika (ficha diz só "maio") |
 | Você / charmaker | Editor estilo Charat, favoritos, rosto à escolha | — |
 | Admin | Moderação, telemetria, Montar Idol; ferramentas baixam só para admin (#110) | — |
 
@@ -73,8 +78,9 @@
 | — | `battle.js` e `battle.css` | Ao abrir o Battle |
 | — | `studio.js` | Ao abrir o Studio ou montar a capa do jornal |
 | `jornal.js` | `jornal-capitulos.js` | Ao abrir o jornal ou o Calendário |
-| `mapa-textos.js` | `tw-mapa.js` | Logo depois da abertura |
+| `mapa-textos.js` | `tw-mapa.js` | Ao abrir o Mapa |
 | `tw-bairro.js` | `tw-bairro-tela.js` | Ao abrir o painel, ou no Mapa nos dias guiados |
+| Início | `jornal.js`, cenas do telão | Ao abrir Jornal, Calendário ou a galeria do Jornal no Pet |
 | `duo-base.js` | `duo.js`, `duo-tela.js`, `duo-pedido.js` | Ao abrir o Duo |
 | `admin-base.js` | `admin.js` | Quando o Perfil confirma conta admin |
 | `encontro-base.js` | `encontro.js` (#112) | Ao abrir o Encontro |
@@ -88,6 +94,7 @@
 - `tests/site-source.js` lista os arquivos na ordem original, para os testes que recortam código por posição.
 
 ## Pendências
+- Publicação do Camarim em duas etapas, com aceite das funções novas, referência de rollback e corte final do crédito legado. [Roteiro de publicação](qa/pilotos-estreia-bairro-karaoke.md#ordem-da-publicação-do-camarim)
 **Do dono**
 - Conferir no celular, depois da #110: Início, show no Karaoke com foto no meio, abrir o Moon⭐Duo!, "Vida no bairro" e aba de moderação na conta admin.
 - Ok do Pati para o visual novo.
@@ -103,7 +110,8 @@
 - Roupa como prêmio do nível 3 do bairro.
 
 **Código**
-- Validar a #117, incluindo a versão de cache do Jornal. O piloto do bairro e a matriz física do Karaoke estão em [docs/qa](qa/pilotos-estreia-bairro-karaoke.md).
+- A #117 continua separada e conflita com a main. Revisar desfecho, calibração e versões do Jornal em separado dos arquivos de áudio, cuja revisão ficou para depois.
+- Testar a #124 com conta real e conferência no aparelho de login, vitrine, retrospectiva e recompensas semanais. [Pilotos e matriz física do Karaoke](qa/pilotos-estreia-bairro-karaoke.md).
 - Medir em Android e PC reais: o teste aqui roda sem placa de vídeo.
 
 **Nunca testado de verdade:** login real em todos os fluxos novos, iPhone/Android físicos, sons ouvidos.

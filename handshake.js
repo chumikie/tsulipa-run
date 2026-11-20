@@ -17,6 +17,81 @@ var HS_COR_TR = {
   th:{n:['ชมพู','ม่วง','ฟ้า','เขียว','เหลือง','ขาว'],l:'แท่งไฟ',q:'แล้วแท่งไฟสีอะไร?',ok:'แท่งไฟก็ถูก! +50 💡'},
   ja:{n:['ピンク','むらさき','青','緑','黄色','白'],l:'ペンライト',q:'ペンライトの色は？',ok:'ペンライトも正解！+50 💡'}
 };
+var HS_REVISAO = {
+  pt:['De volta! Meu favorito agora é {p}.','Pistas para rever','Presente','Lightstick','Você respondeu','Passou o tempo'],
+  en:['I’m back! My favorite now is {p}.','Clues to revisit','Gift','Lightstick','You answered','Time ran out'],
+  es:['¡Volví! Ahora mi favorito es {p}.','Pistas para repasar','Regalo','Lightstick','Respondiste','Se acabó el tiempo'],
+  id:['Aku kembali! Favoritku sekarang {p}.','Petunjuk untuk diulas','Hadiah','Lightstick','Jawabanmu','Waktu habis'],
+  th:['กลับมาแล้ว! ตอนนี้ฉันชอบ {p}','เบาะแสที่ควรทบทวน','ของขวัญ','แท่งไฟ','คำตอบของคุณ','หมดเวลา'],
+  ja:['また来たよ！今のお気に入りは{p}。','振り返りのヒント','プレゼント','ペンライト','あなたの回答','時間切れ']
+};
+function hsRevisaoT(){ return HS_REVISAO[LANG] || HS_REVISAO.pt; }
+function hsPresenteNome(i){ var p=HS_PRESENTES[i];return p ? p[0]+' '+tr(p[1]) : ''; }
+function hsVoltaMemoria(fila, livres, confirmados){
+  if(hs.voltaMemoria || (hs.servidor && !confirmados) || !fila.length) return;
+  var f;
+  var memoria = hsMemLer().find(function(m){
+    if(livres.indexOf(m.nome)<0 || hs.historico.some(function(anterior){return anterior.nome===m.nome;}))return false;
+    var conhecido=fila.find(function(atual){return atual.nome===m.nome;});
+    f=conhecido || fila.find(function(atual){return !atual.hsCafeVoltou && atual.pres!==m.pres;});
+    return f && !f.hsCafeVoltou && f.pres!==m.pres;
+  });
+  if(!memoria) return;
+  f.nome = memoria.nome;
+  Object.keys(f.c).forEach(function(k){ if(memoria.c && typeof memoria.c[k] === 'string') f.c[k] = memoria.c[k]; });
+  if(HS_JEITO_LISTA.indexOf(memoria.jeito) >= 0){
+    f.jeito = memoria.jeito;
+    f.expr = f.jeito==='timido' ? 0 : 3;
+  }
+  f.presAnterior = memoria.pres;
+  hs.voltaMemoria = true;
+}
+var HS_RETORNO_TR={
+  pt:['Reencontro · Agora você lembrou da pista de {n}!','Reencontro · A pista de {n} segue disponível para rever.'],
+  en:['Reunion · You remembered {n}’s clue this time!','Reunion · You can review {n}’s clue again.'],
+  es:['Reencuentro · ¡Ahora recordaste la pista de {n}!','Reencuentro · Puedes volver a repasar la pista de {n}.'],
+  id:['Bertemu lagi · Kali ini kamu mengingat petunjuk {n}!','Bertemu lagi · Kamu bisa mengulas petunjuk {n} lagi.'],
+  th:['พบกันอีก · คราวนี้คุณจำเบาะแสของ {n} ได้!','พบกันอีก · คุณยังทบทวนเบาะแสของ {n} ได้'],
+  ja:['再会 · 今回は{n}のヒントを思い出せました！','再会 · {n}のヒントをまた復習できます。']
+ };
+function hsPistaChave(){var chave=hsMemChave();return chave?chave+':revisar':'';}
+function hsPistaPendente(){
+  var chave=hsPistaChave();
+  try{
+    var f=chave&&JSON.parse(localStorage.getItem(chave));
+    return f&&hsNomesLivres().indexOf(f.nome)>=0&&HS_PRESENTES[f.pres]&&f.c&&HS_JEITO_LISTA.includes(f.jeito)?f:null;
+  }catch(e){return null;}
+}
+function hsPistaCorrigida(f,cor,ok){
+  if(!hs.treinoLeitura || !f.hsPistaReencontro || f.hsPistaCor!==cor)return;
+  hs.pistaReencontro={nome:f.nome,ok:ok};
+  if(ok){
+    var chave=hsPistaChave(), pista=hsPistaPendente();
+    if(chave && pista && pista.nome===f.nome && pista.pres===f.pres)try{localStorage.removeItem(chave);}catch(e){}
+  }
+}
+function hsAnotarPista(f, cor, resposta){
+  var chave=hsPistaChave();
+  if(chave && !hs.treinoLeitura && hs.visitaAlvo!==f && !f.superfa){
+    var detalhe={nome:f.nome,c:f.c,pres:f.pres,cor:f.cor,jeito:f.jeito,pose:f.pose,expr:f.expr,hsPistaReencontro:true,hsPistaCor:cor};
+    try{localStorage.setItem(chave,JSON.stringify(detalhe));}catch(e){}
+  }
+  var nome = cor ? function(i){ return hsCorT().n[i] || ''; } : hsPresenteNome;
+  (hs.pistasErradas || (hs.pistasErradas=[])).push({
+    fa:f.nome, tipo:hsRevisaoT()[cor?3:2], certa:nome(cor?f.cor:f.pres), dada:nome(resposta)
+  });
+}
+function hsPistasHtml(){
+  var erros=hs.pistasErradas;
+  var reencontro=hs.pistaReencontro, resultado=reencontro?'<p class="hsdica">'+escHtml((HS_RETORNO_TR[LANG]||HS_RETORNO_TR.pt)[reencontro.ok?0:1].replace('{n}',reencontro.nome))+'</p>':'';
+  if(!erros || !erros.length)return resultado;
+  var t=hsRevisaoT();
+  return resultado+'<details class="hsdica"><summary>'+escHtml(t[1])+' · '+erros.length+'</summary><ul>'+
+    erros.map(function(e){
+      return '<li><b>'+escHtml(e.fa)+'</b> · '+escHtml(e.tipo+' · '+e.certa)+'<br>'+
+        escHtml(e.dada ? t[4]+' · '+e.dada : t[5])+'</li>';
+    }).join('')+'</ul></details>';
+}
 function hsCorT(){ return HS_COR_TR[typeof LANG === 'string' && HS_COR_TR[LANG] ? LANG : 'pt']; }
 // O jeito agora vale na jogada: o fã tímido se apresenta mais rápido, o animado fica um pouco mais; o lightstick dá mais tempo.
 function hsTempoFila(f){ return 160 + (f && f.cor !== undefined ? 40 : 0) + (f && f.jeito === 'timido' ? -30 : f && f.jeito === 'animado' ? 20 : 0); }
@@ -80,17 +155,26 @@ function hsMemGuardar(f){
   campos.forEach(function(k){ if(f.c && typeof f.c[k] === 'string') detalhes[k] = f.c[k]; });
   var memoria = { nome:f.nome, pres:f.pres, c:detalhes, jeito:f.jeito, dia:new Date(Date.now() - 3 * 3600e3).toISOString().slice(0,10) };
   try{
-    var lista = hsMemLer().filter(function(m){ return m.nome !== f.nome; });
+    var memorias = hsMemLer(), antiga = memorias.find(function(m){ return m.nome === f.nome; });
+    memoria = Object.assign({},antiga,memoria);
+    var lista = memorias.filter(function(m){ return m.nome !== f.nome; });
     lista.unshift(memoria); localStorage.setItem(chave, JSON.stringify(lista.slice(0, 8)));
   }catch(e){} // bloqueio de armazenamento não interfere no minijogo.
 }
 function hsCafeConfirmar(f, contaOrigem){
   var chave = hsMemChave();
   if(!chave || chave !== contaOrigem || !f || !f.hsLembranca) return;
-  var m = hsMemLer().find(function(item){
+  var lista = hsMemLer();
+  var m = lista.find(function(item){
     return item.nome === f.nome && item.pres === f.hsLembranca.pres;
   });
-  if(m) hsCafePendente = {conta:chave, nome:m.nome, pres:m.pres};
+  if(!m) return;
+  hsCafePendente = {conta:chave, nome:m.nome, pres:m.pres};
+  var pedido = typeof cfPedidoMemoria === 'function' && cfPedidoMemoria(f.pedido);
+  if(pedido){
+    m.ultimoPedido = pedido;
+    try{ localStorage.setItem(chave,JSON.stringify(lista)); }catch(e){}
+  }
 }
 function hsCafeAplicarReencontro(fila, presentesServidor){
   var pendente = hsCafePendente;
@@ -146,7 +230,39 @@ function hsFechar(){ hsOv.hidden = true; hs = null; }
 // Hora extra: depois da 5ª rodada, com Hype sobrando, vêm mais 3 filas (6 fãs, 4 s para responder).
 // Com conta, só existe se o servidor mandar as rodadas extras (proposta SQL em supabase/sql/proposta/handshake_hora_extra_REVIEW_ONLY.sql);
 // sem isso, a partida termina na 5ª como sempre. Sem conta (treino), a hora extra já vale.
+var HS_LEITURA={
+  pt:['Treinar no meu ritmo','Próximo fã','Começar a lembrar','Repetir com o tempo padrão','Treino sem pontuação oficial'],
+  en:['Practice at my pace','Next fan','Start recall','Repeat with standard timing','Practice without official scoring'],
+  es:['Practicar a mi ritmo','Siguiente fan','Empezar a recordar','Repetir con el tiempo normal','Práctica sin puntuación oficial'],
+  id:['Berlatih sesuai ritmeku','Penggemar berikutnya','Mulai mengingat','Ulangi dengan waktu standar','Latihan tanpa skor resmi'],
+  th:['ฝึกตามจังหวะของฉัน','แฟนคนถัดไป','เริ่มทบทวน','เล่นซ้ำด้วยเวลาปกติ','ฝึกโดยไม่นับคะแนนทางการ'],
+  ja:['自分のペースで練習','次のファン','思い出す','標準時間でもう一度','公式スコアなしの練習']
+};
+function hsLeitura(i){return (HS_LEITURA[LANG]||HS_LEITURA.pt)[i];}
+function hsFocar(sel){var alvo=$('hsCorpo').querySelector(sel);if(alvo)alvo.focus({preventScroll:true});}
+function hsIniciarTreino(manual,fila){
+  hsReiniciar();hs.donoMemoria=hsMemChave();hs.treinoLeitura=true;hs.leituraManual=manual;
+  if(fila && fila.length)hsUsarFila(fila,fila.slice(),hsSorteio(Date.now()));
+  else{
+    var pista=hsPistaPendente();
+    if(pista)hsUsarFila([pista],[pista],hsSorteio(Date.now()));
+    else hsNovaRodada();
+  }
+  hsFocar(manual?'[data-hs-avancar]':'#hsLeituraStatus');
+}
+function hsAvancarFila(){
+  hs.vi++;hs.t0=hsT;
+  if(hs.vi>=hs.fila.length)hs.fase='lembrar';
+  hsUI();
+  if(hs.leituraManual)hsFocar('[data-hs-avancar]');
+}
+function hsUsarFila(fila,quiz,r){
+  hs.historico = hs.historico.concat(fila);
+  hs.fila = fila; hs.quiz = quiz.sort(function(){ return r() - .5; }); hs.qi = -1; hs.vi = 0; hs.fase = 'fila'; hs.t0 = hsT; hs.rodada++;
+  hsUI();
+}
 function hsMaxRodadas(){
+  if(hs && hs.treinoLeitura)return 1;
   if(hs && hs.servidor && Array.isArray(hs.servidor.desafios)) return Math.max(5, Math.min(8, hs.servidor.desafios.length));
   if(hs && hs.provaErro) return 5;
   return contaJ ? 5 : 8;
@@ -154,23 +270,34 @@ function hsMaxRodadas(){
 function hsNovaRodada(){
   var r = hsSorteio(Date.now() + hs.rodada * 977), usadosNome = {};
   hs.historico.forEach(function(f){ usadosNome[f.nome] = 1; });
-  var livres = hsNomesLivres().filter(function(n){ return !usadosNome[n]; }), n = Math.min(3 + Math.floor(hs.rodada * .8), 6), fila = [];
+  var disponiveis = hsNomesLivres().filter(function(n){ return !usadosNome[n]; }), livres = disponiveis.slice(), n = Math.min(3 + Math.floor(hs.rodada * .8), 6), fila = [];
   for(var i = 0; i < n && livres.length; i++){ var nome = livres.splice(Math.floor(r() * livres.length), 1)[0]; fila.push(hsFa(r, nome)); }
   // O servidor determina as respostas desta partida; a estética/ordem dos fãs permanece local.
   var presentesServidor = hs.servidor && hs.servidor.desafios && hs.servidor.desafios[hs.rodada];
-  if(Array.isArray(presentesServidor) && presentesServidor.length === fila.length){ fila.forEach(function(f, i){ f.pres = presentesServidor[i]; }); }
+  var confirmados = Array.isArray(presentesServidor) && presentesServidor.length === fila.length &&
+    presentesServidor.every(function(i){ return Number.isInteger(i) && !!HS_PRESENTES[i]; });
+  if(confirmados){ fila.forEach(function(f, i){ f.pres = presentesServidor[i]; }); }
   fila.forEach(function(f,i){ f.hsOrigem=hs.rodada+1; f.hsIndice=i; });
   // Cores do lightstick: do servidor quando ele manda; sem conta, sorteio local; servidor antigo (sem cores): sem cor.
   var coresServidor = hs.servidor && Array.isArray(hs.servidor.cores) ? hs.servidor.cores[hs.rodada] : null;
   if(hs.rodada >= 2 && (!hs.servidor || Array.isArray(coresServidor))) fila.forEach(function(f, i){
     f.cor = Array.isArray(coresServidor) && coresServidor.length === fila.length ? (+coresServidor[i] || 0) % HS_CORES.length : Math.floor(r() * HS_CORES.length); });
   // presentes diferentes entre si na mesma rodada (fica justo lembrar)
-  var usados = {}; fila.forEach(function(f){ while(usados[f.pres]) f.pres = (f.pres + 1) % HS_PRESENTES.length; usados[f.pres] = 1; });
-  if(typeof eventoPresente === 'function' && fila.length){ var ep = eventoPresente(); if(!usados[ep]){ fila[Math.floor(r() * fila.length)].pres = ep; } }   // o presente da semana sempre aparece
-  hsCafeAplicarReencontro(fila, presentesServidor);
+  var usados = {};
+  fila.forEach(function(f){
+    if(!confirmados) while(usados[f.pres]) f.pres = (f.pres + 1) % HS_PRESENTES.length;
+    usados[f.pres] = 1;
+  });
+  if(!confirmados && typeof eventoPresente === 'function' && fila.length){
+    var ep = eventoPresente();
+    if(!usados[ep]) fila[Math.floor(r() * fila.length)].pres = ep;
+  }
+  fila.forEach(function(f){ usados[f.pres] = 1; });   // o presente da semana sempre aparece
+  if(confirmados) hsCafeAplicarReencontro(fila, presentesServidor);
+  hsVoltaMemoria(fila, disponiveis, confirmados);
   // Reencontros têm prioridade; a visita ocupa apenas um lugar comum já existente.
   if(hs.visitaComunidade && hsVisitaDono() === hs.visitaComunidade.dono && !hs.visitaAlvo){
-    var comuns = fila.filter(function(f){ return !f.hsCafeVoltou; });
+    var comuns = fila.filter(function(f){ return !f.hsCafeVoltou && f.presAnterior === undefined; });
     if(comuns.length) hs.visitaAlvo = comuns[Math.floor(Math.random() * comuns.length)];
   }
   var quiz = fila.slice();
@@ -180,9 +307,7 @@ function hsNovaRodada(){
     var sf = anteriores[Math.floor(r() * anteriores.length)];
     if(!usados[sf.pres]){ sf = Object.assign({}, sf, { superfa:true }); quiz.push(sf); }
   }
-  hs.historico = hs.historico.concat(fila);
-  hs.fila = fila; hs.quiz = quiz.sort(function(){ return r() - .5; }); hs.qi = -1; hs.vi = 0; hs.fase = 'fila'; hs.t0 = hsT; hs.rodada++;
-  hsUI();
+  hsUsarFila(fila,quiz,r);
 }
 function hsTempoPergunta(){ return Math.max(240, 420 - hs.rodada * 30); }   // ~7s no começo, ~4s no fim   // em quadros (60 por segundo)
 function hsProxima(){
@@ -190,22 +315,27 @@ function hsProxima(){
   if(hs.qi >= hs.quiz.length){ if(hs.hype <= 0 || hs.rodada >= hsMaxRodadas()) return hsFim(); hs.fase = 'pausa'; hs.t0 = hsT; hsUI(); return; }
   var f = hs.quiz[hs.qi], ops = [f.pres], r = hsSorteio(Date.now()), grupo = HS_PRESENTES[f.pres][2];
   // as erradas: até 2 do mesmo grupo do certo e, de preferência, presentes de outros fãs da fila (pegadinha)
+  if(f.presAnterior !== undefined && f.presAnterior !== f.pres) ops.push(f.presAnterior);
   var mesmo = HS_PRESENTES.map(function(p, i){ return i; }).filter(function(i){ return i !== f.pres && HS_PRESENTES[i][2] === grupo; });
   var daFila = hs.quiz.map(function(q){ return q.pres; }).filter(function(p){ return p !== f.pres; });
   [daFila, mesmo].forEach(function(L){ L = L.slice(); while(ops.length < 3 && L.length){ var o = L.splice(Math.floor(r() * L.length), 1)[0]; if(ops.indexOf(o) < 0) ops.push(o); } });
   while(ops.length < 4){ var o = Math.floor(r() * HS_PRESENTES.length); if(ops.indexOf(o) < 0) ops.push(o); }
   hs.ops = ops.sort(function(){ return r() - .5; }); hs.fase = 'quiz'; hs.t0 = hsT; hs.resp = -1; hsUI();
+  if(hs.leituraManual)hsFocar('[data-hs]');
 }
 function hsResponder(i){
   if(!hs || hs.fase !== 'quiz' || hs.resp >= 0) return;
+  if(hsContaMudou(hs)){hsFechar();return;}
   var f = hs.quiz[hs.qi], ok = i >= 0 && hs.ops[i] === f.pres, rest = Math.max(0, 1 - (hsT - hs.t0) / hsTempoPergunta()), J = HS_JEITOS[f.jeito] || HS_JEITOS.fofo;
   if(hs.servidor && f.hsOrigem && Number.isInteger(f.hsIndice)) hs.respostas.push({ rodada:hs.rodada, origem:f.hsOrigem, indice:f.hsIndice, resposta:i>=0?hs.ops[i]:-1, restante:Math.round(rest*1000), superfa:!!f.superfa });
   hs.resp = i; hs.ok = ok; hs.total++;
+  hsPistaCorrigida(f,false,ok);
+  if(!ok && f.hsPistaCor)hsPistaCorrigida(f,true,false);
   if(ok){
     hs.combo++; hs.comboMax = Math.max(hs.comboMax, hs.combo); hs.acertos++;
-    if(hs.visitaAlvo !== f) hsMemGuardar(f); // visitantes reais não entram na memória dos NPCs
+    if(hs.visitaAlvo !== f && !f.superfa && !hs.treinoLeitura) hsMemGuardar(f); // visitantes reais não entram na memória dos NPCs
     if(typeof eventoPresente === 'function' && f.pres === eventoPresente()) hs.pontos += 50;
-    if(hs.combo >= 10 && typeof conqGanhar === 'function' && conqGanhar('jogo_memoria')) hs.conq = '🤝 ' + tr('Memória de fã');
+    if(!hs.treinoLeitura && hs.combo >= 10 && typeof conqGanhar === 'function' && conqGanhar('jogo_memoria')) hs.conq = '🤝 ' + tr('Memória de fã');
     var base = 100 + Math.round(rest * 80) + hs.rodada * 10 + (f.superfa ? 150 : 0);
     hs.pontos += Math.round(base * (1 + Math.min(hs.combo - 1, 10) * .1));
     hs.hype = Math.min(100, hs.hype + (f.superfa ? 15 : 8)); if(f.superfa) hs.superfas++;
@@ -213,6 +343,7 @@ function hsResponder(i){
     for(var k = 0; k < 6; k++) hs.hearts.push({ x:.18 + Math.random() * .2, y:.6, v:.004 + Math.random() * .004, t:0, e:['💖', '💕', '✨'][k % 3] });
     if(sfx && sfx.star) try{ sfx.star(); }catch(e){}
   } else {
+    hsAnotarPista(f,false,i>=0 ? hs.ops[i] : -1);
     hs.combo = 0; hs.hype = Math.max(0, hs.hype - (i < 0 ? 18 : 22));
     hs.fala = tr(J.erro[0]).replace('{p}', HS_PRESENTES[f.pres][0] + ' ' + tr(HS_PRESENTES[f.pres][1]));
     if(sfx && sfx.hit) try{ sfx.hit(); }catch(e){}
@@ -222,15 +353,20 @@ function hsResponder(i){
     var outras = HS_CORES.map(function(c, k){ return k; }).filter(function(k){ return k !== f.cor; }).sort(function(){ return Math.random() - .5; }).slice(0, 3);
     hs.corOps = outras.concat([f.cor]).sort(function(){ return Math.random() - .5; });
     hs.corEntrada = hs.servidor && hs.respostas.length ? hs.respostas[hs.respostas.length - 1] : null;
-    hs.corResp = -1; hs.fase = 'quizcor'; hs.t0 = hsT; hsUI(); return;
+    hs.corResp = -1; hs.fase = 'quizcor'; hs.t0 = hsT; hsUI();
+    if(hs.leituraManual)hsFocar('[data-hscor]');
+    return;
   }
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
 }
 function hsResponderCor(j){
   if(!hs || hs.fase !== 'quizcor') return;
+  if(hsContaMudou(hs)){hsFechar();return;}
   var f = hs.quiz[hs.qi], c = j >= 0 ? hs.corOps[j] : -1;
   if(hs.corEntrada && c >= 0) hs.corEntrada.cor = c;   // o servidor confere a cor e soma os +50 dele
   hs.corResp = j;
+  hsPistaCorrigida(f,true,c===f.cor);
+  if(c !== f.cor) hsAnotarPista(f,true,c);
   if(c === f.cor){ hs.pontos += 50; hs.fala = hsCorT().ok; if(typeof beep === 'function') try{ beep(1568, .07, 'triangle', .04); }catch(e){} }
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
 }
@@ -253,7 +389,7 @@ function hsReceberPremio(r, atual){
   if(typeof twMissoesAtualizar === 'function') twMissoesAtualizar();   // missão do Handshake marca na hora
   if(r.tipo === 'ticket' && window.ktTickets && window.ktTickets.refresh) try{ window.ktTickets.refresh(); }catch(e){}
   var pronto = hsAplicarPet(r);
-  if(atual && hs === atual){ hs.premio = r; hs.premioPetPendente = !pronto; hsUI(); }
+  if(atual && hs === atual && !atual.treinoLeitura){ hs.premio = r; hs.premioPetPendente = !pronto; hsUI(); }
 }
 function hsFinalizarNoServidor(args){
   // Compatibilidade temporária: a PR pode ser pré-visualizada antes da aprovação do SQL.
@@ -272,13 +408,18 @@ function hsRecuperar(){
     else if(r && r.erro === 'pontos') try{localStorage.removeItem('tw_hs_pendente');}catch(e){}
   }).catch(function(){});
 }
+function hsContaMudou(partida){
+  return partida && partida.donoMemoria !== undefined && partida.donoMemoria !== hsMemChave();
+}
 function hsIniciarSeguro(){
   hsReiniciar(); var atual = hs;
+  atual.donoMemoria = hsMemChave();
   hsVisitaPreparar(atual);
   if(!contaJ){ hsNovaRodada(); return; } // livre para praticar sem conta.
   hs.fase = 'preparando'; hsUI();
   contaRpc('handshake_iniciar').then(function(r){
     if(hs !== atual) return;
+    if(hsContaMudou(atual)){hsFechar();return;}
     if(r && r.ok && Array.isArray(r.desafios)) atual.servidor = r;
     else atual.provaErro = (r && r.erro) || 'servidor';
     hsNovaRodada();
@@ -287,7 +428,9 @@ function hsIniciarSeguro(){
 function hsFim(){
   var atual=hs;
   if(!atual || atual.fase==='fim') return;
+  if(hsContaMudou(atual)){hsFechar();return;}
   atual.fase='fim';
+  if(atual.treinoLeitura){hsUI();hsFocar('#hsRepetirTempo');return;}
   if(atual.total>0 && window.TW_HUMOR) window.TW_HUMOR.treino('handshake');
   var rec=hsRecorde(); atual.novo=atual.pontos>rec;
   if(typeof recRegistrarLocal === 'function') recRegistrarLocal('hand',atual.pontos);
@@ -298,7 +441,7 @@ function hsFim(){
   try{ localStorage.setItem('tw_hs_pendente',JSON.stringify({nick:contaJ.nick,sessao:args.p_sessao,respostas:args.p_respostas})); }catch(e){}
   hsFinalizarNoServidor(args).then(function(r){
     if(r && (r.ok || r.erro==='pontos')) try{ localStorage.removeItem('tw_hs_pendente'); }catch(e){}
-    if(hs!==atual) return;
+    if(hs!==atual || hsContaMudou(atual)) return;
     if(r && r.ok){
       hsReceberPremio(r,atual);
       if(window.TWVidaCidade)window.TWVidaCidade.registrar('handshake',{id:args.p_sessao});
@@ -307,13 +450,14 @@ function hsFim(){
 }
 function hsLoop(ms){
   hsAnim = 0; if(!twAnimacaoVisivel(hsOv)) return;
+  if(hsContaMudou(hs)){hsFechar();return;}
   var d = window.TWMotionLifecycle ? TWMotionLifecycle.frameDelta($('hsCv'), ms) : 1; hsT += d;
   if(hs){
     var dt = hsT - hs.t0;
-    if(hs.fase === 'fila' && dt > hsTempoFila(hs.fila[hs.vi])){ hs.vi++; hs.t0 = hsT; if(hs.vi >= hs.fila.length){ hs.fase = 'lembrar'; } hsUI(); }
-    else if(hs.fase === 'lembrar' && dt > 100) hsProxima();
-    else if(hs.fase === 'quiz' && dt > hsTempoPergunta()) hsResponder(-1);
-    else if(hs.fase === 'quizcor' && dt > 210) hsResponderCor(-1);
+    if(!hs.leituraManual && hs.fase==='fila' && dt>hsTempoFila(hs.fila[hs.vi]))hsAvancarFila();
+    else if(!hs.leituraManual && hs.fase === 'lembrar' && dt > 100) hsProxima();
+    else if(!hs.leituraManual && hs.fase === 'quiz' && dt > hsTempoPergunta()) hsResponder(-1);
+    else if(!hs.leituraManual && hs.fase === 'quizcor' && dt > 210) hsResponderCor(-1);
     else if(hs.fase === 'resposta' && dt > 80){ if(hs.hype <= 0) hsFim(); else hsProxima(); }
     else if(hs.fase === 'pausa' && dt > 90) hsNovaRodada();
     if(hs.fase === 'quiz' || hs.fase === 'quizcor'){ var bar = $('hsTempo'); if(bar) bar.style.width = Math.max(0, 100 - dt / (hs.fase === 'quiz' ? hsTempoPergunta() : 210) * 100) + '%'; }
@@ -449,23 +593,29 @@ function hsCoracoes(x, W2, H2){
 function hsReiniciar(){ var p = hs.premio; hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:hsT, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[], servidor:null, respostas:[], provaErro:'' }; }
 function hsUI(){
   var c = $('hsCorpo'); if(!c || !hs) return;
-  var h = '<div class="hsstatus"><span>⭐ ' + hs.pontos.toLocaleString('pt-BR') + '</span><span>' + escHtml(tr('Rodada')) + ' ' + Math.max(1, hs.rodada) + '/' + (hs.rodada > 5 ? hsMaxRodadas() : 5) + (hs.rodada > 5 ? ' ⏰' : '') + '</span>' + (hs.combo >= 2 ? '<span class="hscombo">🔥 x' + hs.combo + '</span>' : '') + '<span>🏆 ' + hsRecorde().toLocaleString('pt-BR') + '</span></div>' +
+  var h = '<div class="hsstatus"><span>⭐ ' + hs.pontos.toLocaleString('pt-BR') + '</span><span>' + escHtml(tr('Rodada')) + ' ' + Math.max(1, hs.rodada) + '/' + (hs.treinoLeitura ? 1 : hs.rodada > 5 ? hsMaxRodadas() : 5) + (hs.rodada > 5 ? ' ⏰' : '') + '</span>' + (hs.combo >= 2 ? '<span class="hscombo">🔥 x' + hs.combo + '</span>' : '') + '<span>🏆 ' + hsRecorde().toLocaleString('pt-BR') + '</span></div>' +
     '<div class="hshype"><b>🔥 Hype</b><div class="albumbarra"><i style="width:' + hs.hype + '%"></i></div></div>';
+  if(hs.treinoLeitura)h+='<p class="hsdica" id="hsLeituraStatus" tabindex="-1">'+escHtml(hsLeitura(4))+'</p>';
   if(hs.fase === 'preparando') h += '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o registro do evento…')) + '</p>';
   if(hs.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs vão passar pela sua mesa dizendo o nome e o presente favorito. Depois eles voltam: escolha o presente certo antes do aperto de mão acabar!')) + '</p>' +
     (typeof eventoAtual === 'function' ? '<p class="hsdica evsemana">' + eventoAtual().emo + ' <b>' + escHtml(tr(eventoAtual().nome)) + '</b>: ' + escHtml(tr('o presente {p} vale +50!').replace('{p}', eventoAtual().pres)) + '</p>' : '') +
-    '<div class="btns"><button type="button" class="btn" id="hsJogar">🤝 ' + escHtml(tr('Começar o Handshake')) + '</button></div>' +
+    '<div class="btns"><button type="button" class="btn" id="hsJogar">🤝 ' + escHtml(tr('Começar o Handshake')) + '</button><button type="button" class="btn alt" id="hsTreinar">'+escHtml(hsLeitura(0))+'</button></div>' +
     '<p class="hsdica">🎁 ' + escHtml(tr('Fez 600 pontos? Ganha um prêmio do dia: ticket do Karaoke⭐Time! ou um mimo para o seu pet.')) + '</p>';
   else if(hs.fase === 'fila'){ var fv = hs.fila[hs.vi];
+    if(hs.treinoLeitura && fv)h+='<p class="hsdica" role="status"><b>'+escHtml(fv.nome)+'</b> · '+escHtml(hsPresenteNome(fv.pres))+'</p>';
+    if(hs.leituraManual)h+='<button class="btn alt" type="button" data-hs-avancar>'+escHtml(hsLeitura(1))+'</button>';
     h += '<p class="hsdica">👀 ' + escHtml(tr('Memorize: fã {a} de {b}')).replace('{a}', hs.vi + 1).replace('{b}', hs.fila.length) +
+      (fv && fv.presAnterior !== undefined ? ' · ' + escHtml(fv.nome + ' · ' + hsRevisaoT()[0].replace('{p}',hsPresenteNome(fv.pres))) : '') +
       (fv && fv.cor !== undefined ? ' · <span class="hscor" style="background:' + HS_CORES[fv.cor] + '"></span> ' + escHtml(hsCorT().l + ': ' + hsCorT().n[fv.cor]) : '') + '</p>'; }
   else if(hs.fase === 'quizcor'){
     h += '<p class="hsdica">💡 ' + escHtml(hsCorT().q) + '</p><div class="hstempo"><i id="hsTempo" style="width:100%"></i></div><div class="hsops hscores">' + hs.corOps.map(function(c, i){
       return '<button type="button" class="hsop" data-hscor="' + i + '"><span class="hscor" style="background:' + HS_CORES[c] + '"></span><small>' + escHtml(hsCorT().n[c]) + '</small></button>'; }).join('') + '</div>';
   }
-  else if(hs.fase === 'lembrar') h += '<p class="hsdica">✨ ' + escHtml(tr('Agora eles voltam! Lembra do presente de cada um?')) + '</p>';
+  else if(hs.fase === 'lembrar') h += '<p class="hsdica">✨ ' + escHtml(tr('Agora eles voltam! Lembra do presente de cada um?')) + '</p>'+
+    (hs.leituraManual?'<button class="btn alt" type="button" data-hs-avancar>'+escHtml(hsLeitura(2))+'</button>':'');
   else if(hs.fase === 'quiz' || hs.fase === 'resposta'){
-    h += '<div class="hstempo"><i id="hsTempo" style="width:100%"></i></div><div class="hsops">' + hs.ops.map(function(o, i){
+    if(hs.treinoLeitura)h+='<p class="hsdica" role="status"><b>'+escHtml(hs.quiz[hs.qi].nome)+'</b></p>';
+    h += (hs.leituraManual?'':'<div class="hstempo"><i id="hsTempo" style="width:100%"></i></div>')+'<div class="hsops">' + hs.ops.map(function(o, i){
       var p = HS_PRESENTES[o], cls = hs.fase === 'resposta' ? (o === hs.quiz[hs.qi].pres ? ' certo' : i === hs.resp ? ' errado' : '') : '';
       return '<button type="button" class="hsop' + cls + '" data-hs="' + i + '"' + (hs.fase === 'resposta' ? ' disabled' : '') + '><span>' + p[0] + '</span><small>' + escHtml(tr(p[1])) + '</small></button>';
     }).join('') + '</div>';
@@ -475,19 +625,34 @@ function hsUI(){
     h += '<p class="hsfim">' + (hs.novo ? '🏆 ' + escHtml(tr('Novo recorde!')) + ' ' : '') + escHtml(tr('Fim do evento!')) + ' <b>' + hs.pontos.toLocaleString('pt-BR') + '</b> ' + escHtml(tr('pts')) + '</p>';
     if(hs.conq) h += '<p class="faok">🏆 ' + escHtml(tr('Insígnia nova na Estante de troféus:')) + ' ' + escHtml(hs.conq) + '</p>';
     h += '<div class="hsresumo"><span>🎯 ' + hs.acertos + '/' + hs.total + '</span><span>🔥 ' + escHtml(tr('Combo máx.')) + ' ' + hs.comboMax + '</span><span>🌟 ' + escHtml(tr('Superfãs')) + ' ' + hs.superfas + '</span></div>';
-    if(hs.premioPetPendente) h += '<p class="hsdica">🎁 ' + escHtml(tr('Prêmio registrado no servidor. Crie ou abra seu pet para receber o mimo.')) + '</p>';
-    if(!hs.servidor && contaJ) h += '<p class="hsdica">🔒 ' + escHtml(tr('Partida de treino: o servidor não confirmou o início; sem prêmio nem missão.')) + '</p>';
-    if(hs.premio && hs.premio.erro === 'servidor') h += '<p class="hsdica">⏳ ' + escHtml(tr('Registro pendente. Ele será recuperado ao reabrir o evento.')) + '</p>';
-    if(hs.premio && hs.premio.ok && hs.premio.tipo) h += '<p class="faok">🎁 ' + escHtml(hs.premio.repetido ? tr('Prêmio do dia já registrado') : hs.premio.tipo === 'ticket' ? tr('Você ganhou 1 ticket do Karaoke⭐Time!') : tr('Seu pet ganhou um mimo! Está guardado no camarim.')) + '</p>';
-    else if(hs.premio && hs.premio.confirmado) h += '<p class="faok">✅ ' + escHtml(tr('Pontuação confirmada na conta:')) + ' ' + recNum(hs.premio.pontos_verificados) + ' · ' + escHtml(tr(hs.premio.premio_entregue ? 'Prêmio diário já entregue' : 'Partida registrada')) + '</p>';
-    else if(hs.premio && hs.premio.erro === 'hoje') h += '<p class="hsdica">' + escHtml(tr('O prêmio de hoje já foi entregue. Volte amanhã!')) + '</p>';
-    else if(hs.pontos >= 600 && !contaJ) h += '<p class="hsdica">' + escHtml(tr('Entre na sua conta para ganhar o prêmio do dia.')) + '</p>';
-    else if(hs.pontos < 600) h += '<p class="hsdica">' + escHtml(tr('Faça 600 pontos para ganhar o prêmio do dia.')) + '</p>';
+    h += hsPistasHtml();
+    if(hs.treinoLeitura)h+='<div class="btns"><button class="btn" type="button" id="hsRepetirTempo">'+escHtml(hsLeitura(3))+
+      '</button><button class="btn alt" type="button" id="hsTreinar">'+escHtml(hsLeitura(0))+'</button></div>';
+    if(!hs.treinoLeitura){
+      if(hs.premioPetPendente) h += '<p class="hsdica">🎁 ' + escHtml(tr('Prêmio registrado no servidor. Crie ou abra seu pet para receber o mimo.')) + '</p>';
+      if(!hs.servidor && contaJ && !hs.treinoLeitura) h += '<p class="hsdica">🔒 ' + escHtml(tr('Partida de treino: o servidor não confirmou o início; sem prêmio nem missão.')) + '</p>';
+      if(hs.premio && hs.premio.erro === 'servidor') h += '<p class="hsdica">⏳ ' + escHtml(tr('Registro pendente. Ele será recuperado ao reabrir o evento.')) + '</p>';
+      if(hs.premio && hs.premio.ok && hs.premio.tipo) h += '<p class="faok">🎁 ' + escHtml(hs.premio.repetido ? tr('Prêmio do dia já registrado') : hs.premio.tipo === 'ticket' ? tr('Você ganhou 1 ticket do Karaoke⭐Time!') : tr('Seu pet ganhou um mimo! Está guardado no camarim.')) + '</p>';
+      else if(hs.premio && hs.premio.confirmado) h += '<p class="faok">✅ ' + escHtml(tr('Pontuação confirmada na conta:')) + ' ' + recNum(hs.premio.pontos_verificados) + ' · ' + escHtml(tr(hs.premio.premio_entregue ? 'Prêmio diário já entregue' : 'Partida registrada')) + '</p>';
+      else if(hs.premio && hs.premio.erro === 'hoje') h += '<p class="hsdica">' + escHtml(tr('O prêmio de hoje já foi entregue. Volte amanhã!')) + '</p>';
+      else if(hs.pontos >= 600 && !contaJ) h += '<p class="hsdica">' + escHtml(tr('Entre na sua conta para ganhar o prêmio do dia.')) + '</p>';
+      else if(hs.pontos < 600) h += '<p class="hsdica">' + escHtml(tr('Faça 600 pontos para ganhar o prêmio do dia.')) + '</p>';
+    }
     h += '<div class="btns"><button type="button" class="btn" id="hsJogar">🔁 ' + escHtml(tr('Jogar de novo')) + '</button></div>';
   }
   c.innerHTML = h;
 }
 function hsClique(e){
+  var t=e.target.closest && e.target.closest('#hsTreinar,#hsRepetirTempo,[data-hs-avancar]');
+  if(t && hs){
+    if(t.id==='hsTreinar'){hsIniciarTreino(true);return;}
+    if(t.id==='hsRepetirTempo' && hs.treinoLeitura && hs.fase==='fim'){hsIniciarTreino(false,hs.fila);return;}
+    if(t.hasAttribute('data-hs-avancar') && hs.leituraManual){
+      if(hs.fase==='fila')hsAvancarFila();
+      else if(hs.fase==='lembrar')hsProxima();
+      return;
+    }
+  }
   var b = e.target.closest && e.target.closest('[data-hs]'); if(b){ hsResponder(+b.dataset.hs); return; }
   var bc = e.target.closest && e.target.closest('[data-hscor]'); if(bc){ hsResponderCor(+bc.dataset.hscor); return; }
   if(e.target.closest && e.target.closest('#hsJogar')){ hsIniciarSeguro(); if(sfx && sfx.card) try{ sfx.card(); }catch(x){} }

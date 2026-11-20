@@ -39,7 +39,7 @@
     ['neon', function(e){ return e.fundo === 'neon' || e.luz === 'neon'; }],
     ['ceu', function(e){ return e.fundo === 'nuvens'; }],
     ['sol', function(e){ return e.luz === 'por'; }],
-    ['flores', function(e){ return String(e.objeto || '').indexOf('flor_') === 0; }],
+    ['flores', function(e){ return (String(e.objeto || '').indexOf('flor_') === 0 || arranjoFlores(e.objeto).length>0); }],
     ['palco', function(e){ return e.objeto === 'microfone' || e.objeto === 'lightstick'; }],
     ['close', function(e){ return e.quadro === 'rosto'; }],
     ['fofura', function(e){ return e.pose === 'coracao'; }]
@@ -61,7 +61,7 @@
   }
   function L(){ return typeof LANG === 'string' && T[LANG] ? LANG : 'pt'; }
   function t(k){ return T[L()][k] || T.pt[k] || k; }
-  function nomeOpc(tipo, v){ if(v.indexOf('flor_') === 0){ var B = window.BLOOM_TR, k = v.slice(5); return (B && (B[L()] || B.pt)[k]) || t('flor'); } return t(tipo === 'luz' && v === 'neon' ? 'neon_l' : v); }
+  function nomeOpc(tipo, v){ if(arranjoFlores(v).length)return referenciaT()[3]; if(v.indexOf('flor_') === 0){ var B = window.BLOOM_TR, k = v.slice(5); return (B && (B[L()] || B.pt)[k]) || t('flor'); } return t(tipo === 'luz' && v === 'neon' ? 'neon_l' : v); }
   // Sem emoji nos botões: cenário, luz e flores ganham uma amostra de cor desenhada; o resto é só o nome.
   var AMOSTRA = {fundo:{rosa:'linear-gradient(160deg,#ffe3f1,#ffb3d6)',cortina:'linear-gradient(160deg,#dff1ff,#fff 55%,#bfe0ff)',nuvens:'linear-gradient(180deg,#9fd4ff,#fff)',neon:'linear-gradient(135deg,#7b3ff0,#ff6fb5)'},
     luz:{suave:'radial-gradient(circle at 35% 35%,#fff,#ffe9b8)',neon:'linear-gradient(135deg,#ff5fd2,#4dd8ff)',por:'linear-gradient(180deg,#ffb35c,#ff7fa8)'},
@@ -84,6 +84,54 @@
   };
   var CAMPOS_COMPOSICAO = {fundo:FUNDOS,pose:POSES,luz:LUZES,quadro:QUADROS};
   var favorita = null, chaveFavorita = null;
+  var referenciaUrl = '', referenciaCarregando = false, referenciaObjeto = '', arranjoStudio = '';
+  var REFERENCIA_TR = {
+    pt:['Foto de referência','Esta foto antiga pode servir de guia visual.','Não foi possível abrir a referência.','Arranjo de flores','Arranjo guardado na foto local.'],
+    en:['Reference photo','Use this older photo as a visual guide.','Could not open the reference.','Flower arrangement','Arrangement saved in your local photo.'],
+    es:['Foto de referencia','Usa esta foto antigua como guía visual.','No se pudo abrir la referencia.','Arreglo floral','Arreglo guardado en la foto local.'],
+    id:['Foto referensi','Gunakan foto lama ini sebagai panduan visual.','Foto referensi gagal dibuka.','Rangkaian bunga','Rangkaian disimpan di foto lokal.'],
+    th:['ภาพอ้างอิง','ใช้ภาพเก่านี้เป็นแนวทางได้','เปิดภาพอ้างอิงไม่ได้','ช่อดอกไม้','บันทึกช่อดอกไม้ในภาพบนอุปกรณ์แล้ว'],
+    ja:['参考写真','以前の写真を見ながら撮影できます。','参考写真を開けませんでした。','花のアレンジ','この端末の写真にアレンジを保存しました。']
+  };
+  function referenciaT(){return REFERENCIA_TR[L()] || REFERENCIA_TR.pt;}
+  function limparReferencia(){
+    if(referenciaUrl)URL.revokeObjectURL(referenciaUrl);
+    referenciaUrl='';referenciaCarregando=false;referenciaObjeto='';
+  }
+  function arranjoFlores(item){
+    if(typeof item!=='string' || item.indexOf('arranjo_')!==0)return [];
+    var lista=item.slice(8).split('+');
+    return lista.length>=2 && lista.length<=3 && new Set(lista).size===lista.length &&
+      lista.every(function(k){return FLORES.indexOf(k)>=0;}) ? lista : [];
+  }
+  function arranjoDisponivel(item){
+    var lista=arranjoFlores(item);
+    return lista.length>0 && lista.every(function(k){return +flores[k]>0;});
+  }
+  function aplicarObjetoReferencia(){
+    var item=referenciaObjeto;
+    if(escolheuObjeto || fase!=='monta' || typeof item!=='string')return;
+    if(OBJ.indexOf(item)>=0)esc_.objeto=item;
+    else if(item.indexOf('flor_')===0 && +flores[item.slice(5)]>0)esc_.objeto=item;
+    else if(arranjoDisponivel(item)){arranjoStudio=item;esc_.objeto=item;}
+  }
+  function aplicarReferencia(atalho,sess,dono){
+    if(!atalho || !atalho.referencia || !window.TW_ALBUM_FOTOS)return;
+    referenciaCarregando=true;
+    TW_ALBUM_FOTOS.referencia(atalho.referencia,atalho.donoAlbum).then(function(ref){
+      if(!sessaoAtiva(sess,dono))return;
+      if(!ref)throw Error('referencia');
+      referenciaUrl=URL.createObjectURL(ref.blob);
+      var campos=composicaoValida(ref.composicao);
+      if(campos){
+        Object.assign(esc_,campos);
+        referenciaObjeto=ref.composicao.objeto;aplicarObjetoReferencia();
+      }else msg=referenciaT()[1];
+    }).catch(function(){if(sessaoAtiva(sess,dono))msg=referenciaT()[2];}).then(function(){
+      if(sessaoAtiva(sess,dono)){referenciaCarregando=false;ui();}
+    });
+  }
+
   function composicaoChave(){
     var id = logado() && (contaJ.id || contaJ.nick);
     if(logado() && typeof contaAuthUserId === 'string' && contaAuthUserId) id = contaAuthUserId;
@@ -191,20 +239,28 @@
   function logado(){ return typeof contaJ !== 'undefined' && contaJ && typeof contaRpc === 'function'; }
   function acertos(){ if(!pauta) return [false,false,false]; return [esc_.fundo === pauta.fundo, esc_.pose === pauta.pose, esc_[pauta.detalhe.tipo] === pauta.detalhe.valor]; }
 
+  var categoriaStudio='fundo', pautaAberta=false;
   function montarOv(){
     if(ov) return;
     ov = document.createElement('div'); ov.className = 'ov studioov tw-window-overlay'; ov.id = 'studioOv'; ov.hidden = true;
     ov.innerHTML = '<div class="panel studiop tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="studioTit">' +
       '<button type="button" class="perfx tw-window-control tw-window-close" id="studioX" aria-label="✕">✕</button>' +
       '<h2 class="tw-modal-title" id="studioTit"></h2><small class="tw-modal-jp" lang="ja">フォトスタジオ</small>' +
-      (typeof twLinkBotao === 'function' ? twLinkBotao('studio') : '') +
-      '<div class="stabas" id="studioAbas"></div><div id="studioPauta"></div><div id="studioVisor"><canvas id="studioCv" width="480" height="680"></canvas></div><div id="studioCorpo"></div><div id="studioMural" hidden></div></div>';
+      '<div class="stabas" id="studioAbas"></div><details id="studioPauta"><summary></summary><div></div></details>' +
+      '<div class="stbancada"><div id="studioVisor"><canvas id="studioCv" width="480" height="680"></canvas><div id="studioAcao"></div></div><div id="studioCorpo"></div></div><div id="studioMural" hidden></div>' +
+      (typeof twLinkBotao === 'function' ? twLinkBotao('studio') : '') + '</div>';
     document.body.appendChild(ov);
+    ov.querySelector('#studioPauta').addEventListener('toggle',function(){pautaAberta=this.open;});
     ov.addEventListener('click', function(e){
       if(e.target === ov || e.target.id === 'studioX'){ fechar(); return; }
       if(donoSessao !== donoFoto()){ fechar(); return; }
       var b = e.target.closest && e.target.closest('[data-st]'); if(!b || ocupado) return;
       var a = b.getAttribute('data-st'), v = b.getAttribute('data-v');
+      if(a === 'categoria'){
+        categoriaStudio=v;ui();
+        ov.querySelector('[data-st="categoria"][aria-pressed="true"]').focus({preventScroll:true});
+        return;
+      }
       if(a === 'aba'){ aba = v; ui(); if(aba === 'mural') carregarMural(); return; }
       if(a === 'guardar-composicao' || a === 'usar-composicao'){ composicaoAcao(a); return; }
       if(a === 'mural-retry'){ carregarMural(); return; }
@@ -217,7 +273,7 @@
       else if(a === 'serie' && foto && !foto.serie && !foto.seriePendente && foto.dono === donoFoto() && window.TW_ALBUM_FOTOS){
         var selecionada = foto;
         selecionada.seriePendente = true;
-        TW_ALBUM_FOTOS.salvar('studio',polaroidLimpa(selecionada),b).then(function(ok){
+        TW_ALBUM_FOTOS.salvar('studio',polaroidLimpa(selecionada),b,selecionada.escolhas,{edicao:selecionada.edicao}).then(function(ok){
           selecionada.seriePendente = false;
           if(ok) selecionada.serie = true;
           else if(foto === selecionada && !b.isConnected) ui();
@@ -237,11 +293,13 @@
     });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && ov && !ov.hidden) fechar(); });
   }
-  var pilotoStudio = null;
+  var pilotoStudio = null, lookTemporario=null;
   function abrir(atalho){
     montarOv();
+    limparReferencia(); arranjoStudio='';categoriaStudio='fundo';pautaAberta=false;
     pilotoStudio = window.TW_PILOTO_BAIRRO && atalho && atalho.piloto || null;
     var sess = ++sessao, dono = donoFoto();
+    lookTemporario=atalho&&atalho.dono===dono&&atalho.look?{dono:dono,av:atalho.look,aviso:atalho.aviso}:null;
     var flor = atalho && atalho.dono === dono && FLORES.indexOf(atalho.flor) >= 0 ? atalho.flor : '';
     if(dono !== donoSessao){
       mural = null;
@@ -257,10 +315,15 @@
     try{ favorita = composicaoValida(JSON.parse(localStorage.getItem(chave))); }catch(e){}
     muralCarregando = muralErro = false;
     flores = {}; escolheuObjeto = false;
-    if(esc_.objeto.indexOf('flor_') === 0) esc_.objeto = 'nenhum';
+    if(esc_.objeto.indexOf('flor_') === 0 || arranjoFlores(esc_.objeto).length) esc_.objeto = 'nenhum';
+    if(atalho && window.TW_JANELAS) TW_JANELAS.preparar(ov,atalho.origem);
     ocupado = false; ov.hidden = false; aba = 'estudio'; publicou = false;
     if(pilotoStudio && FUNDOS.indexOf(pilotoStudio.fundo) >= 0) esc_.fundo = pilotoStudio.fundo;
-    fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pilotoStudio ? null : pautaLocal(); ui(); laco();
+    fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pilotoStudio ? null : pautaLocal();
+    var querReferencia=atalho && atalho.referencia && logado() && !pilotoStudio;
+    referenciaCarregando=!!querReferencia;
+    ui(); laco();
+    if(querReferencia)aplicarReferencia(atalho,sess,dono);
     if(logado() && !pilotoStudio){
       contaRpc('studio_pauta').then(function(r){
         if(sessaoAtiva(sess, dono) && r && r.ok){ pauta = r; servidor = true; ui(); }
@@ -268,13 +331,17 @@
       contaRpc('jardim_estado').then(function(r){
         if(!sessaoAtiva(sess, dono) || !r || !r.ok) return;
         flores = r.flores || {};
-        if(flor && +flores[flor] > 0 && fase === 'monta' && !escolheuObjeto) esc_.objeto = 'flor_' + flor;
+        if(flor && +flores[flor] > 0 && fase === 'monta' && !escolheuObjeto){esc_.objeto = 'flor_' + flor;categoriaStudio='objeto';}
+        var arranjo=atalho && atalho.dono === dono && Array.isArray(atalho.arranjo) ? 'arranjo_'+atalho.arranjo.join('+') : '';
+        if(arranjoDisponivel(arranjo) && fase==='monta' && !escolheuObjeto){arranjoStudio=arranjo;esc_.objeto=arranjo;categoriaStudio='objeto';}
+        if(querReferencia)aplicarObjetoReferencia();
         ui();
       }).catch(function(){});
     }
   }
-  function fechar(){ sessao++; if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; }
+  function fechar(){ limparReferencia(); lookTemporario=null; sessao++; if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; }
   function clicar(){
+    if(referenciaCarregando)return;
     var sess = sessao, dono = donoFoto();
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
     if(pilotoStudio && esc_.fundo === pilotoStudio.fundo) TW_PILOTO_BAIRRO.iniciar('studio',pilotoStudio);
@@ -293,11 +360,14 @@
       try{ capturarCena(capturada); }catch(e){ foto = null; fase = 'monta'; ocupado = false; msg = t('erro'); ui(); return; }
       if(window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('studio', true);
       if(pilotoStudio){
-        if(esc_.fundo === pilotoStudio.fundo) TW_PILOTO_BAIRRO.concluir('studio',pilotoStudio,capturada.cena);
+        if(esc_.fundo === pilotoStudio.fundo && TW_PILOTO_BAIRRO.concluir('studio',pilotoStudio,capturada.cena))capturada.edicao=TW_PILOTO_BAIRRO.edicao(pilotoStudio);
         fase = 'foto'; ocupado = false; ui(); return;
       }
       if(!logado() && window.TW_HUMOR) window.TW_HUMOR.treino('studio');
-      if(!logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
+      if(arranjoFlores(capturada.escolhas.objeto).length){
+        fase='foto';ocupado=false;msg=referenciaT()[4];ui();return;
+      }
+      if(lookTemporario || !logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
       contaRpc('studio_clique', {p:capturada.escolhas}).then(function(r){
         if(sess !== sessao || dono !== donoFoto() || foto !== capturada) return;
         if(r && r.ok){
@@ -331,7 +401,7 @@
   }
   function salvar(){
     if(!foto || fase !== 'foto' || foto.dono !== donoFoto()) return;
-    try{ var a = document.createElement('a'); a.download = 'photo-studio-' + foto.dia + '.png'; a.href = fotoUrl(foto); document.body.appendChild(a); a.click(); a.remove(); }catch(e){ msg = t('erro'); ui(); }
+    try{ var a = document.createElement('a'); a.download = 'photo-studio-' + foto.dia + '.png'; a.href = (window.twMarcaPng ? window.twMarcaPng(polaroidLimpa(foto)) : fotoUrl(foto)); document.body.appendChild(a); a.click(); a.remove(); }catch(e){ msg = t('erro'); ui(); }
   }
   function guardar(){
     if(!podeGuardar() || fase !== 'foto') return;
@@ -367,28 +437,51 @@
     abas.innerHTML = logado() ? ['estudio','mural'].map(function(k, i){ return '<button type="button" class="stabab' + (aba === k ? ' on' : '') + '" data-st="aba" data-v="' + k + '" aria-pressed="' + (aba === k) + '">' + esc(t(i ? 'aba2' : 'aba1')) + '</button>'; }).join('') : '';
     var visor = ov.querySelector('#studioVisor'), visorAnterior = visor.dataset.fase;
     visor.dataset.fase = fase;
-    ['#studioPauta','#studioVisor','#studioCorpo'].forEach(function(id){ ov.querySelector(id).hidden = noMural; });
+    ov.querySelector('.stbancada').hidden=noMural;
+    var pautaBox=ov.querySelector('#studioPauta');
+    pautaBox.hidden=noMural || (!pauta && !temaHtml(esc_));
+    pautaBox.open=pautaAberta;
     ov.querySelector('#studioMural').hidden = !noMural;
     if(noMural){ muralUI(); return; }
     var ac = acertos(), d = pauta && pauta.detalhe;
-    ov.querySelector('#studioPauta').innerHTML = pauta ? '<div class="stpauta"><b>' + esc(t('pauta')) + ': ' + esc(t('t_' + d.tipo)) + '</b><span>' +
+    pautaBox.querySelector('summary').textContent=pauta?t('pauta')+' · '+ac.filter(Boolean).length+'/3':t('pauta');
+    pautaBox.querySelector('div').innerHTML = pauta ? '<div class="stpauta"><b>' + esc(t('pauta')) + ': ' + esc(t('t_' + d.tipo)) + '</b><span>' +
       [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]]
         .map(function(p){ return '<i class="' + (p[0] ? 'ok' : '') + '">' + (p[0] ? '✓ ' : '') + esc(p[1]) + '</i>'; }).join('') + '</span></div>' + temaHtml(esc_) : temaHtml(esc_);
+    var acao=ov.querySelector('#studioAcao'), obturador=acao.querySelector('[data-st="clique"]');
+    var resultados=acao.querySelector('.stresultado-acoes');
+    if(!resultados){resultados=document.createElement('div');resultados.className='btns stresultado-acoes';acao.appendChild(resultados);}
+    resultados.hidden=fase!=='foto';
+    if(!obturador){
+      obturador=document.createElement('button');obturador.type='button';obturador.className='btn stclique';
+      obturador.dataset.st='clique';acao.appendChild(obturador);
+    }
+    obturador.hidden=fase==='foto';
+    obturador.textContent=t('clique');
+    obturador.disabled=ocupado||referenciaCarregando;
     var c = ov.querySelector('#studioCorpo'), hh = '';
+    if(referenciaUrl && donoSessao===donoFoto()) hh+='<figure class="st-referencia"><img src="'+esc(referenciaUrl)+
+      '" alt="'+esc(referenciaT()[0])+'"><figcaption>'+esc(referenciaT()[0])+'</figcaption></figure>';
+    if(fase==='monta' && lookTemporario && lookTemporario.aviso) hh += '<p class="stmsg" role="status">' + esc(lookTemporario.aviso) + '</p>';
     if(msg) hh += '<p class="stmsg" aria-live="polite">' + esc(msg) + '</p>';
     if(fase === 'foto'){
       // As estrelas já estão na polaroid: aqui vai o que faltou na pauta (ou que ela ficou completa).
       var fa = pauta ? [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]].filter(function(p){ return !p[0]; }).map(function(p){ return p[1]; }) : [];
+      resultados.innerHTML=(window.TW_ALBUM_FOTOS&&!foto.serie&&!foto.seriePendente?TW_ALBUM_FOTOS.botao('data-st="serie"'):'')+
+        '<button type="button" class="btn" data-st="salvar">💾 '+esc(t('salvar'))+'</button>';
       if(foto.verificada && !publicou) hh += '<p class="stdica">' + esc(PARTILHA[L()]) + '</p>';
       hh += '<p class="stres">' + esc(t('estrelas').replace('{n}', foto.estrelas)) + '</p>' +
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
-        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + (window.TW_ALBUM_FOTOS && !foto.serie && !foto.seriePendente ? TW_ALBUM_FOTOS.botao('data-st="serie"') : '') +
-        (pilotoStudio ? '<button type="button" class="btn alt" data-piloto-bairro="rua">Voltar à Rua Fofa</button>' : '') + (foto.guardada ? '<button type="button" class="btn alt" data-st="momentos">📖 ' + 'Momentos⭐' + '</button>' : '') + (logado() ? '<button type="button" class="btn alt" data-st="duo">Moon⭐Duo!</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
+        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') +
+        (pilotoStudio ? (window.TW_PILOTO_BAIRRO ? TW_PILOTO_BAIRRO.aposContribuicao() : '') + '<button type="button" class="btn alt" data-piloto-bairro="rua">Voltar à Rua Fofa</button>' : '') + (foto.guardada ? '<button type="button" class="btn alt" data-st="momentos">📖 ' + 'Momentos⭐' + '</button>' : '') + (logado() ? '<button type="button" class="btn alt" data-st="duo">Moon⭐Duo!</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
     } else {
       var objs = OBJ.concat(FLORES.filter(function(k){ return +flores[k] > 0; }).map(function(k){ return 'flor_' + k; }));
+      if(arranjoDisponivel(arranjoStudio))objs.push(arranjoStudio);
       if(esc_.objeto.indexOf('flor_') === 0 && objs.indexOf(esc_.objeto) < 0) esc_.objeto = 'nenhum';
-      hh += chips('fundo', FUNDOS) + chips('pose', POSES) + chips('luz', LUZES) + chips('quadro', QUADROS) + chips('objeto', objs) +
-        '<div class="btns"><button type="button" class="btn stclique" data-st="clique"' + (ocupado ? ' disabled' : '') + '>' + esc(t('clique')) + '</button></div>';
+      var categorias={fundo:FUNDOS,pose:POSES,luz:LUZES,quadro:QUADROS,objeto:objs};
+      hh += '<div class="stcategorias" role="group" aria-label="'+esc(t('pauta'))+'">'+Object.keys(categorias).map(function(k){
+        return '<button type="button" class="stabab" data-st="categoria" data-v="'+k+'" aria-pressed="'+(k===categoriaStudio)+'">'+esc(t(k))+'</button>';
+      }).join('')+'</div>'+chips(categoriaStudio,categorias[categoriaStudio]);
       if(fase === 'monta'){
         var ft = FAVORITA_TR[L()];
         hh += '<div class="btns"><button type="button" class="btn alt" data-st="guardar-composicao">' + esc(ft[favorita ? 4 : 0]) + '</button>' +
@@ -478,7 +571,7 @@
   }
   window.studioPolaroid = polaroid;
   // ---------- desenho ----------
-  function meuAv(){ try{ if(typeof lookAtual === 'function'){
+  function meuAv(){ if(lookTemporario&&lookTemporario.dono===donoFoto())return lookTemporario.av; try{ if(typeof lookAtual === 'function'){
     var av = lookAtual();
     if(typeof perfMeuAv !== 'undefined' && perfMeuAv && perfMeuAv.expr != null) av.expr = perfMeuAv.expr;
     return av;
@@ -515,7 +608,7 @@
     // Na paz e no aceno, a mão esquerda segura o objeto e a direita continua livre.
     var mao = pose === 'coracao' ? [20,28.5,.48] :
       pose === 'v' || pose === 'tchau' ? [3,31,-.35] : [27,31,.30];
-    var flor = item.indexOf('flor_') === 0, angulo = mao[2];
+    var arranjo=arranjoFlores(item), flor = item.indexOf('flor_') === 0 || arranjo.length>0, angulo = mao[2];
     // Em retratos próximos, incline a haste para dentro sem mover a mão da pose.
     if(flor && quadro !== 'inteiro' && pose !== 'coracao'){
       angulo = mao[0] < 15 ? .46 : -.46;
@@ -525,7 +618,14 @@
     x.scale(corpo.scale, corpo.scale);
     x.rotate(angulo);
     x.lineCap = 'round';
-    if(flor){
+    if(arranjo.length && typeof window.bloomDesenharFlor === 'function'){
+      var pos = arranjo.length===2 ? [[-2.8,-8],[2.5,-9]] : [[-3.4,-8],[0,-11],[3.4,-8.6]];
+      arranjo.forEach(function(k,i){
+        var p=pos[i];x.strokeStyle='#44845a';x.lineWidth=.65;x.beginPath();x.moveTo(0,2.3);x.quadraticCurveTo(0,-3,p[0],p[1]);x.stroke();
+      });
+      arranjo.forEach(function(k,i){x.save();x.translate(pos[i][0],pos[i][1]);x.scale(.12,.12);window.bloomDesenharFlor(x,k,0,0,24);x.restore();});
+      x.fillStyle='#cf82b2';x.fillRect(-1.3,-1.5,2.6,1.25);
+    }else if(flor){
       var especie = item.slice(5);
       x.strokeStyle = '#44845a'; x.lineWidth = .68;
       x.beginPath(); x.moveTo(-.3,2.3); x.quadraticCurveTo(.7,-2.7,0,-6); x.stroke();
@@ -560,7 +660,7 @@
     var av = JSON.parse(JSON.stringify(avOutro || meuAv() || {})); av.pose = e.pose === 'normal' ? '' : e.pose; av.fundo = '';
     if(e.objeto === 'balao') baloes(x, W, H, tm);
     var corpo;
-    var quadro = e.quadro || 'inteiro', comFlor = String(e.objeto || '').indexOf('flor_') === 0;
+    var quadro = e.quadro || 'inteiro', comFlor = (String(e.objeto || '').indexOf('flor_') === 0 || arranjoFlores(e.objeto).length>0);
     if(typeof perfDesenharIdol === 'function'){
       corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro, comFlor);
     }

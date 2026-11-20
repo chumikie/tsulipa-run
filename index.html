@@ -19,12 +19,12 @@
 <!-- Mesmo com JS/CSS anterior em cache, nunca mostrar a espera decorativa. -->
 <style id="twSemEsperaDecorativa">.twc-carrega{display:none!important;pointer-events:none}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script src="./tw-nitidez.js?v=9"></script>
+<script src="./tw-nitidez.js?v=9"></script><script src="./tw-marca.js?v=1"></script>
 <script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
 <script src="./tw-avatar-hair.js?v=14"></script>
-<script src="./tw-lado.js?v=3"></script>
+<script src="./tw-lado.js?v=4"></script>
 <script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
@@ -46,8 +46,12 @@
 <link rel="manifest" href="manifest.json">
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
-<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=15">
+<!-- Fontes (20/11/2026): subconjuntos WOFF2 servidos pelo próprio site (latim, hiragana e katakana).
+     Só em japonês, que precisa dos kanji, entra a folha completa do Google Fonts (146 KB de CSS). -->
+<link rel="stylesheet" href="./kt-fonts.css?v=2">
+<script>function twFontesJa(){if(document.getElementById('twFontesJa'))return;var k=document.createElement('link');k.id='twFontesJa';k.rel='stylesheet';k.href='https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap';document.head.appendChild(k);}
+(function(){var l='';try{l=new URLSearchParams(location.search).get('lang')||localStorage.getItem('brs48cr_lang')||'';}catch(e){}if(l==='ja')twFontesJa();})();</script>
+<link rel="stylesheet" href="./centerrun.css?v=19">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -56,7 +60,7 @@
 .conta-perfil{display:inline-flex;align-items:center;gap:6px;border:0;background:linear-gradient(90deg,#7b3ff0,#ff6fb5);color:#fff;border-radius:99px;padding:3px 12px 3px 3px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 2px 8px rgba(123,63,240,.35)}
 .conta-perfil canvas{width:28px;height:28px;border-radius:50%;box-shadow:0 0 0 2px #fff}
 </style>
-<link rel="stylesheet" href="./admin.css?v=2">
+<link rel="stylesheet" href="./admin.css?v=3">
 <style>
 .perfapagar{margin:16px 0 4px;padding:10px 12px;border-radius:14px;border:2px dashed rgba(255,79,154,.45);background:rgba(255,79,154,.06);text-align:left}
 .perfapagar summary{cursor:pointer;font-weight:800;color:#d6336c;text-align:center}
@@ -66,8 +70,8 @@
 .perfp .btn.perfperigo{background:linear-gradient(90deg,#ff4f6d,#d6336c);box-shadow:0 3px 0 rgba(140,20,60,.45)}
 .perfdica{text-align:center;font-size:13px}
 </style>
-<link rel="stylesheet" href="./hub.css?v=11">
-<link rel="stylesheet" href="./shop.css?v=5">
+<link rel="stylesheet" href="./hub.css?v=12">
+<link rel="stylesheet" href="./shop.css?v=7">
 <link rel="stylesheet" href="./jornal.css?v=15">
 <style>
 
@@ -81,10 +85,10 @@
 .buscares em{font-size:12px;color:var(--sub)}
 </style>
 <link rel="stylesheet" href="./gacha.css?v=1">
-<link rel="stylesheet" href="./album.css?v=4">
+<link rel="stylesheet" href="./album.css?v=7">
 <link rel="stylesheet" href="./fa.css?v=3">
 <link rel="stylesheet" href="./handshake.css?v=4">
-<link rel="stylesheet" href="./cafe.css?v=4">
+<link rel="stylesheet" href="./cafe.css?v=7">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -95,7 +99,7 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 /* Títulos com mais personalidade (Mochiy Pop One, estilo adesivo) */
 .hublogo,.logo b,.hubcard b,#gachaTit,.duotit{font-family:"Mochiy Pop One","Kosugi Maru","M PLUS Rounded 1c",sans-serif!important;font-weight:400;letter-spacing:.01em}
 </style>
-<link rel="stylesheet" href="./duo.css?v=4">
+<link rel="stylesheet" href="./duo.css?v=5">
 <style>
 .perfduo{margin-top:10px}.duobtn{background:linear-gradient(90deg,#4169e1,#7b3ff0,#ff6fb5)!important;color:#fff!important}
 /* Últimos cards */
@@ -170,7 +174,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<link rel="stylesheet" href="./hub-polish.css?v=43">
+<link rel="stylesheet" href="./hub-polish.css?v=47">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=6"><'+'/script>');</script>
@@ -228,6 +232,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 
       <!-- JOGAR vem primeiro (15/11/2026): montar o visual fica recolhido aqui e também no Perfil e na Zipper Shop -->
       <button class="btn" id="play">JOGAR</button>
+      <button class="btn alt" id="crDesafioMenu" type="button" hidden></button><p id="crDesafioMenuStatus" role="status"></p>
       <button type="button" class="sec custtoggle" id="custToggle" aria-expanded="false" aria-controls="custBox">✏️ <span>Montar visual</span></button>
       <div class="custbox" id="custBox" hidden>
       <div class="cust" id="cust" hidden>
@@ -313,13 +318,14 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
       </div>
     </div>
   </div>
+  <section id="crPraticaPainel" class="cr-pratica" hidden><b id="crPraticaTitulo"></b><span id="crPraticaTempo"></span><button type="button" class="btn alt" id="crPraticaSair"></button></section>
   <div class="ov" id="over" hidden>
 
     <div class="panel">
       <h1>Fim do show<small>おつかれさま</small></h1>
       <canvas id="cel" width="200" height="150" style="width:200px;height:150px;display:block;margin:0 auto 12px;border-radius:14px" aria-hidden="true"></canvas>
       <div class="res" id="res"></div>
-      <div class="btns"><button class="btn" id="again">DE NOVO</button><button class="btn alt" id="tomenu">MENU</button><button class="btn alt" id="shbtn">SALVAR IMAGEM</button></div>
+      <p id="crPraticaStatus" role="status"></p><div class="btns"><button class="btn alt" type="button" id="crPraticaBt" hidden></button><button class="btn alt" type="button" id="crPraticaPista" hidden></button><button class="btn alt" type="button" id="crDesafioFim"></button><button class="btn" id="again">DE NOVO</button><button class="btn alt" id="tomenu">MENU</button><button class="btn alt" id="shbtn">SALVAR IMAGEM</button></div>
       <div class="tabs"><button data-t="day">Hoje</button><button data-t="week">Semana</button><button data-t="all">Geral</button></div><ol class="lb" id="lbo"></ol>
     </div>
   </div>
@@ -404,22 +410,20 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 (function(){var l='';try{l=localStorage.getItem('brs48cr_lang')||'';}catch(e){}
 if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=2"><'+'/script>');})();</script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=5"><'+'/script>');</script>
-<script src="./karaoke-room-views.js?v=1"></script>
-<script src="./karaoke-clip-uniforms.js?v=1"></script>
-<script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=34"></script>
-<script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=45"></script>
-<script src="./perfil.js?v=29"></script>
-<script src="./gacha.js?v=4"></script>
-<script src="./album-fotos.js?v=1"></script>
+<script defer src="./karaoke-room-views.js?v=1"></script>
+<script src="./centerrun.js?v=40"></script>
+<script defer src="./center-recovery.js?v=1"></script>
+<script src="./pet.js?v=50"></script>
+<script src="./perfil.js?v=33"></script>
+<script src="./gacha.js?v=7"></script>
+<script src="./album-fotos.js?v=8"></script>
 <script src="./album.js?v=8"></script>
-<script src="./gacha-po.js?v=1"></script>
+<script defer src="./gacha-po.js?v=1"></script>
 <script src="./troca.js?v=1"></script>
 <script src="./fa.js?v=2"></script>
 <script src="./hoje.js?v=1"></script>
 <script src="./evento.js?v=4"></script>
-<script src="./recordes.js?v=5"></script>
+<script src="./recordes.js?v=6"></script>
 <script>
 // Cursor de coração em TUDO que é clicável: quem tem cursor:pointer vindo de outro CSS (divs, canvas, itens de lista)
 // ganha o coração na primeira vez que o mouse passa por cima. Só com mouse.
@@ -443,7 +447,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=16','./cafe.js?v=27','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=7','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=19','./cafe.js?v=31','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=13','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
@@ -464,63 +468,110 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   window.twAbrirJogoDoHub = function(nome){ atalho(nome)(); };
   window.TW_JOGOS_SOB_DEMANDA=true;window.twJogosCarregar=carregar;window.hsAbrir=atalho('hsAbrir');window.cfAbrir=atalho('cfAbrir');})();
 </script>
-<script src="./duo-base.js?v=2"></script>
+<script src="./duo-base.js?v=6"></script>
 <script src="./encontro-base.js?v=2"></script>
-<script src="./hub.js?v=33"></script>
-<script src="./hub-layout.js?v=5"></script>
-<script src="./mapa-textos.js?v=3"></script>
-<script>/* Mapa da cidade (~100 KB): baixa logo depois da abertura, sem segurar a primeira tela. Quem usa o mapa
-   (twMapaVisitaAgora, twMapaCena, TW_MAPA_HORA…) já confere se ele existe; o painel aparece assim que ele chega. */
+<script src="./hub.js?v=36"></script>
+<script defer src="./hub-layout.js?v=5"></script>
+<script>/* O mapa baixa na primeira abertura, pelo TsuPhone ou pela entrada clássica. */
 (function(){
   var pedido;
-  function carregar(){
-    if(!pedido) pedido = new Promise(function(ok, falhou){
-      var script = document.createElement('script');
-      script.src='./tw-mapa.js?v=66';
-      script.onload = ok;
-      script.onerror = function(){ script.remove(); pedido = null; falhou(new Error('mapa')); };
+  function carregarArquivo(url){
+    return new Promise(function(ok,falhou){
+      var script=document.createElement('script');script.src=url;
+      script.onload=ok;
+      script.onerror=function(){script.remove();falhou(new Error('mapa'));};
       document.body.appendChild(script);
     });
+  }
+  function carregar(){
+    if(!pedido){
+      var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=70');})
+        .catch(function(e){pedido=null;throw e;});
+    }
     return pedido;
   }
   window.twMapaCarregar = carregar;
-  function antecipar(){ carregar().catch(function(){}); }
-  if(document.readyState === 'complete') antecipar();
-  else window.addEventListener('load', function(){
-    if(window.requestIdleCallback) window.requestIdleCallback(antecipar, {timeout:1200});
-    else setTimeout(antecipar, 0);
+  document.addEventListener('click',function(e){
+    var botao=e.target.closest&&e.target.closest('#hubMapaCarregar');
+    if(!botao||botao.disabled)return;
+    botao.disabled=true;botao.textContent=TW_CARGA.texto(0);
+    carregar().then(function(){
+      var destino=document.querySelector('#twMapa .tw-mapa-botao');
+      if(!destino)throw Error('mapa');
+      botao.remove();
+      if(!document.getElementById('twMapa').classList.contains('aberto'))destino.click();
+      destino.focus();
+    }).catch(function(){botao.disabled=false;botao.textContent=TW_CARGA.texto(1);});
   });
 })();</script>
-<script src="./bloom.js?v=11"></script>
-<script src="./shop.js?v=8"></script>
-<script src="./tw-piloto-bairro.js?v=1"></script>
-<script src="./jornal.js?v=31"></script>
+<script src="./bloom.js?v=12"></script>
+<script src="./shop.js?v=13"></script>
+<script src="./tw-piloto-bairro.js?v=9"></script>
+<script>
+/* O jornal completo e as cenas do telão carregam ao abrir o Jornal, Calendário ou galeria do Pet. */
+function jornalFestivalTexto(i){
+  var textos = {
+    pt:['Ver placar','Cantar a música da semana','Até sábado, 23h59 (Brasília)'],
+    en:['View standings','Sing the song of the week','Until Saturday, 11:59 pm (Brasília)'],
+    es:['Ver clasificación','Cantar la canción de la semana','Hasta el sábado, 23:59 (Brasilia)'],
+    id:['Lihat peringkat','Nyanyikan lagu minggu ini','Hingga Sabtu, 23.59 (Brasília)'],
+    th:['ดูอันดับ','ร้องเพลงประจำสัปดาห์','ถึงวันเสาร์ 23:59 น. (บราซิเลีย)'],
+    ja:['順位を見る','今週の曲を歌う','土曜23:59まで（ブラジリア時間）']
+  };
+  return (textos[LANG] || textos.pt)[i];
+}
+function jornalFestivalPrazo(){ return jornalFestivalTexto(2); }
+function jornalAbrir(){
+  var args=arguments;
+  TW_CARGA.abrir('Idol⭐News!',jornalCarregar,function(){ window.jornalAbrir.apply(window,args); });
+}
+function jornalCapsCarregar(cb){
+  jornalCarregar().then(function(){window.jornalCapsCarregar(cb);},function(){if(cb)cb(false);});
+}
+function jornalFechar(){ jornalOv.hidden=true; }
+var jornalCarregar=(function(){
+  var pedido;
+  function carregar(src){
+    return new Promise(function(ok,falha){
+      var script=document.createElement('script');script.src=src;script.onload=ok;
+      script.onerror=function(){script.remove();falha();};document.head.appendChild(script);
+    });
+  }
+  return function(){
+    if(!pedido)pedido=Promise.all([
+      window.KaraokeClipUniforms || carregar('./karaoke-clip-uniforms.js?v=1'),
+      window.KaraokeNewsPhoto || carregar('./karaoke-news-photo.js?v=1')
+    ]).then(function(){return carregar('./jornal.js?v=36');})
+      .catch(function(e){pedido=null;throw e;});
+    return pedido;
+  };
+})();
+</script>
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=24';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=33';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
-  function ligarJornal(){if(typeof window.jornalAbasIniciar!=='function'||window.jornalAbasIniciar.twStudio)return;var orig=window.jornalAbasIniciar;
-    window.jornalAbasIniciar=function(){var r=orig.apply(this,arguments);carregar().then(function(){if(window.studioCapaNews)window.studioCapaNews();}).catch(function(){});return r;};window.jornalAbasIniciar.twStudio=1;}
-  ligarJornal();window.addEventListener('DOMContentLoaded',ligarJornal);})();
+  window.studioCarregar=carregar;})();
 </script>
 <script>
 /* Idol⭐Battle! sob demanda: o CSS e o JS (≈60 KB) só baixam no primeiro toque.
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
 (function(){var p=null;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
   if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
-  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=16'),arq('script','./battle.js?v=22')]);
+  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=18'),arq('script','./battle.js?v=30')]);
     p.then(function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);}).catch(function(){p=null;});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>
 <script src="./jogos-trilha.js?v=2"></script>
 <script src="./hub-novos.js?v=2"></script>
-<script src="./charmaker.js?v=15"></script>
-<script src="./banner.js?v=6"></script>
-<script src="./conta.js?v=7"></script>
-<script src="./admin-base.js?v=1"></script>
-<script src="./vida-cidade.js?v=6"></script>
+<script src="./charmaker.js?v=18"></script>
+<script src="./banner.js?v=8"></script>
+<script src="./conta.js?v=13"></script>
+<script src="./admin-base.js?v=4"></script>
+<script defer src="./vida-cidade.js?v=6"></script>
 <script>/* Visual novo (padrão nos telefones desde 16/11/2026; em todos os aparelhos desde 17/11/2026, pedido do dono):
    ?celular=1 liga e ?celular=0 desliga; a escolha fica em brs48cr_celular ('1' ligado, '0' clássico).
    Sem escolha guardada, liga em qualquer aparelho (telefone, tablet e computador). Ajustes → "Voltar ao visual clássico"
@@ -529,15 +580,15 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=43"><script src="./tw-humor.js?v=10"><'+'/script><script src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=7"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=57"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=48"><script src="./tw-humor.js?v=10"><'+'/script><script defer src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=8"><'+'/script><script defer src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=63"><'+'/script><script defer src="./tw-presenca.js?v=3"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=43';document.head.appendChild(l);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=48';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=10';hm.async=false;document.body.appendChild(hm);
   var vbi=document.createElement('script');vbi.src='./tw-bichos.js?v=2';vbi.async=false;document.body.appendChild(vbi);
-  var vb=document.createElement('script');vb.src='./tw-bairro.js?v=7';vb.async=false;document.body.appendChild(vb);
+  var vb=document.createElement('script');vb.src='./tw-bairro.js?v=8';vb.async=false;document.body.appendChild(vb);
   var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
-  var s=document.createElement('script');s.src='./tw-celular.js?v=57';s.async=false;document.body.appendChild(s);
-  var p=document.createElement('script');p.src='./tw-presenca.js?v=2';document.body.appendChild(p);}
+  var s=document.createElement('script');s.src='./tw-celular.js?v=63';s.async=false;document.body.appendChild(s);
+  var p=document.createElement('script');p.src='./tw-presenca.js?v=3';document.body.appendChild(p);}
 var TX={pt:'📱 Visual de celular',en:'📱 Phone look',es:'📱 Estilo de celular',id:'📱 Tampilan ponsel',th:'📱 หน้าตาแบบมือถือ',ja:'📱 スマホ表示'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;
   var b=c.querySelector('[data-twcel]');if(window.TW_CELULAR_LIGADO){if(b)b.parentNode.remove();return r;}
@@ -678,6 +729,9 @@ CH.forEach(function(c,i){
 // O 4º personagem aparece com o nome de quem joga (conta ou apelido digitado); a chave interna continua "Idol"
 function idolNomeVisivel(){
   var n=(typeof contaJ!=='undefined'&&contaJ&&contaJ.nick)||(($('nick')&&$('nick').value)||'').trim();
+  // 20/11/2026: se o nome é igual ao de um membro (ex.: a conta "Tsu"), o 4º botão vira "Meu Idol" para não repetir
+  var meu={pt:'Meu Idol',en:'My Idol',es:'Mi Idol',id:'Idol-ku',th:'ไอดอลของฉัน',ja:'マイアイドル'};
+  if(n&&CH.some(function(c,i){return i<3&&String(c.n).toLowerCase()===String(n).trim().toLowerCase();}))return meu[LANG]||meu.pt;
   return n?String(n).slice(0,12):'Idol';
 }
 function idolChipNome(){
@@ -995,6 +1049,8 @@ function twSelecionarIdioma(novo){
     if(token!==twIdiomaEscolhaToken)return;
     LANG=novo;
     try{localStorage.setItem('brs48cr_lang',LANG)}catch(e){}
+    if(LANG==='ja'&&typeof twFontesJa==='function')twFontesJa();
+    if(typeof twA11yIdioma==='function')twA11yIdioma();
     // A home tem botões próprios: ambos só podem ser redesenhados com LANG definitivo.
     if(typeof hubMontar==='function')hubMontar();
     applyLang();
@@ -1575,7 +1631,7 @@ window.addEventListener('pagehide',petPhoneMomentosLimpar);
 // Sem login: o jogo continua igual (save no aparelho e ranking deste aparelho).
 // Com login: nome de Idol único, estrelas e recorde guardados no Supabase e
 // conferidos por funções no servidor (jogador, escolher_nome, importar_save,
-// iniciar_corrida, terminar_corrida, gastar_estrelas, ganhar_minijogo).
+// iniciar_corrida, terminar_corrida, gastar_estrelas, mini_run_start, mini_run_finish).
 // As chaves brs48cr_* continuam as mesmas.
 // ================================================================
  try{ perfMinhaCor = /^#[0-9a-f]{6}$/i.test(localStorage.getItem('brs48cr_cor') || '') ? localStorage.getItem('brs48cr_cor') : ''; }catch(e){}
@@ -1861,7 +1917,8 @@ shopOv.className = 'ov shopov tw-window-overlay'; shopOv.id = 'shopOv'; shopOv.h
 document.body.appendChild(shopOv);
 $('shopX').onclick = shopFechar;
 $('shopCv').addEventListener('click', shopReage);
-shopOv.addEventListener('click', function(e){ if(e.target.id === 'shopFotoPerfil') shopFotoPerfil(); else if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); else if(e.target.id === 'shopLookFoto') shopLookFoto(); else if(e.target.id === 'shopLookStudio') shopLookStudio(); });
+document.addEventListener('tw-visual-favoritos',function(){if(!shopOv.hidden)shopLookUI();});
+shopOv.addEventListener('click', function(e){ var aba=e.target.closest('[data-shop-aba]');if(aba){shopExibirAba(aba.dataset.shopAba);return;} if(e.target.id === 'shopFotoPerfil') shopFotoPerfil(); else if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); else if(e.target.id === 'shopLookFoto') shopLookFoto(); else if(e.target.id === 'shopLookStudio') shopLookStudio(); else if(e.target.hasAttribute('data-shop-favorito')) shopLookStudio(+e.target.dataset.shopFavorito); else if(e.target.id==='shopLimparProva' && perfProva)shopProvar(perfProva); });
 // Montar Idol: os mesmos controles no perfil e na Zipper⭐Shop! (a loja redesenha o provador)
 function montInput(e){ var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return; if(el.type === 'color'){ perfMontMudou(el.dataset.m, el.value); if(!shopOv.hidden) shopProvador(); } }
 function montChange(e){
@@ -1882,7 +1939,7 @@ var jornalOv = document.createElement('div');
 jornalOv.className = 'ov jornalov tw-window-overlay'; jornalOv.id = 'jornalOv'; jornalOv.hidden = true;
 jornalOv.innerHTML = '<div class="panel jornalp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-label="Idol⭐News!"><button type="button" class="perfx tw-window-control tw-window-close" id="jornalX">✕</button><div id="jornalCorpo"></div></div>';
 document.body.appendChild(jornalOv);
-$('jornalX').onclick = jornalFechar;
+$('jornalX').onclick = function(){jornalFechar();};
 jornalOv.addEventListener('click', function(e){ var b = e.target.closest('[data-jfoto]'); if(b){ jornalFotoAmpliar(+b.dataset.jfoto); return; } if(e.target.closest('#jnTrioCena')){ jornalTrioAmpliar(); return; } if(e.target.id === 'jnMusicaIr'){ jornalFechar(); var k = hubOv.querySelector('#hubCards [data-ir="karaoke"]'); if(k) k.click(); return; } b = e.target.closest('[data-jnperfil]'); if(b){ var nk = b.dataset.jnperfil; jornalFechar(); perfAbrir(nk); return; } b = e.target.closest('[data-jnapagar]'); if(b){ jornalPostApagar(+b.dataset.jnapagar); return; } if(e.target.id === 'jnPostOk') jornalPostar(e.target); });
 jornalOv.addEventListener('change', function(e){ if(e.target.id === 'jnPostImg') jornalPostImagem(e.target.files && e.target.files[0]); });
 // ---------- Lojinha de roupas (Montar Idol e Zipper⭐Shop!) ----------
@@ -1907,6 +1964,7 @@ function lojaRoupasClique(e){
     return;
   }
   var c = e.target.closest('#perfLoja [data-provar]');
+  if(c && !shopOv.hidden){shopProvar(c.dataset.provar);return;}
   if(c){ perfProva = perfProva === c.dataset.provar ? '' : c.dataset.provar; beep(988, .04, 'triangle', .04); perfLojaUI(); if(!shopOv.hidden) shopProvador(); }
 }
 perfOv.addEventListener('click', lojaRoupasClique);
@@ -2213,7 +2271,7 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<div class="tw-rank-tv-buttons" id="twRankTvButtons" role="group" aria-label="Canais do ranking"></div></section></section>' +
   '<section class="hubbloco hubhoje" id="hubHoje" aria-labelledby="hubHojeT"><h2 class="hubblocot" id="hubHojeT"></h2>' +
   '<div class="hubhojelinha" id="hubHojeLinha"><button type="button" class="hubmusica" id="hubMusica"></button></div></section>' +
-  '<div class="hubcards" id="hubCards"></div>' +
+  '<button class="btn alt" type="button" id="hubMapaCarregar">'+escHtml(tr('Mapa'))+'</button><div class="hubcards" id="hubCards"></div>' +
   '<section class="hubpainel hubrec" id="hubRec"></section>' +
   '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
   '<h2>🏆 Top Idols <small class="tw-jpsub" lang="ja">今週のトップアイドル</small></h2><p class="tw-rank-sub"></p>'+
@@ -2275,7 +2333,7 @@ setTimeout(function twMicPreparar(){   // depois do script todo (TW_KARAOKE_TIME
 }, 0);
 
 var HUB_TRIO_DRAW_CHARS=HUB_TRIO.map(function(m){return JSON.parse(JSON.stringify(CH[m[0]]));});
-try{ if(document.fonts) document.fonts.load('16px "Mochiy Pop One"'); }catch(_){ }
+try{ if(document.fonts) document.fonts.load('16px "Mochiy Pop One"').catch(function(){}); }catch(_){ }
 (function(){
   var cv = $('hubCv'); if(!cv) return;
   cv.style.cursor = 'pointer'; cv.removeAttribute('aria-hidden'); cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'TsuLiPa: Tsu, Lirika e Pati');
@@ -2305,13 +2363,13 @@ var TW_RANK_WORDS = window.TW_I18N.locale.TW_RANK_WORDS;;
 window.twKaraokeOnline={
  ativo:function(){return !!contaJ&&!!_supabase;},
  sessionKey:function(){return contaJ?String(contaJ.nick||'').toLowerCase():'';},
- iniciar:function(resume,useTicket){var owner=contaJ&&String(contaJ.nick||'').toLowerCase(),next=useTicket&&!resume&&window.ktTickets?window.ktTickets.startExtra():contaRpc('kt_run_start',{p_resume:resume||null});return next.then(function(x){if(contaJ&&owner===String(contaJ.nick||'').toLowerCase()&&x&&x.ok&&Number.isInteger(x.used)){twRankData.ktUsados=Math.min(5,x.used);if(Number.isInteger(x.tickets))twRankData.ktTickets=x.tickets;twKaraokeAtualizarCard();}return x;});},
+ iniciar:function(resume,useTicket){var conta=contaSessaoAtual(),next=useTicket&&!resume&&window.ktTickets?window.ktTickets.startExtra():contaRpc('kt_run_start',{p_resume:resume||null});return next.then(function(x){if(conta()&&contaJ&&x&&x.ok&&Number.isInteger(x.used)){twRankData.ktUsados=Math.min(5,x.used);if(Number.isInteger(x.tickets))twRankData.ktTickets=x.tickets;twKaraokeAtualizarCard();}return x;});},
  terminar:function(run,r){
-  var owner=contaJ&&String(contaJ.nick||'').toLowerCase();
+  var conta=contaSessaoAtual();
   var base={p_run:run,p_score:r?r.score:null,p_hits:r?r.hits:null,p_attempts:r?r.attempts:null,p_combo:r?r.combo:null,p_notes:r?r.totalNotes:null};
   // Música da semana: envia a música; se o banco ainda não tiver o parâmetro p_song (PGRST202), repete sem ele.
-  return (r&&r.song?contaRpc('kt_run_finish',Object.assign({p_song:String(r.song)},base)).catch(function(e){if(e&&e.code==='PGRST202')return contaRpc('kt_run_finish',base);throw e;}):contaRpc('kt_run_finish',base))
-   .then(function(x){if(contaJ&&owner===String(contaJ.nick||'').toLowerCase())twRankRefreshAfterSora();return x;});
+  return (r&&r.song?contaRpc('kt_run_finish',Object.assign({p_song:String(r.song)},base)).catch(function(e){if(e&&e.code==='PGRST202'){if(!conta())return null;return contaRpc('kt_run_finish',base);}throw e;}):contaRpc('kt_run_finish',base))
+   .then(function(x){if(conta()&&contaJ&&x&&x.ok){twRankRefreshAfterSora();if(window.TW_SEMANA)window.TW_SEMANA.depoisDoKaraoke();}return x;});
  },
  ranking:function(){return contaRpc('kt_ranking');},
  posicao:function(){return contaRpc('kt_minha_posicao');},
@@ -2519,7 +2577,7 @@ var gachaOv = document.createElement('div');
 gachaOv.className = 'ov gachaov tw-window-overlay'; gachaOv.id = 'gachaOv'; gachaOv.hidden = true;
 gachaOv.innerHTML = '<div class="panel gachap tw-modal tw-modal-gacha tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="gachaTit"><button type="button" class="perfx tw-window-control tw-window-close" id="gachaX">✕</button><button type="button" class="ovsom tw-window-control tw-window-sound" data-som="1" aria-label="🔊"></button><h2 class="tw-modal-title" id="gachaTit" translate="no"></h2><small class="tw-modal-jp" lang="ja">スター・ガチャ</small><p class="tw-modal-lede" id="twGachaLede"></p>' +
   '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
-  '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div><div class="btns gachaalbum"><button type="button" class="btn alt" id="gachaAlbum"></button></div></div></div>';
+  '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button><button type="button" class="btn alt" id="gachaBattle" hidden></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div><div class="btns gachaalbum"><button type="button" class="btn alt" id="gachaAlbum"></button></div></div></div>';
 document.body.appendChild(gachaOv);
 // Handshake⭐Event! (handshake.js)
 var hsOv = document.createElement('div');
@@ -2564,12 +2622,15 @@ $('gachaX').onclick = gachaFechar;
 $('gachaGirar').onclick = function(){
   if(!contaJ){ contaEntrar(); return; }
   if(gachaFeito){ gachaFechar(); return; }
-  if(gachaGiro >= 0) return;
+  if(gachaGiro >= 0 || gachaPedido) return;
+  var dono=gachaContaAtual(), pedido={};
+  gachaDono=dono;gachaPedido=pedido;
   ac(); gachaGiro = 0; gachaUI();
   [523, 587, 659, 698, 784].forEach(function(f, i){ beep(f, .08, 'square', .03, i * .12); });
   contaRpc('gacha_girar').then(function(r){
     setTimeout(function(){
-      gachaGiro = -1;
+      if(gachaPedido!==pedido || gachaContaAtual()!==dono)return;
+      gachaPedido=null;gachaGiro=-1;
       if(r && r.ok){
         gachaFeito = true; gachaRes = r; gachaAgora = true;
         if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
@@ -2581,7 +2642,10 @@ $('gachaGirar').onclick = function(){
       if(!hubOv.hidden)hubCardsUI();
       if(typeof gachaCardsCarregar==='function')setTimeout(function(){if(!gachaOv.hidden)gachaCardsCarregar();},600);
     }, 1600);
-  }).catch(function(){ gachaGiro = -1; if(!gachaOv.hidden)gachaUI(); });
+  }).catch(function(){
+    if(gachaPedido!==pedido || gachaContaAtual()!==dono)return;
+    gachaPedido=null;gachaGiro=-1;if(!gachaOv.hidden)gachaUI();
+  });
 };
 
 // ---------- Música da tela de início (chiptune leve, em loop, muda com o tema) ----------
@@ -2616,11 +2680,12 @@ var duoOv = document.createElement('div');
 duoOv.className = 'ov duoov tw-window-overlay'; duoOv.id = 'duoOv'; duoOv.hidden = true;
 duoOv.innerHTML = '<div class="panel duop tw-modal tw-modal-duo tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="duoTit"><button type="button" class="perfx tw-window-control tw-window-close" id="duoX" aria-label="✕">✕</button>' +
   '<h2 class="duotit tw-modal-title" id="duoTit" translate="no">🌙 Moon<span class="tw-modal-star">⭐</span>Duo!</h2><small class="tw-modal-jp" lang="ja">ムーン・デュオ</small><p class="duosub" id="duoSub"></p>' +
-  '<div id="duoEscolha"></div>' +
+  '<button class="btn alt" type="button" id="duoVoltarRua" data-piloto-bairro="rua" hidden>Voltar à Rua Fofa</button><div id="duoEscolha"></div>' +
   '<div id="duoPalco" hidden>' +
     '<div class="duoquem"><span id="duoNomes"></span><button type="button" class="btn alt" id="duoTrocar"></button></div>' +
     '<canvas id="duoCv" width="960" height="600"></canvas><p class="duodica" id="duoDica"></p>' +
     '<div class="duoacoes"><a class="btn" id="duoPng" href="#" download="moon-duo.png"></a><a class="btn alt" id="duoPngSem" href="#" download="moon-duo-sem-fundo.png"></a><button class="btn alt" type="button" id="duoPhone"></button><button class="btn alt" type="button" id="duoSerie"></button></div>' +
+    '<button class="btn alt" type="button" id="duoRuaFofa" hidden>Fotografar para a Rua Fofa</button><button class="btn alt" type="button" id="duoRuaGuardar" hidden></button><p id="duoRuaStatus" role="status"></p>' +
     '<p class="perfmsg" id="duoMsg" hidden></p>' +
     '<div class="duotabs" role="tablist" id="duoTabs"></div><div class="duopres duotrava" id="duoPresBox" hidden></div><div class="duotabc" id="duoTabC"></div>' +
   '</div></div>';
@@ -2634,7 +2699,7 @@ window.TW_I18N.rows.moonDuoLabels.forEach(function(t){ ['en', 'es', 'th', 'ja'].
 var cardZOv = document.createElement('div');
 cardZOv.className = 'ov cardzov'; cardZOv.hidden = true;
 cardZOv.innerHTML = '<div class="panel cardzp" role="dialog" aria-modal="true"><button type="button" class="perfx tw-window-control tw-window-close" id="cardZX">✕</button><canvas id="cardZCv" width="360" height="504"></canvas>' +
-  '<div class="btns"><a class="btn" id="cardZDl" href="#" download="star-gacha-card.png"></a><button type="button" class="btn alt" id="cardZOk"></button></div></div>';
+  '<div class="btns"><a class="btn" id="cardZDl" href="#" download="star-gacha-card.png"></a><button type="button" class="btn alt" id="cardZBattle" hidden></button><button type="button" class="btn alt" id="cardZOk"></button></div></div>';
 document.body.appendChild(cardZOv);
 document.addEventListener('click', function(e){
   var b = e.target.closest && e.target.closest('[data-cardz]');
@@ -2642,7 +2707,12 @@ document.addEventListener('click', function(e){
     var p = b.dataset.cardz.split('|'), c = (cardsMem[p[0]] || [])[+p[1]]; if(!c || !c.card) return;
     var d = cardsDados(c), cv = $('cardZCv'); gachaCardDesenhar(cv, d);
     $('cardZDl').textContent = '⬇️ ' + tr('Salvar como imagem'); $('cardZOk').textContent = tr('Fechar');
-    $('cardZDl').onclick = function(){ this.href = cv.toDataURL('image/png'); this.download = (d.aniver ? 'feliz-aniversario-' : 'star-gacha-') + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
+    $('cardZDl').onclick = function(){ this.href = (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')); this.download = (d.aniver ? 'feliz-aniversario-' : 'star-gacha-') + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
+    // 20/11/2026: card do próprio álbum entra direto na unit do Idol⭐Battle!
+    var zb = $('cardZBattle'), dono = typeof gachaContaAtual === 'function' ? gachaContaAtual() : '';
+    if(zb){ zb.hidden = !(p[0] === 'album' && contaJ && dono && d.nick && typeof window.battleAbrir === 'function');
+      zb.textContent = (typeof GACHA_BATTLE_TR !== 'undefined' && (GACHA_BATTLE_TR[LANG] || GACHA_BATTLE_TR.pt)) || 'Idol⭐Battle!';
+      zb.onclick = function(){ if(zb.hidden) return; var origem = window.TW_JANELAS && TW_JANELAS.origem(zb); cardZOv.hidden = true; if(typeof albumFechar === 'function') albumFechar(); window.battleAbrir({card:d.nick, dono:dono, origem:origem}); }; }
     cardZOv.hidden = false; if(sfx.card) sfx.card(); return;
   }
   if(e.target.id === 'cardZX' || e.target.id === 'cardZOk' || e.target === cardZOv) cardZOv.hidden = true;
@@ -2668,7 +2738,7 @@ function aniverFesta(){
     var d = JSON.parse(JSON.stringify(r.card || { nick:nick })); d.aniver = true; d.nick = d.nick || nick;
     var cv = $('aniverCard'); try{ gachaCardDesenhar(cv, d); }catch(e){}
     $('aniverDl').textContent = '⬇️ ' + tr('Salvar card'); $('aniverOk').textContent = tr('Obrigado! 💖');
-    $('aniverDl').onclick = function(){ this.href = cv.toDataURL('image/png'); this.download = 'feliz-aniversario-' + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
+    $('aniverDl').onclick = function(){ this.href = (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')); this.download = 'feliz-aniversario-' + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
     aniverOv.hidden = false; aniverOv.scrollTop = 0; aniverT = 0; if(!aniverAnim) aniverAnim = requestAnimationFrame(aniverLoop);
     aniverMusica();
     if(typeof perfAtual!=='undefined'&&perfAtual&&perfMeu&&!perfOv.hidden){var perfilOrigem=perfPedido;twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&perfMeu&&perfilOrigem===perfPedido;},function(){perfAbrir();},400);}   // atualiza os cards apenas na mesma sessão do perfil
@@ -2936,7 +3006,7 @@ encOv.addEventListener('click', function(e){
     x.fillStyle = '#ff6fb5'; x.font = '700 15px "M PLUS Rounded 1c",sans-serif'; x.fillText(tr(encDados.fala), 230, 478, 410);
     x.fillStyle = '#5b7fa6'; x.font = '600 12px "M PLUS Rounded 1c",sans-serif'; x.fillText(encHoje().split('-').reverse().join('/'), 230, 506);
     x.font = '500 11px "M PLUS Rounded 1c",sans-serif'; x.fillText('🌟 ' + tr('Encontro do dia') + ' · TsuLiPa⭐World', 230, 532);
-    e.target.href = c.toDataURL('image/png'); e.target.download = 'encontro-' + String(encDados.nick).replace(/[^\w-]+/g, '') + '.png';
+    e.target.href = (window.twMarcaPng?window.twMarcaPng(c):c.toDataURL('image/png')); e.target.download = 'encontro-' + String(encDados.nick).replace(/[^\w-]+/g, '') + '.png';
     var fl = document.createElement('div'); fl.className = 'encflash'; $('encCv').parentNode.appendChild(fl); setTimeout(function(){ fl.remove(); }, 400);
     beep(1568, .05, 'square', .03); beep(2093, .08, 'triangle', .03, .05);
   }
@@ -3230,21 +3300,15 @@ end = function(impacto){
 var _origUpdate;   // a corrida chega depois (centerrun-corrida.js): o invólucro entra quando ela carregar
 twCorridaAoCarregar(function(){
 _origUpdate = update;
+$('crPraticaBt').onclick=function(){crPraticaComecar(false);};
+$('crPraticaPista').onclick=function(){crPraticaComecar(true);};
+$('crPraticaSair').onclick=function(){crPraticaTerminar(false);};
+crDesafioBotoes();$('crDesafioMenu').hidden=false;
+$('crDesafioMenu').onclick=$('crDesafioFim').onclick=function(){crPraticaComecar('desafio');};
 update = function(dt){
+  if(crPratica){crPraticaQuadro(dt);return;}
   s2StageFrames += dt;
-  if(s2SlideTimer > 0){
-    s2SlideTimer -= dt;
-    if(s2SlideTimer <= 0) s2Sliding = false;
-  }
-
-  // Ajusta caixa de colisão da Idol quando está abaixada/deslizando
-  var targetH = (s2Sliding && !(pw && pw.k === 'alien')) ? 26 : 44;
-  if(P.h !== targetH){
-    var diff = P.h - targetH;
-    P.h = targetH;
-    if(!P.air) P.y = GY - P.h;
-    else P.y += diff;
-  }
+  s2DeslizeQuadro(dt);
 
   // Registra estrelas antes do frame para detectar estrelas perdidas ou coletadas
   var prevStars = stars;
@@ -3602,7 +3666,8 @@ applyLang();
 })();
 </script>
 <script>twLinkInicializar();</script>
-<script src="./tw-windows.js?v=2"></script>
+<script>window.TW_EMAIL_MENSAL_DISPONIVEL=false;</script>
+<script defer src="./tw-windows.js?v=3"></script><script defer src="./tw-acessibilidade.js?v=1"></script><script defer src="./tw-semana.js?v=4"></script><script defer src="./tw-pessoal.js?v=5"></script>
 <script src="./karaoke-tickets.js?v=2"></script>
 <script>/* Quem abre o site já em outro idioma: alguns textos (rank, itens do Center Run…) eram montados antes de todas as
    traduções entrarem. Depois de tudo carregado, refaz a tela no idioma salvo — o mesmo caminho do botão de idioma. */

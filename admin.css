@@ -35,3 +35,8 @@
 .admbarras b{text-align:right}.admbarras small{color:#8a7aa8;font-weight:700;white-space:nowrap;text-align:right}
 :root[data-theme="dark"] .admbarras i{background:linear-gradient(90deg,#b28cff var(--w),#2d2350 var(--w))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .admbarras i{background:linear-gradient(90deg,#b28cff var(--w),#2d2350 var(--w))}}
+.admrecados{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.admrecados li{padding:10px 12px;border-radius:14px;background:#fff6fb;border:2px solid #ffd6ec}
+.admrecados li.lido{opacity:.6;background:#f6f3ff;border-color:#ece6fb}
+.admrecados p{margin:0 0 4px;white-space:pre-wrap;word-break:break-word}
+.admnovo{display:inline-block;min-width:22px;padding:0 6px;border-radius:999px;background:#ff6fb5;color:#fff;font-size:12px;text-align:center}

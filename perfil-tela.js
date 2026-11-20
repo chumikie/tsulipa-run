@@ -54,6 +54,7 @@ function perfMontar(){
   h += '<p class="perfmsg" id="perfTopoMsg" hidden></p><div id="perfAbaCorpo"></div>';
   h += '<div class="btns" style="margin-top:14px"><button type="button" class="btn alt" id="perfVoltar">' + escHtml(tr('VOLTAR')) + '</button></div>';
   $('perfCorpo').innerHTML = h;
+  if(window.TW_PESSOAL) try{ window.TW_PESSOAL.vitrineMontar(d, meu); }catch(e){}   // vitrine do perfil (tw-pessoal.js)
   $('perfVoltar').onclick = perfFechar;
   $('perfFotoBtn').onclick = function(){ perfZoom = !perfZoom; perfFotoAtual(); beep(perfZoom ? 784 : 988, .05, 'triangle', .04); };
   if(!meu) $('perfCora').onclick = perfDarCoracao;
@@ -403,7 +404,7 @@ function perfPng(){
     x.shadowColor = 'rgba(30,10,60,.6)'; x.shadowBlur = 6;
     x.fillText(perfAtual.nick + ' · TsuLiPa⭐World', 1000, 1004);
   }
-  return cv.toDataURL('image/png');
+  return perfGenAv.fundo ? (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')) : cv.toDataURL('image/png');   // com fundo: selo do site; transparente fica limpo
 }
 //←perfComprar
 function perfComprar(k, btn){

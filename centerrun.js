@@ -210,7 +210,7 @@ function mk(){
 function layout(){
   var pt=window.matchMedia&&matchMedia('(max-width:700px) and (orientation:portrait)').matches;
   W=pt?380:720;H=pt?506:380;GY=H-80;SC=Math.max(.65,W/720);K=GY/300;cv.width=W;cv.height=H;g=cv.getContext('2d');   /* 17/11: pede o pincel de novo para a nitidez automática (tw-nitidez.js) valer no tamanho atual */
-  var st=document.getElementById('stage');st.style.aspectRatio=W+'/'+H;st.style.maxWidth=pt?'calc((100vh - 120px) * '+(W/H)+')':'760px';
+  var st=document.getElementById('stage');st.style.aspectRatio=W+'/'+H;st.style.maxWidth=pt?'calc((100vh - 120px) * '+(W/H)+')':'';   /* 20/11: deitado, a largura vem do CSS (760 px; maior no visual novo em tela larga) */
   mk();
 }
 var AC=null;
@@ -257,6 +257,7 @@ var paused=false,abducted=false,wasAbducted=false;
 var isTestGame = false;
 var CFG={STAR:15,STAR_FEVER:30,CARD:100,UFO_EVERY:2500,UFO_BONUS:100,UFO_FRAMES:480,UFO_STAR_MULT:.5,DIST_RATE:.015};
 function reset(){
+  if(typeof crPuloGuardado !== 'undefined'){ crPuloGuardado=0;crPuloSegura=0; }
   P={x:80,y:GY-44,vy:0,w:30,h:44,air:false};
   obs=[]; items=[]; fans=[]; sp=5.5; if(typeof cenaReset==='function') cenaReset();
   var tstVal = (!$('tstw').hidden && $('tst')) ? (+$('tst').value||0) : 0;
@@ -285,11 +286,11 @@ function rankOf(s){var r=0;for(var i=0;i<RANKS.length;i++)if(s>=RANKS[i][0])r=i;
 function start(e){
   if(e && e.preventDefault) e.preventDefault();
 
-// Validação: Exige o preenchimento do nome
+// O visitante pode jogar antes de escolher um nome.
   var inputNick = $('nick');
   var nomeLimpo = (inputNick ? inputNick.value : '').trim();
 
-  if(!nomeLimpo){
+  if(!nomeLimpo && contaJ){
     if(inputNick){
       inputNick.classList.remove('aviso-erro');
       void inputNick.offsetWidth; // Força o reflow para reiniciar a animação
@@ -1628,6 +1629,7 @@ function s2ResetHook(){
 }
 // Cinco oportunidades de ganhar ★; sem penalidade por errar ou não apertar.
 function s2BonusAction(action){
+  if(typeof crPratica !== 'undefined' && crPratica)return;
   if(!s2Challenge || !s2Challenge.active || state !== 'play' || paused || s2Challenge.pressed) return;
   var expected = s2Challenge.beat % 2 === 0 ? 'jump' : 'slide';
   if(action !== expected) return;
@@ -1641,7 +1643,19 @@ function s2BonusAction(action){
   sfx.star();
 }
 // Controles de Abaixar e Deslizar (PC + Celular)
+function s2DeslizeQuadro(dt){
+  if(s2SlideTimer>0){
+    s2SlideTimer-=dt;
+    if(s2SlideTimer<=0)s2Sliding=false;
+  }
+  var alvo=s2Sliding&&!(pw&&pw.k==='alien')?26:44;
+  if(P.h!==alvo){
+    P.y=P.air?P.y+P.h-alvo:GY-alvo;
+    P.h=alvo;
+  }
+}
 function s2StartSlide(fromTap){
+  if(typeof crPratica !== 'undefined' && crPratica && !crPratica.desafio && !(crPratica.pista && obs[0].high))return;
   if(state !== 'play' || paused) return;
   // A ação correta rende ★, mas a animação de deslizar continua normalmente.
   if(s2Challenge && s2Challenge.active) s2BonusAction('slide');
@@ -1746,7 +1760,7 @@ function s2ShowSlideButton(){
 // ---------- Corrida sob demanda (centerrun-corrida.js) ----------
 // O resto do site nunca chama a corrida; ela baixa quando o palco do Center Run aparece ou ao tocar em JOGAR.
 // twCorridaAoCarregar guarda o que precisa da corrida (os invólucros da Temporada 2 no index.html) e roda na ordem.
-var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=12',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
+var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=17',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
 function twCorridaAoCarregar(f){if(TW_CORRIDA_PRONTA)f();else twCorridaFila.push(f);}
 function twCorridaCarregar(){
   if(TW_CORRIDA_PRONTA)return Promise.resolve();

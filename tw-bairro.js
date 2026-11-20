@@ -274,12 +274,12 @@
   var tela = null, telaFila = [], telaPedida = false;
   function carregarTela(){
     if(tela || telaPedida) return; telaPedida = true;
-    var s = document.createElement('script'); s.src = './tw-bairro-tela.js?v=2'; s.async = true;
+    var s = document.createElement('script'); s.src = './tw-bairro-tela.js?v=3'; s.async = true;
     s.onerror = function(){ telaPedida = false; };
     (document.head || document.documentElement).appendChild(s);
   }
   function comTela(fn){ if(tela){ fn(tela); return; } telaFila.push(fn); carregarTela(); }
-  function abrir(){ comTela(function(T){ T.abrir(); }); }
+  function abrir(origem){ comTela(function(T){ T.abrir(origem); }); }
   function fechar(){ if(tela) tela.fechar(); }
   function toast(msg){ comTela(function(T){ T.toast(msg); }); }
   function guiaPergunta(rua, entrar){ if(ruaAberta(rua)) return false; comTela(function(T){ T.guiaPergunta(rua, entrar); }); return true; }

@@ -625,7 +625,7 @@ function jornalFotoDesenhar(cv, f, assinatura){
 function jornalFotoAmpliar(i){   // abre grande, com BAIXAR (a mesma tela de foto do jogo)
   var f = jornalFotosHoje[i]; if(!f) return;
   var cv = document.createElement('canvas'); cv.width = 1440; cv.height = 900; jornalFotoDesenhar(cv, f, true);
-  var u = cv.toDataURL('image/png'), dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+  var u = (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')), dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
   $('shimg').src = u; $('shimg').alt = jornalLegenda(f); $('shdl').href = u; $('shdl').download = 'idol-news-' + dia + '-' + (i + 1) + '.png';
   if(typeof petPhShow === 'function') petPhShow(false);
   $('shr').hidden = false; if(sfx && sfx.card) try{ sfx.card(); }catch(e){}
@@ -647,7 +647,7 @@ function jornalTop5(d){   // o pódio do servidor tem 3; Center, Sora e Karaoke 
 }
 /* Os quadrinhos (capítulos antigos + Temporada 1, ~100 KB nos 6 idiomas) só baixam quando alguém abre o Idol⭐News!
    ou o Calendário — antes eles pesavam na abertura de todo mundo. */
-var JORNAL_CAPS_ARQ = './jornal-capitulos.js?v=12', jornalCapsFila = null;
+var JORNAL_CAPS_ARQ = './jornal-capitulos.js?v=13', jornalCapsFila = null;
 function jornalCapsCarregar(cb){
   if(typeof jornalCapsUI === 'function'){ if(cb) cb(true); return; }
   if(jornalCapsFila){ if(cb) jornalCapsFila.push(cb); return; }
@@ -675,17 +675,26 @@ function jornalCapituloSelecionar(cap){
   }
   return '';
 }
-function jornalAbrir(aba, capitulo){
+function janelaCapituloVisivel(){
+  var quadro=document.querySelector('#jornalCaps .jncapquadros canvas');
+  return typeof window.twCapRegistrar==='function' && !document.hidden && !jornalOv.hidden &&
+    jornalAba==='vida' && quadro && quadro.getClientRects().length>0;
+}
+function jornalAbrir(aba, capitulo, origem){
   var abertura = ++jornalAbertura;
   jornalFestivalFoco = aba === 'festival';
   jornalAba = aba === 'comunidade' || jornalFestivalFoco ? 'comunidade' : 'vida'; jornalAtividadeCarregada = false;
+  if(window.TW_JANELAS) TW_JANELAS.preparar(jornalOv,origem);
   jornalOv.hidden = false; jornalOv.scrollTop = 0;
   $('jornalCorpo').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();
   function vigente(){ return !jornalOv.hidden && abertura === jornalAbertura; }
   function focarCapitulo(foco){
     var alvo = foco && $('jornalCorpo').querySelector(foco);
-    if(alvo){ alvo.focus({preventScroll:true}); alvo.scrollIntoView({block:'nearest'}); }
+    if(alvo && !alvo.disabled){
+      alvo.focus({preventScroll:true}); alvo.scrollIntoView({block:'nearest'});
+      if(alvo.hasAttribute('data-jncap') && janelaCapituloVisivel())window.twCapRegistrar(Number(alvo.dataset.jncap)+1);
+    }
   }
   jornalCapsCarregar(function(ok){
     if(!ok || !vigente()) return;
@@ -700,9 +709,17 @@ function jornalAbrir(aba, capitulo){
     var foco = jornalCapituloSelecionar(capitulo);
     $('jornalCorpo').innerHTML = jornalMontar(dados);
     jornalAbasIniciar(); focarCapitulo(foco);
+    if(window.studioCarregar)window.studioCarregar().then(function(){
+      if(vigente() && window.studioCapaNews)window.studioCapaNews();
+    }).catch(function(){});
     if(aba === 'ruaFofa'){
       var ruaFofa = $('jornalRuaFofa');
-      if(ruaFofa){ var manchete = ruaFofa.querySelector('h4'); manchete.focus({preventScroll:true}); manchete.scrollIntoView({block:'nearest'}); }
+      if(ruaFofa){
+        var edicao = Number.isInteger(capitulo) && ruaFofa.querySelector('[data-piloto-desfecho="' + capitulo + '"]');
+        if(edicao) edicao.open = true;
+        var manchete = edicao ? edicao.querySelector('summary') : ruaFofa.querySelector('h4');
+        manchete.focus({preventScroll:true}); manchete.scrollIntoView({block:'nearest'});
+      }
     }
     jornalFotos(); jornalFotosDia(); jornalPostsCarregar(); jornalTimesCarregar(); jornalFestCarregar(); jornalTrioCarregar();
   });
@@ -820,18 +837,6 @@ function jornalTimesCarregar(){
 }
 // ---------- Festival de Unidades (RPC festival_unidades: proposta 20261103190000_festival_e_ensaio_trio.sql) ----------
 var jornalFest = null;
-function jornalFestivalTexto(i){
-  var textos = {
-    pt:['Ver placar','Cantar a música da semana','Até sábado, 23h59 (Brasília)'],
-    en:['View standings','Sing the song of the week','Until Saturday, 11:59 pm (Brasília)'],
-    es:['Ver clasificación','Cantar la canción de la semana','Hasta el sábado, 23:59 (Brasilia)'],
-    id:['Lihat peringkat','Nyanyikan lagu minggu ini','Hingga Sabtu, 23.59 (Brasília)'],
-    th:['ดูอันดับ','ร้องเพลงประจำสัปดาห์','ถึงวันเสาร์ 23:59 น. (บราซิเลีย)'],
-    ja:['順位を見る','今週の曲を歌う','土曜23:59まで（ブラジリア時間）']
-  };
-  return (textos[LANG] || textos.pt)[i];
-}
-function jornalFestivalPrazo(){ return jornalFestivalTexto(2); }
 function jornalFestivalCantar(){
   if(!contaJ){ if(typeof twLinkGuardarLogin === 'function')twLinkGuardarLogin('festival'); contaEntrar(); return; }
   var rolagem = jornalOv.scrollTop;
@@ -888,7 +893,7 @@ function jornalTrioDesenhar(cv, assinatura){   // a cena especial: o trio no pal
 }
 function jornalTrioAmpliar(){
   var cv = document.createElement('canvas'); cv.width = 1440; cv.height = 900; jornalTrioDesenhar(cv, true);
-  var u = cv.toDataURL('image/png'); $('shimg').src = u; $('shimg').alt = tr('Ensaio de trio'); $('shdl').href = u; $('shdl').download = 'ensaio-de-trio.png';
+  var u = (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')); $('shimg').src = u; $('shimg').alt = tr('Ensaio de trio'); $('shdl').href = u; $('shdl').download = 'ensaio-de-trio.png';
   if(typeof petPhShow === 'function') petPhShow(false); $('shr').hidden = false;
 }
 function jornalTrioCarregar(){

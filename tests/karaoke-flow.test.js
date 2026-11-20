@@ -14,7 +14,9 @@ class Element {
   get innerHTML(){return this.html||'';}
   after(other){if(other.id)elements.set(other.id,other);}
   before(...nodes){for(const node of nodes)if(node.id)elements.set(node.id,node);}
-  appendChild(child){if(child.id)elements.set(child.id,child);}
+  appendChild(child){if(child && child.id)elements.set(child.id,child);}
+  append(...nodes){for(const node of nodes)this.appendChild(node);}
+  focus(){}
   addEventListener(){}
   setAttribute(){}
   querySelector(selector){return get(selector);}
@@ -101,6 +103,16 @@ async function waitForQuota(){await new Promise(resolve=>setImmediate(resolve));
   assert.equal(ui.offset(),10,'ajuste local de 10 ms');
   assert.equal(values.get('kt_rhythm_offset_ms_v1'),'10','offset persistido apenas no navegador');
   assert.deepEqual(calls.at(-1),['offset',10]);
+  const output=get('ktAudioOutput');
+  output.value='bluetooth';output.onchange();get('ktOffsetPlus').onclick();
+  assert.equal(values.get('kt_rhythm_offset_ms_v1:bluetooth'),'20');
+  output.value='speaker';output.onchange();get('ktOffsetMinus').onclick();
+  assert.equal(ui.offset(),0);
+  output.value='bluetooth';output.onchange();
+  assert.equal(ui.offset(),20);
+  ui.abrirAjuste(()=>calls.push(['repeat']));
+  get('ktRepeatAfterTiming').onclick();
+  assert.deepEqual(calls.at(-1),['repeat']);
 
   assert(html.includes('practice=mode===true||rehearsal'),'cantor automático e ensaio ficam fora da quota');
   assert(html.includes('if(!r.practice&&typeof ktMeta'),'a conclusão do ensaio nunca envia resultado oficial');

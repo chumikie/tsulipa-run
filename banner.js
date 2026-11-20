@@ -157,3 +157,31 @@ function bannerTorcidaDesenhar(x, W2, H2, t, girando){   // no canto esquerdo da
   }catch(e){}
   finally{ state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; accSel = oA; frame = oF; charPose = ''; perfAntena = ''; }
 }
+
+/* Seu Idol no palco (20/11/2026): nos dias do TsuLiPa, o Idol de quem está logado aparece de convidado ao lado
+   do trio — 1 dia a cada 3, sorteado pela data e pelo nome (cada pessoa tem os seus dias). Só a própria pessoa vê.
+   As contas do trio não entram (já estão no palco). Usa o visual público da vitrine (vitrine_idols). */
+function bannerConvidado(){
+  if(typeof contaJ === 'undefined' || !contaJ || !contaJ.nick) return null;
+  var eu = String(contaJ.nick).toLowerCase(); if(BANNER_TSULIPA.indexOf(eu) >= 0 || eu === 'pati') return null;
+  var h = 0; for(var i = 0; i < eu.length; i++) h = (h * 31 + eu.charCodeAt(i)) >>> 0;
+  if(((bannerDia() + h) % 3 + 3) % 3 !== 0) return null;
+  var L = typeof hubIdolsDados !== 'undefined' && hubIdolsDados && Array.isArray(hubIdolsDados.idols) ? hubIdolsDados.idols : [];
+  for(var j = 0; j < L.length; j++) if(L[j] && String(L[j].nick).toLowerCase() === eu && L[j].avatar && L[j].avatar.c) return L[j];
+  return null;
+}
+function bannerConvidadoDesenhar(x, W2, H2, t, roupa, sc, chao){
+  var p = bannerConvidado(); if(!p) return;
+  var av = p.avatar, c = perfChar(av), largo = W2 / sc > 250, s2 = sc * (largo ? .74 : .56), cx = largo ? W2 * .075 : 12.5 * sc,   // à esquerda do Tsu: do outro lado ficam o Pati e o Pucchi
+      _ = 0, bob = Math.sin(t * .06 + 4.2) * 1.1 * s2;
+  if(roupa){ c.out = roupa; c.outcol = c.img || c.outcol; }
+  var ex = [0, 1, 2, 3, 4, 5, 6].indexOf(+av.expr) >= 0 ? +av.expr : 2;
+  var pose = typeof perfPoseInfo === 'function' && perfPoseInfo(av.pose) ? av.pose : 'v';
+  var oA = accSel; accSel = typeof av.a === 'string' ? av.a : '';
+  try{
+    x.fillStyle = 'rgba(30,10,60,.18)'; x.beginPath(); x.ellipse(cx, chao - .4 * s2, 9 * s2, 1.6 * s2, 0, 0, 7); x.fill();
+    perfCharContorno(x, cx - 15 * s2, chao - 44 * s2 + bob, s2, function(){ charPose = pose; drawChar(c, 0, 0, 0, ex, false); });
+    x.save(); x.textAlign = 'center'; x.font = (4.2 * sc) + 'px sans-serif'; x.globalAlpha = .65 + .35 * Math.sin(t * .09);
+    x.fillText('✨', cx - 12 * s2, chao - 46 * s2 + bob); x.fillText('✨', cx + 12 * s2, chao - 38 * s2 + bob); x.restore();
+  } finally { charPose = ''; perfAntena = ''; accSel = oA; }
+}

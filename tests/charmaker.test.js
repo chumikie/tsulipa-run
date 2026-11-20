@@ -31,5 +31,5 @@ assert.ok(html.indexOf('charmaker.js?v=') > html.indexOf('hub-novos.js?v='), 'ca
 // Sortear nunca mexe na pele e respeita as trancas (só opções sem disabled).
 assert.doesNotMatch(js, /skin/, 'pele não é sorteada');
 assert.match(js, /!o\.disabled/);
-assert.match(js, /anterior = JSON\.parse\(JSON\.stringify\(c\)\)/, 'desfazer guarda o visual anterior');
+assert.match(js, /anterior = \{c:JSON\.parse\(JSON\.stringify\(c\)\),a:accSel\}/, 'desfazer guarda o visual anterior');
 console.log('charmaker ok');

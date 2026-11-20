@@ -15,7 +15,15 @@ function contaRpc(nome, args){
   return _supabase.rpc(nome, args || {}).then(function(r){ if(r.error) throw r.error; return r.data; });
 }
 function contaSiteOk(){ return /^https?:$/.test(location.protocol) && !/claude|anthropic|usercontent/i.test(location.hostname); }
+function contaSessaoAtual(){
+  function perfil(){return contaJ ? String(contaJ.id || contaJ.nick || '') : null;}
+  var token=contaSessaoToken, usuario=contaAuthUserId, dono=perfil();
+  return function(){return token===contaSessaoToken && usuario===contaAuthUserId && dono===perfil();};
+}
 function contaUI(){
+  if(window.TW_PESSOAL)window.TW_PESSOAL.contaMudou();
+  if(window.TW_SEMANA)window.TW_SEMANA.contaMudou();
+  if(typeof twMapaVitrineAtualizar === 'function') twMapaVitrineAtualizar();
   if(typeof TW_ALBUM_FOTOS !== 'undefined') TW_ALBUM_FOTOS.conferir();
   if(typeof idolChipNome === 'function') idolChipNome();
   if(typeof hubLoginCtaUI==='function') hubLoginCtaUI();
@@ -83,6 +91,7 @@ function contaAplicar(j, token, semRecuperar){
   if(typeof s2SyncProfile === 'function') s2SyncProfile();
   if(typeof petUI === 'function' && petOpen) petUI();
   perfAoEntrar();   // V2.1.3: nuvem + presente da conta
+  if(window.TW_CELULAR&&typeof window.TW_CELULAR.tutContaChegou==='function')window.TW_CELULAR.tutContaChegou(j);   // tutorial já visto acompanha a conta
   if(typeof twLinkRetomar === 'function' && twLinkRetomar()) twAbrirPeloEndereco();
   if(typeof duoAvisoAgendar==='function')duoAvisoAgendar();
   if(!semRecuperar)contaRecuperarCorridas();
@@ -226,11 +235,33 @@ function contaGasto(qtd, motivo){   // compra no camarim: desconta na hora e con
     if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); if(petOpen) petUI(); }
   }).catch(function(){});
 }
-function contaGanhoMini(qtd){
-  if(!contaJ || qtd <= 0) return;
-  contaRpc('ganhar_minijogo', { p_qtd:qtd }).then(function(r){
-    if(r && typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); if(petOpen) petUI(); }
-  }).catch(function(){});
+// Minijogos do camarim (20/11/2026): o servidor marca o início e confere o tempo no fim (mini_run_start/finish).
+function contaMiniInicio(jogo){
+  if(!contaJ)return null;
+  return {
+    conta:contaSessaoAtual(),
+    inicio:contaRpc('mini_run_start',{p_jogo:jogo})
+      .then(function(r){return r&&r.ok&&r.run||null;},function(){return null;})
+  };
+}
+async function contaGanhoMini(qtd, partida){
+  if(!partida.conta())return {estado:'conta'};
+  var id=await partida.inicio;
+  if(!partida.conta())return {estado:'conta'};
+  if(!id)return {estado:'indisponivel'};
+  try{
+    var r=await contaRpc('mini_run_finish',{p_run:id,p_qtd:qtd});
+    if(!partida.conta())return {estado:'conta'};
+    if(!r||!r.ok||!Number.isSafeInteger(r.stars)||!Number.isSafeInteger(r.dadas))return {estado:'encerrado'};
+    starT=r.stars;
+    try{localStorage.setItem('brs48cr_st',starT);}catch(e){}
+    setBest();
+    if(petOpen)petUI();
+    return {estado:'confirmado',dadas:r.dadas};
+  }catch(e){
+    if(!partida.conta())return {estado:'conta'};
+    return {estado:e&&(e.code==='PGRST202'||e.code==='42501')?'indisponivel':'repetir'};
+  }
 }
 function contaTesteParceiras(){
   var s = $('tstP'); if(!s || $('tstw').hidden) return;

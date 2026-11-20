@@ -6,9 +6,25 @@ var GACHA_SORTE = ['Hoje não veio nada... mas amanhã a sorte gira! 🍀', 'Cá
   'Só confete! 🎊 Volte amanhã', 'A Lirika guardou o prêmio pra amanhã 🐨', 'O Pati disse: amanhã é dia de coroa! 👑', 'Sorte pequena: um sorriso 😊', 'Hoje não... mas o Center te espera! ⭐'];
 var GACHA_BONUS = { ima:'🧲 Ímã', escudo:'🛡️ Escudo', fever:'🔥 Fever' };
 var gachaFeito = false, gachaRes = null, gachaT = 0, gachaAnim = 0, gachaGiro = -1, gachaAgora = false;
+var gachaDono='', gachaPedido=null;
+var GACHA_BATTLE_TR = {
+  pt:'Testar no meu trio',en:'Try in my unit',es:'Probar en mi trío',
+  id:'Uji di trioku',th:'ลองในทีมของฉัน',ja:'自分のユニットで試す'
+};
+function gachaContaAtual(){
+  return typeof petPhoneContaChave==='function' ? petPhoneContaChave() : (contaJ && String(contaJ.id||contaJ.nick)||'');
+}
 function gachaConferir(){
-  if(!contaJ){ gachaFeito = false; return; }
-  contaRpc('gacha_hoje').then(function(r){ gachaFeito = !!(r && r.tipo); gachaRes = gachaFeito ? r : null; if(!hubOv.hidden) hubCardsUI(); if(!gachaOv.hidden){ gachaUI(); gachaCardUI(); } }).catch(function(){});
+  var dono=gachaContaAtual();
+  if(gachaDono!==dono){gachaRes=null;gachaFeito=false;gachaGiro=-1;gachaPedido=null;}
+  gachaDono=dono;
+  if(!dono)return;
+  contaRpc('gacha_hoje').then(function(r){
+    if(dono!==gachaContaAtual() || gachaPedido || gachaAgora && gachaFeito)return;
+    gachaFeito=!!(r && r.tipo);gachaRes=gachaFeito?r:null;
+    if(!hubOv.hidden)hubCardsUI();
+    if(!gachaOv.hidden){gachaUI();gachaCardUI();}
+  }).catch(function(){});
 }
 function gachaTexto(r){
   if(!r) return '';
@@ -27,11 +43,21 @@ function gachaUI(){
   b.textContent = '🎰 ' + tr('Girar!'); b.disabled = gachaGiro >= 0; t.textContent = tr('Gire a manivela e veja o que sai da cápsula!');
 }
 function gachaCardUI(){   // o card do Idol que saiu (estilo dos cards do BRS48 Collect)
-  var cv = $('gachaCardCv'), dl = $('gachaCardDl'), d = gachaRes && gachaRes.tipo === 'card' && gachaRes.card;
+  var cv = $('gachaCardCv'), dl = $('gachaCardDl'), battle = $('gachaBattle');
+  var d = contaJ && gachaDono===gachaContaAtual() && gachaRes && gachaRes.tipo==='card' && gachaRes.card;
+  if(battle){
+    battle.hidden=!(d && d.nick && typeof window.battleAbrir==='function');
+    battle.textContent=GACHA_BATTLE_TR[LANG]||GACHA_BATTLE_TR.pt;
+    battle.onclick=function(){
+      if(battle.hidden || gachaDono!==gachaContaAtual() || !gachaRes || gachaRes.card!==d)return;
+      var origem=window.TW_JANELAS && TW_JANELAS.origem(battle);
+      gachaFechar();window.battleAbrir({card:d.nick,dono:gachaDono,origem:origem});
+    };
+  }
   cv.hidden = !d; dl.hidden = !d; if(!d) return;
   gachaCardDesenhar(cv, d);
   dl.textContent = '⬇️ ' + tr('Baixar card');
-  dl.onclick = function(){ this.href = cv.toDataURL('image/png'); this.download = 'star-gacha-' + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
+  dl.onclick = function(){ this.href = (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')); this.download = 'star-gacha-' + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
 }
 function gachaCardDesenhar(cv, d){
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, i, h = 0;
@@ -82,8 +108,15 @@ function gachaCardDesenhar(cv, d){
   x.restore();
   x.strokeStyle = 'rgba(255,255,255,.9)'; x.lineWidth = 6; rr(3, 3, W2 - 6, H2 - 6, 20); x.stroke();
 }
-function gachaAbrir(){ gachaAgora = false;   // abre por cima da tela de início (sem o Center Run no fundo)
-  if(typeof gachaCardsCarregar === 'function') gachaCardsCarregar(); gachaOv.hidden = false; gachaT = 0; gachaGiro = -1; gachaUI(); gachaCardUI(); if(!gachaAnim) gachaAnim = requestAnimationFrame(gachaLoop); gachaConferir(); if(hubComecou) hubMusicaTocar(); }
+function gachaAbrir(){
+  gachaAgora=false;gachaOv.hidden=false;gachaT=0;
+  gachaConferir();
+  if(!gachaPedido)gachaGiro=-1;
+  gachaUI();gachaCardUI();
+  if(typeof gachaCardsCarregar==='function')gachaCardsCarregar();
+  if(!gachaAnim)gachaAnim=requestAnimationFrame(gachaLoop);
+  if(hubComecou)hubMusicaTocar();
+}
 function gachaFechar(){ gachaOv.hidden = true; hubMostrar(); }
 function gachaDesenhar(){
   var cv = $('gachaCv'); if(typeof twNitido === 'function') twNitido(cv); var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = gachaT, i;
@@ -172,5 +205,6 @@ function gachaCardsCarregar(){
   $('gachaCardsT').textContent = '🃏 ' + tr('Seus últimos cards');
   var ab = $('gachaAlbum'); if(ab){ ab.textContent = '📖 ' + tr('Álbum de cards'); ab.hidden = !contaJ; }
   if(!contaJ){ box.innerHTML = ''; return; }
-  contaRpc('meus_cards').then(function(L){ box.innerHTML = cardsHtml(L || [], 'gachaCards', true); cardsDesenhar(L || [], 'gachaCards'); }).catch(function(){});
+  var dono=gachaContaAtual();
+  contaRpc('meus_cards').then(function(L){ if(dono!==gachaContaAtual())return; box.innerHTML = cardsHtml(L || [], 'gachaCards', true); cardsDesenhar(L || [], 'gachaCards'); }).catch(function(){});
 }

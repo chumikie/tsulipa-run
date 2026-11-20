@@ -48,18 +48,19 @@ Se faltar uma medida, anote a última etapa observada. Ao comparar as sessões, 
 
 ### Histórias da Rua Fofa
 
-Abra a versão da #118 com `?piloto_bairro=1`. O piloto começa no domingo de 22/11/2026 à meia-noite de Brasília. Para rodar com um novo grupo, escolha outro domingo com `&piloto_bairro_inicio=AAAA-MM-DD` e use o mesmo link nas duas semanas. O progresso fica neste navegador, associado à conta ou ao visitante. Use o mesmo perfil de navegador nas duas visitas.
+Abra a versão da #118 com `?piloto_bairro=1`. O piloto começa no domingo de 22/11/2026 à meia-noite de Brasília. Para rodar com um novo grupo, escolha outro domingo com `&piloto_bairro_inicio=AAAA-MM-DD` e use o mesmo link nas duas semanas. O progresso fica neste navegador, associado à conta ou ao visitante. Use o mesmo perfil de navegador em cada visita. A terceira semana começa em 06/12/2026 no calendário padrão.
 
 | Semana | Chamada no Hoje | Ação no bairro | Desfecho |
 |---|---|---|---|
 | 1 | A vitrine da Rua Fofa | Tirar uma foto no cenário rosa do Studio | A edição de domingo comenta a abertura da vitrine |
 | 2 | Um céu na Rua Fofa | Tirar uma foto entre as nuvens | A edição de domingo comenta a inauguração do mural |
+| 3 | Uma vitrine de boas-vindas | Tirar uma foto no Studio ou preparar o pedido no Café | A edição de domingo registra a contribuição concluída |
 
 O cenário vem selecionado. Se a pessoa usar outro cenário, pode tirar a foto e tentar a história novamente. O Studio piloto guarda uma miniatura na vitrine local. O desfecho tem versões para quem concluiu e para quem não concluiu a atividade, sem publicação da imagem para outros jogadores.
 
 Use `TW_PILOTO_BAIRRO.medidas()` para contar quem abriu a história, acionou o obturador no cenário pedido, concluiu a foto e leu o desfecho. Faça uma contagem por semana. Compare quantas pessoas voltaram a abrir a matéria com quantas terminaram a atividade. Registre também quem voltou mesmo sem ter concluído.
 
-Se o retorno ao jornal justificar testar o bico, acrescente `&piloto_bico=1` ao mesmo link. O balcão da Rua Fofa tem um pedido sem relógio. A entrega correta acrescenta a plaquinha à vitrine e uma lembrança ao desfecho. O bico reaproveita a conferência de ingredientes do Café e opera fora de missões, ranking, Caderno e recompensas.
+Na terceira semana, o Café é uma das escolhas disponíveis no piloto. Para testar o bico nas duas primeiras semanas, acrescente `&piloto_bico=1` ao mesmo link. O balcão da Rua Fofa tem um pedido sem relógio. A entrega correta acrescenta a plaquinha à vitrine e uma lembrança ao desfecho. O bico reaproveita a conferência de ingredientes do Café e opera fora de missões, ranking, Caderno e recompensas.
 
 ### Ensaio de visitante
 
@@ -72,8 +73,26 @@ Com um visitante, abra `?piloto_karaoke=1` e selecione **Ensaiar no Karaoke · 2
 | Android / Chrome | Alto-falante | | | | | |
 | Android / Chrome | Bluetooth | | | | | |
 
-A simulação não mede latência de hardware. Rodar o ensaio com visitantes após a matriz física permite observar quantos concluem em 20 s e quantos pedem outra rodada.
+Em cada combinação, use a mesma música e anote o ajuste de timing. Durante um trecho, troque de aba, volte e toque em **Retomar**. Confira se o tempo ficou parado, se as notas voltam no ponto em que a música parou e se o resultado compara os mesmos trechos. Complete também o trecho a 75%, repita a 100% e confira se os dois resultados usam a mesma quantidade de notas. Troque a saída de áudio entre partidas. A simulação não mede latência de hardware. Rodar o ensaio com visitantes após a matriz física permite observar quantos concluem em 20 s e quantos pedem outra rodada.
 
 ### Série de fotos
 
-Com conta, use **Guardar na série** no resultado do Studio, na cena do Duo e no Camarim VIP. A seção **Série de fotos** fica no Álbum das duas interfaces. Repita a mesma composição do Studio com dois looks e confira ordem, download e remoção. O navegador guarda até 24 imagens JPEG por conta e substitui as mais antigas ao atingir o limite. Recarregue e abra o Álbum com outra conta para verificar o isolamento.
+Com conta, use **Guardar na série** no resultado do Studio, na cena do Duo e no Camarim VIP. A seção **Série de fotos** fica no Álbum das duas interfaces. Repita a mesma composição do Studio com dois looks e confira ordem, download e remoção. O navegador guarda até 24 imagens JPEG por conta e pede que você escolha a foto a substituir ao atingir o limite. Cancele uma vez para conferir que as 24 fotos ficaram intactas. Depois escolha uma foto, confirme e confira que só ela foi substituída. Recarregue e abra o Álbum com outra conta para verificar o isolamento.
+
+
+Durante a retomada, observe se o relógio e as notas ficam no mesmo ponto quando o áudio ainda está interrompido. Se aparecer “Áudio interrompido”, recupere a saída de áudio e toque em **Retomar** novamente. A contagem deve voltar e o mesmo show deve prosseguir dali. Compare a contagem de tentativas antes e depois dessa recuperação.
+
+
+### Aceite curto da publicação
+
+Em iPhone com Safari e Android com Chrome, entrar com uma conta de teste. Concluir e retomar o mesmo show com alto-falante e Bluetooth, anotando latência, tempo congelado durante a pausa e posição das notas ao voltar. No Camarim, concluir uma partida de Ritmo ou Corda com crédito, conferir o saldo após a resposta do servidor e simular uma queda de conexão no fim. Usar **Tentar confirmar estrelas** e conferir que a partida só dá crédito uma vez. No Álbum, baixar a cópia JSON, restaurar a série, conferir a ordem das fotos fixadas e escolher qual substituir ao chegar ao limite.
+
+### Ordem da publicação do Camarim
+
+1. Aplicar as três migrações da #124 em sequência. Durante a transição, o banco conserva a permissão que o site antigo já usa. O site novo, quando abre antes do banco novo, mantém o jogo e avisa no resultado que o crédito está indisponível até atualizar e jogar de novo.
+2. Publicar e validar o site com `mini_run_start` e `mini_run_finish`. Em caso de rollback antes do corte, a versão anterior ainda tem o contrato antigo. Neste ponto guardar como referência para rollback uma versão que já use as duas chamadas novas.
+3. Encerrar prontamente a transição após o aceite, executando [a proposta de corte](../../supabase/sql/proposta/encerrar_credito_legado_camarim.sql) com a autorização de publicação do banco. A partir daí o rollback do frontend mantém as duas chamadas novas. Uma aba anterior ao corte precisa ser recarregada antes de outra partida.
+
+### Ativação do e-mail mensal
+
+A retrospectiva e o download funcionam com a preferência de e-mail oculta. Depois de configurar a função, o provedor e o agendamento, testar um envio para endereço de teste e o cancelamento da inscrição. Só então habilitar `TW_EMAIL_MENSAL_DISPONIVEL` no site. Testar manualmente a preferência com essa opção visível e confirmar que o endereço deixa de entrar no pacote depois do cancelamento.

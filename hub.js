@@ -163,6 +163,7 @@ function hubDesenhar(alvo){   // o TsuLiPa (trio) com os pets, no fundo do tema 
         if(HUB_PET_REAGE.i === i && pg < 70){ x.save(); x.globalAlpha = pg < 50 ? 1 : (70 - pg) / 20; x.textAlign = 'center'; x.font = (5 * sc) + 'px sans-serif'; x.fillStyle = ['#ff6fb5', '#5cc72c', '#4169e1'][i]; x.fillText('♪', px - 5 * sc, py - 9 * sc - pg * sc / 8); x.fillText('♡', px + 5 * sc, py - 12 * sc - pg * sc / 7); x.restore(); }
       }
     });
+    if(!visita && typeof bannerConvidadoDesenhar === 'function') bannerConvidadoDesenhar(x, W2, H2, t, roupa, sc, chao);   // seu Idol de convidado (banner.js)
     var rg2 = hubT - HUB_REAGE.t0;
     var rDur = HUB_REAGE.dur || 220;   // dura o tempo da voz + um pouquinho
     if(HUB_REAGE.i >= 0 && rg2 < rDur){   // balão kawaii (balão + rabinho num só contorno) e emojis subindo dos lados
@@ -527,7 +528,7 @@ function hubMisUI(){
   box.innerHTML = '<ul class="hubmis">' + hubMisDados.map(function(m){
     var t = m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k], pc = Math.round(Math.min(1, m.prog / Math.max(1, m.meta)) * 100), pronto = m.prog >= m.meta;
     var acao = m.feito ? '<em class="ok">✓ ★' + m.premio + '</em>' : (m.k === 'collect' && !pronto) ? '<button type="button" class="btn alt" data-collect="1">' + escHtml(tr('Abrir')) + ' ↗</button>' : (m.k === 'duo' && !pronto) ? '<button type="button" class="btn alt" data-hduo="1">' + escHtml(tr('Abrir')) + ' 🌙</button>' : pronto ? '<button type="button" class="btn" data-resg="' + escHtml(m.k) + '">' + escHtml(tr('Resgatar')) + ' ★' + m.premio + '</button>' : '<em>' + (m.meta > 9 ? m.prog + '/' + m.meta : m.prog + '/' + m.meta) + ' · ★' + m.premio + '</em>';
-    return '<li class="' + (m.feito ? 'feita' : pronto ? 'pronta' : '') + '"><span>' + t[0] + '</span><div><b>' + escHtml(tr(t[1]).replace('{n}', m.meta)) + '</b><i style="--p:' + pc + '%"></i></div>' + acao + '</li>';
+    return '<li class="' + (m.feito ? 'feita' : pronto ? 'pronta' : '') + '"><span>' + t[0] + '</span><div><b>' + escHtml(tr(t[1]).replace('{n}', m.meta)) + (m.semana ? ' <small class="hubmis-semana">🌟 ' + escHtml(({pt:'Jogo da semana',en:'Game of the week',es:'Juego de la semana',id:'Game minggu ini',th:'เกมประจำสัปดาห์',ja:'今週のゲーム'})[LANG] || 'Jogo da semana') + '</small>' : '') + '</b><i style="--p:' + pc + '%"></i></div>' + acao + '</li>';
   }).join('') + '</ul>';
 }
 // V3.1: depois de um resultado confirmado (Handshake, Café), as missões mostram o progresso novo
@@ -536,7 +537,7 @@ function twMissoesAtualizar(){
   if(contaJ) setTimeout(hubMisCarregar, 400);
 }
 function hubMisCarregar(){
-  if(typeof recCarregar === 'function') recCarregar();   // 🏅 Meus recordes (depois dos Jogos)
+  if(typeof recCarregar === 'function') recCarregar(true);   // 🏅 Meus recordes (depois dos Jogos); no máximo 1 leitura por minuto
   if(!contaJ){ hubMisDados = null; hubMisUI(); return; }
   hubMisDados = null; hubMisUI();
   contaRpc('missoes').then(function(r){ hubMisDados = Array.isArray(r) ? r : []; hubMisUI(); }).catch(function(){});

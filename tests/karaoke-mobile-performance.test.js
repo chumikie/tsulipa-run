@@ -5,6 +5,12 @@ const root=path.join(__dirname,'..');
 const assert=require('node:assert/strict');
 const html=require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 const baseCss=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-time-base.css'),'utf8');
+const fontes=fs.readFileSync(path.join(root,'kt-fonts.css'),'utf8');
+assert(!fontes.includes('data:font/'),'Karaoke carrega fontes externas sob demanda');
+const lotes=[...fontes.matchAll(/url\('\.\/([^']+\.woff2)'\)/g)].map(m=>m[1]);
+assert(lotes.length>=2 && fontes.includes('unicode-range:'),'fontes divididas por alfabeto');
+for(const lote of lotes)assert.equal(fs.readFileSync(path.join(root,lote)).subarray(0,4).toString(),'wOF2');
+
 const mobile=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-mobile.js'),'utf8');
 const mobileCss=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-mobile.css'),'utf8');
 const lifecycle=fs.readFileSync(require('node:path').join(__dirname,'..','tw-motion-lifecycle.js'),'utf8');
@@ -137,7 +143,7 @@ assert(html.includes('var krPosterArtes=new WeakMap();')&&html.includes('x.drawI
 
 assert(main.includes('var contaSessaoToken=0,contaAuthUserId=')&&main.includes('if(userId===contaAuthUserId)return;')&&main.includes('token!==contaSessaoToken'),'Auth callbacks must be invalidated when account identity changes, not on same-user token refreshes');
 assert(main.includes("if(contaJ&&(!j||contaJ.nick!==j.nick))")&&main.includes("contaJ=null;contaRun=null;nick='';contaUI();perfSair();"),'A newly authenticated player must not inherit previous account UI or cloud-sync state');
-assert(main.includes('sessionKey:function(){return contaJ?String(contaJ.nick||\'\').toLowerCase():\'\';}')&&main.includes('owner===String(contaJ.nick||\'\').toLowerCase()'),'Karaoke parent wallet and ranking updates must stay with their originating account');
+assert(main.includes('sessionKey:function(){return contaJ?String(contaJ.nick||\'\').toLowerCase():\'\';}')&&main.includes('conta()&&contaJ&&x&&x.ok&&Number.isInteger(x.used)')&&main.includes('conta()&&contaJ&&x&&x.ok){twRankRefreshAfterSora()'),'Karaoke parent wallet and ranking updates must stay with their originating account');
 assert(windows.includes('function attach()')&&windows.includes('function detach()')&&windows.includes("window.addEventListener('pagehide',detach)")&&windows.includes("window.addEventListener('pageshow',attach)"),'Iframe window media-query listeners must reattach after BFCache without duplicates');
 assert(html.includes("ktDailyGate=TWMotionLifecycle.watchLoop($('ktPopup')")&&html.includes('function ktDailyTimerStop()')&&html.includes('clearInterval(ktDailyTimer)'),'Karaoke daily roster checks should pause while its dialog is closed');
 assert(html.includes("ktMetaGate=TWMotionLifecycle.watchLoop($('ktPopup')")&&html.includes('function ktMetaTimerStop()')&&html.includes('clearInterval(ktMetaTimer)'),'Karaoke metadata polling should run only while its dialog is visible');
@@ -145,7 +151,7 @@ assert(!html.includes('setInterval(refresh,1000)'),'Karaoke Idol strip should up
 assert(html.includes("LANG=b.dataset.l")&&html.includes("krUI();krRhythmRender();if(typeof ktDecor!=='undefined'&&ktDecor)ktDecor.refresh();"),'Changing Karaoke language must refresh clip-card translation without restoring the permanent poll');
 assert(html.includes('function krRoomObserversDesconectar()')&&html.includes('krRoomObserver.disconnect()')&&html.includes('krRhythmObserver.disconnect()')&&html.includes("window.addEventListener('pageshow',function(){krRoomObserversConectar();krRoomAtualizar();})"),'Room and rhythm IntersectionObservers must disconnect on pagehide and reconnect on pageshow');
 assert(html.includes('function krRoomFallbackAtualizar()')&&html.includes("window.addEventListener('scroll',krRoomFallbackAtualizar")&&html.includes("window.addEventListener('resize',krRoomFallbackAtualizar)"),'Karaoke visibility gates must recover on browsers without IntersectionObserver');
-assert(html.includes('run.paused=true;run.pauseAt=kNow();clearInterval(audioTimer);audioTimer=0;silence();')&&html.includes('if(!audioTimer)audioTimer=setInterval(schedule,25);'),'Paused rhythm shows must release their audio scheduler and recreate it only on resume');
+assert(/run\.pauseAt=kNow\(\);run\.pauseWall=performance\.now\(\);run\.paused=true;\s*clearInterval\(audioTimer\);audioTimer=0;silence\(\);/.test(html)&&html.includes('if(!audioTimer)audioTimer=setInterval(schedule,25);'),'Paused rhythm shows must release their audio scheduler and recreate it only on resume');
 const karaokeOnline=fs.readFileSync(path.join(__dirname,'..','karaoke-online.js'),'utf8');
 assert(karaokeOnline.includes('function runMap()')&&karaokeOnline.includes('function guardado(owner)')&&karaokeOnline.includes('function guardar(id,owner)')&&karaokeOnline.includes('if(!sameSession(a,owner)){if(r&&r.ok&&r.run)guardar(r.run,owner);window.ktShowAdmissionPending=false;return;}'),'Online Karaoke sessions must remain associated with the account that started them');
 assert(karaokeOnline.includes('if(!sameSession(a,owner)){guardar(id,owner);lastFinish=null;renderFinish();return;}'),'Karaoke must not finish an old account run under a newly signed-in account');
@@ -275,10 +281,10 @@ assert([108,132,90,116,120,124,84].every(bpm=>rhythm.includes('bpm:'+bpm+',')),'
 assert(rhythm.includes('step=60000/song.bpm/2')&&rhythm.includes('run.total=Math.floor((run.durationMs-1000)/step)')&&rhythm.includes('if(now-run.start>=run.durationMs)'),'Generated beat subdivisions and the one-minute show duration must remain tied to each song BPM');
 assert(rhythm.includes('function ktPrepararRelogioAudio(')&&rhythm.includes('pending.then(arm,arm)')&&rhythm.includes('target.audioOrigin=audioReady?ctx.currentTime+prepareMs/1000-elapsed/1000:0'),'The song countdown and note/audio timeline must wait for AudioContext resume and share a single origin');
 assert(rhythm.includes('acResumePromise')&&rhythm.includes("if(!run||run.paused||!run.audioReady||!run.audioClock||!AC||AC.state!=='running')return;"),'Audio scheduling must not run against a suspended or unsynchronized AudioContext');
-assert(rhythm.includes('function ktOutputLatencyMs()')&&rhythm.includes('Number.isFinite(AC.outputLatency)')&&rhythm.includes('return run.start+(AC.currentTime-run.audioOrigin)*1000-ktOutputLatencyMs();'),'Rhythm judgement should use the audio clock with one consistent output-latency correction');
+assert(rhythm.includes('function ktOutputLatencyMs()')&&rhythm.includes('Number.isFinite(AC.outputLatency)')&&rhythm.includes('target.outputLatencyMs=audioReady?ktOutputLatencyMs():0;')&&rhythm.includes('(AC.currentTime-run.audioOrigin)*1000-run.outputLatencyMs'),'Rhythm judgement should use the audio clock with one consistent output-latency correction');
 assert(rhythm.includes('playback.audioOrigin+i*playback.step/1000')&&rhythm.includes('var elapsed=(AC.currentTime-run.audioOrigin)*1000')&&rhythm.includes('target.notes.forEach(function(n){n.at=target.start+n.idx*target.step;})'),'The shared beat renderer supports standalone previews while the live game retains its synchronized audio clock and rebased hit windows');
 assert(rhythm.includes('ktPrepararRelogioAudio(activeRun,resumeElapsed?0:prepareMs,resumeElapsed')&&rhythm.includes('ktPrepararRelogioAudio(target,0,elapsed'),'Initial start and manual resume must both synchronize their audio clock');
-assert(rhythm.includes('if(!run||!run.audioReady)return;if(value)')&&rhythm.includes('ac();run.resumeUntil=performance.now()+3000'),"Audio reactivation must be requested directly from the user's resume gesture");
+assert(rhythm.includes('if(!run.paused||run.resumeUntil||document.hidden)return;')&&rhythm.includes('ac();run.resumeUntil=performance.now()+3000'),"Audio reactivation must be requested directly from the user's resume gesture");
 const rhythmTickStart=rhythm.indexOf('function tick(){');
 const rhythmTickEnd=rhythm.indexOf('function hit(',rhythmTickStart);
 assert(rhythmTickStart>=0&&rhythmTickEnd>rhythmTickStart&&!rhythm.slice(rhythmTickStart,rhythmTickEnd).includes('schedule();'),'The visual rhythm tick must not duplicate the independent 25 ms audio scheduler');
@@ -358,7 +364,7 @@ assert(availableVoiceFiles.every(id=>audienceAudio.includes("'"+id+"':1")),'All 
 assert(audienceAudio.includes("next.preload='none'")&&audienceAudio.includes("new Audio('./audio/'+id+'.mp3?v=1')"),'Audio files should be loaded lazily only after a player action');
 assert(audienceAudio.includes("if(o.muted()){if(status)status.textContent=tr('O som está desativado.")&&html.includes('muted:function(){return muted;}')&&html.includes("if(muted){krMusicaParar();if(kt){kt.silence();kt.stopPreview(false);}if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();}"),'Audio previews should respect the page-wide mute control and stop both standalone music and voice playback');
 assert(audienceAudio.includes("addEventListener('ended'")&&audienceAudio.includes("addEventListener('error'")&&audienceAudio.includes("addEventListener('visibilitychange'")&&audienceAudio.includes("addEventListener('pagehide'"),'The shared audio preview player must release audio on end, error, page hide and visibility loss');
-assert(html.includes("function start(mode){if(run)return;previewPlayer.stop(false);if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();")&&html.includes("ktAudioVitrine.stop();kt.stopPreview(false);kt.allowExit();"),'Starting a rhythm show or leaving the room must stop both audio preview players');
+assert(html.includes("function start(mode,lento){if(run)return;previewPlayer.stop(false);if(typeof ktAudioVitrine!=='undefined'&&ktAudioVitrine)ktAudioVitrine.stop();")&&html.includes("ktAudioVitrine.stop();kt.stopPreview(false);kt.allowExit();"),'Starting a rhythm show or leaving the room must stop both audio preview players');
 assert(audienceAudio.includes("old.removeAttribute('src');old.load();")&&audienceAudio.includes("if(player&&playingId===id&&!restart){stop("),'The audio showcase should reuse one player and release the previous audio before switching previews');
 const audienceDecorStart=html.indexOf('var ktDecor=(function(){');
 const audienceDecorEnd=html.indexOf('krDesenharEstanteItens=ktDecor.shelf',audienceDecorStart);

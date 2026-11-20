@@ -1606,6 +1606,7 @@ var soraOnlineRunStartPromise = null;
 var soraOnlineRunFinishSent = false;
 var soraOnlineRunOwnerId = null;
 var soraOnlineRunGeneration = 0;
+var soraOnlineSessionGeneration = 0;
 var soraRankPeriod = 'week';
 var soraRankRequestSerial = 0;
 var soraRankRowsCache = { week:null, all:null };
@@ -1671,10 +1672,15 @@ function soraOnlineSetSession(session){
   var user = session && session.user;
   var nextId = user && user.is_anonymous !== true ? user.id : null;
   if(nextId === soraOnlineUserId) return;
+  soraOnlineSessionGeneration++;
+  soraPremioAtual=null;
   var previousId=soraOnlineUserId;
   if(previousId||soraOnlineRunOwnerId)soraOnlineRunGeneration++;
   if(soraOnlineRunOwnerId&&soraOnlineRunOwnerId!==nextId){soraOnlineRunId=null;soraOnlineRunOwnerId=null;soraOnlineRunStartPromise=null;soraOnlineRunFinishSent=true;}
   soraOnlineUserId = nextId;
+  var painelPremio=$('soraMisBonus');
+  if(painelPremio)painelPremio.textContent='';
+  soraPremioMenu();soraMetaTreinoUI();
   soraOnlineProfile = null;
   soraOnlineProfileLoaded = false;
   soraOnlineProfilePromise = null;
@@ -1749,51 +1755,77 @@ function soraOnlineBeginRun(){
 // 17/11: o prêmio diário dos 500 m é do servidor (★25, uma vez por dia, partida de 20 s ou mais e média de até 25 m/s).
 // logado (mesmo se o início da partida não chegou ao servidor): quem decide é o servidor, nunca a missão local
 function soraOnlinePremioPendente(){ return !!(SORA_ONLINE_RANKING_ENABLED && soraOnlineUserId); }
-function soraPremioMostrar(d, score){
-  var el = $('soraMisBonus'); if(!el || !(score >= 500) || el.getAttribute('data-ok')) return; el.setAttribute('data-ok', '1');
-  var txt;
-  if(d && d.ok === true && d.stars_credited > 0){
-    txt = '🎯 ' + tr('Missão concluída! +25 ★');
-    starT += d.stars_credited; try{ window.__TW_TEST_STORAGE.setItem('brs48cr_st', starT); }catch(e){}
-    try{ if(typeof setBest === 'function') setBest(); }catch(e){}
-    try{ if(parent !== window) parent.postMessage({type:'TW_SORA_STARS', delta:d.stars_credited}, location.origin); }catch(e){}
-  }else if(d && d.ok === true && d.reward_claimed_today){
-    txt = '✓ ' + tr('Prêmio dos 500 m de hoje já recebido. Volte amanhã!');
-  }else if(d && d.ok === true){
-    txt = '☁️ ' + tr('Essa subida foi rápida demais para o prêmio. Tente de novo com calma!');
-  }else{
-    txt = '☁️ ' + tr('Não deu para conferir o prêmio agora.');
-  }
-  el.textContent = txt;
+var soraPremioAtual=null;
+function soraPremioChave(owner){ return 'brs48cr_sora_recibo_v1:'+owner; }
+function soraRecibo(owner){
+  try{ return JSON.parse(window.__TW_TEST_STORAGE.getItem(soraPremioChave(owner))); }catch(e){ return null; }
 }
-function soraOnlineFinishRun(score){
-  var owner=soraOnlineRunOwnerId,generation=soraOnlineRunGeneration;
-  if(!SORA_ONLINE_RANKING_ENABLED||soraTestSceneId||soraOnlineRunFinishSent||!Number.isSafeInteger(score)||score<0||!soraOnlineRunStartPromise||!owner||owner!==soraOnlineUserId)return;
+function soraPremioSalvar(recibo, novo){
+  try{
+    var anterior=soraRecibo(recibo.owner);
+    if(novo||!anterior||anterior.id===recibo.id)
+      window.__TW_TEST_STORAGE.setItem(soraPremioChave(recibo.owner),JSON.stringify(recibo));
+  }catch(e){}
+}
+function soraPremioTexto(status){
+  if(status==='creditado')return tr('Missão concluída! +25 ★');
+  if(status==='recebido')return tr('Prêmio dos 500 m de hoje já recebido. Volte amanhã!');
+  if(status==='sem-premio')return tr('Essa subida foi rápida demais para o prêmio. Tente de novo com calma!');
+  if(status==='aguardando')return tr('Conferindo o prêmio dos 500 m…');
+  var pendente={pt:'Confirmação do prêmio pendente.',en:'Reward confirmation pending.',es:'Confirmación del premio pendiente.',id:'Konfirmasi hadiah tertunda.',th:'รอยืนยันรางวัล',ja:'報酬の確認待ちです。'};
+  return pendente[LANG]||pendente.pt;
+}
+function soraPremioMenu(){
+  var el=$('soraMenuPremio'), recibo=soraOnlineUserId && soraRecibo(soraOnlineUserId);
+  if(!el)return;
+  el.hidden=!recibo||recibo.dia!==dk();
+  el.textContent=el.hidden?'':soraPremioTexto(recibo.status==='aguardando'?'pendente':recibo.status);
+}
+function soraPremioMostrar(recibo, status){
+  recibo.status=status;
+  soraPremioSalvar(recibo);
+  if(recibo.owner!==soraOnlineUserId)return;
+  var el=$('soraMisBonus');
+  if(el && soraPremioAtual===recibo)el.textContent=soraPremioTexto(status);
+  soraPremioMenu();
+}
+function soraOnlineFinishRun(score, recibo){
+  var owner=soraDonoDaSubida||soraOnlineUserId,generation=soraOnlineRunGeneration, sessao=soraOnlineSessionGeneration;
+  if(!SORA_ONLINE_RANKING_ENABLED||soraTestSceneId||soraOnlineRunFinishSent||!Number.isSafeInteger(score)||score<0||!soraOnlineRunStartPromise||!owner||owner!==soraOnlineUserId){
+    if(recibo)soraPremioMostrar(recibo,'pendente');
+    return;
+  }
   soraOnlineRunFinishSent=true;
+  var enviou=false;
   Promise.resolve(soraOnlineRunStartPromise).then(function(runId){
     if(generation!==soraOnlineRunGeneration||owner!==soraOnlineUserId||!runId||!_supabase||typeof _supabase.rpc!=='function')return null;
+    enviou=true;
     return _supabase.rpc('sora_run_finish',{p_run_id:runId,p_score:score});
   }).then(function(result){
-    if(generation!==soraOnlineRunGeneration||owner!==soraOnlineUserId)return;
     if(result && result.error) throw result.error;
-    if(result && result.data && result.data.ok === false)
-      console.info('Sora⭐Jump: partida encerrada sem entrar no ranking.', result.data.reason);
-    soraPremioMostrar(result && result.data, score);
-    if(result && result.data && result.data.ok === true && result.data.ranked === true &&
-       parent !== window && new URLSearchParams(location.search).get('embed') === 'index2'){
+    var d=result&&result.data, atual=owner===soraOnlineUserId&&sessao===soraOnlineSessionGeneration;
+    var creditou=d && d.ok === true && d.stars_credited > 0;
+    if(creditou && atual){
+      starT += d.stars_credited; try{ window.__TW_TEST_STORAGE.setItem('brs48cr_st', starT); }catch(e){}
+      try{ if(typeof setBest === 'function') setBest(); }catch(e){}
+      try{ if(parent !== window) parent.postMessage({type:'TW_SORA_STARS', delta:d.stars_credited}, location.origin); }catch(e){}
+    }
+    if(recibo)soraPremioMostrar(recibo,creditou?'creditado':d&&d.ok===true?(d.reward_claimed_today?'recebido':'sem-premio'):'pendente');
+    if(!enviou||!atual)return;
+    if(d && d.ok === true && d.ranked === true && parent !== window && new URLSearchParams(location.search).get('embed') === 'index2'){
       try{ parent.postMessage({type:'TW_SORA_ONLINE_SCORE_SAVED'},location.origin); }catch(e){}
     }
-    soraOnlineRunId = null;
-    soraOnlineRunOwnerId = null;
-    soraOnlineRunStartPromise = null;
-    soraRankRowsCache.week = null;
-    soraRankRowsCache.all = null;
-    soraRankCacheAt.week = 0;
-    soraRankCacheAt.all = 0;
+    if(generation===soraOnlineRunGeneration){
+      soraOnlineRunId = null;
+      soraOnlineRunOwnerId = null;
+      soraOnlineRunStartPromise = null;
+    }
+    soraRankRowsCache.week = null; soraRankRowsCache.all = null;
+    soraRankCacheAt.week = 0; soraRankCacheAt.all = 0;
     if(soraState === 'over') soraRenderLb();
   }).catch(function(error){
     console.warn('Sora⭐Jump: não foi possível enviar o resultado online.', error);
-    soraPremioMostrar(null, score);
+    if(recibo)soraPremioMostrar(recibo,'pendente');
   });
 }
 function soraOnlineAbortRun(){
@@ -1820,7 +1852,7 @@ var soraCamY = 0;
 var soraHeight = 0;
 var soraBest = 0;
 var soraStarsRun = 0;
-var soraPlats = [];
+var soraPlats = [], soraBifurcacaoCriada = false;
 var soraItems = [];
 var soraHazards = [];
 var soraParticles = [];
@@ -1868,6 +1900,163 @@ function soraBurst(px, py, color, count, power){
     soraParticles.push({x:px, y:py, vx:Math.cos(a)*v, vy:Math.sin(a)*v, c:color || '#fff1a8', t:0, life:24 + Math.random()*12, size:1.5 + Math.random()*2.2, sparkle:true});
   }
   if(soraParticles.length>120)soraParticles.splice(0,soraParticles.length-120);
+}
+// A bifurcação ocupa uma faixa curta e volta a se juntar à geração normal.
+var soraRotaDaSubida = '', soraDonoDaSubida = null;
+var SORA_ROTA_ENTRADA = -1040, SORA_ROTA_SAIDA = -1508;
+var SORA_ROTA_TR = {
+  pt:['Nuvens próximas','Atalho alto','Bifurcação: nuvens próximas à esquerda ou salto alto à direita'],
+  en:['Closer clouds','High shortcut','Fork: closer clouds on the left or high jumps on the right'],
+  es:['Nubes cercanas','Atajo alto','Cruce: nubes cercanas a la izquierda o saltos altos a la derecha'],
+  id:['Awan berdekatan','Jalan pintas tinggi','Percabangan: awan dekat di kiri atau lompatan tinggi di kanan'],
+  th:['เมฆอยู่ใกล้กัน','ทางลัดสูง','ทางแยก: เมฆใกล้กันด้านซ้าย หรือกระโดดสูงด้านขวา'],
+  ja:['近い雲','高い近道','分岐：左は近い雲、右は高く跳ぶ近道']
+};
+function soraRotaTexto(i){return (SORA_ROTA_TR[LANG]||SORA_ROTA_TR.pt)[i];}
+// Registra o ponto onde o Idol cruzou a altura de uma plataforma sem alcançar a borda.
+var soraUltimoSalto=null,soraPousoPerdido=null,soraTreinoPouso=null;
+var SORA_TREINO_TR={
+  pt:['Praticar este pouso','Treino sem pontuação', 'Pouso certo!', 'A nuvem ficou fora do alcance. Tente outra vez.'],
+  en:['Practice this landing','Unscored practice','Landing cleared!', 'You missed the cloud. Try again.'],
+  es:['Practicar este aterrizaje','Práctica sin puntuación','¡Aterrizaje logrado!', 'No llegaste a la nube. Inténtalo otra vez.'],
+  id:['Latih pendaratan ini','Latihan tanpa skor','Pendaratan berhasil!', 'Awan terlewat. Coba lagi.'],
+  th:['ฝึกลงจอดตรงนี้','ฝึกแบบไม่นับคะแนน','ลงจอดสำเร็จ!', 'พลาดเมฆ ลองอีกครั้ง'],
+  ja:['この着地を練習','スコアなしの練習','着地成功！', '雲に届きませんでした。もう一度。']
+};
+function soraTreinoTexto(i){return (SORA_TREINO_TR[LANG]||SORA_TREINO_TR.pt)[i];}
+var soraMetaTreino=null, soraMetaTreinoFeita=false;
+var SORA_META_TREINO={
+ pt:['Na próxima subida, complete {rota} até a saída.','Você completou a rota que treinou!'],
+ en:['On your next climb, follow {rota} to the exit.','You cleared the path you practiced!'],
+ es:['En tu próxima subida, completa {rota} hasta la salida.','¡Completaste la ruta que practicaste!'],
+ id:['Pada pendakian berikutnya, ikuti {rota} hingga keluar.','Rute latihan berhasil diselesaikan!'],
+ th:['รอบถัดไป ไปตาม{rota}จนถึงทางออก','คุณผ่านเส้นทางที่ซ้อมแล้ว!'],
+ ja:['次は{rota}を出口まで進もう。','練習したルートをクリア！']
+};
+function soraMetaTreinoChave(owner){return 'brs48cr_sora_meta_treino_v1:'+(owner||'visitante');}
+function soraLerMetaTreino(owner){
+  try{
+    var rota=window.__TW_TEST_STORAGE.getItem(soraMetaTreinoChave(owner));
+    return rota==='alta'||rota==='suave'?rota:null;
+  }catch(e){return null;}
+}
+function soraMetaTreinoTexto(rota, feita){
+  return (SORA_META_TREINO[LANG]||SORA_META_TREINO.pt)[feita?1:0].replace('{rota}',soraRotaTexto(rota==='alta'?1:0));
+}
+function soraMetaTreinoUI(){
+  var el=$('soraMetaTreinoMenu'), rota=soraLerMetaTreino(soraOnlineUserId);
+  if(!el)return;
+  el.hidden=!rota;el.textContent=rota?soraMetaTreinoTexto(rota,false):'';
+}
+function soraPraticarPouso(){
+  var d=soraPousoPerdido;
+  if(soraState!=='over'||!d||!d.salto)return;
+  soraTreinoPouso={p:soraP,pl:soraPlats,cam:soraCamY,items:soraItems,haz:soraHazards,pet:soraPet,part:soraParticles,toast:soraToastT};
+  soraP=Object.assign({},d.salto);soraPlats=[d.origem,d.alvo];
+  soraCamY=Math.min(d.alvo.y-50,soraP.y-SH*.48);
+  soraItems=[];soraHazards=[];soraParticles=[];soraPet=null;soraToastT=0;
+  $('soraOverBox').hidden=true;var status=$('soraTreinoStatus');status.hidden=false;status.textContent=soraTreinoTexto(1);
+  soraState='play';
+}
+function soraTerminarTreinoPouso(ok){
+  var a=soraTreinoPouso, rota=null;soraTreinoPouso=null;
+  if(ok && soraDonoDaSubida===soraOnlineUserId && soraPousoPerdido &&
+      (soraPousoPerdido.rota==='alta'||soraPousoPerdido.rota==='suave')){
+    rota=soraPousoPerdido.rota;
+    try{window.__TW_TEST_STORAGE.setItem(soraMetaTreinoChave(soraDonoDaSubida),rota);}catch(e){}
+  }
+  soraP=a.p;soraPlats=a.pl;soraCamY=a.cam;soraItems=a.items;soraHazards=a.haz;soraPet=a.pet;soraParticles=a.part;soraToastT=a.toast;
+  soraState='over';$('soraOverBox').hidden=false;$('soraTreinoStatus').hidden=true;
+  $('soraTreinoResultado').textContent=soraTreinoTexto(ok?2:3)+(rota?' '+soraMetaTreinoTexto(rota,false):'');
+  $('soraTreinoPouso').focus({preventScroll:true});
+}
+function soraRegistrarPousoPerdido(pl,antes,agora,x){
+  var salto=soraUltimoSalto;
+  if(soraTestSceneId || soraTreinoPouso || !salto || antes>=pl.y || agora<pl.y || pl.y>=salto.y-8)return;
+  var rota=pl.rota==='alta'||pl.rota==='suave'?pl.rota:'';
+  if(!rota && salto.tipo!=='trampolim')return;
+  if(rota && salto.rota && salto.rota!=='entrada' && salto.rota!=='saida' && rota!==salto.rota)return;
+  var dx=pl.x+pl.w/2-x;
+  if(dx>SW/2)dx-=SW;
+  if(dx<-SW/2)dx+=SW;
+  var distancia=Math.abs(dx);
+  if(distancia>100 || (soraPousoPerdido && distancia>=soraPousoPerdido.distancia))return;
+  soraPousoPerdido={rota:rota,altura:Math.round(-pl.y/10),lado:dx<0?0:1,distancia:distancia,trampolim:salto.tipo==='trampolim',
+    salto:!pl.vx && salto.p && Object.assign({},salto.p,{wingsT:0,ufoT:0}),origem:salto.origem,alvo:Object.assign({},pl)};
+}
+function soraDicaDeQueda(){
+  var d=soraPousoPerdido;
+  if(!d)return '';
+  var tx={
+    pt:['Pouso perdido','Depois do trampolim','ajuste para a esquerda','ajuste para a direita','Nuvem'],
+    en:['Missed landing','After the spring','steer left','steer right','Cloud'],
+    es:['Aterrizaje fallido','Después del trampolín','corrige a la izquierda','corrige a la derecha','Nube'],
+    id:['Pendaratan terlewat','Setelah trampolin','arahkan ke kiri','arahkan ke kanan','Awan'],
+    th:['พลาดจุดลง','หลังแทรมโพลีน','ขยับซ้าย','ขยับขวา','เมฆ'],
+    ja:['着地を逃した場所','トランポリンの後','左へ調整','右へ調整','雲']
+  };
+  var t=tx[LANG]||tx.pt, alvo=d.rota?soraRotaTexto(d.rota==='alta'?1:0):t[4];
+  return (d.trampolim?t[1]:t[0])+' · '+alvo+' ('+d.altura+' m) · '+t[2+d.lado];
+}
+function soraResumoRotas(altura){
+  var chave = 'brs48cr_sora_rotas_v1:' + (soraDonoDaSubida || 'visitante'), marcas = {};
+  try{
+    var salvas = JSON.parse(window.__TW_TEST_STORAGE.getItem(chave));
+    if(salvas && typeof salvas === 'object' && !Array.isArray(salvas)) marcas = salvas;
+  }catch(e){}
+  if(soraRotaDaSubida && altura > (Number(marcas[soraRotaDaSubida]) || 0)){
+    marcas[soraRotaDaSubida] = altura;
+    try{ window.__TW_TEST_STORAGE.setItem(chave,JSON.stringify(marcas)); }catch(e){}
+  }
+  var textos = {
+    pt:['Caminho nesta subida','Melhores alturas por caminho','Ainda sem marca'],
+    en:['Path this climb','Best height by path','No record yet'],
+    es:['Ruta de esta subida','Mejores alturas por ruta','Sin marca todavía'],
+    id:['Jalur pendakian ini','Ketinggian terbaik per jalur','Belum ada rekor'],
+    th:['เส้นทางรอบนี้','ความสูงสูงสุดแต่ละเส้นทาง','ยังไม่มีสถิติ'],
+    ja:['今回のルート','ルート別の最高高度','記録なし']
+  };
+  var t = textos[LANG] || textos.pt;
+  return (soraRotaDaSubida ? '<p class="sora-mission-copy">' + escHtml(t[0] + ' · ' + soraRotaTexto(soraRotaDaSubida === 'alta' ? 1 : 0)) + '</p>' : '') +
+    '<div class="sora-result-grid" aria-label="' + escHtml(t[1]) + '">' + ['suave','alta'].map(function(rota,i){
+      var m = Math.max(0,Math.floor(Number(marcas[rota]) || 0));
+      return '<div class="sora-result-stat"><span class="stat-label">' + escHtml(soraRotaTexto(i)) +
+        '</span><strong class="stat-value">' + (m ? m + ' m' : escHtml(t[2])) + '</strong></div>';
+    }).join('') + '</div>';
+}
+function soraCriarBifurcacao(){
+  function por(x,y,w,rota,k){soraPlats.push({k:k||'nuvem',x:x,y:y,w:w,h:14,vx:0,broken:false,used:false,rota:rota});}
+  por(141,SORA_ROTA_ENTRADA,78,'entrada');
+  [87,56,78,49,76,109,128].forEach(function(x,i){por(x,-1098-59*i,72,'suave');});
+  [220,240,205].forEach(function(x,i){por(x,-1150-110*i,52,'alta');});
+  por(202,-1470,54,'alta','trampolim');
+  por(141,SORA_ROTA_SAIDA,78,'saida');
+}
+function soraCorDaRota(rota){return rota==='alta'?'#b45309':'#075985';}
+function soraDesenharRota(ctx,pl){
+  if(pl.rota!=='alta'&&pl.rota!=='suave')return;
+  ctx.save();ctx.fillStyle=soraCorDaRota(pl.rota);
+  ctx.fillRect(pl.x+9,pl.y+12,pl.w-18,3);
+  if(pl.y===-1098 || pl.y===-1150){
+    ctx.font='800 11px system-ui,sans-serif';ctx.textAlign='center';
+    ctx.fillStyle='#fff';ctx.fillRect(pl.x+pl.w/2-61,pl.y-24,122,18);
+    ctx.fillStyle=soraCorDaRota(pl.rota);
+    ctx.fillText(soraRotaTexto(pl.rota==='alta'?1:0),pl.x+pl.w/2,pl.y-11,112);
+  }
+  ctx.restore();
+}
+function soraPreviaRotaAtiva(){
+  return soraState === 'play' && !soraTestSceneId && soraHeight >= 75 && soraHeight < 104;
+}
+function soraDesenharPreviaRota(ctx){
+  if(!soraPreviaRotaAtiva())return;
+  ctx.save();ctx.font='800 12px system-ui,sans-serif';ctx.textAlign='center';
+  ['suave','alta'].forEach(function(rota,i){
+    var x=18+i*170;
+    ctx.fillStyle=soraCorDaRota(rota);ctx.fillRect(x,77,154,23);
+    ctx.fillStyle='#fff';ctx.fillText((i===0?'← ':'→ ')+soraRotaTexto(i),x+77,92,144);
+  });
+  ctx.restore();
 }
 function soraMakePlat(y, forceNormal){
   var m = Math.max(0, Math.floor(-y / 10));
@@ -2135,12 +2324,18 @@ function soraMusicStart(){
 }
 function soraReset(){
   soraCamY = 0;
+  soraTreinoPouso=null;
+  if($('soraTreinoStatus'))$('soraTreinoStatus').hidden=true;
   soraHeight = 0;
+  soraRotaDaSubida = ''; soraDonoDaSubida = soraOnlineUserId;
+  soraMetaTreino=soraLerMetaTreino(soraDonoDaSubida);soraMetaTreinoFeita=false;
+  soraUltimoSalto=null;soraPousoPerdido=null;
   soraStarsRun = 0;
   soraFlashAlpha = 0;
   soraToast = ''; soraToastT = 0;
   soraVisitorUfo = null; soraVisitorElapsed = 0; soraVisitorAttempted = false; soraVisitorWaitFrames = 360 + Math.random() * 660;
   soraPlats = [];
+  soraBifurcacaoCriada = false;
   soraItems = [];
   soraHazards = [];
   soraParticles = [];
@@ -2368,9 +2563,9 @@ function soraCompactAlive(list,bottom,mode){
 function soraUpdate(dt){
   var soraFrameAnterior=soraFrame;
   soraFrame += dt;
-  soraVisitorElapsed += dt;
-  if(!soraVisitorAttempted && soraVisitorElapsed >= soraVisitorWaitFrames) soraStartVisitorFlyby();
-  if(soraVisitorUfo){
+  if(!soraTreinoPouso)soraVisitorElapsed += dt;
+  if(!soraTreinoPouso && !soraVisitorAttempted && soraVisitorElapsed >= soraVisitorWaitFrames) soraStartVisitorFlyby();
+  if(!soraTreinoPouso && soraVisitorUfo){
     soraVisitorUfo.x += soraVisitorUfo.vx * dt;
     soraVisitorUfo.phase += .055 * dt;
     if(soraVisitorUfo.x > SW + 100) soraVisitorUfo = null;
@@ -2427,6 +2622,15 @@ function soraUpdate(dt){
   if(soraP.x + soraP.w < 0) soraP.x = SW;
   else if(soraP.x > SW) soraP.x = -soraP.w;
 
+  if(soraTreinoPouso){
+    var alvo=soraPlats[1], pe=soraP.y+soraP.h;
+    soraCamY=Math.min(alvo.y-36,soraP.y-SH*.4);
+    if(soraP.vy>0 && pe>=alvo.y){
+      var noAlvo=pe-soraP.vy*dt<=alvo.y+10 && soraP.x+soraP.w-6>alvo.x && soraP.x+6<alvo.x+alvo.w;
+      soraTerminarTreinoPouso(noAlvo);
+    }
+    return;
+  }
   // Atualiza plataformas móveis (discos voadores) e checa pouso quando o Idol está descendo
   for(var i = 0; i < soraPlats.length; i++){
     var pl = soraPlats[i];
@@ -2437,7 +2641,21 @@ function soraUpdate(dt){
     if(soraP.vy > 0 && !soraP.slipping && !pl.broken && !pl.used){
       var feetPrev = (soraP.y - soraP.vy * dt) + soraP.h;
       var feetNow  = soraP.y + soraP.h;
-      if(soraP.x + soraP.w - 6 > pl.x && soraP.x + 6 < pl.x + pl.w && feetPrev <= pl.y + 10 && feetNow >= pl.y){
+      var sobreposta=soraP.x + soraP.w - 6 > pl.x && soraP.x + 6 < pl.x + pl.w;
+      if(!sobreposta)soraRegistrarPousoPerdido(pl,feetPrev,feetNow,soraP.x+soraP.w/2);
+      if(sobreposta && feetPrev <= pl.y + 10 && feetNow >= pl.y){
+        soraUltimoSalto={tipo:pl.k,rota:pl.rota,y:pl.y};soraPousoPerdido=null;
+        if(!soraRotaDaSubida && (pl.rota === 'suave' || pl.rota === 'alta')) soraRotaDaSubida = pl.rota;
+        if(pl.rota === 'entrada' && !pl.sinalizada){
+          pl.sinalizada=true;
+          soraMsg(soraMetaTreino && !soraTestSceneId?soraMetaTreinoTexto(soraMetaTreino,false):soraRotaTexto(2),210);
+        }
+        if(!soraTestSceneId && pl.rota==='saida' && soraMetaTreino && !soraMetaTreinoFeita &&
+           soraRotaDaSubida===soraMetaTreino && soraDonoDaSubida===soraOnlineUserId){
+          soraMetaTreinoFeita=true;
+          try{window.__TW_TEST_STORAGE.removeItem(soraMetaTreinoChave(soraDonoDaSubida));}catch(e){}
+          soraMsg(soraMetaTreinoTexto(soraMetaTreino,true),150);
+        }
         if(pl.k === 'caixa'){
           // Caixa de som quebra quando pisa!
           pl.broken = true;
@@ -2457,6 +2675,10 @@ function soraUpdate(dt){
           // Nuvem normal ou disco voador
           soraP.y = pl.y - soraP.h;
           soraJumpBounce(1.0);
+        }
+        if(!soraTestSceneId && pl.k!=='caixa' && !soraP.wingsT && !soraP.ufoT){
+          soraUltimoSalto.p=Object.assign({},soraP);
+          soraUltimoSalto.origem=Object.assign({},pl,{used:false});
         }
         break;
       }
@@ -2628,11 +2850,17 @@ function soraUpdate(dt){
 
   // Gera novas plataformas e perigos lá no alto conforme a câmera sobe
   while(soraHighestY > soraCamY - 120){
-    soraMakePlat(soraHighestY, false);
-    soraHighestY -= 55 + Math.random() * 24;
+    if(!soraTestSceneId && !soraBifurcacaoCriada && soraHighestY <= SORA_ROTA_ENTRADA + 68){
+      soraBifurcacaoCriada = true;
+      soraCriarBifurcacao();
+      soraHighestY = SORA_ROTA_SAIDA - 66;
+    }else{
+      soraMakePlat(soraHighestY, false);
+      soraHighestY -= 55 + Math.random() * 24;
+    }
   }
   if(soraCamY < soraNextHazardY){
-    soraSpawnHazard(soraCamY - 60);
+    if(!soraBifurcacaoCriada || soraCamY > SORA_ROTA_ENTRADA || soraCamY < SORA_ROTA_SAIDA) soraSpawnHazard(soraCamY - 60);
     soraNextHazardY = soraCamY - (180 + Math.random() * 140);
   }
 
@@ -3660,6 +3888,8 @@ function soraDraw(){
     }
   });
 
+  soraPlats.forEach(function(pl){if(pl.rota&&!pl.broken)soraDesenharRota(x,pl);});
+
   // Acabamento das plataformas: contorno luminoso, brilho superior e partículas.
   soraPlats.forEach(function(pl){
     if(pl.broken) return;
@@ -3975,6 +4205,8 @@ function soraDraw(){
   x.fillText('★ +' + soraStarsRun + '  ·  total ' + starT, 16, 59);
   x.restore();
 
+  soraDesenharPreviaRota(x);
+
   if(soraToastT > 0){
     x.save();
     x.globalAlpha = Math.min(1, soraToastT / 20);
@@ -4031,6 +4263,7 @@ function soraStartGame(){
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;   // sem botão "Início" sobre a tela durante a partida
 }
 function soraMenuAtualizarRecorde(){
+  soraPremioMenu();soraMetaTreinoUI();
   var recorde = $('soraMenuBest'), meta = $('soraMenuMeta');
   if(recorde) recorde.textContent = soraBest + ' m';
   if(meta){
@@ -4048,7 +4281,8 @@ function soraMetaIntermediaria(h){
     ja:['次の目標', '目標達成']
   };
   var tMeta = textos[typeof LANG === 'string' ? LANG : 'pt'] || textos.pt;
-  return h < 100 ? tMeta[0] + ' · 100 m' : h < 250 ? tMeta[0] + ' · 250 m' : tMeta[1] + ' · 250 m';
+  var proxima = [100,250,375,500].find(function(meta){ return h < meta; });
+  return (proxima ? tMeta[0] : tMeta[1]) + ' · ' + (proxima || 500) + ' m';
 }
 function soraEndGame(){
   soraMusicStop();
@@ -4057,7 +4291,7 @@ function soraEndGame(){
   if(soraSoundOn && sfx && sfx.over) sfx.over();
   var h = Math.floor(soraHeight);
   var isTestScene = !!soraTestSceneId;
-  if(!isTestScene) soraOnlineFinishRun(h);
+
   var isNew = !isTestScene && h > soraBest;
   if(isNew){
     soraBest = h;
@@ -4089,10 +4323,13 @@ function soraEndGame(){
   // Missão diária: "Suba 500 metros no Sora⭐Jump!"
   var misBonus = '';
   // 17/11: logado, quem confirma o +25 ★ é o servidor (sora_run_finish); aqui só fica o "conferindo" até a resposta chegar.
-  var misServidor = !isTestScene && h >= 500 && soraOnlinePremioPendente();
-  if(misServidor) misBonus = '<span id="soraMisBonus">🎯 ' + escHtml(tr('Conferindo o prêmio dos 500 m…')) + '</span>';
-  if(misServidor) setTimeout(function(){ soraPremioMostrar(null, h); }, soraOnlineRunStartPromise ? 15000 : 50);   // sem resposta em 15 s, não fica "conferindo" para sempre
-  if(!isTestScene && h >= 500 && !misServidor){
+  var misServidor = !isTestScene && h >= 500 && soraOnlinePremioPendente() && (!soraDonoDaSubida || soraDonoDaSubida===soraOnlineUserId);
+  soraPremioAtual=misServidor?{id:String(Date.now())+':'+soraOnlineRunGeneration,quando:Date.now(),dia:dk(),owner:soraOnlineUserId,status:'aguardando'}:null;
+  var recibo=soraPremioAtual;
+  if(recibo)soraPremioSalvar(recibo,true);
+  if(misServidor) misBonus = '<span id="soraMisBonus" role="status">🎯 ' + escHtml(tr('Conferindo o prêmio dos 500 m…')) + '</span>';
+  if(misServidor) setTimeout(function(){ if(recibo.status==='aguardando')soraPremioMostrar(recibo,'pendente'); }, 15000);   // sem resposta em 15 s, não fica "conferindo" para sempre
+  if(!isTestScene && h >= 500 && !misServidor && !soraDonoDaSubida){
     try{
       var md = window.__TW_TEST_STORAGE.getItem(MIS_DIA_KEY);
       if(md !== dk()){
@@ -4107,6 +4344,10 @@ function soraEndGame(){
 
   var tier = soraBadgeTier();
   var tierTxt = tr(tier === 3 ? '🌙 Show na Lua (Nv.3)' : tier === 2 ? '🌌 Voo Estrelado (Nv.2)' : tier === 1 ? '☁️ Pulo nas Nuvens (Nv.1)' : 'Rumo aos 500m!');
+  var rotasHtml = isTestScene ? '' : soraResumoRotas(h);
+  if(!isTestScene && soraMetaTreino && soraDonoDaSubida===soraOnlineUserId)
+    rotasHtml+='<p class="sora-mission-copy">'+escHtml(soraMetaTreinoTexto(soraMetaTreino,soraMetaTreinoFeita))+'</p>';
+  var dicaQueda=isTestScene?'':soraDicaDeQueda();
   if($('soraResTxt')){
     $('soraResTxt').innerHTML =
       '<div class="sora-score-hero' + (isNew ? ' is-record' : '') + '">' +
@@ -4119,7 +4360,8 @@ function soraEndGame(){
         '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('⭐ ESTRELAS DA RODADA')) + '</span><strong class="stat-value">+' + soraStarsRun + ' ' + escHtml(tr('estrelas')) + '</strong></div>' +
         '<div class="sora-result-stat"><span class="stat-label">' + escHtml(tr('🏅 SUA INSÍGNIA')) + '</span><strong class="stat-value">' + escHtml(tierTxt) + '</strong></div>' +
       '</div>' +
-      (!isTestScene && h < 500 ? '<p class="sora-mission-copy">' + escHtml(soraMetaIntermediaria(h)) + '</p>' : '') +
+      (dicaQueda?'<p id="soraDicaQueda" class="sora-mission-copy">'+escHtml(dicaQueda)+'</p>':'') + rotasHtml +
+      (!isTestScene && soraBest < 500 ? '<p class="sora-mission-copy">' + escHtml(soraMetaIntermediaria(soraBest)) + '</p>' : '') +
       (misBonus ? '<div class="sora-mission-bonus">' + misBonus.replace(/^<br>/,'').replace(/<b style="color:#4ade80">/,'').replace(/<\/b>$/,'') + '</div>' : '');
   }
   if($('soraOverIcon')) $('soraOverIcon').textContent = isTestScene ? '🧪✨' : isNew ? '🏆✨' : h >= 500 ? '🌟☁️' : '🌸';
@@ -4127,6 +4369,10 @@ function soraEndGame(){
   if($('soraOverSubtitle')) $('soraOverSubtitle').textContent = tr(isTestScene ? 'Esta sessão não altera seus recordes, histórico ou estrelas permanentes.' : isNew ? 'Mais alto a cada tentativa! 💖' : 'Cada pulo é mais uma estrelinha na sua história ✨');
   soraRenderLb();
   if($('soraOverBox')) $('soraOverBox').hidden = false;
+  $('soraTreinoPouso').hidden=isTestScene || !soraPousoPerdido || !soraPousoPerdido.salto;
+  $('soraTreinoPouso').textContent=soraTreinoTexto(0);
+  $('soraTreinoResultado').textContent='';
+  if(!isTestScene)soraOnlineFinishRun(h,recibo);
 }
 function soraRenderLbRows(rows, online, serial){
   var el = $('soraLbList'), source = $('soraRankSource');
@@ -4276,7 +4522,7 @@ function soraSetupUI(){
             '<div class="sora-eyebrow">✦ Kawaii sky adventure ✦</div>' +
             '<div style="font-size:27px;line-height:1.1;filter:drop-shadow(0 0 12px rgba(255,160,220,.38))">☁️ 🌸 ⭐</div>' +
             '<p class="sora-menu-copy">' + escHtml(tr('Pule de nuvem em nuvem, reúna estrelas e deixe o céu surpreender você!')) + '</p>' +
-            '<div class="sora-mission-card"><div class="sora-mission-title">🎯 ' + escHtml(tr('MISSÃO DO DIA')) + '</div><div class="sora-mission-copy">' + '<div id="soraMenuMeta"' + (soraBest >= 500 ? ' hidden' : '') + '>' + (soraBest < 500 ? escHtml(soraMetaIntermediaria(soraBest)) : '') + '</div>' + escHtml(tr('Suba 500 metros no Sora⭐Jump!')) + '</div><div style="font-size:9px;color:#f5e5ff;margin-top:3px">' + escHtml(tr('Recompensa:')) + ' <b style="color:#ffe66d">+25 ★</b></div></div>' +
+            '<div class="sora-mission-card"><div class="sora-mission-title">🎯 ' + escHtml(tr('MISSÃO DO DIA')) + '</div><div class="sora-mission-copy">' + '<div id="soraMetaTreinoMenu" hidden></div><div id="soraMenuPremio" role="status" hidden></div><div id="soraMenuMeta"' + (soraBest >= 500 ? ' hidden' : '') + '>' + (soraBest < 500 ? escHtml(soraMetaIntermediaria(soraBest)) : '') + '</div>' + escHtml(tr('Suba 500 metros no Sora⭐Jump!')) + '</div><div style="font-size:9px;color:#f5e5ff;margin-top:3px">' + escHtml(tr('Recompensa:')) + ' <b style="color:#ffe66d">+25 ★</b></div></div>' +
             '<div class="sora-test-profile" id="soraTestProfileCard">' +
               '<div class="sora-test-profile-side"><canvas id="soraTestCharPreview" width=48 height=60></canvas><div><b id="soraTestCharName">Personagem</b><small>' + escHtml(tr('Sua idol')) + '</small></div></div>' +
               '<div class="sora-test-profile-side pet-side"><canvas id="soraTestPetPreview" width=60 height=58></canvas><div><b id="soraTestPetName">Pet</b><small>' + escHtml(tr('Companheiro')) + '</small></div></div>' +
@@ -4307,12 +4553,14 @@ function soraSetupUI(){
             '<div id="soraHistBox" hidden style="width:100%;max-height:115px;overflow:auto;background:var(--card);color:var(--ink);border-radius:12px;padding:8px;margin-top:2px"><div id="soraHistContent"></div></div>' +
           '</div>' +
         '</div>' +
+        '<p id="soraTreinoStatus" role="status" hidden style="position:absolute;top:8px;left:12px;color:white;pointer-events:none"></p>' +
         '<div id="soraOverBox" hidden style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;overflow-y:auto;overscroll-behavior:contain;padding:10px 12px;color:#fff">' +
           '<div class="sora-over-content">' +
             '<div class="sora-over-icon" id="soraOverIcon">🌸</div>' +
             '<h2 class="sora-over-title" id="soraOverTitle">' + escHtml(tr('Fim da subida!')) + '</h2>' +
             '<p class="sora-over-subtitle" id="soraOverSubtitle">' + escHtml(tr('Cada pulo é mais uma estrelinha na sua história ✨')) + '</p>' +
             '<div id="soraResTxt" class="res" style="width:100%;color:#fff"></div>' +
+            '<p id="soraTreinoResultado" role="status"></p><button type="button" class="sec" id="soraTreinoPouso" hidden></button>' +
             '<div class="sora-over-actions"><button type="button" class="btn" id="soraAgainBtn">' + escHtml(tr('✨ JOGAR NOVAMENTE')) + '</button><button type="button" class="sec" id="soraMenuBtn">' + escHtml(tr('☁️ VOLTAR AO MENU')) + '</button></div>' +
           '</div>' +
         '</div>' +
@@ -4429,6 +4677,7 @@ function soraSetupUI(){
   $('soraHomeBtn').onclick = soraReturnToMenu;
   $('soraPlayBtn').onclick = function(){ soraTestSceneId = ''; soraStartGame(); };
   $('soraAgainBtn').onclick = soraStartGame;
+  $('soraTreinoPouso').onclick = soraPraticarPouso;
   $('soraTestFujiBtn').onclick = function(){ soraTestSceneId = 'fuji'; soraStartGame(); };
   $('soraTestRioBtn').onclick = function(){ soraTestSceneId = 'rio'; soraStartGame(); };
   $('soraTestRuralBtn').onclick = function(){ soraTestSceneId = 'rural'; soraStartGame(); };
@@ -4543,7 +4792,7 @@ function soraBindTestProfileTools(){
 soraSetupUI();
 var soraCanvasMotionGate=window.TWMotionLifecycle&&soraCv?TWMotionLifecycle.watchLoop(soraCv,function(){var ov=$('soraOv');return !!(soraOpen&&soraHostVisible&&ov&&!ov.hidden);},function(){soraCanvasVisible=true;soraAgendarLoop();if(soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();},function(){soraCanvasVisible=false;soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraPararLoop();soraMusicStop();}):null;
 function soraReturnToMenu(){
-  if(soraState === 'play') soraOnlineAbortRun();
+  if(soraState === 'play' && !soraTreinoPouso) soraOnlineAbortRun();
   soraMusicStop(); soraReset(); soraState = 'menu';
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
   soraMenuAtualizarRecorde();
@@ -4608,7 +4857,7 @@ window.addEventListener('pageshow',function(){
  if(soraState==='play'&&!document.hidden&&soraHostVisible&&soraSoundOn&&!muted&&soraMusicTimer===null)soraMusicStart();
 });
 function soraCloseUI(){
-  if(soraState === 'play') soraOnlineAbortRun();
+  if(soraState === 'play' && !soraTreinoPouso) soraOnlineAbortRun();
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
   soraMusicStop(); soraOpen = false; soraState = 'menu'; soraTouchDir = 0; soraKeyL = false; soraKeyR = false;
   soraPararLoop(); if($('soraOv')) $('soraOv').hidden = true;
@@ -4673,6 +4922,6 @@ function soraCloseUI(){
 })();
 </script>
 
-<script src="./tw-windows.js?v=2"></script>
+<script src="./tw-windows.js?v=3"></script>
 </body>
 </html>

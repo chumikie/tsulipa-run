@@ -402,8 +402,20 @@
     for(var i = 0; i < 6; i++){ var d = new Date(CAPS_INICIO + i * 7 * 864e5).toISOString().slice(0, 10); if(d <= h) r = {n:i + 1, data:d}; }
     return r;
   }
-  function capLido(){ try{ return +localStorage.getItem('tw_cap_lido') || 0; }catch(e){ return 0; } }
-  function capMarcarLido(){ var c = capHoje(); if(c && c.n > capLido()) try{ localStorage.setItem('tw_cap_lido', String(c.n)); }catch(e){} }
+  function capLidos(){
+    try{
+      var lidos=JSON.parse(localStorage.getItem('tw_cap_lidos_v2'));
+      if(Array.isArray(lidos))return lidos;
+      var legado=Math.min(6,Number(localStorage.getItem('tw_cap_lido'))||0);
+      return [1,2,3,4,5,6].filter(function(n){return n<=legado;});
+    }catch(e){ return []; }
+  }
+  window.twCapRegistrar=function(n){
+    var c=capHoje(), lidos=capLidos();
+    if(!c || !Number.isInteger(n) || n<1 || n>c.n || lidos.includes(n))return;
+    try{localStorage.setItem('tw_cap_lidos_v2',JSON.stringify(lidos.concat(n)));}catch(e){}
+    if(topo()==='inicio')desenhar();
+  };
   function anivDados(){ try{ var o = JSON.parse(localStorage.getItem('tw_aniv_cor') || 'null'), h = window.TW_CAL ? window.TW_CAL.hoje() : ''; return o && o.dia === h ? o : {dia:h, nicks:[]}; }catch(e){ return {dia:'', nicks:[]}; } }
   function anivDei(nick){ return anivDados().nicks.indexOf(String(nick).toLowerCase()) >= 0; }
   function anivGuardar(nick){ var o = anivDados(); if(o.nicks.indexOf(nick.toLowerCase()) < 0) o.nicks.push(nick.toLowerCase()); try{ localStorage.setItem('tw_aniv_cor', JSON.stringify(o)); }catch(e){} }
@@ -436,14 +448,18 @@
         esc(hubMusicaSemana()[1] + ' · ' + jornalFestivalPrazo()) + '</small></span>' +
         '<button type="button" class="twc-hj-bt" data-a="festival">' + esc(jornalFestivalTexto(0)) + '</button></div>';
     }
+    var proxima = window.TW_PILOTO_BAIRRO && TW_PILOTO_BAIRRO.continuacao();
+    var continuar = proxima ? '<div class="twc-hj-it"><span class="twc-hj-ico twc-g-uva" aria-hidden="true">' + ico('pin',18) +
+      '</span><span class="twc-hj-txt"><b>' + esc(proxima.titulo) + '</b><small>' + esc(proxima.sub) +
+      '</small></span><button type="button" class="twc-hj-bt" data-piloto-bairro="continuar">' + esc(tt('Continuar')) + '</button></div>' : '';
     // 2. missões do dia (com conta)
     var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
     if(mis && mis.length){ var mf = mis.filter(function(m){ return m.feito; }).length, ok2 = mf >= mis.length;
       linha(ok2, 'lima', 'missoes', esc(thj('mis')), esc(ok2 ? thj('misOk') : thj('misFalta', {f:mf, n:mis.length})), ok2 ? '' : '<button type="button" class="twc-hj-bt" data-a="missoes">' + esc(thj('ver')) + '</button>'); }
     // 3. capítulo do domingo (aparece na semana em que saiu)
     var cp = capHoje(), hj = C ? C.hoje() : '';
-    if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLido() >= cp.n;
-      linha(lido, 'roxo', 'news', esc(thj('cap', {n:cp.n})), esc(lido ? thj('capLido') : thj('capNovo')), lido ? '' : '<button type="button" class="twc-hj-bt" data-a="news">' + esc(thj('ler')) + '</button>'); }
+    if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLidos().includes(cp.n);
+      linha(lido, 'roxo', 'news', esc(thj('cap', {n:cp.n})), esc(lido ? thj('capLido') : thj('capNovo')), lido ? '' : '<button type="button" class="twc-hj-bt" data-a="ler-capitulo">' + esc(thj('ler')) + '</button>'); }
     // 4. aniversários do dia: jogadores (coração + perfil) e o trio (fichinha)
     if(C){ calAniversarios(); var mk = C.marcas(hj), eu = logado() ? String(contaJ.nick || '').toLowerCase() : '';
       mk.forEach(function(m){
@@ -467,6 +483,8 @@
     var tot = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0; }).length; if(!tot) return '';
     var pc = Math.round(feitos / tot * 100), lista;
     // o "Também hoje" (outros eventos) entra na lista do "Ver tudo": um lugar só para tudo do dia
+    var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
+      (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
     var todos = extra ? itens.concat([extra]) : itens, fechar = '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('recolher')) + '</button>';
     if(feitos === tot) lista = hojeAberto ? todos.join('') : extra;   // tudo feito: a lista recolhe (abre no "Ver lista"); o próximo evento fica à vista
     else {   // Início curto: as 2 pendências mais importantes (a ordem acima já é a de importância); o resto no "Ver tudo"
@@ -474,12 +492,10 @@
       if(sobra <= 1) lista = todos.join('');   // só 1 escondido: mostra direto, sem botão
       else lista = hojeAberto ? todos.join('') + fechar : pend.join('') + '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('verTudo', {n:sobra})) + '</button>';
     }
-    var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
-      (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
     return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
       '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
       (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
-      festival + lista + '</section>';
+      continuar + festival + lista + '</section>';
   }
 
   var ESTREIA_TR = {
@@ -597,9 +613,8 @@
     }).join('');
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
-    var piloto = window.TW_PILOTO_BAIRRO;
     return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + estreiaHtml() + '</div>' +
-      '<div class="twc-lado twc-ini-hoje">' + (piloto ? piloto.hoje() : '') + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
+      '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + (window.TW_SEMANA ? window.TW_SEMANA.html() : '') + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -622,6 +637,7 @@
     var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
               ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', tf('fichas'), 'data-v="trio"'], ['pata', tt2('tour'), 'data-v="tour"']];
     if(window.TW_BAIRRO) at.push(['pin', window.TW_BAIRRO.t('tit'), 'data-bairro="abrir"']);   // Vida no bairro (tw-bairro.js)
+    if(window.TW_PESSOAL && logado()) at.push(['coracao', window.TW_PESSOAL.t('recado'), 'data-twp="recado"']);   // Caixa de recados para o TsuLiPa (tw-pessoal.js)
     return faixa(esc(t('menu')), t('menuSub')) + '<div class="twc-pag twc-menu">' +
       '<div class="twc-menu-topo"><div class="twc-duas">' +
         '<button type="button" class="twc-card twc-idol" data-ir="pet"><canvas class="twc-idol-av" data-av="1" width="160" height="160" aria-hidden="true"></canvas>' +
@@ -776,7 +792,7 @@
   }
   function telaEmb(k){
     return faixa(esc(k === 'busca' ? twLinkTexto(5) : t(EMB[k][1])), k === 'mapa' ? visita() : t('menuSub')) + '<div class="twc-pag twc-emb twc-emb-' + k + '">' +
-      (k === 'mapa' ? '<span class="twc-online" data-twc-online hidden></span>' : '') + '<div id="twcEmbSlot"></div>' +
+      (k === 'mapa' ? '<span class="twc-online" data-twc-online hidden></span>' + (window.TW_SEMANA ? window.TW_SEMANA.mapaHtml() : '') : '') + '<div id="twcEmbSlot"></div>' +
       (k === 'busca' ? '<section id="twcBuscaAtalhos" class="twc-busca-atalhos" aria-label="'+esc(twLinkTexto(6))+'"></section>' : '') + (k === 'mapa' ? frasesHtml() : '') + '</div>';
   }
   /* ---------- Humor do Idol + Desejo do dia + passe do Camarim VIP (tw-humor.js; ideia do The Sims, arte nossa) ---------- */
@@ -821,6 +837,7 @@
   var desenhoPend = 0;
   function agendaDesenho(){ if(desenhoPend) return; desenhoPend = setTimeout(function(){ desenhoPend = 0; if(cel && !classico && topo() === 'inicio') desenhar(); }, 300); }
   if(window.TW_PILOTO_BAIRRO) window.addEventListener('tw-piloto-bairro',agendaDesenho);
+  if(window.addEventListener) window.addEventListener('tw-semana', agendaDesenho);   // "Esta semana" (tw-semana.js)
   function vipFoto(serie){   // Polaroid do Camarim VIP em PNG (canvas → toDataURL), sem servidor
     var cv = $id('twcDentroCv'); if(!cv || topo() !== 'dentro:vip') return;
     // A pose escolhida precisa estar no Canvas antes da captura, mesmo em toques rápidos.
@@ -830,7 +847,7 @@
     x.fillStyle = '#5b2bb5'; x.font = '26px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('👑 ' + t2('vip') + ' · TsuLiPa⭐World', W / 2, cv.height + 62);
     x.fillStyle = '#9a86c8'; x.font = '700 16px "M PLUS Rounded 1c",sans-serif'; x.fillText(nick() + ' · ' + new Date().toLocaleDateString(), W / 2, cv.height + 90);
     if(serie){ TW_ALBUM_FOTOS.salvar('vip',o,serie); return; }
-    try{ var a = document.createElement('a'); a.href = o.toDataURL('image/png'); a.download = 'tsulipa-camarim-vip.png'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
+    try{ var a = document.createElement('a'); a.href = (window.twMarcaPng?window.twMarcaPng(o):o.toDataURL('image/png')); a.download = 'tsulipa-camarim-vip.png'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
     // guarda uma cópia pequena (JPEG) para o álbum do app Humor no TsuPhone e para o tapete vermelho do camarim
     try{ var mini = document.createElement('canvas'), k = 360 / W; mini.width = 360; mini.height = Math.round(Hh * k);
       mini.getContext('2d').drawImage(o, 0, 0, mini.width, mini.height);
@@ -1555,6 +1572,13 @@
     window.contaRpc.twcManut = true;
   }
   if(typeof window.addEventListener === 'function') window.addEventListener('offline', function(){ falhas = 3; manutVista = false; manutMostrar(); });
+  var ruaFofaPendente = false;
+  window.twcAbrirRuaFofa = function(origem){
+    if(!cel || classico) return;
+    ruaFofaPendente = true;
+    if(topo() === 'emb:mapa') embutir('mapa');
+    else ir('emb:mapa',origem);
+  };
   function embutir(k){
     var el = document.querySelector(EMB[k][0]), slot = $id('twcEmbSlot');
     if(slot && !el && k === 'mapa'){
@@ -1575,6 +1599,9 @@
     if(!embAtual) embAtual = {el:el, pai:el.parentNode, prox:el.nextSibling};
     slot.appendChild(el);
     if(k === 'mapa' && !el.classList.contains('aberto')){ var b = el.querySelector('.tw-mapa-botao'); if(b) b.click(); }
+    if(k === 'mapa' && ruaFofaPendente && typeof window.twMapaRuaFofa === 'function'){
+      if(window.twMapaRuaFofa()) ruaFofaPendente = false;
+    }
     if(k === 'mapa') setTimeout(function(){ try{ window.dispatchEvent(new Event('resize')); }catch(e){} }, 60);
     if(k === 'missoes' && typeof hubMisCarregar === 'function' && logado() && !(typeof hubMisDados !== 'undefined' && hubMisDados)) hubMisCarregar();
     if(k === 'nov') el.open = true;
@@ -1720,12 +1747,12 @@
     if(focoAnterior&&focoAnterior.foco)restaurarPonto(focoAnterior);
   }
   var pontosPilha=[];
-  function pontoAtual(){
+  function pontoAtual(alvo){
     if(!cel||!tela)return null;
-    var el=document.activeElement, seletor='';
+    var el=alvo||document.activeElement, seletor='';
     if(el && cel.contains(el)){
       if(el.id)seletor='#'+CSS.escape(el.id);
-      else ['data-a','data-ir','data-v','data-n','data-estreia','data-pin','data-pin-ir','data-cald','data-calmes','data-cal-ics','data-cal-cap'].some(function(a){
+      else ['data-a','data-ir','data-v','data-n','data-estreia','data-pin','data-pin-ir','data-piloto-bairro','data-cald','data-calmes','data-cal-ics','data-cal-cap','data-tw-bairro'].some(function(a){
         if(!el.hasAttribute(a))return false;
         seletor='['+a+'="'+CSS.escape(el.getAttribute(a))+'"]';return true;
       });
@@ -1743,18 +1770,23 @@
     }else focarTitulo();
     return true;
   }
-  function ir(v){
+  function ir(v,origem){
     if(classico)sairClassico();
     if(topo()===v)return;
     if(v==='cal')calCapsPedido=false;
-    pontosPilha[pilha.length-1]=pontoAtual();pilha.push(v);
+    if(v!=='emb:mapa')ruaFofaPendente=false;
+    pontosPilha[pilha.length-1]=origem&&origem.ponto||pontoAtual();pilha.push(v);
     som();desenhar();tela.scrollTop=0;
     var busca=v==='emb:busca'&&$id('hubBusca');
     if(busca)busca.focus({preventScroll:true});else focarTitulo();
   }
-  function inicio(){ if(classico) sairClassico(); pilha = ['inicio']; pontosPilha=[]; som(); desenhar(); tela.scrollTop = 0; focarTitulo(); }
+  function inicio(){ ruaFofaPendente = false; if(classico) sairClassico(); pilha = ['inicio']; pontosPilha=[]; som(); desenhar(); tela.scrollTop = 0; focarTitulo(); }
   function voltar(){
+    ruaFofaPendente = false;
     if(classico){ sairClassico(); som(); desenhar(); return; }
+    if(topo()==='emb:mapa' && typeof window.twMapaVoltarRua==='function' && window.twMapaVoltarRua()){
+      som();return;
+    }
     if(pilha.length>1){
       pilha.pop();var ponto=pontosPilha.pop();som();desenhar();
       if(ponto)restaurarPonto(ponto);else focarTitulo();
@@ -1801,7 +1833,8 @@
     }
     if(a === 'karaokeEnsaio' && !logado()){ twPreviewAbrirJogo('karaoke','ensaio'); return; }
     if(a === 'festival'){ if(typeof window.jornalAbrir === 'function') window.jornalAbrir('festival'); return; }
-    if(a === 'news'){ capMarcarLido(); if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
+    if(a === 'ler-capitulo'){ var cap=capHoje(); if(cap)jornalAbrir('capitulo',{tipo:'cap',data:cap.data},window.TW_JANELAS && TW_JANELAS.origem(el)); return; }
+    if(a === 'news'){ if(typeof window.jornalAbrir === 'function'){ try{ if(typeof sfx !== 'undefined' && sfx.card) sfx.card(); }catch(e){} window.jornalAbrir(); } return; }
     if(a === 'tv'){ var tv = $id('twRankTvAbrir'); if(tv) tv.click(); return; }
     if(a === 'vipOla'){ // A8.4-A: apenas reação local, sem saves ou recompensas
       if(topo() === 'dentro:vip' && dentroUltimos.length){
@@ -2015,7 +2048,23 @@
     folha.hidden = false;
     var b = folha.querySelector('[data-f="tutOk"]'); if(b) try{ b.focus(); }catch(e){}
   }
-  function tutTalvez(){ if(tutI < 0 && !tutVisto() && typeof hubComecou !== 'undefined' && hubComecou){ tutI = 0; tutMostrar(); } }
+  // 20/11/2026: o "já vi" acompanha a conta. Quem entra com uma conta que já jogou (estrelas ou recorde no servidor)
+  // não vê o tutorial de novo em outro aparelho; com sessão salva, espera a conta chegar (até 4 s) antes de decidir.
+  function tutContaVeterana(j){ return !!j && ((+j.best || 0) > 0 || (+j.stars || 0) > 0); }
+  function tutMarcarVisto(){ try{ localStorage.setItem(TUT_CHAVE, '1'); }catch(e){} }
+  function tutSessaoGuardada(){ try{ for(var i = 0; i < localStorage.length; i++){ var k = localStorage.key(i); if(/^sb-.*-auth-token$/.test(k)) return true; } }catch(e){} return false; }
+  var tutEsperaAte = 0;
+  function tutTalvez(){
+    if(tutI >= 0 || tutVisto() || typeof hubComecou === 'undefined' || !hubComecou) return;
+    var j = typeof contaJ !== 'undefined' ? contaJ : null;
+    if(tutContaVeterana(j)){ tutMarcarVisto(); return; }
+    if(!j && tutSessaoGuardada()){
+      if(!tutEsperaAte) tutEsperaAte = Date.now() + 4000;
+      if(Date.now() < tutEsperaAte){ setTimeout(tutTalvez, 300); return; }
+    }
+    tutI = 0; tutMostrar();
+  }
+  function tutContaChegou(j){ if(!tutContaVeterana(j)) return; tutMarcarVisto(); if(tutI >= 0){ tutI = -1; fecharFolha(); } }
 
   /* ---------- montar ---------- */
   // Ligar e desligar na hora, sem recarregar a página (o hub clássico nunca deixou de estar montado por baixo).
@@ -2056,7 +2105,7 @@
     });
     folha.addEventListener('click', function(e){ if(e.target === folha){ if(tutI >= 0) tutFim(); else fecharFolha(); } });
     if(!montar.tecla) document.addEventListener('keydown', function(e){
-      if(e.key !== 'Escape' || !cel || h.hidden) return;
+      if(e.key !== 'Escape' || e.defaultPrevented || !cel || h.hidden) return;
       if(!folha.hidden){ e.preventDefault(); if(tutI >= 0) tutFim(); else fecharFolha(); return; }
       if(Array.from(document.querySelectorAll('[aria-modal="true"],dialog[open]')).some(function(el){return el.getClientRects().length;}))return;
       if(classico || pilha.length > 1){ e.preventDefault(); voltar(); }
@@ -2089,5 +2138,5 @@
     var v = $id('twcVisita'); if(v){ var tx = visita(); if(v.textContent !== tx){ v.textContent = tx; if(tela && tela.getAttribute('data-tela') !== 'abre') agendarRedesenho(); } }   // trocou quem passeia: refaz o selinho com a bolinha certa
   }, 5000);
   if(document.readyState !== 'loading') montar(); else document.addEventListener('DOMContentLoaded', montar);
-  window.TW_CELULAR = {txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, rotaPronta:function(){return tutVisto()&&!classico&&(!folha||folha.hidden);}, pontoAtual:pontoAtual, restaurarPonto:restaurarPonto, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
+  window.TW_CELULAR = {toast:toast, tutContaChegou:tutContaChegou, txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, rotaPronta:function(){return tutVisto()&&!classico&&(!folha||folha.hidden);}, pontoAtual:pontoAtual, restaurarPonto:restaurarPonto, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
 })();

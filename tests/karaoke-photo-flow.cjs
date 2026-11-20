@@ -137,7 +137,7 @@ exports.standalone=async function(browser,origin,fonts,out){
  const context=await browser.newContext({viewport:{width:390,height:844},colorScheme:'dark'});
  await exports.install(context);const p=await context.newPage(),errors=[];
  p.on('pageerror',e=>errors.push(e.message));
- await p.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.request().url().includes('fonts.googleapis.com')?r.fulfill({contentType:'text/css',body:fonts}):r.abort());
+ await p.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.request().url().includes('fonts.googleapis.com')?r.fulfill({contentType:'text/css',body:fonts.replaceAll("url('./assets/", "url('"+origin+'/'+"assets/")}):r.abort());
  await p.goto(origin+'/karaoke-time.html?theme=dark');
  await p.locator('#ktFoto').click();await p.locator('#ktPhotoImage').waitFor({state:'visible'});
  await p.locator('#ktPhotoImage').evaluate(i=>i.decode());

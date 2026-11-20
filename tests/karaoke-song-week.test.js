@@ -31,6 +31,6 @@ assert.equal(rules.songBoard('2026-11-08','duo','idol-1').top.length,0,'quadro z
 // sala e ponte com o servidor
 assert(html.includes('id="ktSongWeek"')&&html.includes("function renderSongWeek(c,b)")&&html.includes("try{renderSongWeek(c,b);}catch(e){}"),'quadro na sala, sem derrubar o ranking se falhar');
 assert(html.includes("completedAt:Date.now(),song:run.session.song}")&&online.includes("if(a.musicaSemana)a.musicaSemana().then("),'resultado leva a música; online lê o quadro');
-assert(index.includes("musicaSemana:function(){return contaRpc('kt_musica_semana');},")&&index.includes("if(e&&e.code==='PGRST202')return contaRpc('kt_run_finish',base);"),'envia p_song e repete sem ele se o banco ainda não tiver');
+assert(index.includes("musicaSemana:function(){return contaRpc('kt_musica_semana');},")&&index.includes("if(e&&e.code==='PGRST202'){if(!conta())return null;return contaRpc('kt_run_finish',base);}"),'envia p_song e repete sem ele se o banco ainda não tiver');
 assert(html.includes("['Música da semana','Song of the week','Canción de la semana','เพลงประจำสัปดาห์','今週の曲']"),'traduzido');
 console.log('✓ Karaoke: música da semana (pares, rodízio, quadro local/online e envio ao servidor)');

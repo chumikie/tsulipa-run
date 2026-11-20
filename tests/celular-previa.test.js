@@ -25,7 +25,7 @@ test('padrão em todos os aparelhos: o index liga sozinho, respeita a escolha gu
   assert.match(bloco, /on=pref!=='0';/, 'só a escolha guardada do clássico (0) desliga; sem escolha, liga em qualquer aparelho');
   assert.doesNotMatch(bloco, /pointer:coarse/, 'computador e tablet não ficam mais de fora');
   assert.match(js, /function desligar\(\)\{\n    try\{ localStorage\.setItem\(CHAVE, '0'\); \}/, 'Visual clássico fica guardado');
-  assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-humor\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-bichos\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-bairro\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-calendario\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-celular\.js\?v=\d+">/);
+  assert.match(bloco, /if\(on\)\{document\.write\('<link rel="stylesheet" href="\.\/tw-celular\.css\?v=\d+"><script src="\.\/tw-humor\.js\?v=\d+"><'\+'\/script><script (?:defer )?src="\.\/tw-bichos\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-bairro\.js\?v=\d+"><'\+'\/script><script (?:defer )?src="\.\/tw-calendario\.js\?v=\d+"><'\+'\/script><script src="\.\/tw-celular\.js\?v=\d+">/);
   // o tw-lado.js (perfil do trio) carrega no site todo desde 17/11 (Center⭐Run), não mais só no visual novo
   assert.match(html, /^<script src="\.\/tw-lado\.js\?v=\d+"><\/script>$/m, 'tw-lado carregado uma vez, no site todo');
   assert.ok(!/^<script src="\.\/tw-celular\.js/m.test(html), 'nunca carrega direto no HTML');
@@ -158,7 +158,7 @@ test('rodada 8 (BarbieGirls/Zwinky): frases prontas iguais às do servidor, onli
   assert.ok(!/function telaPais\(\)/.test(js), 'Cantinho dos pais saiu (o público é adulto)');
   assert.match(js, /if\(falhaDeRede\(err\)\)\{ falhas\+\+; if\(falhas >= 3\) manutMostrar\(\); \}/, 'manutenção só depois de 3 falhas de rede seguidas');
   assert.match(cm, /var PASSOS = \[\[0, '[^']*', 'Visual'/, 'Montar Idol em 3 passos');
-  assert.match(cm, /if\(celLigado\(\)\)\{ redoma\(cv, c\); return; \}/, 'redoma só no visual de celular');
+  assert.match(cm, /if\(celLigado\(\)\)\{ redoma\(cv, c, item\); return; \}/, 'redoma só no visual de celular');
   assert.match(cm, /if\(podeProvar\)\{ st\.prova = /, 'provar peça trancada só na prévia (não salva nem compra)');
 });
 
@@ -214,7 +214,8 @@ test('Hoje no Início, Menu sem repetição, selo de missão sem quebrar e Times
   assert.match(js, /\(hjHtml \|\| destaque\)/, 'Hoje no Início no lugar do destaque');
   ['data-desejo=', 'data-a="vip"', 'data-a="missoes"', 'data-a="news"', 'data-anivcor=', 'data-v="trio"'].forEach(a => assert.ok(js.includes(a), 'Hoje tem ' + a));
   assert.match(js, /contaRpc\('dar_coracao', \{p_nick:nick\}\)/, 'coração de aniversário usa a RPC de sempre');
-  assert.match(js, /capMarcarLido\(\); if\(typeof window\.jornalAbrir/, 'abrir o News marca o capítulo como lido');
+  assert.match(js, /jornalAbrir\('capitulo',\{tipo:'cap',data:cap.data\}/, 'Ler abre o capítulo exato');
+  assert.doesNotMatch(js, /if\(a === 'news'\)\{[^}]*twCapRegistrar/);
   assert.ok(!/\['tv', 'TsuLiPa TV', 'data-a="tv"'\]/.test(js), 'TV não se repete no Menu');
   assert.ok(!/bs\.push\(banner\('news'/.test(js), 'News fica só na porta do Início');
   assert.match(js, /function badge\(c\)\{ return \(c === true \|\| alerta\(c\)\)/, 'selo aceita true (missão pendente) sem quebrar o visual');

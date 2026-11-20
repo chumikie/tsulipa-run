@@ -85,3 +85,13 @@ html:not([data-theme="light"]) .cfduplo-urgente{color:#ffd1a8}
 .hstempo.cfpac.cfpac-fim b{animation:cfpacpulso .6s ease-in-out infinite alternate}
 @keyframes cfpacpulso{to{transform:translateY(-50%) scale(1.22)}}
 @media (prefers-reduced-motion:reduce){.hstempo.cfpac i{transition:none}.hstempo.cfpac.cfpac-fim b{animation:none}}
+
+.cfduplo-primeiro,.cfduplo-copo{display:block;font-weight:750;font-size:.75rem;line-height:1.2}
+.cfduplo-primeiro{color:#91352c}
+:root:not([data-theme="light"]) .cfduplo-primeiro{color:#ffc7a3}
+
+.cfduplo-copo{min-height:40px}
+.cfduplo-copo-ativo{display:block;padding:1px 5px;border-radius:5px;background:#64237b;color:#fff;width:max-content;max-width:100%}
+.cfduplo-copo ul{display:flex;flex-wrap:wrap;gap:3px;list-style:none;margin:3px 0 0;padding:0}
+.cfduplo-copo li{font-size:1rem}
+.cfduplo-copo .twc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}

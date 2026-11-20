@@ -999,6 +999,13 @@ function petPhoneJornalVoltar(){
 //←petPhoneJornalAtualizar
 function petPhoneJornalAtualizar(){
   if(!petPhoneOpen || petPhoneTela !== 'fotos' || petPhoneFotosAba !== 'jornal') return false;
+  if(typeof jornalFotosMontarDoDia!=='function' && typeof jornalCarregar==='function'){
+    var dono=petPhoneFotoChave();
+    jornalCarregar().then(function(){
+      if(dono===petPhoneFotoChave())petPhoneJornalAtualizar();
+    }).catch(function(){});
+    return true;
+  }
   petPhoneRender();
   // Reaproveita a vitrine de leitura do Hub: nunca cria uma RPC nem faz polling.
   if(!petPhoneJornalFotos.length && typeof hubIdolsCarregar === 'function' &&
@@ -1897,8 +1904,18 @@ function petDrawRoom(){
   if(petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar){
     jeito.x -= petLifePetAproximar(true,petDrawDelta);
   }else jeito.x -= petLifePetAproximar(false,petDrawDelta); // retorno sem salto de 52 px
-  petDecorReacao(x, petData.ativo, p.cfg, petT, livre);
-  x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2, 26 - hop * .5, 5, 0, 0, 7); x.fill();
+  var cena = !sleepy && !petAnim && !petArrumando && !petLifePhoneOlhar && petDecorCena &&
+    petDecorCena.pet===p && petDecorCena.dono===petArrumoChave() ? petDecorCena : null;
+  if(cena){
+    var repouso=cena.tipo==='cochilo', movimento=petLifeMovimentoReduzido()?0:petT;
+    var alvo = repouso ? petLifeSofaApoio(pose) : null;
+    var cx = repouso ? (alvo && alvo.x>100 ? 64 : 124) : petArrumoX('mesa')+22;
+    jeito.x=cx-PET_X;
+    jeito.y=repouso ? -24 : 0;
+    hop=repouso ? 0 : Math.abs(Math.sin(movimento/14))*7;
+    if(!repouso)petEstrelaBrinquedo(x,cx+23+Math.sin(movimento/20)*3,PET_FLOOR-25,movimento*.035,.7);
+  }else petDecorReacao(x, petData.ativo, p.cfg, petT, livre);
+  x.fillStyle = 'rgba(80,30,120,.18)'; x.beginPath(); x.ellipse(PET_X + jeito.x, PET_FLOOR + 2 + (cena ? jeito.y : 0), 26 - hop * .5, 5, 0, 0, 7); x.fill();
   x.save(); x.translate(jeito.x, jeito.y);
   if((companhia && companhia.inclina) || atencaoLembranca || (petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar)){
     x.translate(PET_X,PET_FLOOR - 12 * PET_SC);
@@ -1913,7 +1930,7 @@ function petDrawRoom(){
   }
   drawPet(x, petType(petData.ativo), PET_X, PET_FLOOR - 12 * PET_SC - hop, PET_SC,
     sleepy ? petT * .35 : petT,
-    toqueIdol ? toqueIdol.ex : (petEx(p) || (companhia ? companhia.ex :
+    cena ? (cena.tipo==='cochilo'?'sono':'feliz') : toqueIdol ? toqueIdol.ex : (petEx(p) || (companhia ? companhia.ex :
       (amizade ? amizade.ex : (surpresa ? surpresa.ex : (rotina.modo === 'descanso' ? 'sono' : rotina.modo === 'brinca' ? 'feliz' : null))))));
   petDrawDirt(x, p, PET_X, PET_FLOOR - 12 * PET_SC - hop);
   petRoomFront(x, p, hop);   // chapéu do tema, estrelinhas de estágio e promoção (V2.1)
@@ -2026,6 +2043,7 @@ function petOpenUI(){
 }
 //←petClose
 function petClose(){
+  petDecorCena=null;
   petLifePose = ''; petLifePoseOrigem = null; petLifePetPerto = 0; petLifePoseUI();
   petRecepcaoFrames = 0; petLembrancaRecente = null;
   if(petPhoneOpen) petPhoneFechar(false);
@@ -2135,6 +2153,12 @@ function petActUI(){
     return '<button type="button" data-a="' + a[0] + '"' + (off ? ' disabled' : '') + ' aria-pressed="' + (petMenuK === a[0]) + '">' + a[1] + ' ' + escHtml(tr(a[2])) + cd + '</button>';
   }).join('');
   petMenuUI();
+  if(petGame&&petGame.fim&&petGame.fim.credito==='repetir'){
+    var jogo=petGame, menu=$('petMenu'), retry=document.createElement('button');
+    retry.type='button';retry.textContent=petMiniCreditoTexto(2);
+    retry.onclick=function(){petMiniConfirmar(jogo);};
+    menu.hidden=false;menu.appendChild(retry);
+  }
 }
 //←petMenuUI
 function petMenuUI(){
@@ -2455,7 +2479,7 @@ function petMakePhoto(){
   x.textAlign = 'center'; x.fillStyle = '#94a3b8'; x.font = '500 11px "M PLUS Rounded 1c",sans-serif';
   x.fillText('🌷 TsuLiPa⭐World · Backstage⭐Pet!', 200, 414);
 
-  return c2.toDataURL('image/png');
+  return (window.twMarcaPng?window.twMarcaPng(c2):c2.toDataURL('image/png'));
 }
 //←petDevUI
 function petDevUI(){
@@ -2719,6 +2743,18 @@ function petDrawDecor(x){
     x.restore();
   });
 }
+//←petDecorCenaTexto
+function petDecorCenaTexto(){
+  var textos={
+    pt:['Cochilar na almofada do sofá','Brincar perto da mesa','Encerrar a cena'],
+    en:['Nap on the sofa cushion','Play by the table','End the scene'],
+    es:['Dormir en el cojín del sofá','Jugar junto a la mesa','Terminar la escena'],
+    id:['Tidur di bantal sofa','Bermain dekat meja','Akhiri adegan'],
+    th:['งีบบนเบาะโซฟา','เล่นข้างโต๊ะ','จบฉาก'],
+    ja:['ソファのクッションでお昼寝','テーブルの横で遊ぶ','シーンを終える']
+  };
+  return textos[LANG]||textos.pt;
+}
 //←petDecorMenuUI
 function petDecorMenuUI(m){
   var d = petData.decor || {};
@@ -2731,7 +2767,16 @@ function petDecorMenuUI(m){
       '<button type="button" data-k="arrumar-padrao">↺ <b>' + escHtml(tr('Arrumação original')) + '</b></button>';
     return;
   }
-  m.innerHTML = '<button type="button" class="petarrumo-abrir" data-k="arrumar">✋ <b>' + escHtml(tr('Arrumar o quarto')) + '</b><em>' + escHtml(tr('Mover móveis e quadros')) + '</em></button>' + PET_DECOR.map(function(it){
+  var t=petDecorCenaTexto(), cena=petDecorCena && petDecorCena.pet===petAtivo() &&
+    petDecorCena.dono===petArrumoChave() ? petDecorCena : null;
+  var off=petGame || petAnim || petAtivo().dorme;
+  var acoes = ['cochilo','estrela'].map(function(k,i){
+    var on=cena && cena.tipo===k;
+    return '<button type="button" data-k="cena-'+k+'" aria-pressed="'+Boolean(on)+'"'+
+      (off?' disabled':'')+'><b>'+escHtml(on?t[2]:t[i])+'</b></button>';
+  }).join('');
+  if(cena && !off && window.TW_ALBUM_FOTOS)acoes+=TW_ALBUM_FOTOS.botao('data-k="cena-foto"');
+  m.innerHTML = acoes + '<button type="button" class="petarrumo-abrir" data-k="arrumar">✋ <b>' + escHtml(tr('Arrumar o quarto')) + '</b><em>' + escHtml(tr('Mover móveis e quadros')) + '</em></button>' + PET_DECOR.map(function(it){
     var k = it[0], own = k in d;
     var tag = own ? (d[k] ? '🖼️ ' + tr('Na parede') : tr('Guardado')) : (it[2] ? '★ ' + it[2] : tr('Grátis'));
     var off = !own && starT < it[2];
@@ -2741,6 +2786,23 @@ function petDecorMenuUI(m){
 }
 //←petDecorClick
 function petDecorClick(k){
+  if(k==='cena-cochilo' || k==='cena-estrela' || k==='cena-foto'){
+    var p=petAtivo(), dono=petArrumoChave();
+    if(!p || p.dorme || petGame || petAnim || petArrumando)return;
+    if(k==='cena-foto'){
+      var botao=$('petMenu').querySelector('[data-k="cena-foto"]');
+      if(!botao || !petDecorCena || petDecorCena.pet!==p || petDecorCena.dono!==dono)return;
+      petDrawRoom();
+      if(window.TW_ALBUM_FOTOS)TW_ALBUM_FOTOS.salvar('pet',petCv,botao);
+      return;
+    }
+    var tipo=k.slice(5);
+    petDecorCena=petDecorCena && petDecorCena.tipo===tipo && petDecorCena.pet===p && petDecorCena.dono===dono ? null : {tipo:tipo,pet:p,dono:dono};
+    petUI();
+    var foco=$('petMenu').querySelector('[data-k="'+k+'"]');
+    if(foco)foco.focus({preventScroll:true});
+    return;
+  }
   if(k === 'arrumar' || k === 'arrumar-pronto'){ petArrumoModo(k === 'arrumar'); beep(petArrumando ? 880 : 660, .06, 'triangle', .04); petUI(); return; }
   if(k === 'arrumar-desfazer'){
     var A = petArrumoLer(), a = petArrumoAnterior;
@@ -3011,7 +3073,7 @@ function petGameStart(k){
   petMenuK = ''; petSinging = true; petTalkB = null;
   petGameBtns(false);   // 📷 e 🐾 somem durante o minijogo
   var now = petNowS(), t0 = now + 2;
-  petGame = { k:k, t0:t0, last:now, fim:null, fx:[] };
+  petGame = { k:k, t0:t0, last:now, fim:null, fx:[], run:(typeof contaMiniInicio === 'function' ? contaMiniInicio(k) : null) };
   [0, .5, 1].forEach(function(w){ beep(660, .1, 'square', .03, .5 + w); });
   beep(1320, .18, 'square', .035, 2);
   if(k === 'ritmo'){
@@ -3060,7 +3122,7 @@ function petJump(){
 //←petGameUpdate
 function petGameUpdate(){
   var G = petGame, now = petNowS(), dt = Math.min(.05, now - G.last); G.last = now;
-  if(G.fim){ G.fim.t+=petDrawDelta; if(G.fim.t > 420) petGameClose(); return; }
+  if(G.fim){ G.fim.t+=petDrawDelta; if(G.fim.t>420&&!['aguardando','repetir'].includes(G.fim.credito))petGameClose(); return; }
   if(G.k === 'ritmo'){
     while(G.step < 128 && G.t0 + G.step * PET_BEAT < now + .12){   // acompanhamento lofi agendado no tempo certo
       var i = G.step, w = Math.max(0, G.t0 + i * PET_BEAT - now), st = i % 8, ch = PET_CHORDS[(i >> 3) % 4];
@@ -3087,18 +3149,44 @@ function petGameUpdate(){
     }
   }
 }
+//←PET_CREDITO_MINI
+var PET_CREDITO_MINI={
+  pt:['Confirmando estrelas…','Conexão interrompida.','Tentar confirmar estrelas','Crédito indisponível. Atualize e jogue de novo.','Partida encerrada sem crédito.','A conta mudou.'],
+  en:['Confirming stars…','Connection interrupted.','Retry star confirmation','Credit unavailable. Reload and play again.','The game ended without credit.','The account changed.'],
+  es:['Confirmando estrellas…','Conexión interrumpida.','Reintentar confirmación','Crédito no disponible. Recarga y vuelve a jugar.','La partida terminó sin crédito.','Cambió la cuenta.'],
+  id:['Memastikan bintang…','Koneksi terputus.','Coba konfirmasi bintang lagi','Kredit tidak tersedia. Muat ulang dan main lagi.','Permainan berakhir tanpa kredit.','Akun berubah.'],
+  th:['กำลังยืนยันดาว…','การเชื่อมต่อขาดหาย','ลองยืนยันดาวอีกครั้ง','รับดาวไม่ได้ รีโหลดแล้วเล่นอีกครั้ง','จบเกมโดยไม่ได้รับดาว','เปลี่ยนบัญชีแล้ว'],
+  ja:['スターを確認中…','接続が切れました。','スターの確認を再試行','受け取れません。再読み込みして遊んでください。','スターを獲得できませんでした。','アカウントが変わりました。']
+};
+//←petMiniCreditoTexto
+function petMiniCreditoTexto(i){return (PET_CREDITO_MINI[LANG]||PET_CREDITO_MINI.pt)[i];}
+//←petMiniConfirmar
+function petMiniConfirmar(G){
+  if(petGame!==G||!G.run||!G.fim||!['novo','repetir'].includes(G.fim.credito))return;
+  G.fim.credito='aguardando';
+  petUI();
+  contaGanhoMini(G.fim.est,G.run).then(function(r){
+    if(petGame!==G)return;
+    G.fim.credito=r.estado;
+    if(r.estado==='confirmado')G.fim.dar=r.dadas;
+    petUI();
+  });
+}
 //←petGameEnd
 function petGameEnd(){
   var G = petGame; if(!G || G.fim) return;
   var p = petAtivo(), mi = petMini(), k = G.k;
   var pts = k === 'ritmo' ? G.score : G.pulos;
   var est = k === 'ritmo' ? Math.min(40, Math.round(G.perf * .5 + G.bom * .25)) : Math.min(25, Math.floor(G.pulos / 2));
-  var dar = Math.max(0, Math.min(est, PET_MINI_CAP - mi.ganho));
-  if(dar > 0){ starT += dar; mi.ganho += dar; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); contaGanhoMini(dar); }
+  var dar=G.run||contaJ?0:Math.max(0,Math.min(est,PET_MINI_CAP-mi.ganho));
+  if(dar>0){starT+=dar;mi.ganho+=dar;try{localStorage.setItem('brs48cr_st',starT);}catch(e){}setBest();}
   var rec = pts > 0 && pts > (mi.rec[k] || 0);
   if(rec){ mi.rec[k] = pts; petData.inv = petData.inv || {}; petData.inv.sorvete = (petData.inv.sorvete || 0) + 1; }
   if(p){ petTick(); p.humor = petClamp(p.humor + 10); p.energia = petClamp(p.energia - 6); p.fome = petClamp(p.fome - 4); }
-  G.fim = { t:0, pts:pts, est:est, dar:dar, rec:rec };
+  var credito='';
+  if(est>0)credito=G.run?'novo':contaJ?'conta':'';
+  G.fim = { t:0, pts:pts, est:est, dar:dar, rec:rec, credito:credito };
+  if(G.fim.credito==='novo')petMiniConfirmar(G);
   if(rec){ if(sfx.rank) sfx.rank(); } else if(sfx.card) sfx.card();
   petSave(true);
   if(p) petXP(p, 5 + Math.min(10, Math.floor(k === 'ritmo' ? G.perf / 8 : G.pulos / 3)));
@@ -3190,7 +3278,10 @@ function petGameDraw(x, p){
     x.fillStyle = '#12365e'; x.font = '900 22px "M PLUS Rounded 1c",sans-serif';
     x.fillText(G.k === 'ritmo' ? F.pts + ' ' + tr('pontos') : tr('Pulos') + ': ' + F.pts, 180, 100);
     x.font = '800 13px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#7b3ff0';
-    x.fillText('★ +' + F.dar + (F.dar < F.est ? '  (' + tr('Limite de estrelas de hoje atingido') + ')' : ''), 180, 122);
+    var iCredito={novo:0,aguardando:0,repetir:1,indisponivel:3,encerrado:4,conta:5}[F.credito];
+    var credito=iCredito===undefined?'★ +'+F.dar:petMiniCreditoTexto(iCredito);
+    if(!G.run&&!F.credito&&F.dar<F.est)credito+=' ('+tr('Limite de estrelas de hoje atingido')+')';
+    x.fillText(credito,180,122,204);
     if(F.rec){ x.fillStyle = '#ff6fb5'; x.fillText('🍓 ' + tr('Sorvete de morango') + ' +1', 180, 142); }
     x.fillStyle = '#94a3b8'; x.font = '700 11px "M PLUS Rounded 1c",sans-serif'; x.fillText(tr('Toque para voltar'), 180, 168);
     x.globalAlpha = 1;

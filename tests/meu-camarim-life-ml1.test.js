@@ -63,6 +63,7 @@ function fakeRoom(signedIn = true){
   ctx.window=ctx;
   ctx.petArrumoDx=()=>0;
   vm.runInContext(lembrancas, ctx, {filename:'petVidaLembrancas'});
+  ctx.shopCenaGate=null;ctx.perfMiniaturasLiberar=()=>{};
   ctx.shopOv = {hidden:false}; ctx.albumOv = {hidden:false};
   ctx.perfOv = {hidden:false}; ctx.perfPedido=0; ctx.perfMontou=false;
   ctx.perfIconeConta = () => {};

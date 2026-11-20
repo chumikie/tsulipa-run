@@ -86,7 +86,7 @@ function crMetaSequencia(){
   return r;
 }
 function crMetaDesenhar(){
-  if(!crMeta || state !== 'play' || isTestGame) return;
+  if(!crMeta || state !== 'play' || isTestGame || crPratica) return;
   var txt = crTr(crMeta.txt).replace('{n}', crMeta.alvo), prog = crMetaProgresso(), fim = crMeta.feita;
   var rot = (fim ? '✓ ' : '🎯 ') + txt + (crMeta.alvo > 1 && !fim ? '  ' + prog + '/' + crMeta.alvo : '') + (fim ? '  +★' + CR_META_PREMIO : '');
   g.save(); g.font = '700 12px "M PLUS Rounded 1c",sans-serif'; var pt = W < 500, w = Math.min(pt ? W - 20 : W - 230, g.measureText(rot).width + 26), x0 = pt ? 10 : W / 2 - w / 2 + 50, y0 = pt ? 92 : 10;   // celular em pé: abaixo do placar, longe dos botões de pausa/câmera/som
@@ -367,6 +367,18 @@ var CR_OBSTACULOS = {
 function crIdiomaResultado(){
   return typeof LANG === 'string' && Object.prototype.hasOwnProperty.call(CR_COLISAO, LANG) ? LANG : 'pt';
 }
+var CR_AJUSTE_TR={
+  pt:['Tente pular um pouco mais tarde para ainda estar no ar ao passar.','Tente iniciar o pulo um pouco antes de alcançar o obstáculo.','Tente deslizar antes de chegar ao refletor.','Mantenha o deslize até passar sob o refletor.'],
+  en:['Jump slightly later so you are still in the air as you pass.','Start your jump slightly before you reach the obstacle.','Start sliding before reaching the spotlight.','Keep sliding until you clear the spotlight.'],
+  es:['Salta un poco más tarde para seguir en el aire al pasar.','Empieza el salto un poco antes del obstáculo.','Deslízate antes de llegar al reflector.','Mantén el deslizamiento hasta pasar el reflector.'],
+  id:['Lompat sedikit lebih lambat agar masih di udara saat melewatinya.','Mulai lompat sedikit sebelum rintangan.','Meluncurlah sebelum mencapai lampu sorot.','Terus meluncur hingga melewati lampu.'],
+  th:['ลองกระโดดช้าลงเล็กน้อยเพื่อให้ยังลอยอยู่ตอนผ่าน','เริ่มกระโดดก่อนถึงสิ่งกีดขวางเล็กน้อย','เริ่มสไลด์ก่อนถึงไฟส่องเวที','สไลด์ต่อจนพ้นไฟส่องเวที'],
+  ja:['少し遅く跳んで、空中で通過しましょう。','障害物に届く少し前に跳びましょう。','照明に届く前にスライドしましょう。','照明を通過するまでスライドを続けましょう。']
+};
+function crAjusteColisao(impacto){
+  var i=impacto.suspenso?(impacto.deslizou?3:2):impacto.ar&&impacto.descendo?0:1;
+  return CR_AJUSTE_TR[crIdiomaResultado()][i];
+}
 function crColisaoTexto(impacto){
   if(!impacto || !Object.prototype.hasOwnProperty.call(CR_OBSTACULOS, impacto.tipo)) return '';
   var idioma = crIdiomaResultado();
@@ -408,7 +420,8 @@ function end(impacto){
     +((contaJ||isTestGame)?'':'<br><small style="color:var(--b1);font-weight:800">🔐 '+tr('Entre com Google para aparecer no ranking online')+'</small>');   // V2.1.2
 
   var colisao = !isTestGame ? crColisaoTexto(impacto) : '';
-  if(colisao) $('res').innerHTML += '<p class="crfim-colisao" id="crFimColisao">' + colisao + '</p>';
+  if(colisao) $('res').innerHTML += '<p class="crfim-colisao" id="crFimColisao">' + colisao + '</p><p class="crfim-colisao" id="crFimAjuste">' + crAjusteColisao(impacto) + '</p>';
+  if(typeof crPraticaConfig === 'function') crPraticaConfig(colisao ? impacto : null);
 
   // Envia o resultado assim que a tela o apresenta. Falhas em acabamentos
   // opcionais abaixo não podem impedir a confirmação online da corrida.
@@ -420,7 +433,7 @@ function end(impacto){
  var isTesting = isTestGame;
   var nomeDigitado = (nick || '').trim().toLowerCase();
   var isAdmin = (nomeDigitado === 'tsuadmin');
-  var row={name:nick||'Anônimo',score:s,rankId:rId,char:CH[sel].n,t:Date.now()};
+  var row={name:nick||tr('Visitante'),score:s,rankId:rId,char:CH[sel].n,t:Date.now()};
   if(!isTestGame && typeof bestcSalvar==='function'){ bestcSalvar(sel, s); refreshAcc(); }   // V2.1.3: recorde por personagem
 
  if(!isTesting && !isAdmin){
@@ -447,7 +460,7 @@ clearTimeout(overTimer);
     resultado.hidden = false;
     resultado.scrollTop = 0;
     tentar.textContent = CR_COLISAO[crIdiomaResultado()][4];
-    if(colisao) tentar.setAttribute('aria-describedby', 'crFimColisao');
+    if(colisao) tentar.setAttribute('aria-describedby', 'crFimColisao crFimAjuste');
     else tentar.removeAttribute('aria-describedby');
     tentar.focus({preventScroll:true});
     celeb();
@@ -468,6 +481,126 @@ function hit(a,b){
          (a.x + mx < b.x + b.w) &&
          (a.y + a.h - my > b.y) &&
          (a.y + my < b.y + b.h);
+}
+function crPularQuadro(dt){
+  var crSegurando = held || crPuloSegura > 0;   // pulo guardado conta como toque curto segurado (não vira pulinho)
+  if(!crSegurando && P.vy < -1.5) P.vy *= 0.82;
+  P.vy += ((crSegurando && P.vy < 0) ? .5 : .85) * dt;
+  if(crPuloSegura > 0) crPuloSegura = Math.max(0, crPuloSegura - dt);
+  P.y += P.vy * dt;
+  if(P.y >= GY - P.h){
+    P.y = GY - P.h;
+    P.vy = 0;
+    P.air = false;
+    if(crPuloGuardado > 0 && state === 'play' && !paused){ P.vy = -12.5; P.air = true; sfx.jump(); crPuloSegura = 8; }   // pulo guardado
+    crPuloGuardado = 0;
+  }
+}
+
+var crPratica = null, crPraticaAlvo = null;
+var CR_DESAFIO_TR={
+  pt:['Desafio de pulo e deslize','Pule o cabo e deslize sob o refletor.','Pulo','Deslize','Passou','Colidiu'],
+  en:['Jump and slide challenge','Jump over cables and slide under spotlights.','Jump','Slide','Cleared','Hit'],
+  es:['Reto de salto y deslizamiento','Salta el cable y deslízate bajo el reflector.','Salto','Deslizamiento','Superado','Choque'],
+  id:['Tantangan lompat dan meluncur','Lompati kabel dan meluncur di bawah lampu.','Lompat','Meluncur','Lolos','Tertabrak'],
+  th:['ความท้าทายกระโดดและสไลด์','กระโดดข้ามสายและสไลด์ลอดไฟ','กระโดด','สไลด์','ผ่าน','ชน'],
+  ja:['ジャンプとスライドに挑戦','ケーブルを跳び、照明の下をスライド。','ジャンプ','スライド','クリア','衝突']
+};
+function crDesafioTexto(i){return CR_DESAFIO_TR[crIdiomaResultado()][i];}
+function crDesafioBotoes(){
+  $('crDesafioMenu').textContent=$('crDesafioFim').textContent=crDesafioTexto(0);
+}
+var CR_PISTA_TR = {
+  pt:['Tentar na pista','Treino na pista','Você passou pelo obstáculo na pista!','Você bateu na pista. Tente de novo.'],
+  en:['Try on the track','Track practice','You cleared the obstacle on the track!','You hit the obstacle. Try again.'],
+  es:['Probar en la pista','Práctica en pista','¡Superaste el obstáculo en la pista!','Chocaste en la pista. Inténtalo otra vez.'],
+  id:['Coba di lintasan','Latihan di lintasan','Kamu melewati rintangan di lintasan!','Kamu menabrak rintangan. Coba lagi.'],
+  th:['ลองในสนาม','ฝึกบนสนาม','ผ่านสิ่งกีดขวางบนสนามแล้ว!','ชนสิ่งกีดขวาง ลองอีกครั้ง'],
+  ja:['コースで試す','コース練習','コースの障害物をクリア！','障害物にぶつかりました。もう一度！']
+};
+var CR_PRATICA_TR = {
+  pt:['Praticar obstáculo','Treino · {n} s','Sair do treino','Passou por {n} de 3 obstáculos.','Treino sem pontuação'],
+  en:['Practice obstacle','Practice · {n} s','Exit practice','Cleared {n} of 3 obstacles.','Unscored practice'],
+  es:['Practicar obstáculo','Práctica · {n} s','Salir de la práctica','Superaste {n} de 3 obstáculos.','Práctica sin puntuación'],
+  id:['Latih rintangan','Latihan · {n} dtk','Keluar dari latihan','Melewati {n} dari 3 rintangan.','Latihan tanpa skor'],
+  th:['ฝึกผ่านสิ่งกีดขวาง','ฝึกซ้อม · {n} วิ','ออกจากการฝึก','ผ่าน {n} จาก 3 สิ่งกีดขวาง','ฝึกซ้อมโดยไม่นับคะแนน'],
+  ja:['障害物を練習','練習 · {n}秒','練習を終える','3つ中{n}つをクリアしました。','スコアなしの練習']
+};
+function crPraticaTexto(i){ return CR_PRATICA_TR[crIdiomaResultado()][i]; }
+function crPraticaConfig(impacto){
+  crPraticaAlvo = impacto && impacto.obstaculo ? impacto : null;
+  var pista = $('crPraticaPista');
+  var isolado=crPraticaAlvo && !crPraticaAlvo.suspenso && ['cable','speaker'].includes(crPraticaAlvo.tipo);
+  if(pista){ pista.hidden = !crPraticaAlvo; pista.textContent = CR_PISTA_TR[crIdiomaResultado()][0]; }
+  var botao = $('crPraticaBt'), info = $('crPraticaStatus');
+  if(botao){ botao.hidden = !isolado; botao.textContent = crPraticaTexto(0); }
+  if(info) info.textContent = '';
+}
+function crPraticaComecar(naPista){
+  var desafio=naPista==='desafio';
+  if(crPratica || (desafio ? state!=='over'&&state!=='menu' : !crPraticaAlvo||state!=='over'))return;
+  naPista = naPista === true;
+  if(naPista && $('crPraticaPista').hidden) return;
+  var alvo = desafio?'cable':crPraticaAlvo.tipo, cabo = alvo === 'cable';
+  var velo = naPista && crPraticaAlvo.velocidade > 0 ? crPraticaAlvo.velocidade : 5.5*SC;
+  crPratica = {tempo:0, passou:0, pista:naPista, desafio:desafio, limite:desafio?448:naPista?240:540, anterior:{estado:state, P:P,obs:obs,items:items,pops:pops,fans:fans,sp:sp,frame:frame,dist:dist,pw:pw,shake:shake,
+    inv:inv,shield:shield,s2Sliding:s2Sliding,s2SlideTimer:s2SlideTimer,pet:window.activePetFly}};
+  P = {x:80,y:GY-44,vy:0,w:30,h:44,air:false};
+  var obst = naPista && crPraticaAlvo.obstaculo;
+  obs = (desafio?[96,192,288,384]:naPista?[120]:[100,260,420]).map(function(t,i){
+    if(desafio && i%2===1)return {k:'refletor',x:P.x+t*velo,y:GY-72,w:46,h:46,high:true};
+    var h = obst ? obst.h : cabo ? 12 : 48;
+    return {k:alvo,x:P.x+t*velo,y:GY-(obst&&obst.top||h),w:obst ? obst.w : cabo ? 56 : 36,h:h,high:!!(naPista && crPraticaAlvo.suspenso)};
+  });
+  if(naPista) dist = Math.max(0,dist-velo*120);
+  items=[];pops=[];fans=[];pw=null;inv=0;shield=0;shake=0;held=false;paused=false;
+  s2Sliding=false;s2SlideTimer=0;crPuloGuardado=0;crPuloSegura=0;window.activePetFly=null;sp=velo;
+  $('menu').hidden=true;$('over').hidden=true;$('crPraticaPainel').hidden=false;$('crPraticaTempo').textContent=crPraticaTexto(1).replace('{n}',Math.ceil(crPratica.limite/60));
+  $('crPraticaSair').textContent=crPraticaTexto(2);$('crPraticaTitulo').textContent=desafio?crDesafioTexto(1):naPista?CR_PISTA_TR[crIdiomaResultado()][1]:crPraticaTexto(4);
+  $('pause').style.display='block';$('pause').textContent='⏸';$('pz').hidden=true;
+  if((window.matchMedia&&matchMedia('(pointer:coarse)').matches)||(desafio&&navigator.maxTouchPoints>0))$('jb').style.display='block';
+  document.body.classList.add('jogando');state='play';
+  if(desafio || naPista && crPraticaAlvo.suspenso)s2ShowSlideButton();
+  $('crPraticaSair').focus({preventScroll:true});last=performance.now();sync();
+}
+function crPraticaTerminar(completo){
+  if(!crPratica)return;
+  var registro = crPratica, a = registro.anterior; crPratica=null;
+  P=a.P;obs=a.obs;items=a.items;pops=a.pops;fans=a.fans;sp=a.sp;frame=a.frame;dist=a.dist;pw=a.pw;shake=a.shake;
+  inv=a.inv;shield=a.shield;s2Sliding=a.s2Sliding;s2SlideTimer=a.s2SlideTimer;window.activePetFly=a.pet;
+  held=false;paused=false;state=a.estado;
+  s2ShowSlideButton();
+  $('jb').style.display='none';$('pause').style.display='none';$('pz').hidden=true;$('crPraticaPainel').hidden=true;
+  document.body.classList.remove('jogando');$('over').hidden=state!=='over';$('menu').hidden=state!=='menu';
+  if(registro.desafio){
+    var out=state==='menu'?$('crDesafioMenuStatus'):$('crPraticaStatus');
+    if(completo)out.textContent=registro.resultado;
+    (state==='menu'?$('crDesafioMenu'):$('crDesafioFim')).focus({preventScroll:true});sync();return;
+  }
+  var pista = $('crPraticaPista');
+  if(completo && !registro.pista) pista.hidden = false;
+  if(completo) $('crPraticaStatus').textContent=registro.pista ?
+    CR_PISTA_TR[crIdiomaResultado()][registro.passou?2:3] : crPraticaTexto(3).replace('{n}',registro.passou);
+  (registro.pista || completo ? pista : $('crPraticaBt')).focus({preventScroll:true});sync();
+}
+function crPraticaQuadro(dt){
+  crPratica.tempo+=dt; frame+=dt;dist+=sp*dt;
+  if(crPratica.desafio || obs[0].high)s2DeslizeQuadro(dt);
+  crPularQuadro(dt);
+  if(crPuloGuardado>0)crPuloGuardado=Math.max(0,crPuloGuardado-dt);
+  obs.forEach(function(o){
+    o.x-=sp*dt;
+    if(o.testado)return;
+    if(hit(P,o)){o.testado=true;o.errou=true;sfx.hit();return;}
+    if(o.x+o.w<P.x){o.testado=true;crPratica.passou++;sfx.star();}
+  });
+  if(crPratica.tempo>=crPratica.limite){
+    if(crPratica.desafio)crPratica.resultado=obs.map(function(o,i){
+      return (i+1)+'. '+crDesafioTexto(o.high?3:2)+' · '+crDesafioTexto(o.errou?5:4);
+    }).join(' / ');
+    crPraticaTerminar(true);return;
+  }
+  $('crPraticaTempo').textContent=crPraticaTexto(1).replace('{n}',Math.ceil((crPratica.limite-crPratica.tempo)/60));
 }
 function update(dt){
   frame+=dt;var s0=Math.min(5.5+frame*.0011,12)+Math.min(3,Math.max(0,score-5000)*.0003);sp=s0*SC;dist+=sp*dt;score+=s0*CFG.DIST_RATE*dt;
@@ -589,18 +722,7 @@ if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
     P.y += (targetY - P.y) * 0.12 * dt;
     P.vy = 0; P.air = true;
   } else {
-    var crSegurando = held || crPuloSegura > 0;   // pulo guardado conta como toque curto segurado (não vira pulinho)
-    if(!crSegurando && P.vy < -1.5) P.vy *= 0.82;
-    P.vy += ((crSegurando && P.vy < 0) ? .5 : .85) * dt;
-    if(crPuloSegura > 0) crPuloSegura = Math.max(0, crPuloSegura - dt);
-    P.y += P.vy * dt;
-    if(P.y >= GY - P.h){
-      P.y = GY - P.h;
-      P.vy = 0;
-      P.air = false;
-      if(crPuloGuardado > 0 && state === 'play' && !paused){ P.vy = -12.5; P.air = true; sfx.jump(); crPuloSegura = 8; }   // pulo guardado
-      crPuloGuardado = 0;
-    }
+    crPularQuadro(dt);
   }
   if(crPuloGuardado > 0) crPuloGuardado = Math.max(0, crPuloGuardado - dt);
 
@@ -638,7 +760,8 @@ if(curMic > (window.lastMic||0) && score > 0 && state === 'play') {
         if(shield){shield--;inv=90;sfx.hit();shake=8;toast=tr('Escudo usado!');toastT=80;break}
         var obstaculo = obs[i];
         crTelemetriaAnotar(obstaculo);
-        end({tipo:obstaculo.k, ar:P.air, suspenso:obstaculo.high});
+        end({tipo:obstaculo.k, ar:P.air, descendo:P.vy>0, deslizou:s2Sliding, suspenso:obstaculo.high, velocidade:sp,
+          obstaculo:{w:obstaculo.w,h:obstaculo.h,top:GY-obstaculo.y}});
         return;
       }
     }
@@ -980,7 +1103,7 @@ g=x2;g.save();
     x2.fillText(t('Jogue também e entre no ranking!'),300,H2-44);
     petShareMoldura(x2, W2, H2);   // moldura na cor do Oshi + data (V2.1.2)
   
-  return c2.toDataURL('image/png');
+  return (window.twMarcaPng?window.twMarcaPng(c2):c2.toDataURL('image/png'));
 }
 function draw(){
   var P2=curPal();
@@ -1212,13 +1335,15 @@ g.save();
   
 	
   g.textAlign='center';g.font='800 15px "M PLUS Rounded 1c",sans-serif';pops.forEach(function(p){g.globalAlpha=Math.max(0,1-p.t/40);g.fillStyle='#ffe14d';g.fillText(p.s,p.x+9,p.y-p.t*.9)});g.globalAlpha=1;
-  if(s2ArtActive())s2ArtHudBacking();
-  g.fillStyle='rgba(255,255,255,.92)';g.font='800 18px "M PLUS Rounded 1c",sans-serif';g.textAlign='left';
-  g.fillText(String(Math.floor(score)).padStart(5,'0'),14,28);
-  g.font='700 12px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#ff9ccd';g.fillText(tr(RANKS[rankI||rankOf(score)][1]),14,46);g.fillStyle='#ffe14d';g.fillText('★ '+stars,14,64);
+  if(!crPratica){
+    if(s2ArtActive())s2ArtHudBacking();
+    g.fillStyle='rgba(255,255,255,.92)';g.font='800 18px "M PLUS Rounded 1c",sans-serif';g.textAlign='left';
+    g.fillText(String(Math.floor(score)).padStart(5,'0'),14,28);
+    g.font='700 12px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#ff9ccd';g.fillText(tr(RANKS[rankI||rankOf(score)][1]),14,46);g.fillStyle='#ffe14d';g.fillText('★ '+stars,14,64);
+  }
   if(pw&&state==='play'){g.textAlign='right';g.fillStyle='#ffe14d';g.fillText((pw.k==='fever'?tr('Fever '):pw.k==='alien'?tr('Abdução '):pw.k==='gigante'?tr('Mega '):pw.k==='unit'?tr('Unit ✨ '):tr('Ímã '))+Math.ceil(pw.t/60)+'s',W-16,72)}
   crMetaDesenhar();
-  if(toastT>0){g.globalAlpha=Math.min(1,toastT/30);g.textAlign='center';g.font='800 '+(W<500?16:26)+'px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#fff';g.shadowColor='#ff6fb5';g.shadowBlur=16;g.fillText(toast,W/2,W<500?122:86,W-24);g.shadowBlur=0;g.globalAlpha=1}
+  if(!crPratica&&toastT>0){g.globalAlpha=Math.min(1,toastT/30);g.textAlign='center';g.font='800 '+(W<500?16:26)+'px "M PLUS Rounded 1c",sans-serif';g.fillStyle='#fff';g.shadowColor='#ff6fb5';g.shadowBlur=16;g.fillText(toast,W/2,W<500?122:86,W-24);g.shadowBlur=0;g.globalAlpha=1}
 }
 // Celular que não aguenta (17/11): mede a corrida e, se ficar abaixo de ~45 quadros por segundo, pede menos pixels
 // ao canvas do jogo (2× → 1,5× → 1×). O aparelho guarda o nível (tw_cr_nitidez) para a próxima corrida já começar leve.
@@ -1419,7 +1544,7 @@ function makeCard(){
   x2.font='500 11px "M PLUS Rounded 1c",sans-serif';
   x2.fillText('🌷 TsuLiPa⭐World · Center⭐Run! · BRS48 Official Photocard', 200, 524);
 	
-  return c2.toDataURL('image/png');
+  return (window.twMarcaPng?window.twMarcaPng(c2):c2.toDataURL('image/png'));
 }
 function cenaRGB(s){ var m = String(s).match(/\d+/g) || [0, 0, 0]; return [+m[0], +m[1], +m[2]]; }
 function cenaMix(a, b, t, al){ return 'rgba(' + Math.round(a[0] + (b[0] - a[0]) * t) + ',' + Math.round(a[1] + (b[1] - a[1]) * t) + ',' + Math.round(a[2] + (b[2] - a[2]) * t) + ',' + (al === undefined ? 1 : al) + ')'; }
@@ -1694,7 +1819,7 @@ function s2SpawnStage(){
   var t = s2Rand(), o;
 
   // Se estiver no Desafio de Fim de Cenário (5 obstáculos no ritmo da música)
-  if(s2Challenge && s2Challenge.active && s2Challenge.left > 0){
+  if(!crPratica && s2Challenge && s2Challenge.active && s2Challenge.left > 0){
     var isHigh = (s2Challenge.left % 2 === 0) && (id === 'estudio' || id === 'geral' || id === 'backstage' || id === 'dome');
     if(isHigh){
       o = { k: id === 'estudio' ? 'refletor' : 'fita', w: 42, h: 46, high: true, x: nextX, y: GY - 64, challenge: true };

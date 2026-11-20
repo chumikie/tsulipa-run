@@ -61,6 +61,7 @@ const path = require('node:path');
       box.id = 'jornalPosts';
       document.body.prepend(box);
       window.contaRpc = () => Promise.reject(new Error('offline'));
+      await jornalCarregar();
       await jornalPostsCarregar();
     });
     assert.equal(await page.locator('#jornalPosts button').first().textContent(),'Tentar novamente');
@@ -85,6 +86,7 @@ const path = require('node:path');
     await page.waitForFunction(() => window.jardimA.length === 1);
     await conta('B');
     await page.evaluate(() => studioAbrir());
+    await page.locator('#studioOv [data-st="categoria"][data-v="objeto"]').click();
     await page.locator('#studioOv [data-v="flor_girassol"]').waitFor();
     await page.evaluate(() => window.jardimA[0]({ok:true,flores:{tulipa:2}}));
     assert.equal(await page.locator('#studioOv [data-v="flor_tulipa"]').count(),0);
@@ -110,8 +112,10 @@ const path = require('node:path');
     const flor = page.locator('#studioOv [data-v="flor_girassol"][aria-pressed="true"]');
     await flor.waitFor();
     for(const quadro of ['inteiro','meio','rosto']){
+      await page.locator('#studioOv [data-st="categoria"][data-v="quadro"]').click();
       await page.locator('#studioOv [data-st="quadro"][data-v="' + quadro + '"]').click();
-      assert.equal(await flor.count(),1);
+      await page.locator('#studioOv [data-st="categoria"][data-v="objeto"]').click();
+      await flor.waitFor();
     }
     await page.locator('#studioX').click();
 
@@ -133,12 +137,28 @@ const path = require('node:path');
     await conta('');
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.evaluate(() => battleAbrir());
-    await page.locator('[data-battle="jogar"]').click();
     const batalha = page.locator('#battleCorpo');
+    await batalha.locator('[data-battle="abrir-slot"][data-slot="1"]').click();
+    const card = batalha.locator('.battle-pick').first();
+    const atributos = await card.locator('.battle-card-attrs small').evaluateAll(nodes=>nodes.map(n=>n.title));
+    assert.deepEqual(atributos.map(a=>a.replace(/ \d+\/10$/,'')),['Canto','Dança','Carisma']);
+    assert.equal(await card.locator('small.atual').getAttribute('title'),atributos[1]);
+    await batalha.locator('[data-battle="slot"]').first().click();
+    await page.locator('[data-battle="jogar"]').click();
     for(const rodada of [1,2,3]){
-      const placar = batalha.getByRole('status');
+      const placar = batalha.locator('.battle-showhud[role="status"]');
       await placar.waitFor();
       assert.match(await placar.textContent(),new RegExp(rodada + '/3'));
+      if(rodada === 1){
+        const placarAntes = await placar.textContent();
+        const previa = batalha.locator('#battlePreviaTroca');
+        const valores = (await previa.textContent()).replace('Se trocar · ','');
+        assert.match(valores,/→.*→/);
+        await batalha.getByRole('button',{name:'Confirmar troca'}).click();
+        assert.equal(await previa.textContent(),'Troca feita · '+valores);
+        assert.equal(await placar.textContent(),placarAntes);
+        assert.equal(await batalha.locator('[data-battle="trocar-restantes"]').count(),0);
+      }
       await batalha.getByRole('button',{name:rodada < 3 ? 'Próxima rodada' : 'Ver resultado'}).click();
     }
     assert.equal(await batalha.locator('.battle-result-grid .battle-round').count(),3);

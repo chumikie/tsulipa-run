@@ -57,7 +57,8 @@ duoOv.addEventListener('keydown', function(e){ if(e.target.id === 'duoBusca') e.
 $('duoCv').addEventListener('click', function(e){
   if(!duoGu) return;
   var cv = this, r = cv.getBoundingClientRect(), px = (e.clientX - r.left) * cv.width / r.width, py = (e.clientY - r.top) * cv.height / r.height;
-  var inf = duoInfo(), G = duoGeo(duoMeuAv(), duoT), U = G.sc, chao = cv.height * .9, gap = inf[5] * U, sxE = cv.width / 2 - gap / 2, sxG = cv.width / 2 + gap / 2;
+  var inf=duoInfo(),U=duoGeo(duoMeuAv(),duoT).sc,chao=cv.height*.9,q=duoQuadroGeo(cv.width,cv.height,U,inf),sxE=q.eu,sxG=q.gu;
+  px=cv.width/2+(px-cv.width/2)/q.zoom;py=q.pivo+(py-q.pivo)/q.zoom;
   if(py < chao - 52 * U || py > chao + 10) return;
   if(Math.abs(px - sxG) < 20 * U){ duoBalao = { txt:duoFala(), t0:duoT }; duoPulo = { quem:'gu', t0:duoT }; [1319, 1568, 2093].forEach(function(f, i){ beep(f, .09, 'triangle', .035, i * .07); }); }
   else if(Math.abs(px - sxE) < 20 * U){ duoPulo = { quem:'eu', t0:duoT }; beep(988, .08, 'triangle', .04); }
@@ -94,12 +95,31 @@ duoOv.addEventListener('click', function(e){
   if(t.id === 'duoPng' || t.id === 'duoPngSem'){   // PNG com o cenário ou transparente (sem fundo)
     var cv = document.createElement('canvas'); cv.width = 960; cv.height = 600;
     try{ duoRender(cv.getContext('2d'), 960, 600, t.id === 'duoPng', false); }catch(er){}
-    t.href = cv.toDataURL('image/png'); t.download = 'moon-duo-' + String(duoGu.nick).replace(/[^\w-]+/g, '') + (t.id === 'duoPngSem' ? '-sem-fundo' : '') + '.png';
+    t.href = (t.id === 'duoPngSem' ? cv.toDataURL('image/png') : (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png'))); t.download = 'moon-duo-' + String(duoGu.nick).replace(/[^\w-]+/g, '') + (t.id === 'duoPngSem' ? '-sem-fundo' : '') + '.png';
     if(sfx.card) sfx.card();
+  }
+  if(t.id==='duoRuaFofa' && duoPiloto && duoGu && window.TW_PILOTO_BAIRRO){
+    var ruaFoto=document.createElement('canvas');ruaFoto.width=960;ruaFoto.height=600;
+    var piloto=TW_PILOTO_BAIRRO;
+    try{
+      duoRender(ruaFoto.getContext('2d'),960,600,true,false);
+      piloto.iniciar('duo',duoPiloto);
+      if(piloto.concluir('duo',duoPiloto,ruaFoto)){
+        duoPilotoFoto={cena:ruaFoto,dono:petPhoneContaChave(),contexto:{cena:duoCenaAtual(),edicao:piloto.edicao(duoPiloto)}};t.disabled=true;
+        var guardar=$('duoRuaGuardar');guardar.hidden=!window.TW_ALBUM_FOTOS;guardar.disabled=false;
+        guardar.textContent='Guardar foto da Rua na série';
+        $('duoRuaStatus').textContent='Sua foto em dupla está na vitrine da Rua Fofa.';
+      }else $('duoRuaStatus').textContent='Esta edição da Rua Fofa já foi concluída ou terminou.';
+    }catch(e){$('duoRuaStatus').textContent='Não foi possível tirar a foto. Tente novamente.';}
+    return;
+  }
+  if(t.id==='duoRuaGuardar' && duoPilotoFoto && contaJ && duoPilotoFoto.dono===petPhoneContaChave() && window.TW_ALBUM_FOTOS){
+    TW_ALBUM_FOTOS.salvar('duo',duoPilotoFoto.cena,t,null,duoPilotoFoto.contexto);
+    return;
   }
   if(t.id === 'duoSerie' && duoGu && contaJ && window.TW_ALBUM_FOTOS){
     var serie = document.createElement('canvas'); serie.width = 960; serie.height = 600;
-    try{ duoRender(serie.getContext('2d'), 960, 600, true, false); TW_ALBUM_FOTOS.salvar('duo',serie,t); }catch(e){}
+    try{ duoRender(serie.getContext('2d'), 960, 600, true, false); TW_ALBUM_FOTOS.salvar('duo',serie,t,null,{cena:duoCenaAtual()}); }catch(e){}
   }
   if(t.id === 'duoPhone'){
     // Guarda apenas após toque explícito, usando a cena e os bloqueios já validados pelo Moon⭐Duo!.

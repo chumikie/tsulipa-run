@@ -63,3 +63,9 @@
 .duotrava{margin-bottom:8px}
 .duotrava[hidden],#duoPresBox[hidden]{display:none!important}.duotabc{text-align:left}.duotabc .duoexrow small{text-align:left}
 .duocena{display:block;width:100%;height:auto;aspect-ratio:1120/400;border-radius:20px;margin:6px 0 10px;box-shadow:0 4px 0 rgba(90,51,166,.16)}
+
+.duo-pedido{flex-wrap:wrap}
+.duo-direcao{flex:1 0 100%;text-align:left}
+.duo-direcao-pistas{margin:4px 0 8px;padding-left:1.25rem;font-size:.85rem}
+.duo-direcao-acoes{display:flex;gap:5px;flex-wrap:wrap}
+.duo-direcao-acoes .btn{font-size:.78rem;padding:5px 9px;min-height:38px}

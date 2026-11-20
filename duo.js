@@ -56,14 +56,20 @@ function duoMeuAv(){ return lookAtual(); }   // no Moon⭐Duo! você aparece com
 function duoGuAv(){ var a = duoGu && duoGu.look && typeof duoGu.look === 'object' ? duoGu.look : duoGu && duoGu.avatar && typeof duoGu.avatar === 'object' ? duoGu.avatar : {}; return lookSemRank(a); }
 function duoMeuPet(){ var k = petData && petData.ativo; return k && PET_SP[k] ? { k:k, acc:(petData.pets && petData.pets[k] && petData.pets[k].acc) || '', cfg:petData.pets && petData.pets[k] && petData.pets[k].cfg } : null; }
 function duoInfo(){ for(var i = 0; i < DUO_CENAS.length; i++) if(DUO_CENAS[i][0] === duoCena) return DUO_CENAS[i]; return DUO_CENAS[0]; }
+var duoQuadro='aberto', duoInvertido=false;
+function duoQuadroGeo(w,h,unidade,cena){
+  var deslocamento=cena[5]*unidade/2*(duoInvertido?-1:1);
+  return {eu:w/2-deslocamento,gu:w/2+deslocamento,pivo:h*.42,zoom:duoQuadro==='perto'?1.13:1};
+}
 function duoRender(x, W2, H2, comFundo, comUI){
   var t = duoT || 1, inf = duoInfo(), eu = duoMeuAv(), gu = duoGuAv();
-  var G = duoGeo(eu, t), U = G.sc, chao = H2 * .9, gap = inf[5] * U, sxE = W2 / 2 - gap / 2, sxG = W2 / 2 + gap / 2, i;
+  var G = duoGeo(eu, t), U = G.sc, chao = H2 * .9, q=duoQuadroGeo(W2,H2,U,inf), sxE=q.eu, sxG=q.gu, i;
   var poseE = inf[3], poseG = inf[4], exE = duoExEu === '' ? inf[6] : +duoExEu, exG = duoExGu === '' ? inf[6] : +duoExGu;
   if(inf[0] === 'danca'){ poseE = poseG = DUO_DANCA[Math.floor(t / 46) % DUO_DANCA.length]; }
   if(inf[0] === 'guarda') poseG = '';
   x.clearRect(0, 0, W2, H2);
   if(comFundo) duoFundoDesenhar(x, W2, H2, duoFundo, t, perfChar(eu).hair);
+  x.save();x.translate(W2/2,q.pivo);x.scale(q.zoom,q.zoom);x.translate(-W2/2,-q.pivo);
   // efeitos de fundo da cena
   if(inf[0] === 'dueto'){ [sxE, sxG].forEach(function(sx){ var lg = x.createLinearGradient(sx, 0, sx, chao); lg.addColorStop(0, 'rgba(255,248,200,.55)'); lg.addColorStop(1, 'rgba(255,248,200,0)'); x.fillStyle = lg; x.beginPath(); x.moveTo(sx - 18, 0); x.lineTo(sx + 18, 0); x.lineTo(sx + 95, chao); x.lineTo(sx - 95, chao); x.closePath(); x.fill(); }); }
   if(inf[0] === 'luzes' || inf[0] === 'neon'){ for(i = 0; i < 26; i++){ var cc = ['#ff6fb5', '#4dd8ff', '#b6ff3b', '#9b30d9', '#ffe14d'][i % 5]; x.globalAlpha = .35 + .3 * Math.sin(t * .08 + i); x.fillStyle = cc; x.beginPath(); x.arc((cenaHash(i) * W2), H2 * .55 + cenaHash(i + 40) * H2 * .3, 5 + (i % 3) * 2, 0, 7); x.fill(); } x.globalAlpha = 1; }
@@ -72,17 +78,17 @@ function duoRender(x, W2, H2, comFundo, comUI){
   function pulo(quem){ if(!duoPulo || duoPulo.quem !== quem) return 0; var p = (t - duoPulo.t0) / 22; if(p >= 1) return 0; return -Math.sin(p * Math.PI) * 34; }
   var dz = inf[0] === 'danca' ? -Math.abs(Math.sin(t * .136)) * 14 : 0;
   var chE = chao + pulo('eu') + dz, chG = chao + pulo('gu') + dz;
-  if(inf[0] === 'guarda') duoGuardaChuva(x, eu, sxE, chE, t, false);
-  duoIdolEm(x, eu, sxE, chE, poseE, exE, t, false);
-  duoIdolEm(x, gu, sxG, chG, poseG, exG, t + 37, true);
+  if(inf[0] === 'guarda') duoGuardaChuva(x, eu, sxE, chE, t, duoInvertido);
+  duoIdolEm(x, eu, sxE, chE, poseE, exE, t, duoInvertido);
+  duoIdolEm(x, gu, sxG, chG, poseG, exG, t + 37, !duoInvertido);
   // enfeites da cena por cima
-  var mE = duoPonto(eu, sxE, chE, t, false, 15, 27), mG = duoPonto(gu, sxG, chG, t + 37, true, 15, 27);
+  var mE = duoPonto(eu, sxE, chE, t, duoInvertido, 15, 27), mG = duoPonto(gu, sxG, chG, t + 37, !duoInvertido, 15, 27);
   if(inf[0] === 'coracao'){ var pu = 1 + .08 * Math.sin(t * .12); duoCoracao(x, W2 / 2, (mE[1] + mG[1]) / 2 - 30, 34 * pu, '#ff4f9a'); duoCoracao(x, W2 / 2 - 10, (mE[1] + mG[1]) / 2 - 42, 8 * pu, 'rgba(255,255,255,.7)'); }
   if(inf[0] === 'maos' || inf[0] === 'coracao' || inf[0] === 'pets'){ for(i = 0; i < 6; i++){ var hy = ((t * 1.1 + i * 55) % 260); x.globalAlpha = Math.max(0, 1 - hy / 260); duoCoracao(x, W2 / 2 + Math.sin(t * .04 + i * 2) * 40, chao - 160 - hy, 10 + (i % 3) * 3, ['#ff6fb5', '#ff9ccd', '#ffb3d6'][i % 3]); } x.globalAlpha = 1; }
-  if(inf[0] === 'hightouch'){ var hp = duoPonto(eu, sxE, chE, t, false, 35.5, 10.5), ph = (t % 60) / 60; if(ph < .4){ x.save(); x.globalAlpha = 1 - ph / .4; x.strokeStyle = '#ffe14d'; x.lineWidth = 5; for(i = 0; i < 8; i++){ var an = i * Math.PI / 4, r1 = 20 + ph * 90, r2 = 34 + ph * 120; x.beginPath(); x.moveTo(W2 / 2 + Math.cos(an) * r1, hp[1] + Math.sin(an) * r1); x.lineTo(W2 / 2 + Math.cos(an) * r2, hp[1] + Math.sin(an) * r2); x.stroke(); } x.restore(); } duoEstrela(x, W2 / 2, hp[1] - 6, 16, '#ffe14d', t * .05); }
+  if(inf[0] === 'hightouch'){ var hp = duoPonto(eu, sxE, chE, t, duoInvertido, 35.5, 10.5), ph = (t % 60) / 60; if(ph < .4){ x.save(); x.globalAlpha = 1 - ph / .4; x.strokeStyle = '#ffe14d'; x.lineWidth = 5; for(i = 0; i < 8; i++){ var an = i * Math.PI / 4, r1 = 20 + ph * 90, r2 = 34 + ph * 120; x.beginPath(); x.moveTo(W2 / 2 + Math.cos(an) * r1, hp[1] + Math.sin(an) * r1); x.lineTo(W2 / 2 + Math.cos(an) * r2, hp[1] + Math.sin(an) * r2); x.stroke(); } x.restore(); } duoEstrela(x, W2 / 2, hp[1] - 6, 16, '#ffe14d', t * .05); }
   if(inf[0] === 'comida'){ duoComida(x, mE[0], mE[1], U, 'crepe', t); duoComida(x, mG[0], mG[1], U, 'parfait', t); for(i = 0; i < 4; i++) duoEstrela(x, W2 / 2 + (i - 1.5) * 34, chao - 300 + Math.sin(t * .08 + i) * 10, 7, '#ffe14d', t * .03); }
   if(inf[0] === 'dueto' || inf[0] === 'danca'){ x.font = '700 34px sans-serif'; x.textAlign = 'center'; for(i = 0; i < 5; i++){ var ny = (t * .9 + i * 70) % 330; x.globalAlpha = Math.max(0, 1 - ny / 330); x.fillStyle = ['#9b30d9', '#ff6fb5', '#4169e1'][i % 3]; x.fillText(i % 2 ? '♪' : '♫', W2 / 2 + Math.sin(t * .03 + i * 1.7) * 90, chao - 170 - ny); } x.globalAlpha = 1; }
-  if(inf[0] === 'selfie' && (t % 150) < 8){ var fp = duoPonto(eu, sxE, chE, t, false, 37, 9); x.fillStyle = 'rgba(255,255,255,' + (1 - (t % 150) / 8) * .8 + ')'; x.beginPath(); x.arc(fp[0], fp[1], 60, 0, 7); x.fill(); }
+  if(inf[0] === 'selfie' && (t % 150) < 8){ var fp = duoPonto(eu, sxE, chE, t, duoInvertido, 37, 9); x.fillStyle = 'rgba(255,255,255,' + (1 - (t % 150) / 8) * .8 + ')'; x.beginPath(); x.arc(fp[0], fp[1], 60, 0, 7); x.fill(); }
   if(inf[0] === 'seis'){ var up = Math.sin(t * .22) > 0; x.font = '900 64px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.lineWidth = 8; x.strokeStyle = '#fff';
     [['6', sxE, up], ['7', sxG, !up]].forEach(function(n){ var yy = chao - 340 - (n[2] ? 16 : 0); x.strokeText(n[0], n[1], yy); x.fillStyle = n[0] === '6' ? '#ff6fb5' : '#4169e1'; x.fillText(n[0], n[1], yy); }); }
   if(inf[0] === 'pets'){   // os dois pets na frente, brincando com uma bolinha
@@ -100,7 +106,7 @@ function duoRender(x, W2, H2, comFundo, comUI){
     x.fillStyle = n[2]; x.fillText(String(n[1]).slice(0, 16), n[0], yy + 2);
   });
   if(comUI && duoBalao && t - duoBalao.t0 < 260){   // balão de fala do convidado
-    var hd = duoPonto(gu, sxG, chG, t + 37, true, 15, -4), al = Math.min(1, (t - duoBalao.t0) / 8, (260 - (t - duoBalao.t0)) / 20);
+    var hd = duoPonto(gu, sxG, chG, t + 37, !duoInvertido, 15, -4), al = Math.min(1, (t - duoBalao.t0) / 8, (260 - (t - duoBalao.t0)) / 20);
     x.save(); x.globalAlpha = al; x.font = '800 24px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center';
     var linhas = duoQuebra(x, duoBalao.txt, 330), bw = 0; linhas.forEach(function(l){ bw = Math.max(bw, x.measureText(l).width); }); bw += 40;
     var bh = linhas.length * 32 + 26, bxx = Math.max(bw / 2 + 10, Math.min(W2 - bw / 2 - 10, hd[0])), byy = Math.max(10, hd[1] - bh - 40);
@@ -109,6 +115,7 @@ function duoRender(x, W2, H2, comFundo, comUI){
     x.fillStyle = '#4b2a7a'; linhas.forEach(function(l, j){ x.fillText(l, bxx, byy + 40 + j * 32); });
     x.restore();
   }
+  x.restore();
   return { sxE:sxE, sxG:sxG, chao:chao, U:U };
 }
 function duoQuebra(x, s, max){ var pal = String(s).split(' '), L = [], cur = ''; pal.forEach(function(p){ var tt = cur ? cur + ' ' + p : p; if(x.measureText(tt).width > max && cur){ L.push(cur); cur = p; } else cur = tt; }); if(cur) L.push(cur); return L; }
@@ -148,6 +155,9 @@ function duoTexto(){
   $('duoTrocar').textContent = '🔁 ' + tr('Trocar dupla');
   $('duoPng').textContent = '📸 ' + tr('Salvar PNG'); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo');
   $('duoPhone').textContent = '💗 ' + petPhoneMomentoTexto(0);
+  var rua=$('duoRuaFofa'),voltar=$('duoVoltarRua');
+  rua.hidden=!duoPiloto||!duoGu;
+  voltar.hidden=!duoPiloto;
   var serie = $('duoSerie');
   if(serie && window.TW_ALBUM_FOTOS){
     serie.textContent = TW_ALBUM_FOTOS.textoSalvar(); serie.hidden = !serie.textContent; serie.disabled = false;
@@ -165,11 +175,29 @@ function duoFundos(){
   Object.keys(TEMA_INFO).forEach(function(k){ if(k !== 'halloween') L.push([k, TEMA_INFO[k][0], TEMA_INFO[k][1]]); });
   return L;
 }
+function duoCenaAtual(){
+  return {fundo:duoFundo,pose:duoCena,quadro:duoQuadro,invertido:duoInvertido,exprEu:duoExEu,exprGu:duoExGu,nick:duoGu.nick};
+}
+function duoAplicarCena(c){
+  function livre(lista,attr,k,padrao){
+    var item=lista.find(function(o){return o[0]===k;});
+    return item&&!duoTrava(attr,item)?k:padrao;
+  }
+  duoFundo=livre(duoFundos(),'data-dfundo',c.fundo,'basico');
+  duoCena=livre(DUO_CENAS,'data-dcena',c.pose,'dueto');
+  duoExEu=livre(PET_PH_EXPRS,'data-dexeu',c.exprEu,'');
+  duoExGu=livre(PET_PH_EXPRS,'data-dexgu',c.exprGu,'');
+  duoQuadro=c.quadro==='perto'?'perto':'aberto';duoInvertido=c.invertido===true;
+}
+function duoGuardarRascunho(){
+  if(duoPiloto && duoGu && window.TW_PILOTO_BAIRRO)TW_PILOTO_BAIRRO.guardarDupla(duoPiloto,duoCenaAtual());
+}
 function duoPalcoUI(){
   $('duoEscolha').hidden = true; $('duoPalco').hidden = false; duoTexto();
   $('duoNomes').innerHTML = '🌙 <b>' + escHtml(contaJ ? contaJ.nick : tr('Você')) + '</b> × <b>' + escHtml(duoGu.nick) + '</b>';
   $('duoDica').textContent = '👆 ' + tr('Toque em {nick} para ouvir uma mensagem!').replace('{nick}', duoGu.nick);
   duoTabUI();
+  duoGuardarRascunho();
   if(!duoAnim) duoAnim = requestAnimationFrame(duoLoop);
 }
 function duoEscolhaUI(msg){
@@ -207,13 +235,13 @@ function duoNickBtn(p){ return '<button type="button" class="duochip" data-dnick
 var duoBuscaT=0,duoBuscaSeq=0;
 function duoBuscaCancelar(){clearTimeout(duoBuscaT);duoBuscaT=0;duoBuscaSeq++;}
 var duoLoadSeq=0;
-function duoCarregar(nick){
-  var seq=++duoLoadSeq;
+function duoCarregar(nick,recriar){
+  var seq=++duoLoadSeq, dono=petPhoneContaChave();
   $('duoEscolha').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
   contaRpc('duo_convidado', { p_nick: String(nick).slice(0, 24) }).then(function(r){
-    if(seq!==duoLoadSeq||duoOv.hidden)return;
+    if(seq!==duoLoadSeq||duoOv.hidden||dono!==petPhoneContaChave())return;
     if(!r || r.erro){ duoGu = null; duoEscolhaUI(tr(r && r.erro === 'eu' ? 'Escolha outra pessoa para a dupla 😉' : r && r.erro === 'off' ? 'Essa pessoa não está participando do Moon⭐Duo!' : 'Esse nome ainda não tem perfil (jogou sem conta).')); return; }
-    duoGu = r; duoBalao = null; duoPalcoUI(); duoRegistrar();
+    duoGu = r; duoBalao = null; if(recriar)duoAplicarCena(recriar); duoPalcoUI(); duoRegistrar();
     beep(1047, .08, 'triangle', .04); beep(1568, .1, 'triangle', .04, .08);
   }).catch(function(){ if(seq===duoLoadSeq&&!duoOv.hidden)duoEscolhaUI(tr('Não deu para falar com o servidor. Tente de novo.')); });
 }
@@ -276,19 +304,25 @@ function duoPresUI(){
 }
 var DUO_PRES_ERRO = { hoje:'Você já mandou um presente hoje para essa pessoa.', limite:'Você chegou ao limite de presentes de hoje.', saldo:'Estrelas insuficientes.', alvo:'Essa pessoa não está participando do Moon⭐Duo!', bloqueado:'Sua conta está bloqueada pela moderação.' };
 function duoMsg(t){var m=$('duoMsg');if(!m||duoOv.hidden)return;if(m._twTimeout){m._twTimeout.cancel();m._twTimeout=null;}m.textContent=t;m.hidden=!t;if(t)m._twTimeout=twTimeoutVisivel(m,function(){return !duoOv.hidden&&m.isConnected;},function(){m.hidden=true;m._twTimeout=null;},5000);}
-function duoAbrir(nick){
+var duoPiloto=null,duoPilotoFoto=null;
+function duoAbrir(nick,atalho){
+  duoPiloto=atalho&&atalho.piloto||null;duoPilotoFoto=null;
+  $('duoRuaGuardar').hidden=true;
+  if(atalho&&window.TW_JANELAS)TW_JANELAS.preparar(duoOv,atalho.origem);
   duoVeioHub = !hubOv.hidden; lookSalvar();   // abre por cima da tela de início
   if(typeof perfOv !== 'undefined' && !perfOv.hidden) perfFechar();
   duoOv.hidden = false; duoOv.scrollTop = 0; duoT = 0; duoBalao = null; duoTexto();
+  $('duoRuaStatus').textContent='';$('duoRuaFofa').disabled=false;
   if(duoTrava('data-dfundo', [duoFundo])){ var tk = typeof temaAtual === 'function' ? temaAtual() : ''; duoFundo = tk && tk !== 'halloween' && TEMA_INFO[tk] ? tk : 'basico'; }
   if(duoTrava('data-dcena', duoInfo())) duoCena = 'dueto';
   if(duoExEu !== '' && duoTrava('data-dexeu', [duoExEu])) duoExEu = ''; if(duoExGu !== '' && duoTrava('data-dexgu', [duoExGu])) duoExGu = '';
-  if(nick && contaJ) duoCarregar(nick);
+  duoLoadSeq++;
+  if(nick && contaJ) duoCarregar(nick,atalho&&atalho.recriar);
   else { duoGu = null; duoEscolhaUI(); }
   if(sfx.card) sfx.card();
   if(typeof hubComecou !== 'undefined' && hubComecou) hubMusicaTocar();
 }
-function duoFechar(){ duoBuscaCancelar();var msg=$('duoMsg');if(msg&&msg._twTimeout){msg._twTimeout.cancel();msg._twTimeout=null;}duoLoadSeq++;duoOv.hidden = true; if(duoAnim){ cancelAnimationFrame(duoAnim); duoAnim = 0; } if(duoVeioHub) hubMostrar(); }   // o Halloween tem o fundo próprio da lojinha
+function duoFechar(){ duoPiloto=null;duoPilotoFoto=null;duoBuscaCancelar();var msg=$('duoMsg');if(msg&&msg._twTimeout){msg._twTimeout.cancel();msg._twTimeout=null;}duoLoadSeq++;duoOv.hidden = true; if(duoAnim){ cancelAnimationFrame(duoAnim); duoAnim = 0; } if(duoVeioHub) hubMostrar(); }   // o Halloween tem o fundo próprio da lojinha
 function duoTemaGratis(k){ return !!duoTemaK(k) && temaAtual() === k; }
 function temaProxTxt(k){   // quando o tema volta ("01/12")
   var md = dk().slice(5), prox = '', menor = '';

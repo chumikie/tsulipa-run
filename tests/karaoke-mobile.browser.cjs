@@ -67,7 +67,7 @@ const server=http.createServer((req,res)=>{
    inspectAdmission:function(){var dialog=document.getElementById('ktStartConfirm'),accept=document.getElementById('ktConfirmAccept');return {roomOpen:krSt.aberta,playerAtMic:krEuNoMicrofone(),playerNoMic:krEu.no_mic,active:kt.active(),paused:kt.paused(),pending:!!window.ktShowAdmissionPending,confirmOpen:!!(dialog&&dialog.open),acceptDisabled:!!(accept&&accept.disabled),startDisabled:$('ktStart').disabled,meta:ktMeta.controls(),online:window.ktOnline.online(),queueLength:krDemoFila.length,singer:!!krDemoCantor};}
   };
   function ktNoSite(){`);
-  res.setHeader('Content-Type',name.endsWith('.css')?'text/css':name.endsWith('.js')?'application/javascript':name.endsWith('.html')?'text/html':'application/octet-stream');
+  res.setHeader('Content-Type',name.endsWith('.css')?'text/css':name.endsWith('.js')?'application/javascript':name.endsWith('.html')?'text/html':name.endsWith('.woff2')?'font/woff2':'application/octet-stream');
   res.end(data);
  }catch(e){res.writeHead(404).end();}
 });
@@ -159,7 +159,7 @@ async function waitForRoomMode(frame, expectMobile){
    p.on('pageerror',e=>errors.push(String(e&&e.stack||e&&e.message||e)));
    p.on('console',message=>{if(message.type()==='error'&&consoleErrors.length<30)consoleErrors.push(message.text());});
    p.on('requestfailed',request=>{if(failedRequests.length<30)failedRequests.push({url:request.url(),error:request.failure()&&request.failure().errorText});});
-   await p.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.request().url().includes('fonts.googleapis.com')?r.fulfill({contentType:'text/css',body:fonts}):r.abort());
+   await p.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.request().url().includes('fonts.googleapis.com')?r.fulfill({contentType:'text/css',body:fonts.replaceAll("url('./assets/", "url('"+origin+'/'+"assets/")}):r.abort());
    await p.goto(origin);
    await p.evaluate(()=>window.qaKaraoke());
    // Bring the parent iframe and its stage into their respective viewports.
@@ -287,6 +287,9 @@ async function waitForRoomMode(frame, expectMobile){
     assert(autoMic.bot&&autoMic.automatic&&autoMic.wait,'eligible NPC receives a separate route and player waiting point');
     const micCanvas=frame.locator('#krCv'),micBounds=await micCanvas.boundingBox();
     await micCanvas.click({position:{x:autoMic.wait.x*micBounds.width/960,y:autoMic.wait.y*micBounds.height/540}});
+    // O clique abaixo da metade da cena pode mover a rolagem do host em paisagem.
+    await hostFrame.scrollIntoViewIfNeeded();
+    await micCanvas.scrollIntoViewIfNeeded();
     let singerState=null;
     for(let tries=0;tries<180;tries++){
      singerState=await frame.locator('body').evaluate(()=>window.qaRoomControllers.singerState());

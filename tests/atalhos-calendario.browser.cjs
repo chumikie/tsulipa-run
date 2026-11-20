@@ -44,6 +44,7 @@ async function main(){
     });
     await page.locator('[data-a="comecar"]').click();
     await page.locator('[data-f="tutPular"]').click();
+    assert.equal(await page.locator('script[src*="jornal.js"],script[src*="karaoke-news-photo.js"]').count(),0);
     for(const width of [320,390]){
       await page.setViewportSize({width,height:844});
       const inicio = await page.evaluate(() => {
@@ -58,6 +59,9 @@ async function main(){
     }
     await page.locator('#twcNav [data-n="menu"]').click();
     await page.locator('#twcTela [data-v="ajustes"]').click();
+    await page.locator('#twcAudioVolume').fill('42');
+    await page.locator('#twcAudioSom').uncheck();
+    assert.deepEqual(await page.evaluate(()=>TW_AUDIO.estado()),{volume:42,mudo:true});
     const edit = page.locator('#twcPinEditar');
     await edit.focus();
     await page.keyboard.press('Enter');
@@ -80,6 +84,7 @@ async function main(){
       Object.defineProperty(navigator, 'clipboard', {value:null, configurable:true});
     });
     await page.locator('[data-a="comecar"]').click();
+    assert.deepEqual(await page.evaluate(()=>TW_AUDIO.estado()),{volume:42,mudo:true});
     assert.deepEqual(await page.locator('.twc-ini-portas [data-pin-ir]').evaluateAll(items => items.map(b=>b.dataset.pinIr)),['cafe','cal']);
     const linhaFixada = await page.locator('.twc-ini-portas .twc-rapidos').boundingBox();
     assert.ok(linhaFixada && linhaFixada.height >= 44 && linhaFixada.height <= 50);
@@ -104,6 +109,7 @@ async function main(){
 
     await page.locator('#twcCalFestival').click();
     await page.locator('#jornalFestTitulo').waitFor();
+    assert.equal(await page.locator('script[src*="jornal.js"],script[src*="karaoke-news-photo.js"]').count(),2);
     assert.equal(await page.locator('#jnAbaBtnComunidade').getAttribute('aria-selected'),'true');
     assert.equal(pedidosQuadrinhos,2);
     await page.locator('#jornalOv [data-tw-link="festival"]').click();
@@ -122,6 +128,19 @@ async function main(){
     await page.keyboard.press('Escape');
     await page.locator('[data-cald="2026-11-22"]').click();
     assert.equal(await page.locator('[data-cal-cap="cap"]').count(),0);
+    assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('tw_cap_lidos_v2'))),[1]);
+    await page.evaluate(()=>localStorage.removeItem('tw_cap_lidos_v2'));
+    await page.locator('#twcNav [data-n="inicio"]').click();
+    await page.locator('#twcTela [data-a="news"]').first().click();
+    await page.locator('#jornalCaps .jncapquadros canvas').first().waitFor();
+    assert.equal(await page.evaluate(()=>localStorage.getItem('tw_cap_lidos_v2')),null);
+    await page.locator('#jornalX').click();
+    const ler=page.locator('[data-a="ler-capitulo"]');
+    if(!await ler.isVisible())await page.locator('[data-hjver]').first().click();
+    await ler.click();
+    await page.locator('#jornalCaps [data-jncap="0"][aria-pressed="true"]').waitFor();
+    assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('tw_cap_lidos_v2'))),[1]);
+    await page.locator('#jornalX').click();
 
     for(const rota of ['cafe','studio','festival']){
       const html = await readFile(path.join(root, rota + '.html'),'utf8');
@@ -154,7 +173,7 @@ async function main(){
     });
     assert.deepEqual(audio,[true,true,true]);
     assert.deepEqual(errors,[]);
-    console.log('Atalhos, Calendário, retomada do Jornal e três links públicos verificados.');
+    console.log('Atalhos, áudio, Calendário, Jornal sob demanda e três links públicos verificados.');
   }finally{
     await browser.close();
   }

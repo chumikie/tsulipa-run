@@ -1,0 +1,136 @@
+// "Esta semana", selo do site nas imagens, nomes acessíveis e carregamento (20/11/2026).
+const test = require('node:test');
+const assert = require('node:assert');
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
+const raiz = path.join(__dirname, '..');
+const ler = f => fs.readFileSync(path.join(raiz, f), 'utf8');
+
+test('Camarim: versão antiga do banco, confirmação repetida e troca de conta', async () => {
+  const conta = ler('conta.js');
+  const sala = ler('pet-sala.js');
+  const carteira = new Map();
+  const chamadas = [];
+  const contexto = vm.createContext({
+    contaJ: {id:'a'}, contaSessaoToken:0, contaAuthUserId:'a', petOpen:false, starT:100,
+    petData:{}, petAtivo:()=>null, petMini:()=>({ganho:0, rec:{corda:20}}),
+    petSave(){}, petUI(){}, setBest(){}, sfx:{}, PET_MINI_CAP:50,
+    localStorage:{setItem:(chave, valor)=>carteira.set(chave, valor)}
+  });
+  vm.runInContext(conta.slice(conta.indexOf('function contaSessaoAtual'), conta.indexOf('function contaUI')) +
+    conta.slice(conta.indexOf('function contaMiniInicio'), conta.indexOf('function contaTesteParceiras')) +
+    sala.slice(sala.indexOf('var PET_CREDITO_MINI'), sala.indexOf('//←petGameClose')), contexto);
+  const liquidar = () => new Promise(resolve => setImmediate(resolve));
+  function concluir() {
+    const jogo = {k:'corda', pulos:12, run:contexto.contaMiniInicio('corda')};
+    contexto.petGame = jogo;
+    contexto.petGameEnd();
+    return jogo;
+  }
+
+  contexto.contaRpc = async nome => {
+    chamadas.push(nome);
+    throw {code:'PGRST202'};
+  };
+  const antiga = concluir();
+  await liquidar();
+  assert.equal(antiga.fim.credito, 'indisponivel');
+  assert.equal(antiga.fim.dar, 0);
+  assert.equal(contexto.starT, 100);
+  assert.equal(carteira.size, 0);
+  assert.deepEqual(chamadas, ['mini_run_start']);
+
+  const confirmacoes = [];
+  let responder;
+  contexto.contaRpc = async (nome, args) => {
+    if(nome === 'mini_run_start') return {ok:true, run:'partida-1'};
+    confirmacoes.push(args.p_run);
+    if(confirmacoes.length === 1) throw new Error('sem conexão');
+    return new Promise(resolve => { responder = resolve; });
+  };
+  const atual = concluir();
+  await liquidar();
+  assert.equal(atual.fim.credito, 'repetir');
+  contexto.petMiniConfirmar(atual);
+  contexto.petMiniConfirmar(atual);
+  await liquidar();
+  assert.equal(atual.fim.credito, 'aguardando');
+  assert.equal(contexto.starT, 100);
+  assert.deepEqual(confirmacoes, ['partida-1', 'partida-1']);
+  responder({ok:true, stars:106, dadas:6});
+  await liquidar();
+  assert.equal(atual.fim.credito, 'confirmado');
+  assert.equal(atual.fim.dar, 6);
+  assert.equal(carteira.get('brs48cr_st'), 106);
+
+  const anterior = concluir();
+  await liquidar();
+  contexto.contaJ = {id:'b'};
+  contexto.starT = 20;
+  responder({ok:true, stars:112, dadas:6});
+  await liquidar();
+  assert.equal(anterior.fim.credito, 'conta');
+  assert.equal(contexto.starT, 20);
+  assert.equal(carteira.get('brs48cr_st'), 106);
+});
+
+test('tw-semana: todos os textos nos 6 idiomas e nada de estrela calculada no navegador', () => {
+  const src = ler('tw-semana.js');
+  const ctx = {window:{}, contaSessaoAtual:()=>()=>true, document:{readyState:'complete', addEventListener(){}, getElementById(){ return null; }, body:{setAttribute(){}, removeAttribute(){}}}, setTimeout(){}, Promise, Event:function(){}, LANG:'pt'};
+  ctx.window.dispatchEvent = () => {};
+  vm.runInNewContext(src.replace("document.addEventListener('click'", "(function(){})('click'"), ctx);
+  const m = src.match(/var TX = (\{[\s\S]*?\n  \});/);
+  assert.ok(m, 'dicionário TX');
+  const TX = vm.runInNewContext('(' + m[1] + ')');
+  for(const [k, v] of Object.entries(TX)) for(const l of ['pt', 'en', 'es', 'id', 'th', 'ja']) assert.ok(v[l], k + ' sem ' + l);
+  assert.ok(!/starT\s*\+=/.test(src), 'o saldo só muda pelo que o servidor devolve');
+  assert.match(src, /rpc\('show_sabado_marcar'\)/);
+  assert.match(src, /rpc\('festa_resgatar'\)/);
+});
+
+test('migração da semana: RPCs que dão prêmio exigem login e as de leitura aceitam visitante', () => {
+  const sql = ler('supabase/migrations/20261120160000_semana_show_festa_jogos.sql');
+  for(const f of ['show_sabado_marcar()', 'festa_resgatar()', 'admin_uso_jogos(integer)']) {
+    assert.ok(sql.includes('revoke all on function public.' + f + ' from public, anon;'), f + ' fechada para visitante');
+    assert.ok(sql.includes('grant execute on function public.' + f + ' to authenticated;'), f + ' aberta para quem entrou');
+  }
+  for(const f of ['show_sabado_estado()', 'festa_estado()', 'jogo_da_semana()'])
+    assert.ok(sql.includes('grant execute on function public.' + f + ' to anon, authenticated;'), f + ' pública');
+  assert.match(sql, /private\.kt_runs r where r\.player_id = v_uid and r\.dia = v_dia and r\.finished_at is not null/, 'o show exige música terminada no servidor');
+  assert.match(sql, /if not public\.eh_admin\(\)/, 'uso dos jogos só para a moderação');
+  assert.match(sql, /order by \(k = \(select k from js\)\) desc, h limit 1/, 'missão nível 1 prefere o Jogo da semana');
+});
+
+test('selo do site nos PNGs baixados e nomes acessíveis carregados no index', () => {
+  const html = ler('index.html');
+  assert.match(html, /<script src="\.\/tw-marca\.js\?v=\d+"><\/script>/);
+  assert.match(html, /<script defer src="\.\/tw-acessibilidade\.js\?v=\d+"><\/script>/);
+  assert.match(html, /<script defer src="\.\/tw-semana\.js\?v=\d+"><\/script>/);
+  for(const f of ['gacha.js', 'battle.js', 'shop.js', 'duo-tela.js', 'studio.js', 'album-fotos.js', 'jornal.js', 'centerrun-corrida.js', 'pet-sala.js', 'tw-celular.js'])
+    assert.match(ler(f), /twMarcaPng/, f + ' usa o selo ao salvar');
+  const marca = ler('tw-marca.js');
+  assert.match(marca, /tsulipa-world\.vercel\.app/);
+});
+
+test('fontes próprias: o Google Fonts só entra em japonês', () => {
+  const html = ler('index.html');
+  assert.match(html, /<link rel="stylesheet" href="\.\/kt-fonts\.css\?v=\d+">/);
+  assert.ok(!/<link href="https:\/\/fonts\.googleapis\.com/.test(html), 'sem a folha de 146 KB no carregamento comum');
+  assert.match(html, /if\(l==='ja'\)twFontesJa\(\)/);
+});
+
+test('tw-pessoal: textos nos 6 idiomas; migração fecha o que é pessoal e a lista de emails só para a chave de serviço', () => {
+  const src = ler('tw-pessoal.js');
+  const m = src.match(/var TX = (\{[\s\S]*?\n  \});/);
+  const TX = vm.runInNewContext('(' + m[1] + ')');
+  for(const [k, v] of Object.entries(TX)) for(const l of ['pt', 'en', 'es', 'id', 'th', 'ja']) assert.ok(v[l], k + ' sem ' + l);
+  const sql = ler('supabase/migrations/20261120170000_retro_vitrine_recados_email.sql');
+  for(const f of ['retro_mes(date)', 'salvar_vitrine(text, text, text)', 'minha_vitrine()', 'recado_tsulipa_enviar(text)', 'admin_recados_tsulipa(bigint)', 'email_mensal(boolean)'])
+    assert.ok(sql.includes('revoke all on function public.' + f + ' from public, anon;') && sql.includes('grant execute on function public.' + f + ' to authenticated;'), f);
+  assert.ok(sql.includes('revoke all on function public.email_mensal_pacote(date) from public, anon, authenticated;'));
+  assert.ok(sql.includes('grant execute on function public.email_mensal_pacote(date) to service_role;'));
+  assert.match(sql, />= 3 then\s+return json_build_object\('ok', false, 'erro', 'limite'\)/, 'no máximo 3 recados por dia');
+  assert.match(ler('perfil-tela.js'), /TW_PESSOAL\.vitrineMontar\(d, meu\)/);
+  assert.match(ler('index.html'), /<script defer src="\.\/tw-pessoal\.js\?v=\d+"><\/script>/);
+});

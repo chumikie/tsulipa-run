@@ -4,7 +4,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 const html = require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
-const resume = html.match(/function finishResume\(\)\{[^\n]+\}\nfunction pause\(value\)\{[^\n]+\}/);
+const resume = html.match(/function finishResume\(\)\{[\s\S]*?\n\}\nfunction pause\(value\)\{[\s\S]*?\n\}/);
 const tick = html.match(/function tick\(\)\{[\s\S]*?\}\nfunction hit\(/);
 const keyhandler = [...html.matchAll(/document\.addEventListener\('keydown',function\(e\)\{[\s\S]*?\n\}\);/g)]
   .map(m => m[0]).find(src => src.includes("key==='c'"));
@@ -13,11 +13,16 @@ assert(resume && tick && keyhandler, 'Contagem, áudio e atalhos existem');
 const clock = {ms:2000}, note = {at:3000,done:false};
 const run = {start:0,paused:false,resumeUntil:0,pauseAt:0,audioStep:0,step:250,total:240,
   notes:[note],auto:true,audioReady:true,audioClock:true,offsetMs:0,score:0,combo:0,hits:0,attempts:0};
-let audio=0,scheduled=0,prepared=0;
+let audio=0,scheduled=0,prepared=0, audioDisponivel=true, mensagem;
 const stage = {ktCalibration:{open:false},ktPause:{disabled:false}};
 const ctx=vm.createContext({run,performance:{now:()=>clock.ms},kNow:()=>clock.ms,AC:null,
-  krDemoCantor:null,audioTimer:0,clearInterval:()=>{},document:{hidden:false},ktPrepararRelogioAudio:(target,delay,elapsed,done)=>{prepared++;target.audioReady=true;target.audioClock=true;done(true,0);},$:id=>stage[id],silence:()=>{},ac:()=>audio++,schedule:()=>scheduled++,
-  updateUI:()=>{},checkpoint:()=>{},lastCheckpoint:clock.ms,lastUI:clock.ms,KT_HIT_WINDOWS:{good:100},react:()=>{},
+  krDemoCantor:null,audioTimer:0,clearInterval:()=>{},document:{hidden:false},ktPrepararRelogioAudio:(target,delay,elapsed,done,exigir)=>{
+    prepared++;
+    if(exigir&&!audioDisponivel){target.audioReady=true;done(false,0);return;}
+    target.audioReady=true;target.audioClock=true;target.paused=false;
+    target.start=clock.ms-elapsed;target.notes.forEach(n=>{n.at=target.start+3000;});done(true,0);
+  },$:id=>stage[id],silence:()=>{},ac:()=>audio++,schedule:()=>scheduled++,
+  updateUI:()=>{},checkpoint:()=>{},timingMessage:t=>{mensagem=t;},KT_RETRY_AUDIO:{pt:"Áudio interrompido"},LANG:"pt",lastCheckpoint:clock.ms,lastUI:clock.ms,KT_HIT_WINDOWS:{good:100},react:()=>{},
   end:()=>{throw Error('Não deve encerrar');}});
 vm.runInContext(resume[0]+'\n'+tick[0].replace(/\nfunction hit\($/,''),ctx);
 ctx.pause(true);
@@ -38,6 +43,40 @@ assert.equal(run.paused,true);
 assert.equal(run.resumeUntil,0,'P cancela a contagem em andamento');
 ctx.pause(false);ctx.document.hidden=true;clock.ms=10000;ctx.tick();
 assert.equal(run.resumeUntil,0,'aba oculta não retoma por engano');
+
+ctx.document.hidden=false;audioDisponivel=false;
+ctx.pause(false);clock.ms=13000;ctx.tick();
+assert.equal(run.paused,true,'o relógio e as notas continuam pausados sem áudio');
+assert.equal(note.at,7000);
+assert.match(mensagem,/Áudio interrompido/);
+audioDisponivel=true;ctx.pause(false);clock.ms=16000;ctx.tick();
+assert.equal(run.paused,false,'o mesmo show retoma após o áudio voltar');
+assert.equal(note.at,16000);
+assert.equal(mensagem,'');
+
+// Use the real audio arming function with an unresolved AudioContext.resume().
+{
+  const fonte=fs.readFileSync(path.join(__dirname,'../karaoke-show.js'),'utf8');
+  const trecho=fonte.slice(fonte.indexOf('function ktPrepararRelogioAudio'),fonte.indexOf('function silence'));
+  const alvo={start:4000,step:250,notes:[{idx:12,at:7000}],paused:true,pauseAt:7000};
+  const contexto={state:'interrupted',currentTime:8};
+  let expirar, pronto;
+  const prova=vm.createContext({run:alvo,performance:{now:()=>16000},document:{hidden:false},
+    D:{ac:()=>()=>contexto,acResumePromise:()=>({then(ok){pronto=ok;}})},ktVincularEstadoAudio:()=>{},
+    setTimeout:f=>{expirar=f;},ktOutputLatencyMs:()=>0,audioTimer:1,schedule:()=>{},resultados:[]});
+  vm.runInContext(trecho+'\nktPrepararRelogioAudio(run,0,3000,ok=>resultados.push(ok),true);',prova);
+  expirar();
+  assert.deepEqual(prova.resultados,[false]);
+  assert.equal(alvo.paused,true);
+  assert.equal(alvo.pauseAt,7000);
+  assert.equal(alvo.notes[0].at,7000);
+  contexto.state='running';pronto();
+  assert.deepEqual(prova.resultados,[false],'a resposta antiga não arma o relógio depois do timeout');
+  vm.runInContext('ktPrepararRelogioAudio(run,0,3000,ok=>resultados.push(ok),true);',prova);
+  assert.deepEqual(prova.resultados,[false,true]);
+  assert.equal(alvo.paused,false);
+  assert.equal(alvo.notes[0].at,16000);
+}
 
 let listener;const actions=[],shortcutRun={paused:false,resumeUntil:0};
 const elements={ktResult:{open:false},ktClosed:{hidden:true},ktCalibration:{open:false},ktFoto:{click:()=>actions.push('camera')},krMute:{disabled:false},krMicBtn:{disabled:false,click:()=>actions.push('microphone')}};

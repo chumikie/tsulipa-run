@@ -9,7 +9,7 @@ assert.match(cr,/c === CH\[3\]\) && \(!TW_LADO\.sabe \|\| TW_LADO\.sabe\(c, A\)\
   for(const k of ['longo','onduladof','onduladom','rabo','marias','cacheado']) assert.match(lado,new RegExp("c\\.back === '"+k+"'"),'corte de lado: '+k); }
 assert.match(lado,/var corCam = \(c\.out && /,'a camisa do perfil usa a cor da roupa');
 assert.match(co,/s2DrawSceneryBg\(\);\n    crLuzesPalco\(\);/,'luzes também nos palcos da Temporada 2');
-assert.match(co,/var obstaculo = obs\[i\];\s*crTelemetriaAnotar\(obstaculo\);\s*end\(\{tipo:obstaculo\.k, ar:P\.air, suspenso:obstaculo\.high\}\);/,'telemetria e resultado recebem a mesma colisão');
+assert.match(co,/var obstaculo = obs\[i\];\s*crTelemetriaAnotar\(obstaculo\);\s*end\(\{tipo:obstaculo\.k, ar:P\.air, descendo:P\.vy>0, deslizou:s2Sliding, suspenso:obstaculo\.high, velocidade:sp,\s*obstaculo:\{w:obstaculo\.w,h:obstaculo\.h,top:GY-obstaculo\.y\}\}\);/,'telemetria e resultado recebem a mesma colisão');
 assert.match(conta,/contaRpc\('corrida_telemetria',\{p_run:p\.id,p_causa:tl\.causa,p_meta:tl\.meta\}\)/,'telemetria só depois da corrida confirmada');
 assert.match(sql,/and causa is null/,'telemetria grava uma vez só');
 assert.match(sql,/finished_at > now\(\) - interval '10 minutes'/,'só corrida recém-terminada');

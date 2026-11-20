@@ -89,7 +89,7 @@ test('Café e Handshake só trocam apresentação, mantendo lógica de jogos e m
   assert.match(cafe, /cf\.atendidos > 0 && cf\.visitaComunidade/);
   assert.match(cafe, /if\(cf\.servidor && cf\.servidor\.pedido\) f\.pedido = cf\.servidor\.pedido/);
   assert.match(hs, /hsCafeAplicarReencontro\(fila, presentesServidor\)/);
-  assert.match(hs, /if\(hs\.visitaAlvo !== f && !f\.superfa\) hsMemGuardar\(f\)/);
+  assert.match(hs, /if\(hs\.visitaAlvo !== f && !f\.superfa && !hs\.treinoLeitura\) hsMemGuardar\(f\)/);
   assert.match(hs, /f !== hs\.visitaAlvo/);
   assert.match(hs, /hs\.respostas\.push\(\{ rodada:hs\.rodada, origem:f\.hsOrigem, indice:f\.hsIndice/);
   assert.match(hs, /contaRpc\('handshake_iniciar'\)/);

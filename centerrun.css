@@ -312,3 +312,6 @@ body:has(#over:not([hidden])) #mute{opacity:0;pointer-events:none}
 .cr-pratica{position:absolute;z-index:6;top:54px;left:12px;max-width:calc(100% - 84px);display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:7px 10px;border-radius:12px;background:#2d1959;color:#fff}
 .cr-pratica[hidden],#crPraticaBt[hidden],#crPraticaPista[hidden],#crPraticaStatus:empty{display:none}
 .cr-pratica .btn{min-height:36px;padding:4px 9px}
+
+#crDesafioMenuStatus:empty,#crDesafioMenu[hidden]{display:none}
+#crDesafioMenu{margin:6px auto 0}

@@ -307,7 +307,8 @@ function abrir(atalho){
  cartaTeste=atalho && atalho.dono===dono && dono && typeof atalho.card==='string' ?
    {nick:atalho.card,card:null,posicao:0,pendente:true} : null;
  var previa=cartaTeste;
- montar();ov.hidden=false;estado=treino();unit=estado.cards.slice(0,3).map(function(c){return c.nick;});
+ montar();if(previa && window.TW_JANELAS)TW_JANELAS.preparar(ov,atalho.origem);
+ ov.hidden=false;estado=treino();unit=estado.cards.slice(0,3).map(function(c){return c.nick;});
  rodadas=null;revanche=null;ritmo=null;ocupado=false;msg='';servidor=false;fase='escalar';slotAberto=-1;ranking=null;torcida=null;modo='dia';arena=null;alvo=null;msgOk=false;render();
  if(previa)ov.querySelector('#battleCartaTitulo').focus();
  try{if(typeof hubIdolsCarregar==='function'&&!(typeof hubIdolsDados!=='undefined'&&hubIdolsDados)&&logado())hubIdolsCarregar();}catch(e){}

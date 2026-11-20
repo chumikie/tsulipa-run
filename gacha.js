@@ -50,7 +50,8 @@ function gachaCardUI(){   // o card do Idol que saiu (estilo dos cards do BRS48 
     battle.textContent=GACHA_BATTLE_TR[LANG]||GACHA_BATTLE_TR.pt;
     battle.onclick=function(){
       if(battle.hidden || gachaDono!==gachaContaAtual() || !gachaRes || gachaRes.card!==d)return;
-      gachaFechar();window.battleAbrir({card:d.nick,dono:gachaDono});
+      var origem=window.TW_JANELAS && TW_JANELAS.origem(battle);
+      gachaFechar();window.battleAbrir({card:d.nick,dono:gachaDono,origem:origem});
     };
   }
   cv.hidden = !d; dl.hidden = !d; if(!d) return;

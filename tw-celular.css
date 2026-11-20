@@ -979,3 +979,5 @@ body.tw-cel .twc-novidades-conteudo li{padding:10px 12px;border-radius:14px;back
 .twc-pins :focus-visible,.twc-rapidos :focus-visible,.twc-cal-acoes :focus-visible{outline:2px solid currentColor;outline-offset:2px}
 #twcPinOpcoes p,.twc-cal-hora{margin:10px 0 0;color:var(--twc-sub);font-size:.85rem}
 #twcPinOpcoes .twc-chips{margin-top:8px}
+
+.twc-tela[data-tela=album]{scroll-padding-block:112px calc(100px + env(safe-area-inset-bottom))}

@@ -57,7 +57,8 @@ duoOv.addEventListener('keydown', function(e){ if(e.target.id === 'duoBusca') e.
 $('duoCv').addEventListener('click', function(e){
   if(!duoGu) return;
   var cv = this, r = cv.getBoundingClientRect(), px = (e.clientX - r.left) * cv.width / r.width, py = (e.clientY - r.top) * cv.height / r.height;
-  var inf = duoInfo(), G = duoGeo(duoMeuAv(), duoT), U = G.sc, chao = cv.height * .9, gap = inf[5] * U, sxE = cv.width / 2 - gap / 2, sxG = cv.width / 2 + gap / 2;
+  var inf=duoInfo(),U=duoGeo(duoMeuAv(),duoT).sc,chao=cv.height*.9,q=duoQuadroGeo(cv.width,cv.height,U,inf),sxE=q.eu,sxG=q.gu;
+  px=cv.width/2+(px-cv.width/2)/q.zoom;py=q.pivo+(py-q.pivo)/q.zoom;
   if(py < chao - 52 * U || py > chao + 10) return;
   if(Math.abs(px - sxG) < 20 * U){ duoBalao = { txt:duoFala(), t0:duoT }; duoPulo = { quem:'gu', t0:duoT }; [1319, 1568, 2093].forEach(function(f, i){ beep(f, .09, 'triangle', .035, i * .07); }); }
   else if(Math.abs(px - sxE) < 20 * U){ duoPulo = { quem:'eu', t0:duoT }; beep(988, .08, 'triangle', .04); }

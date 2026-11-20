@@ -5,6 +5,28 @@
 var SHOP_ATENDE = [['Tsu', 0, '#9b30d9'], ['Lirika', 1, '#3f9c1f'], ['Pati', 2, '#4169e1']];
 var SHOP_OI = ['Bem-vindo à Zipper⭐Shop!', 'Provou, gostou, levou!', 'Tem roupa nova na arara!'];
 var shopT = 0, shopAnim = 0, shopFala = { txt:'', t0:-999 };
+var SHOP_PROVADOR_TR={
+  pt:['Provar','Look atual','Com a peça','Tirar peça da prévia'],
+  en:['Try on','Current look','With this piece','Remove from preview'],
+  es:['Probar','Look actual','Con la prenda','Quitar de la vista previa'],
+  id:['Coba','Penampilan saat ini','Dengan pakaian ini','Hapus dari pratinjau'],
+  th:['ลองชุด','ลุคปัจจุบัน','เมื่อใส่ชุดนี้','นำออกจากตัวอย่าง'],
+  ja:['試着','現在のコーデ','試着したコーデ','試着をやめる']
+};
+function shopProvaTexto(i){return (SHOP_PROVADOR_TR[LANG]||SHOP_PROVADOR_TR.pt)[i];}
+function shopProvar(codigo){
+  var item=perfLojaInfo(codigo);
+  if(!item)return;
+  perfProva=perfProva===codigo?'':codigo;
+  perfLojaUI();shopProvador();
+  var botao=$('perfLoja').querySelector('button[data-provar="'+CSS.escape(codigo)+'"]');
+  if(botao)botao.focus({preventScroll:true});
+  if(perfProva){
+    var prova=$('shopProvStatus');
+    prova.focus({preventScroll:true});
+    prova.scrollIntoView({block:'center'});
+  }
+}
 function shopAtendente(){   // uma por dia; nunca a própria pessoa (Tsu, Lirika ou Pati/Patiliri não se atendem)
   var d = Math.floor((Date.now() - 3 * 3600e3) / 864e5), eu = String(typeof contaJ !== 'undefined' && contaJ && contaJ.nick || '').toLowerCase();
   if(eu === 'patiliri') eu = 'pati';
@@ -21,7 +43,10 @@ function shopHtml(){
     '<div id="shopCorpo"></div></div>';
 }
 function shopCorpoHtml(){   // os mesmos blocos (e ids) da lojinha do perfil: as compras seguem iguais
-  return '<section class="shopprov"><h3>🪞 ' + escHtml(tr('Provador')) + '</h3><canvas id="shopProvCv" width="512" height="512" aria-hidden="true"></canvas>' +
+  return '<section class="shopprov"><h3>🪞 ' + escHtml(tr('Provador')) + '</h3><div class="shop-comparar">'+
+    '<figure id="shopAntes" hidden><canvas id="shopAntesCv" width="512" height="512" aria-hidden="true"></canvas><figcaption>'+escHtml(shopProvaTexto(1))+'</figcaption></figure>'+
+    '<figure><canvas id="shopProvCv" width="512" height="512" aria-hidden="true"></canvas><figcaption id="shopProvStatus" role="status" tabindex="-1"></figcaption></figure></div>'+
+    '<button class="btn alt" id="shopLimparProva" type="button" hidden>'+escHtml(shopProvaTexto(3))+'</button>' +
     '<div class="btns"><button type="button" class="btn" id="shopSalvar">💾 ' + escHtml(tr('Salvar visual')) + '</button><a class="btn alt" id="shopPng" href="#" download="zipper-shop.png">⬇️ ' + escHtml(tr('Baixar PNG')) + '</a></div>' +
     '<p class="perfmsg" id="shopProvMsg" hidden></p>' + shopLookHtml() + '</section>' +
     '<h3>✏️ ' + escHtml(tr('Montar Idol')) + '</h3><div class="cust perfmont" id="perfMont"></div>' +
@@ -40,10 +65,9 @@ function shopUI(){
   if(typeof perfLojaUI === 'function') perfLojaUI();
   if(typeof perfLoja2UI === 'function') perfLoja2UI();
   shopProvador();
-  shopLookUI();
 }
-function shopAvAtual(){   // o seu Idol (com a roupa que está provando)
-  var av = perfAvAtual({ fundo:'basico', pose:'v', expr:3 }); if(perfProva) av.c.out = perfProva; return av;
+function shopAvAtual(comProva){   // o seu Idol (com a roupa que está provando)
+  var av = perfAvAtual({ fundo:'basico', pose:'v', expr:3 }); if(perfProva && comProva!==false) av.c.out = perfProva; return av;
 }
 // Look do dia (dress-up da Barbie): um tema de cor por dia (0h de Brasília), igual para todo mundo.
 // Combina quando a cor da roupa entra no tema; com as meias no mesmo tom, vira "Look completo".
@@ -121,8 +145,19 @@ function shopLookFoto(){
 }
 function shopProvador(){
   var cv = $('shopProvCv'), x = cv && cv.getContext('2d'); if(!x) return;
-  x.clearRect(0, 0, cv.width, cv.height);
-  try{ perfDesenharIdol(x, cv.width, cv.height, shopAvAtual(), true); }catch(e){}
+  var info=perfLojaInfo(perfProva), antes=$('shopAntes'), botao=$('shopLimparProva'), status=$('shopProvStatus');
+  antes.hidden=botao.hidden=!info;
+  status.textContent=info?shopProvaTexto(2)+' · '+tr(info[2]):shopProvaTexto(1);
+  x.clearRect(0,0,cv.width,cv.height);
+  try{
+    perfDesenharIdol(x,cv.width,cv.height,shopAvAtual(),true);
+    if(info){
+      var base=$('shopAntesCv'), b=base.getContext('2d');
+      b.clearRect(0,0,base.width,base.height);
+      perfDesenharIdol(b,base.width,base.height,shopAvAtual(false),true);
+    }
+  }catch(e){}
+  shopLookUI();
 }
 function shopPng(a){   // PNG 1024×1024 com assinatura, como o do perfil
   var cv = document.createElement('canvas'); cv.width = cv.height = 1024; var x = cv.getContext('2d');
@@ -150,8 +185,9 @@ function shopAbrir(){
   shopOv.hidden = false; shopOv.scrollTop = 0; shopT = 0;
   shopFala = { txt:SHOP_OI[Math.floor(Math.random() * SHOP_OI.length)], t0:40 };
   shopUI();
+  var dono=petPhoneContaChave(), corpo=$('shopProvCv');
   contaRpc('meu_perfil').then(function(d){   // compras atualizadas (podem ter sido feitas em outro aparelho)
-    if(!d || shopOv.hidden) return; perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : perfDono; perfLojaSincronizar(); shopUI();
+    if(!d || shopOv.hidden || dono!==petPhoneContaChave() || corpo!==$('shopProvCv')) return; perfDono = Array.isArray(d.visuais) ? d.visuais.slice() : perfDono; perfLojaSincronizar(); shopUI();
   }).catch(function(){});
   if(!shopAnim) shopAnim = requestAnimationFrame(shopLoop);
 }

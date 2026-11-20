@@ -47,7 +47,7 @@
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=17">
+<link rel="stylesheet" href="./centerrun.css?v=18">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -67,7 +67,7 @@
 .perfdica{text-align:center;font-size:13px}
 </style>
 <link rel="stylesheet" href="./hub.css?v=11">
-<link rel="stylesheet" href="./shop.css?v=5">
+<link rel="stylesheet" href="./shop.css?v=6">
 <link rel="stylesheet" href="./jornal.css?v=15">
 <style>
 
@@ -95,7 +95,7 @@ body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 
 /* Títulos com mais personalidade (Mochiy Pop One, estilo adesivo) */
 .hublogo,.logo b,.hubcard b,#gachaTit,.duotit{font-family:"Mochiy Pop One","Kosugi Maru","M PLUS Rounded 1c",sans-serif!important;font-weight:400;letter-spacing:.01em}
 </style>
-<link rel="stylesheet" href="./duo.css?v=4">
+<link rel="stylesheet" href="./duo.css?v=5">
 <style>
 .perfduo{margin-top:10px}.duobtn{background:linear-gradient(90deg,#4169e1,#7b3ff0,#ff6fb5)!important;color:#fff!important}
 /* Últimos cards */
@@ -228,6 +228,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 
       <!-- JOGAR vem primeiro (15/11/2026): montar o visual fica recolhido aqui e também no Perfil e na Zipper Shop -->
       <button class="btn" id="play">JOGAR</button>
+      <button class="btn alt" id="crDesafioMenu" type="button" hidden></button><p id="crDesafioMenuStatus" role="status"></p>
       <button type="button" class="sec custtoggle" id="custToggle" aria-expanded="false" aria-controls="custBox">✏️ <span>Montar visual</span></button>
       <div class="custbox" id="custBox" hidden>
       <div class="cust" id="cust" hidden>
@@ -320,7 +321,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
       <h1>Fim do show<small>おつかれさま</small></h1>
       <canvas id="cel" width="200" height="150" style="width:200px;height:150px;display:block;margin:0 auto 12px;border-radius:14px" aria-hidden="true"></canvas>
       <div class="res" id="res"></div>
-      <p id="crPraticaStatus" role="status"></p><div class="btns"><button class="btn alt" type="button" id="crPraticaBt" hidden></button><button class="btn alt" type="button" id="crPraticaPista" hidden></button><button class="btn" id="again">DE NOVO</button><button class="btn alt" id="tomenu">MENU</button><button class="btn alt" id="shbtn">SALVAR IMAGEM</button></div>
+      <p id="crPraticaStatus" role="status"></p><div class="btns"><button class="btn alt" type="button" id="crPraticaBt" hidden></button><button class="btn alt" type="button" id="crPraticaPista" hidden></button><button class="btn alt" type="button" id="crDesafioFim"></button><button class="btn" id="again">DE NOVO</button><button class="btn alt" id="tomenu">MENU</button><button class="btn alt" id="shbtn">SALVAR IMAGEM</button></div>
       <div class="tabs"><button data-t="day">Hoje</button><button data-t="week">Semana</button><button data-t="all">Geral</button></div><ol class="lb" id="lbo"></ol>
     </div>
   </div>
@@ -408,11 +409,11 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./karaoke-room-views.js?v=1"></script>
 <script src="./karaoke-clip-uniforms.js?v=1"></script>
 <script src="./karaoke-news-photo.js?v=1"></script>
-<script src="./centerrun.js?v=36"></script>
+<script src="./centerrun.js?v=37"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=46"></script>
-<script src="./perfil.js?v=29"></script>
-<script src="./gacha.js?v=5"></script>
+<script src="./perfil.js?v=30"></script>
+<script src="./gacha.js?v=6"></script>
 <script src="./album-fotos.js?v=4"></script>
 <script src="./album.js?v=8"></script>
 <script src="./gacha-po.js?v=1"></script>
@@ -444,7 +445,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=17','./cafe.js?v=29','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=11','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=18','./cafe.js?v=29','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=11','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
@@ -465,7 +466,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   window.twAbrirJogoDoHub = function(nome){ atalho(nome)(); };
   window.TW_JOGOS_SOB_DEMANDA=true;window.twJogosCarregar=carregar;window.hsAbrir=atalho('hsAbrir');window.cfAbrir=atalho('cfAbrir');})();
 </script>
-<script src="./duo-base.js?v=2"></script>
+<script src="./duo-base.js?v=3"></script>
 <script src="./encontro-base.js?v=2"></script>
 <script src="./hub.js?v=33"></script>
 <script src="./hub-layout.js?v=5"></script>
@@ -493,7 +494,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   });
 })();</script>
 <script src="./bloom.js?v=12"></script>
-<script src="./shop.js?v=8"></script>
+<script src="./shop.js?v=9"></script>
 <script src="./tw-piloto-bairro.js?v=6"></script>
 <script src="./jornal.js?v=33"></script>
 <script>
@@ -511,7 +512,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
 (function(){var p=null;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
   if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
-  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=18'),arq('script','./battle.js?v=26')]);
+  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=18'),arq('script','./battle.js?v=27')]);
     p.then(function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);}).catch(function(){p=null;});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>
@@ -530,9 +531,9 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=44"><script src="./tw-humor.js?v=10"><'+'/script><script src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=8"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=59"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=45"><script src="./tw-humor.js?v=10"><'+'/script><script src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=8"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=59"><'+'/script><script src="./tw-presenca.js?v=2"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=44';document.head.appendChild(l);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=45';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=10';hm.async=false;document.body.appendChild(hm);
   var vbi=document.createElement('script');vbi.src='./tw-bichos.js?v=2';vbi.async=false;document.body.appendChild(vbi);
   var vb=document.createElement('script');vb.src='./tw-bairro.js?v=8';vb.async=false;document.body.appendChild(vb);
@@ -1862,7 +1863,7 @@ shopOv.className = 'ov shopov tw-window-overlay'; shopOv.id = 'shopOv'; shopOv.h
 document.body.appendChild(shopOv);
 $('shopX').onclick = shopFechar;
 $('shopCv').addEventListener('click', shopReage);
-shopOv.addEventListener('click', function(e){ if(e.target.id === 'shopFotoPerfil') shopFotoPerfil(); else if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); else if(e.target.id === 'shopLookFoto') shopLookFoto(); else if(e.target.id === 'shopLookStudio') shopLookStudio(); });
+shopOv.addEventListener('click', function(e){ if(e.target.id === 'shopFotoPerfil') shopFotoPerfil(); else if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); else if(e.target.id === 'shopLookFoto') shopLookFoto(); else if(e.target.id === 'shopLookStudio') shopLookStudio(); else if(e.target.id==='shopLimparProva' && perfProva)shopProvar(perfProva); });
 // Montar Idol: os mesmos controles no perfil e na Zipper⭐Shop! (a loja redesenha o provador)
 function montInput(e){ var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return; if(el.type === 'color'){ perfMontMudou(el.dataset.m, el.value); if(!shopOv.hidden) shopProvador(); } }
 function montChange(e){
@@ -1908,6 +1909,7 @@ function lojaRoupasClique(e){
     return;
   }
   var c = e.target.closest('#perfLoja [data-provar]');
+  if(c && !shopOv.hidden){shopProvar(c.dataset.provar);return;}
   if(c){ perfProva = perfProva === c.dataset.provar ? '' : c.dataset.provar; beep(988, .04, 'triangle', .04); perfLojaUI(); if(!shopOv.hidden) shopProvador(); }
 }
 perfOv.addEventListener('click', lojaRoupasClique);
@@ -3240,22 +3242,12 @@ _origUpdate = update;
 $('crPraticaBt').onclick=function(){crPraticaComecar(false);};
 $('crPraticaPista').onclick=function(){crPraticaComecar(true);};
 $('crPraticaSair').onclick=function(){crPraticaTerminar(false);};
+crDesafioBotoes();$('crDesafioMenu').hidden=false;
+$('crDesafioMenu').onclick=$('crDesafioFim').onclick=function(){crPraticaComecar('desafio');};
 update = function(dt){
   if(crPratica){crPraticaQuadro(dt);return;}
   s2StageFrames += dt;
-  if(s2SlideTimer > 0){
-    s2SlideTimer -= dt;
-    if(s2SlideTimer <= 0) s2Sliding = false;
-  }
-
-  // Ajusta caixa de colisão da Idol quando está abaixada/deslizando
-  var targetH = (s2Sliding && !(pw && pw.k === 'alien')) ? 26 : 44;
-  if(P.h !== targetH){
-    var diff = P.h - targetH;
-    P.h = targetH;
-    if(!P.air) P.y = GY - P.h;
-    else P.y += diff;
-  }
+  s2DeslizeQuadro(dt);
 
   // Registra estrelas antes do frame para detectar estrelas perdidas ou coletadas
   var prevStars = stars;

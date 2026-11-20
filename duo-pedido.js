@@ -45,22 +45,51 @@
   function nome(o){ return (typeof tr === 'function' ? tr(o[2]) : o[2]); }
   function esc(s){ return typeof escHtml === 'function' ? escHtml(s) : String(s); }
 
+  var DIRECAO={
+    pt:['Poses','Enquadramento','Posição','Aberto','Mais perto','À esquerda','À direita','Outra interpretação','Combina com o pedido','Sugestão'],
+    en:['Poses','Framing','Placement','Wide','Closer','On the left','On the right','Try another version','Fits the request','Suggestion'],
+    es:['Poses','Encuadre','Posición','Abierto','Más cerca','A la izquierda','A la derecha','Otra interpretación','Coincide con el pedido','Sugerencia'],
+    id:['Pose','Bingkai','Posisi','Lebar','Lebih dekat','Di kiri','Di kanan','Versi lain','Cocok dengan permintaan','Saran'],
+    th:['ท่าโพส','การจัดเฟรม','ตำแหน่ง','มุมกว้าง','ใกล้ขึ้น','ด้านซ้าย','ด้านขวา','ลองอีกแบบ','ตรงตามคำขอ','คำแนะนำ'],
+    ja:['ポーズ','構図','立ち位置','引き','寄り','左','右','別のアレンジ','リクエストに合う','提案']
+  };
+  function quadroPedido(p){return ['maos','hightouch','coracao','vv'].indexOf(p.cena[0])>=0?'perto':'aberto';}
+  function direcao(p){
+    var tx=DIRECAO[LANG]||DIRECAO.pt;
+    var quadro=quadroPedido(p), perto=quadro==='perto';
+    var atual=duoInfo(), sides=duoInvertido?6:5;
+    var ajustado=duoQuadro===quadro;
+    var h='<ul class="duo-direcao-pistas">'+[
+      [tx[0],nome(atual),atual[0]===p.cena[0],nome(p.cena)],
+      [t('fundo'),nome(duoFundos().find(function(f){return f[0]===duoFundo;})||p.fundo),duoFundo===p.fundo[0],nome(p.fundo)],
+      [tx[1],tx[duoQuadro==='perto'?4:3],ajustado,tx[perto?4:3]],
+      [tx[2],(contaJ?contaJ.nick:tr('Você'))+' · '+tx[sides]+' / '+duoGu.nick+' · '+tx[duoInvertido?5:6],!duoInvertido,tx[5]]
+    ].map(function(l){
+      return '<li><b>'+esc(l[0])+'</b> · '+esc(l[1])+' <small>· '+esc(l[2]?tx[8]:tx[9]+' · '+l[3])+'</small></li>';
+    }).join('')+'</ul>';
+    return h+'<div class="duo-direcao-acoes">'+[
+      ['quadro',tx[duoQuadro==='perto'?3:4]],['lado',tx[duoInvertido?5:6]],['interpretar',tx[7]]
+    ].map(function(a){
+      return '<button class="btn alt" type="button" data-duo-direcao="'+a[0]+'">'+esc(a[1])+'</button>';
+    }).join('')+'</div>';
+  }
   function ui(){
     var palco = document.getElementById('duoPalco'); if(!palco) return;
     var box = document.getElementById('duoPedido');
     if(!box){ box = document.createElement('div'); box.id = 'duoPedido'; box.className = 'duo-pedido'; palco.insertBefore(box, palco.firstChild); }
-    var p = pedido(); if(!p){ box.hidden = true; return; }
+    var p = pedido(); if(!p || !duoGu){ box.hidden = true; return; }
     box.hidden = false;
     var feito = feitoHoje(), ok = bate(p);
     box.classList.toggle('feito', feito); box.classList.toggle('ok', ok && !feito);
     box.innerHTML = '<span class="duo-pedido-ico">📸</span><span class="duo-pedido-txt"><b>' + esc(t('tit')) + '</b><small>' +
       (feito ? esc(premioMsg ? premioMsg + ' ' + t('feito') : t('feito')) : ok ? esc(t('pron')) :
         esc(t('cena')) + ': ' + p.cena[1] + ' ' + esc(nome(p.cena)) + ' · ' + esc(t('fundo')) + ': ' + p.fundo[1] + ' ' + esc(nome(p.fundo))) +
-      '</small></span>' + (feito || ok ? '' : '<button type="button" class="duo-pedido-bt">' + esc(t('mont')) + '</button>');
+      '</small></span>' + (feito || ok ? '' : '<button type="button" class="duo-pedido-bt">' + esc(t('mont')) + '</button>')+
+      '<div class="duo-direcao">'+direcao(p)+'</div>';
   }
   function montar(){
     var p = pedido(); if(!p) return;
-    duoCena = p.cena[0]; duoFundo = p.fundo[0];
+    duoCena = p.cena[0]; duoFundo = p.fundo[0];duoQuadro=quadroPedido(p);duoInvertido=false;
     if(typeof duoBalao !== 'undefined') duoBalao = null;
     if(typeof duoT !== 'undefined') duoT = 0;
     if(typeof duoPalcoUI === 'function') duoPalcoUI();
@@ -69,6 +98,16 @@
   }
   document.addEventListener('click', function(e){
     var el = e.target && e.target.closest ? e.target : null; if(!el) return;
+    var b=el.closest('[data-duo-direcao]');
+    if(b && duoGu){
+      var acao=b.dataset.duoDirecao;
+      if(acao!=='lado')duoQuadro=duoQuadro==='perto'?'aberto':'perto';
+      if(acao!=='quadro')duoInvertido=!duoInvertido;
+      ui();
+      var foco=document.querySelector('[data-duo-direcao="'+acao+'"]');
+      if(foco)foco.focus({preventScroll:true});
+      return;
+    }
     if(el.closest('.duo-pedido-bt')){ e.preventDefault(); montar(); return; }
     // salvar a foto com a cena e o cenário do dia cumpre o pedido
     if(el.closest('#duoPng,#duoPngSem') && !feitoHoje() && bate(pedido())){

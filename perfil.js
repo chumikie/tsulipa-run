@@ -792,7 +792,10 @@ function perfLojaUI(){
     var acao = veste ? '<em class="ok">✓ ' + escHtml(tr('Vestindo')) + '</em>' : dono ? '<button type="button" class="btn alt" data-vestir="' + it[0] + '">' + escHtml(tr('Vestir')) + '</button>'
       : '<button type="button" class="btn" data-comprar="roupa_' + it[0] + '"' + (starT < it[3] ? ' disabled' : '') + '>★' + it[3] + '</button>';
     var tag = it[4] && !dono && typeof temaAteTxt === 'function' ? '<small class="perftemp">🗓️ ' + escHtml(tr('Só até')) + ' ' + temaAteTxt() + '</small>' : it[4] ? '<small class="perftemp">🗓️ ' + escHtml(tr('Da temporada')) + '</small>' : '';
-    return '<div class="perfroupa' + (prov ? ' on' : '') + (it[4] ? ' temp' : '') + '" data-provar="' + it[0] + '"><canvas width="160" height="160" data-roupa="' + it[0] + '"></canvas><b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b>' + tag + acao + '</div>';
+    var provar=typeof shopOv!=='undefined' && !shopOv.hidden ?
+      '<button type="button" class="btn alt" data-provar="'+it[0]+'" aria-pressed="'+prov+'">'+
+      escHtml(shopProvaTexto(0)+' · '+tr(it[2]))+'</button>' : '';
+    return '<div class="perfroupa' + (prov ? ' on' : '') + (it[4] ? ' temp' : '') + '" data-provar="' + it[0] + '"><canvas width="160" height="160" data-roupa="' + it[0] + '"></canvas><b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b>' + tag + provar + acao + '</div>';
   }).join('');
   [].forEach.call(box.querySelectorAll('canvas[data-roupa]'), function(cv){
     var av = perfAvAtual({ pose:'v', fundo:'basico' }); av.c.out = cv.dataset.roupa;

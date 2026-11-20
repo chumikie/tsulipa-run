@@ -301,6 +301,7 @@ async function album(browser){
     for(const i of [2,0,1]) await fotos.nth(i).getByRole('button',{name:/Selecionar foto/}).click();
     await page.getByLabel('Título da página').fill('Looks da semana');
     await page.getByLabel('Data',{exact:true}).fill('2026-11-22');
+    await exportar.evaluate(el=>el.scrollIntoView({block:'center'}));
     const [download] = await Promise.all([page.waitForEvent('download'),exportar.click()]);
     assert.equal(download.suggestedFilename(),'tsulipa-pagina-de-fotos.png');
     const png = await readFile(await download.path());
@@ -394,8 +395,11 @@ async function gachaBattle(browser){
         if(n==='battle_status')return Promise.resolve({ok:true,starter:!!window.qaStarter,cards,rival:cards.slice(0,3)});
         return Promise.resolve([]);
       };
-      gachaAbrir();
     });
+    await page.locator('#twcNav [data-n="menu"]').click();
+    const origem=page.locator('#twcTela [data-ir="gacha"]');
+    await origem.focus();
+    await page.keyboard.press('Enter');
     const abrirPrevia=()=>page.getByRole('button',{name:'Testar no meu trio'}).click();
     const batalha=page.locator('#battleOv');
     await abrirPrevia();
@@ -407,6 +411,7 @@ async function gachaBattle(browser){
     await batalha.getByRole('button',{name:'Cancelar prévia'}).click();
     await batalha.locator('[data-battle="abrir-slot"][data-slot="1"]').getByText('Lirika',{exact:true}).waitFor();
     await batalha.locator('.tw-window-close').click();
+    await page.waitForFunction(()=>document.activeElement?.dataset.ir==='gacha');
     await page.evaluate(()=>gachaAbrir());
     await abrirPrevia();
     await batalha.getByRole('button',{name:'Dança 6'}).click();
@@ -625,6 +630,94 @@ async function cafeAlternado(browser){
     assert.deepEqual(erros,[]);
   }finally{ await context.close(); }
 }
+async function leituraHandshake(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,'treino-leitura');
+    await page.evaluate(async()=>{
+      await twJogosCarregar();
+      window.hsChamadas=[];
+      contaRpc=n=>{hsChamadas.push(n);return Promise.resolve([]);};
+      hsAbrir();
+    });
+    const h=page.locator('#hsOv');
+    await h.getByRole('button',{name:'Treinar no meu ritmo'}).click();
+    const fila=await page.evaluate(()=>hs.fila.map(f=>[f.nome,f.pres]));
+    await page.evaluate(()=>{hsT+=900;});
+    await page.waitForTimeout(100);
+    assert.equal(await page.evaluate(()=>hs.vi),0);
+    for(let i=0;i<fila.length;i++)await h.getByRole('button',{name:'Próximo fã'}).click();
+    await h.getByRole('button',{name:'Começar a lembrar'}).click();
+    await page.evaluate(()=>{hsT+=900;});
+    await page.waitForTimeout(100);
+    assert.equal(await page.evaluate(()=>hs.fase),'quiz');
+    for(let i=0;i<fila.length;i++){
+      await page.waitForFunction(()=>hs.fase==='quiz');
+      const resposta=await page.evaluate(()=>hs.ops.indexOf(hs.quiz[hs.qi].pres));
+      await h.locator('[data-hs="'+resposta+'"]').click();
+      await page.evaluate(()=>{hsT+=90;});
+    }
+    await h.getByRole('button',{name:'Repetir com o tempo padrão'}).click();
+    assert.deepEqual(await page.evaluate(()=>hs.fila.map(f=>[f.nome,f.pres])),fila);
+    assert.equal(await page.evaluate(()=>hs.leituraManual),false);
+    await page.evaluate(()=>{hsT+=900;});
+    await page.waitForFunction(()=>hs.vi===1);
+    assert.deepEqual(await page.evaluate(()=>hsChamadas.filter(n=>/handshake_iniciar|finish|premio/.test(n))),[]);
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function provarNaLoja(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,'prova-qa');
+    const antes=await page.evaluate(()=>{
+      CU.hair='#8866aa';CU.outcol='#c48998';accSel='mic';perfDono=[];
+      window.shopChamadas=[];contaRpc=n=>{shopChamadas.push(n);return Promise.resolve(null);};
+      shopAbrir();
+      return shopAvAtual(false);
+    });
+    const l=page.locator('#shopOv');
+    const provar=l.locator('button[data-provar]').first();
+    const codigo=await provar.getAttribute('data-provar');
+    await provar.focus();
+    await page.keyboard.press('Enter');
+    await l.locator('#shopAntes').waitFor();
+    const depois=await page.evaluate(()=>shopAvAtual());
+    assert.deepEqual(depois.c,{...antes.c,out:codigo});
+    assert.equal(depois.a,antes.a);
+    assert.equal(await page.evaluate(()=>CU.out),antes.c.out);
+    await l.locator('#shopSalvar').click();
+    await l.getByText('Compre a roupa para salvar com ela.').waitFor();
+    await l.locator('#shopLimparProva').click();
+    await l.locator('#shopAntes').waitFor({state:'hidden'});
+    assert.deepEqual(await page.evaluate(()=>shopChamadas.filter(n=>n==='comprar_visual'||n==='salvar_avatar')),[]);
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function dirigirDuo(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,'duo-direcao');
+    await page.evaluate(()=>{
+      contaRpc=n=>Promise.resolve(n==='duo_convidado'?{nick:'Convidada QA'}:[]);
+      duoAbrir('Convidada QA');
+    });
+    const d=page.locator('#duoPedido'), variante=d.getByRole('button',{name:'Outra interpretação'});
+    await variante.waitFor();
+    const montar=d.locator('.duo-pedido-bt');
+    if(await montar.isVisible())await montar.click();
+    assert.equal(await d.locator('li').count(),4);
+    const antes=await page.evaluate(()=>[duoGu.nick,duoCena,duoFundo,duoQuadro,duoInvertido]);
+    await variante.click();
+    const agora=await page.evaluate(()=>[duoGu.nick,duoCena,duoFundo,duoQuadro,duoInvertido]);
+    assert.deepEqual(agora.slice(0,3),antes.slice(0,3));
+    assert.notEqual(agora[3],antes[3]);
+    assert.notEqual(agora[4],antes[4]);
+    await page.locator('#duoSerie').click();
+    await page.getByRole('button',{name:'Guardada na série.'}).waitFor();
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
 async function karaoke(browser){
   const {page,erros,context} = await preparar(browser);
   try{
@@ -673,6 +766,9 @@ async function karaoke(browser){
 (async()=>{
   const browser = await chromium.launch();
   try{
+    await leituraHandshake(browser);console.log('✓ Handshake mantém a fila manual e repete com o cronômetro padrão.');
+    await provarNaLoja(browser);console.log('✓ Provador compara a peça sem trocar o visual salvo.');
+    await dirigirDuo(browser);console.log('✓ Duo varia o enquadramento e as posições mantendo a dupla.');
     await bairro(browser); console.log('✓ Rua Fofa em dois ciclos e bico isolado.');
     await escolherRua(browser); console.log('✓ Studio e Café geram vitrines e desfechos distintos.');
     await navegarRua(browser); console.log('✓ Esc, Voltar e Fechar restauram a origem no piloto.');

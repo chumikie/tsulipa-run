@@ -200,7 +200,35 @@ function hsFechar(){ hsOv.hidden = true; hs = null; }
 // Hora extra: depois da 5ª rodada, com Hype sobrando, vêm mais 3 filas (6 fãs, 4 s para responder).
 // Com conta, só existe se o servidor mandar as rodadas extras (proposta SQL em supabase/sql/proposta/handshake_hora_extra_REVIEW_ONLY.sql);
 // sem isso, a partida termina na 5ª como sempre. Sem conta (treino), a hora extra já vale.
+var HS_LEITURA={
+  pt:['Treinar no meu ritmo','Próximo fã','Começar a lembrar','Repetir com o tempo padrão','Treino sem pontuação oficial'],
+  en:['Practice at my pace','Next fan','Start recall','Repeat with standard timing','Practice without official scoring'],
+  es:['Practicar a mi ritmo','Siguiente fan','Empezar a recordar','Repetir con el tiempo normal','Práctica sin puntuación oficial'],
+  id:['Berlatih sesuai ritmeku','Penggemar berikutnya','Mulai mengingat','Ulangi dengan waktu standar','Latihan tanpa skor resmi'],
+  th:['ฝึกตามจังหวะของฉัน','แฟนคนถัดไป','เริ่มทบทวน','เล่นซ้ำด้วยเวลาปกติ','ฝึกโดยไม่นับคะแนนทางการ'],
+  ja:['自分のペースで練習','次のファン','思い出す','標準時間でもう一度','公式スコアなしの練習']
+};
+function hsLeitura(i){return (HS_LEITURA[LANG]||HS_LEITURA.pt)[i];}
+function hsFocar(sel){var alvo=$('hsCorpo').querySelector(sel);if(alvo)alvo.focus({preventScroll:true});}
+function hsIniciarTreino(manual,fila){
+  hsReiniciar();hs.donoMemoria=hsMemChave();hs.treinoLeitura=true;hs.leituraManual=manual;
+  if(fila && fila.length)hsUsarFila(fila,fila.slice(),hsSorteio(Date.now()));
+  else hsNovaRodada();
+  hsFocar(manual?'[data-hs-avancar]':'#hsLeituraStatus');
+}
+function hsAvancarFila(){
+  hs.vi++;hs.t0=hsT;
+  if(hs.vi>=hs.fila.length)hs.fase='lembrar';
+  hsUI();
+  if(hs.leituraManual)hsFocar('[data-hs-avancar]');
+}
+function hsUsarFila(fila,quiz,r){
+  hs.historico = hs.historico.concat(fila);
+  hs.fila = fila; hs.quiz = quiz.sort(function(){ return r() - .5; }); hs.qi = -1; hs.vi = 0; hs.fase = 'fila'; hs.t0 = hsT; hs.rodada++;
+  hsUI();
+}
 function hsMaxRodadas(){
+  if(hs && hs.treinoLeitura)return 1;
   if(hs && hs.servidor && Array.isArray(hs.servidor.desafios)) return Math.max(5, Math.min(8, hs.servidor.desafios.length));
   if(hs && hs.provaErro) return 5;
   return contaJ ? 5 : 8;
@@ -245,9 +273,7 @@ function hsNovaRodada(){
     var sf = anteriores[Math.floor(r() * anteriores.length)];
     if(!usados[sf.pres]){ sf = Object.assign({}, sf, { superfa:true }); quiz.push(sf); }
   }
-  hs.historico = hs.historico.concat(fila);
-  hs.fila = fila; hs.quiz = quiz.sort(function(){ return r() - .5; }); hs.qi = -1; hs.vi = 0; hs.fase = 'fila'; hs.t0 = hsT; hs.rodada++;
-  hsUI();
+  hsUsarFila(fila,quiz,r);
 }
 function hsTempoPergunta(){ return Math.max(240, 420 - hs.rodada * 30); }   // ~7s no começo, ~4s no fim   // em quadros (60 por segundo)
 function hsProxima(){
@@ -261,6 +287,7 @@ function hsProxima(){
   [daFila, mesmo].forEach(function(L){ L = L.slice(); while(ops.length < 3 && L.length){ var o = L.splice(Math.floor(r() * L.length), 1)[0]; if(ops.indexOf(o) < 0) ops.push(o); } });
   while(ops.length < 4){ var o = Math.floor(r() * HS_PRESENTES.length); if(ops.indexOf(o) < 0) ops.push(o); }
   hs.ops = ops.sort(function(){ return r() - .5; }); hs.fase = 'quiz'; hs.t0 = hsT; hs.resp = -1; hsUI();
+  if(hs.leituraManual)hsFocar('[data-hs]');
 }
 function hsResponder(i){
   if(!hs || hs.fase !== 'quiz' || hs.resp >= 0) return;
@@ -270,9 +297,9 @@ function hsResponder(i){
   hs.resp = i; hs.ok = ok; hs.total++;
   if(ok){
     hs.combo++; hs.comboMax = Math.max(hs.comboMax, hs.combo); hs.acertos++;
-    if(hs.visitaAlvo !== f && !f.superfa) hsMemGuardar(f); // visitantes reais não entram na memória dos NPCs
+    if(hs.visitaAlvo !== f && !f.superfa && !hs.treinoLeitura) hsMemGuardar(f); // visitantes reais não entram na memória dos NPCs
     if(typeof eventoPresente === 'function' && f.pres === eventoPresente()) hs.pontos += 50;
-    if(hs.combo >= 10 && typeof conqGanhar === 'function' && conqGanhar('jogo_memoria')) hs.conq = '🤝 ' + tr('Memória de fã');
+    if(!hs.treinoLeitura && hs.combo >= 10 && typeof conqGanhar === 'function' && conqGanhar('jogo_memoria')) hs.conq = '🤝 ' + tr('Memória de fã');
     var base = 100 + Math.round(rest * 80) + hs.rodada * 10 + (f.superfa ? 150 : 0);
     hs.pontos += Math.round(base * (1 + Math.min(hs.combo - 1, 10) * .1));
     hs.hype = Math.min(100, hs.hype + (f.superfa ? 15 : 8)); if(f.superfa) hs.superfas++;
@@ -290,7 +317,9 @@ function hsResponder(i){
     var outras = HS_CORES.map(function(c, k){ return k; }).filter(function(k){ return k !== f.cor; }).sort(function(){ return Math.random() - .5; }).slice(0, 3);
     hs.corOps = outras.concat([f.cor]).sort(function(){ return Math.random() - .5; });
     hs.corEntrada = hs.servidor && hs.respostas.length ? hs.respostas[hs.respostas.length - 1] : null;
-    hs.corResp = -1; hs.fase = 'quizcor'; hs.t0 = hsT; hsUI(); return;
+    hs.corResp = -1; hs.fase = 'quizcor'; hs.t0 = hsT; hsUI();
+    if(hs.leituraManual)hsFocar('[data-hscor]');
+    return;
   }
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
 }
@@ -323,7 +352,7 @@ function hsReceberPremio(r, atual){
   if(typeof twMissoesAtualizar === 'function') twMissoesAtualizar();   // missão do Handshake marca na hora
   if(r.tipo === 'ticket' && window.ktTickets && window.ktTickets.refresh) try{ window.ktTickets.refresh(); }catch(e){}
   var pronto = hsAplicarPet(r);
-  if(atual && hs === atual){ hs.premio = r; hs.premioPetPendente = !pronto; hsUI(); }
+  if(atual && hs === atual && !atual.treinoLeitura){ hs.premio = r; hs.premioPetPendente = !pronto; hsUI(); }
 }
 function hsFinalizarNoServidor(args){
   // Compatibilidade temporária: a PR pode ser pré-visualizada antes da aprovação do SQL.
@@ -364,6 +393,7 @@ function hsFim(){
   if(!atual || atual.fase==='fim') return;
   if(hsContaMudou(atual)){hsFechar();return;}
   atual.fase='fim';
+  if(atual.treinoLeitura){hsUI();hsFocar('#hsRepetirTempo');return;}
   if(atual.total>0 && window.TW_HUMOR) window.TW_HUMOR.treino('handshake');
   var rec=hsRecorde(); atual.novo=atual.pontos>rec;
   if(typeof recRegistrarLocal === 'function') recRegistrarLocal('hand',atual.pontos);
@@ -387,10 +417,10 @@ function hsLoop(ms){
   var d = window.TWMotionLifecycle ? TWMotionLifecycle.frameDelta($('hsCv'), ms) : 1; hsT += d;
   if(hs){
     var dt = hsT - hs.t0;
-    if(hs.fase === 'fila' && dt > hsTempoFila(hs.fila[hs.vi])){ hs.vi++; hs.t0 = hsT; if(hs.vi >= hs.fila.length){ hs.fase = 'lembrar'; } hsUI(); }
-    else if(hs.fase === 'lembrar' && dt > 100) hsProxima();
-    else if(hs.fase === 'quiz' && dt > hsTempoPergunta()) hsResponder(-1);
-    else if(hs.fase === 'quizcor' && dt > 210) hsResponderCor(-1);
+    if(!hs.leituraManual && hs.fase==='fila' && dt>hsTempoFila(hs.fila[hs.vi]))hsAvancarFila();
+    else if(!hs.leituraManual && hs.fase === 'lembrar' && dt > 100) hsProxima();
+    else if(!hs.leituraManual && hs.fase === 'quiz' && dt > hsTempoPergunta()) hsResponder(-1);
+    else if(!hs.leituraManual && hs.fase === 'quizcor' && dt > 210) hsResponderCor(-1);
     else if(hs.fase === 'resposta' && dt > 80){ if(hs.hype <= 0) hsFim(); else hsProxima(); }
     else if(hs.fase === 'pausa' && dt > 90) hsNovaRodada();
     if(hs.fase === 'quiz' || hs.fase === 'quizcor'){ var bar = $('hsTempo'); if(bar) bar.style.width = Math.max(0, 100 - dt / (hs.fase === 'quiz' ? hsTempoPergunta() : 210) * 100) + '%'; }
@@ -526,14 +556,17 @@ function hsCoracoes(x, W2, H2){
 function hsReiniciar(){ var p = hs.premio; hs = { fase:'inicio', pontos:0, hype:60, rodada:0, fila:[], quiz:[], qi:0, t0:hsT, msg:'', premio:null, combo:0, comboMax:0, acertos:0, total:0, superfas:0, historico:[], hearts:[], servidor:null, respostas:[], provaErro:'' }; }
 function hsUI(){
   var c = $('hsCorpo'); if(!c || !hs) return;
-  var h = '<div class="hsstatus"><span>⭐ ' + hs.pontos.toLocaleString('pt-BR') + '</span><span>' + escHtml(tr('Rodada')) + ' ' + Math.max(1, hs.rodada) + '/' + (hs.rodada > 5 ? hsMaxRodadas() : 5) + (hs.rodada > 5 ? ' ⏰' : '') + '</span>' + (hs.combo >= 2 ? '<span class="hscombo">🔥 x' + hs.combo + '</span>' : '') + '<span>🏆 ' + hsRecorde().toLocaleString('pt-BR') + '</span></div>' +
+  var h = '<div class="hsstatus"><span>⭐ ' + hs.pontos.toLocaleString('pt-BR') + '</span><span>' + escHtml(tr('Rodada')) + ' ' + Math.max(1, hs.rodada) + '/' + (hs.treinoLeitura ? 1 : hs.rodada > 5 ? hsMaxRodadas() : 5) + (hs.rodada > 5 ? ' ⏰' : '') + '</span>' + (hs.combo >= 2 ? '<span class="hscombo">🔥 x' + hs.combo + '</span>' : '') + '<span>🏆 ' + hsRecorde().toLocaleString('pt-BR') + '</span></div>' +
     '<div class="hshype"><b>🔥 Hype</b><div class="albumbarra"><i style="width:' + hs.hype + '%"></i></div></div>';
+  if(hs.treinoLeitura)h+='<p class="hsdica" id="hsLeituraStatus" tabindex="-1">'+escHtml(hsLeitura(4))+'</p>';
   if(hs.fase === 'preparando') h += '<p class="hsdica">⏳ ' + escHtml(tr('Preparando o registro do evento…')) + '</p>';
   if(hs.fase === 'inicio') h += '<p class="hsdica">' + escHtml(tr('Os fãs vão passar pela sua mesa dizendo o nome e o presente favorito. Depois eles voltam: escolha o presente certo antes do aperto de mão acabar!')) + '</p>' +
     (typeof eventoAtual === 'function' ? '<p class="hsdica evsemana">' + eventoAtual().emo + ' <b>' + escHtml(tr(eventoAtual().nome)) + '</b>: ' + escHtml(tr('o presente {p} vale +50!').replace('{p}', eventoAtual().pres)) + '</p>' : '') +
-    '<div class="btns"><button type="button" class="btn" id="hsJogar">🤝 ' + escHtml(tr('Começar o Handshake')) + '</button></div>' +
+    '<div class="btns"><button type="button" class="btn" id="hsJogar">🤝 ' + escHtml(tr('Começar o Handshake')) + '</button><button type="button" class="btn alt" id="hsTreinar">'+escHtml(hsLeitura(0))+'</button></div>' +
     '<p class="hsdica">🎁 ' + escHtml(tr('Fez 600 pontos? Ganha um prêmio do dia: ticket do Karaoke⭐Time! ou um mimo para o seu pet.')) + '</p>';
   else if(hs.fase === 'fila'){ var fv = hs.fila[hs.vi];
+    if(hs.treinoLeitura && fv)h+='<p class="hsdica" role="status"><b>'+escHtml(fv.nome)+'</b> · '+escHtml(hsPresenteNome(fv.pres))+'</p>';
+    if(hs.leituraManual)h+='<button class="btn alt" type="button" data-hs-avancar>'+escHtml(hsLeitura(1))+'</button>';
     h += '<p class="hsdica">👀 ' + escHtml(tr('Memorize: fã {a} de {b}')).replace('{a}', hs.vi + 1).replace('{b}', hs.fila.length) +
       (fv && fv.presAnterior !== undefined ? ' · ' + escHtml(fv.nome + ' · ' + hsRevisaoT()[0].replace('{p}',hsPresenteNome(fv.pres))) : '') +
       (fv && fv.cor !== undefined ? ' · <span class="hscor" style="background:' + HS_CORES[fv.cor] + '"></span> ' + escHtml(hsCorT().l + ': ' + hsCorT().n[fv.cor]) : '') + '</p>'; }
@@ -541,9 +574,11 @@ function hsUI(){
     h += '<p class="hsdica">💡 ' + escHtml(hsCorT().q) + '</p><div class="hstempo"><i id="hsTempo" style="width:100%"></i></div><div class="hsops hscores">' + hs.corOps.map(function(c, i){
       return '<button type="button" class="hsop" data-hscor="' + i + '"><span class="hscor" style="background:' + HS_CORES[c] + '"></span><small>' + escHtml(hsCorT().n[c]) + '</small></button>'; }).join('') + '</div>';
   }
-  else if(hs.fase === 'lembrar') h += '<p class="hsdica">✨ ' + escHtml(tr('Agora eles voltam! Lembra do presente de cada um?')) + '</p>';
+  else if(hs.fase === 'lembrar') h += '<p class="hsdica">✨ ' + escHtml(tr('Agora eles voltam! Lembra do presente de cada um?')) + '</p>'+
+    (hs.leituraManual?'<button class="btn alt" type="button" data-hs-avancar>'+escHtml(hsLeitura(2))+'</button>':'');
   else if(hs.fase === 'quiz' || hs.fase === 'resposta'){
-    h += '<div class="hstempo"><i id="hsTempo" style="width:100%"></i></div><div class="hsops">' + hs.ops.map(function(o, i){
+    if(hs.treinoLeitura)h+='<p class="hsdica" role="status"><b>'+escHtml(hs.quiz[hs.qi].nome)+'</b></p>';
+    h += (hs.leituraManual?'':'<div class="hstempo"><i id="hsTempo" style="width:100%"></i></div>')+'<div class="hsops">' + hs.ops.map(function(o, i){
       var p = HS_PRESENTES[o], cls = hs.fase === 'resposta' ? (o === hs.quiz[hs.qi].pres ? ' certo' : i === hs.resp ? ' errado' : '') : '';
       return '<button type="button" class="hsop' + cls + '" data-hs="' + i + '"' + (hs.fase === 'resposta' ? ' disabled' : '') + '><span>' + p[0] + '</span><small>' + escHtml(tr(p[1])) + '</small></button>';
     }).join('') + '</div>';
@@ -554,19 +589,33 @@ function hsUI(){
     if(hs.conq) h += '<p class="faok">🏆 ' + escHtml(tr('Insígnia nova na Estante de troféus:')) + ' ' + escHtml(hs.conq) + '</p>';
     h += '<div class="hsresumo"><span>🎯 ' + hs.acertos + '/' + hs.total + '</span><span>🔥 ' + escHtml(tr('Combo máx.')) + ' ' + hs.comboMax + '</span><span>🌟 ' + escHtml(tr('Superfãs')) + ' ' + hs.superfas + '</span></div>';
     h += hsPistasHtml();
-    if(hs.premioPetPendente) h += '<p class="hsdica">🎁 ' + escHtml(tr('Prêmio registrado no servidor. Crie ou abra seu pet para receber o mimo.')) + '</p>';
-    if(!hs.servidor && contaJ) h += '<p class="hsdica">🔒 ' + escHtml(tr('Partida de treino: o servidor não confirmou o início; sem prêmio nem missão.')) + '</p>';
-    if(hs.premio && hs.premio.erro === 'servidor') h += '<p class="hsdica">⏳ ' + escHtml(tr('Registro pendente. Ele será recuperado ao reabrir o evento.')) + '</p>';
-    if(hs.premio && hs.premio.ok && hs.premio.tipo) h += '<p class="faok">🎁 ' + escHtml(hs.premio.repetido ? tr('Prêmio do dia já registrado') : hs.premio.tipo === 'ticket' ? tr('Você ganhou 1 ticket do Karaoke⭐Time!') : tr('Seu pet ganhou um mimo! Está guardado no camarim.')) + '</p>';
-    else if(hs.premio && hs.premio.confirmado) h += '<p class="faok">✅ ' + escHtml(tr('Pontuação confirmada na conta:')) + ' ' + recNum(hs.premio.pontos_verificados) + ' · ' + escHtml(tr(hs.premio.premio_entregue ? 'Prêmio diário já entregue' : 'Partida registrada')) + '</p>';
-    else if(hs.premio && hs.premio.erro === 'hoje') h += '<p class="hsdica">' + escHtml(tr('O prêmio de hoje já foi entregue. Volte amanhã!')) + '</p>';
-    else if(hs.pontos >= 600 && !contaJ) h += '<p class="hsdica">' + escHtml(tr('Entre na sua conta para ganhar o prêmio do dia.')) + '</p>';
-    else if(hs.pontos < 600) h += '<p class="hsdica">' + escHtml(tr('Faça 600 pontos para ganhar o prêmio do dia.')) + '</p>';
+    if(hs.treinoLeitura)h+='<div class="btns"><button class="btn" type="button" id="hsRepetirTempo">'+escHtml(hsLeitura(3))+
+      '</button><button class="btn alt" type="button" id="hsTreinar">'+escHtml(hsLeitura(0))+'</button></div>';
+    if(!hs.treinoLeitura){
+      if(hs.premioPetPendente) h += '<p class="hsdica">🎁 ' + escHtml(tr('Prêmio registrado no servidor. Crie ou abra seu pet para receber o mimo.')) + '</p>';
+      if(!hs.servidor && contaJ && !hs.treinoLeitura) h += '<p class="hsdica">🔒 ' + escHtml(tr('Partida de treino: o servidor não confirmou o início; sem prêmio nem missão.')) + '</p>';
+      if(hs.premio && hs.premio.erro === 'servidor') h += '<p class="hsdica">⏳ ' + escHtml(tr('Registro pendente. Ele será recuperado ao reabrir o evento.')) + '</p>';
+      if(hs.premio && hs.premio.ok && hs.premio.tipo) h += '<p class="faok">🎁 ' + escHtml(hs.premio.repetido ? tr('Prêmio do dia já registrado') : hs.premio.tipo === 'ticket' ? tr('Você ganhou 1 ticket do Karaoke⭐Time!') : tr('Seu pet ganhou um mimo! Está guardado no camarim.')) + '</p>';
+      else if(hs.premio && hs.premio.confirmado) h += '<p class="faok">✅ ' + escHtml(tr('Pontuação confirmada na conta:')) + ' ' + recNum(hs.premio.pontos_verificados) + ' · ' + escHtml(tr(hs.premio.premio_entregue ? 'Prêmio diário já entregue' : 'Partida registrada')) + '</p>';
+      else if(hs.premio && hs.premio.erro === 'hoje') h += '<p class="hsdica">' + escHtml(tr('O prêmio de hoje já foi entregue. Volte amanhã!')) + '</p>';
+      else if(hs.pontos >= 600 && !contaJ) h += '<p class="hsdica">' + escHtml(tr('Entre na sua conta para ganhar o prêmio do dia.')) + '</p>';
+      else if(hs.pontos < 600) h += '<p class="hsdica">' + escHtml(tr('Faça 600 pontos para ganhar o prêmio do dia.')) + '</p>';
+    }
     h += '<div class="btns"><button type="button" class="btn" id="hsJogar">🔁 ' + escHtml(tr('Jogar de novo')) + '</button></div>';
   }
   c.innerHTML = h;
 }
 function hsClique(e){
+  var t=e.target.closest && e.target.closest('#hsTreinar,#hsRepetirTempo,[data-hs-avancar]');
+  if(t && hs){
+    if(t.id==='hsTreinar'){hsIniciarTreino(true);return;}
+    if(t.id==='hsRepetirTempo' && hs.treinoLeitura && hs.fase==='fim'){hsIniciarTreino(false,hs.fila);return;}
+    if(t.hasAttribute('data-hs-avancar') && hs.leituraManual){
+      if(hs.fase==='fila')hsAvancarFila();
+      else if(hs.fase==='lembrar')hsProxima();
+      return;
+    }
+  }
   var b = e.target.closest && e.target.closest('[data-hs]'); if(b){ hsResponder(+b.dataset.hs); return; }
   var bc = e.target.closest && e.target.closest('[data-hscor]'); if(bc){ hsResponderCor(+bc.dataset.hscor); return; }
   if(e.target.closest && e.target.closest('#hsJogar')){ hsIniciarSeguro(); if(sfx && sfx.card) try{ sfx.card(); }catch(x){} }

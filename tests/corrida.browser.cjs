@@ -34,6 +34,21 @@ const server=http.createServer((req,res)=>{
       if(typeof twCorridaCarregar==='function')twCorridaCarregar();
     });
     await p.waitForFunction(()=>typeof jump==='function'&&typeof crDesempenho==='function',null,{timeout:15000});
+    const menuDesafio=p.locator('#crDesafioMenu');
+    const saldoInicial=await p.evaluate(()=>({score,stars,starT}));
+    await menuDesafio.click();
+    await p.locator('#sb').waitFor();
+    await p.evaluate(()=>{
+      while(crPratica && obs[1].x-P.x>50)update(1);
+      document.dispatchEvent(new KeyboardEvent('keydown',{code:'ArrowDown',bubbles:true}));
+      while(crPratica && obs[1].x+obs[1].w>P.x)update(1);
+      document.dispatchEvent(new KeyboardEvent('keyup',{code:'ArrowDown',bubbles:true}));
+      for(let i=0;i<448&&crPratica;i++)update(1);
+    });
+    const resultadoDesafio=p.locator('#crDesafioMenuStatus');
+    assert.match(await resultadoDesafio.textContent(),/1\. Pulo · Colidiu \/ 2\. Deslize · Passou/);
+    assert.deepEqual(await p.evaluate(()=>({score,stars,starT})),saldoInicial);
+    assert.equal(await menuDesafio.evaluate(el=>el===document.activeElement),true);
     await p.evaluate(()=>start());
     await p.waitForTimeout(500);
     const t0=Date.now();

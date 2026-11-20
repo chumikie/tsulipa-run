@@ -1643,8 +1643,19 @@ function s2BonusAction(action){
   sfx.star();
 }
 // Controles de Abaixar e Deslizar (PC + Celular)
+function s2DeslizeQuadro(dt){
+  if(s2SlideTimer>0){
+    s2SlideTimer-=dt;
+    if(s2SlideTimer<=0)s2Sliding=false;
+  }
+  var alvo=s2Sliding&&!(pw&&pw.k==='alien')?26:44;
+  if(P.h!==alvo){
+    P.y=P.air?P.y+P.h-alvo:GY-alvo;
+    P.h=alvo;
+  }
+}
 function s2StartSlide(fromTap){
-  if(typeof crPratica !== 'undefined' && crPratica)return;
+  if(typeof crPratica !== 'undefined' && crPratica && !crPratica.desafio)return;
   if(state !== 'play' || paused) return;
   // A ação correta rende ★, mas a animação de deslizar continua normalmente.
   if(s2Challenge && s2Challenge.active) s2BonusAction('slide');
@@ -1749,7 +1760,7 @@ function s2ShowSlideButton(){
 // ---------- Corrida sob demanda (centerrun-corrida.js) ----------
 // O resto do site nunca chama a corrida; ela baixa quando o palco do Center Run aparece ou ao tocar em JOGAR.
 // twCorridaAoCarregar guarda o que precisa da corrida (os invólucros da Temporada 2 no index.html) e roda na ordem.
-var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=14',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
+var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=15',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
 function twCorridaAoCarregar(f){if(TW_CORRIDA_PRONTA)f();else twCorridaFila.push(f);}
 function twCorridaCarregar(){
   if(TW_CORRIDA_PRONTA)return Promise.resolve();

@@ -98,6 +98,25 @@ duoOv.addEventListener('click', function(e){
     t.href = cv.toDataURL('image/png'); t.download = 'moon-duo-' + String(duoGu.nick).replace(/[^\w-]+/g, '') + (t.id === 'duoPngSem' ? '-sem-fundo' : '') + '.png';
     if(sfx.card) sfx.card();
   }
+  if(t.id==='duoRuaFofa' && duoPiloto && duoGu && window.TW_PILOTO_BAIRRO){
+    var ruaFoto=document.createElement('canvas');ruaFoto.width=960;ruaFoto.height=600;
+    var piloto=TW_PILOTO_BAIRRO;
+    try{
+      duoRender(ruaFoto.getContext('2d'),960,600,true,false);
+      piloto.iniciar('duo',duoPiloto);
+      if(piloto.concluir('duo',duoPiloto,ruaFoto)){
+        duoPilotoFoto={cena:ruaFoto,dono:petPhoneContaChave()};t.disabled=true;
+        var guardar=$('duoRuaGuardar');guardar.hidden=!window.TW_ALBUM_FOTOS;guardar.disabled=false;
+        guardar.textContent='Guardar foto da Rua na série';
+        $('duoRuaStatus').textContent='Sua foto em dupla está na vitrine da Rua Fofa.';
+      }else $('duoRuaStatus').textContent='Esta edição da Rua Fofa já foi concluída ou terminou.';
+    }catch(e){$('duoRuaStatus').textContent='Não foi possível tirar a foto. Tente novamente.';}
+    return;
+  }
+  if(t.id==='duoRuaGuardar' && duoPilotoFoto && contaJ && duoPilotoFoto.dono===petPhoneContaChave() && window.TW_ALBUM_FOTOS){
+    TW_ALBUM_FOTOS.salvar('duo',duoPilotoFoto.cena,t);
+    return;
+  }
   if(t.id === 'duoSerie' && duoGu && contaJ && window.TW_ALBUM_FOTOS){
     var serie = document.createElement('canvas'); serie.width = 960; serie.height = 600;
     try{ duoRender(serie.getContext('2d'), 960, 600, true, false); TW_ALBUM_FOTOS.salvar('duo',serie,t); }catch(e){}

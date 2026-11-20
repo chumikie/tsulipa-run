@@ -23,3 +23,21 @@
 #shopAntes[hidden]+figure{width:min(70%,240px)}
 .shop-comparar canvas,#shopProvCv{display:block;width:100%;height:auto;border-radius:12px}
 #shopLimparProva[hidden],#shopAntes[hidden]{display:none}
+
+#shopAbas{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin:6px auto}
+#shopAbas button{min-height:38px;padding:5px 10px}
+#shopAbas [aria-pressed="true"]{outline:2px solid currentColor;outline-offset:-3px}
+.shop-saudacao{margin:4px auto 8px;text-align:center}
+.shop-saudacao summary{cursor:pointer;color:var(--sub)}
+.shopp .shopprov{position:sticky;top:0;z-index:2;background:var(--card);padding:4px;border-radius:12px}
+body.tw-cel #shopOv{scroll-padding-block:calc(76px + 15dvh + 98px) calc(96px + env(safe-area-inset-bottom))}
+body.tw-cel .shopp .shopprov{top:calc(76px + env(safe-area-inset-top))}
+.shopp .shop-comparar canvas{max-height:clamp(78px,15dvh,138px);width:100%;object-fit:contain}
+.shopp #shopAntes[hidden]+figure{width:min(42%,138px)}
+.shopp .shopprov h3{margin:2px auto}
+.shopp .shopprov .btns{gap:4px;margin:4px auto}
+.shopp .shopprov .btn{min-height:36px;padding:5px 10px}
+.shopp #shopVestindo[hidden],.shopp #shopPecas[hidden],.shopp .perfroupa[hidden],.shopp #shopSemPecas[hidden]{display:none!important}
+.cmfavs .cmfav-importar,.cmfavs .cmfav-status{grid-column:1/-1}
+.cmfavs .cmfav input{box-sizing:border-box;width:100%;min-width:0;min-height:32px}
+.cmfavs .cmfavvestir[aria-pressed="true"]{outline:2px solid currentColor}

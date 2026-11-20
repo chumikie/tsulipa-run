@@ -20,7 +20,7 @@
 
 ## Onde está
 - **`main`:** `9824e3e` (19/11), publicada na Vercel. Últimos merges: #119 (Início compacto), #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
-- **Outras PRs abertas:** #117 (desfecho e timing), #120 (Rua Fofa e lembranças), #121 (jogabilidade) e #122 (reencontros, pista e fotos) e #123 (cópia do Álbum, foco no Café e teste de card no Battle). A #124 integra #120–#123 e inclui a estreia sem nome, a proteção do Álbum cheio e os novos atalhos de treino e retorno. [Auditoria da integração](qa/auditoria-integracao-2026-11-20.md) · [Sustentabilidade e acabamento](qa/auditoria-sustentabilidade-2026-11-20.md).
+- **Outras PRs abertas:** #117 (desfecho e timing), #120 (Rua Fofa e lembranças), #121 (jogabilidade) e #122 (reencontros, pista e fotos) e #123 (cópia do Álbum, foco no Café e teste de card no Battle). A #124 integra #120–#123 e inclui a estreia sem nome, a proteção do Álbum cheio e os novos atalhos de treino e retorno. [Auditoria da integração](qa/auditoria-integracao-2026-11-20.md) · [Sustentabilidade e acabamento](qa/auditoria-sustentabilidade-2026-11-20.md) · [Auditoria visual](qa/auditoria-visual-2026-11-20.md).
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje
@@ -48,10 +48,10 @@ A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, 
 | Star⭐Gacha! | 1 giro por dia, cards de Idols | Pó de estrela e garantia | Álbum com coleções; o card do giro pode ser comparado no Battle antes de confirmar sua entrada no trio | — |
 | Idol⭐Battle! | Cards de Idols em show, torcida de flores | Ranking semanal | Habilidades, lightsticks no ritmo | Prêmio dos lightsticks (SQL proposto, não aplicado) |
 | Bloom⭐Garden! | Jardim, flores com uso no Battle e no Studio | — | Flores desenhadas usadas no Studio, inclusive arranjos de 2 ou 3 espécies | — |
-| Photo⭐Studio! | Fotos com pose, cenário e tema da semana | ★3/semana no tema | Composição favorita e foto do Álbum como referência. Comparação antes/depois baixável como PNG | — |
+| Photo⭐Studio! | Fotos com pose, cenário e tema da semana | ★3/semana no tema | Obturador junto da prévia, composição favorita e foto do Álbum como referência. Comparação antes/depois baixável como PNG | — |
 | Moon⭐Duo! | Foto em dupla com outro Idol; Pedido de cena do dia | — | O Pedido de cena mostra o que já combina e permite variar enquadramento e posições com a mesma dupla | — |
 | Backstage⭐Pet! | Pet, quarto, minijogos, Camarim | ★50/dia nos minijogos | Camarim por conta, porta-retrato e cenas do pet no sofá e junto à mesa, salváveis no Álbum | — |
-| Zipper⭐Shop! | Loja, Look do dia, Montar Idol (charmaker) | — | Provador compara a peça com o visual atual do Idol | — |
+| Zipper⭐Shop! | Loja, Look do dia, Montar Idol (charmaker) | — | Provador compacto junto do catálogo, peças compradas e montagem com favoritos nomeados por conta | — |
 
 ### Sistemas do mundo
 | Sistema | Estado | Próximo passo |
@@ -76,7 +76,7 @@ A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, 
 | — | `battle.js` e `battle.css` | Ao abrir o Battle |
 | — | `studio.js` | Ao abrir o Studio ou montar a capa do jornal |
 | `jornal.js` | `jornal-capitulos.js` | Ao abrir o jornal ou o Calendário |
-| `mapa-textos.js` | `tw-mapa.js` | Logo depois da abertura |
+| `mapa-textos.js` | `tw-mapa.js` | Ao abrir o Mapa |
 | `tw-bairro.js` | `tw-bairro-tela.js` | Ao abrir o painel, ou no Mapa nos dias guiados |
 | `duo-base.js` | `duo.js`, `duo-tela.js`, `duo-pedido.js` | Ao abrir o Duo |
 | `admin-base.js` | `admin.js` | Quando o Perfil confirma conta admin |

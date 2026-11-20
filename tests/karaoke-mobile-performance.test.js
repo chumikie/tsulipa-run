@@ -5,6 +5,12 @@ const root=path.join(__dirname,'..');
 const assert=require('node:assert/strict');
 const html=require('./karaoke-fonte.js')() /* show em karaoke-show.js desde 17/11/2026 */;
 const baseCss=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-time-base.css'),'utf8');
+const fontes=fs.readFileSync(path.join(root,'kt-fonts.css'),'utf8');
+assert(!fontes.includes('data:font/'),'Karaoke carrega fontes externas sob demanda');
+const lotes=[...fontes.matchAll(/url\('\.\/([^']+\.woff2)'\)/g)].map(m=>m[1]);
+assert(lotes.length>=2 && fontes.includes('unicode-range:'),'fontes divididas por alfabeto');
+for(const lote of lotes)assert.equal(fs.readFileSync(path.join(root,lote)).subarray(0,4).toString(),'wOF2');
+
 const mobile=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-mobile.js'),'utf8');
 const mobileCss=fs.readFileSync(require('node:path').join(__dirname,'..','karaoke-mobile.css'),'utf8');
 const lifecycle=fs.readFileSync(require('node:path').join(__dirname,'..','tw-motion-lifecycle.js'),'utf8');

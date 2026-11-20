@@ -14,7 +14,7 @@
     {titulo:'A vitrine da Rua Fofa', fundo:'rosa', tarefa:'Fotografe seu Idol no cenário rosa para a vitrine da rua.',
       morador:'Guardei um lugar para a sua foto. Olha como a vitrine ficou linda!',
       feito:'A vitrine abriu e a sua foto faz parte da exposição.', faltou:'Os vizinhos abriram a vitrine com fotos do próprio bairro.'},
-    {titulo:'Um céu na Rua Fofa', fundo:'nuvens', tarefa:'Fotografe seu Idol entre as nuvens para o mural da Rua Fofa.',
+    {titulo:'Um céu na Rua Fofa', fundo:'nuvens', tema:'Céu da Rua Fofa',duo:true,tarefa:'Fotografe seu Idol entre as nuvens para o mural da Rua Fofa.',
       morador:'Sua foto ficou entre as nuvens. Dá uma olhada no nosso mural!',
       feito:'O mural de nuvens foi inaugurado com a sua contribuição.', faltou:'Os vizinhos terminaram o mural com as fotos que tinham.'},
     {titulo:'Uma vitrine de boas-vindas', fundo:'rosa', escolha:true,
@@ -124,6 +124,10 @@
         botao('Preparar o pedido no Café','cafe','twb-bt twb-bt-claro') + '</div>';
     }else if(p) h += '<p>' + escHtml(ficha.concluiu ? '📷 Sua foto está na vitrine da Rua Fofa.' : p.tarefa) + '</p>' +
       (ficha.concluiu ? '' : botao('Abrir o Studio com este cenário','studio','twb-bt'));
+    if(p && p.duo && !ficha.concluiu && typeof contaJ!=='undefined' && contaJ){
+      h+='<p>'+escHtml('Tema do look · '+p.tema)+'</p><div class="btns">'+
+        botao('Montar o look','look','twb-bt twb-bt-claro')+botao('Fotografar no Moon⭐Duo!','duo','twb-bt twb-bt-claro')+'</div>';
+    }
     if(bicoAtivo() && !p.escolha) h += '<p>' + (ficha.bicoConcluiu ? '☕ A plaquinha da casa está na vitrine. Você recebeu a lembrança da Rua Fofa.' :
       botao('Atender um pedido da Rua Fofa','cafe','twb-bt twb-bt-claro')) + '</p>';
     if(p && contribuicao(ficha)) h += aposContribuicao();
@@ -143,8 +147,9 @@
   function concluir(tipo, token, cena){
     if(!token || token.tipo !== tipo || token.dono !== dono() || token.i !== semana()) return false;
     var estado = ler(token.i), foto;
+    if(tipo==='duo' && (!pauta[token.i].duo || estado.concluiu))return false;
     if(pauta[token.i].escolha && contribuicao(estado)) return contribuicao(estado) === tipo;
-    if(!(tipo === 'studio' ? estado.iniciou : estado.bicoIniciou)) return false;
+    if(!(tipo === 'cafe' ? estado.bicoIniciou : estado.iniciou)) return false;
     if(cena && !estado.concluiu){
       try{
         var mini = document.createElement('canvas'); mini.width = 160; mini.height = Math.round(cena.height*160/cena.width);
@@ -152,7 +157,7 @@
         foto = mini.toDataURL('image/jpeg',.78);
       }catch(e){}
     }
-    marcar(token.i, tipo === 'studio' ? 'concluiu' : 'bicoConcluiu', foto);
+    marcar(token.i, tipo === 'cafe' ? 'bicoConcluiu' : 'concluiu', foto);
     return true;
   }
   document.addEventListener('toggle', function(e){
@@ -180,10 +185,24 @@
     }
     if(acao === 'rua'){
       if(b.closest('#studioOv')) studioFechar();
+      if(b.closest('#duoOv')) duoFechar();
+      if(b.closest('#shopOv')) shopFechar();
       if(p) marcar(i, 'abriu');
       TW_BAIRRO.abrir(origem); return;
     }
     if(!p || (p.escolha && contribuicao(ler(i)))) return;
+    if(acao==='look' && p.duo && contaJ){
+      TW_BAIRRO.fechar();shopAbrir();
+      shopExibirAba('vestindo');
+      var voltar=document.createElement('button');voltar.type='button';voltar.className='btn alt';voltar.dataset.pilotoBairro='rua';
+      voltar.textContent='Voltar à Rua Fofa';document.getElementById('shopVestindo').prepend(voltar);
+      voltar.focus();return;
+    }
+    if(acao==='duo' && p.duo && contaJ && !ler(i).concluiu){
+      marcar(i,'abriu');TW_BAIRRO.fechar();
+      duoAbrir(null,{piloto:{i:i,dono:dono(),tipo:'duo'},origem:origem});
+      return;
+    }
     if(acao === 'studio'){
       marcar(i, 'abriu'); TW_BAIRRO.fechar();
       studioAbrir({origem:origem,piloto:{i:i,dono:dono(),tipo:'studio',fundo:p.fundo}});
@@ -199,7 +218,7 @@
   });
   function iniciar(tipo, token){
     if(!token || token.tipo !== tipo || token.dono !== dono() || token.i !== semana()) return;
-    marcar(token.i, tipo === 'studio' ? 'iniciou' : 'bicoIniciou');
+    marcar(token.i, tipo === 'cafe' ? 'bicoIniciou' : 'iniciou');
   }
   window.addEventListener('storage',function(e){
     if(e.key === banco) window.dispatchEvent(new Event('tw-piloto-bairro'));

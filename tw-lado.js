@@ -101,12 +101,24 @@
     // ---------- do lado de cá, por cima: coque e orelha de gato ----------
     if(c.det === 'coques'){ g.fillStyle = H; E(x + 6.4, y - 1.8, 6, 6); g.fillStyle = HL; g.globalAlpha = .45; E(x + 4.6, y - 4, 2, 1.2, -.5); g.globalAlpha = 1; g.fillStyle = '#2a5bd7'; g.save(); g.translate(x + 7.6, y + 3.6); g.rotate(-.18); g.fillRect(-3.6, -1.4, 7.2, 2.8); g.restore(); }
     if(c.det === 'gato'){ g.fillStyle = H; T([x + 3, y + 5, x + 6, y - 8, x + 13, y]); g.fillStyle = 'rgba(255,150,190,.8)'; T([x + 6, y + 2, x + 7, y - 4, x + 10, y]); }
-    if(c.hat && CHAPEU[c.hat]) CHAPEU[c.hat](g, x, y, E);
+    if(c.det==='tulipa') CHAPEU.tulipa(g,x,y,E);
+    else if(c.hat && CHAPEU[c.hat]) CHAPEU[c.hat](g, x, y, E);
     if(A && ACESSORIO[A]) ACESSORIO[A](g, x, y, E);
   }
   // ---------- chapéus vistos de lado (17/11): cabeça centrada em (14.6, 8), raio 12, olhando para a direita ----------
   function flor(g, E, cx, cy, r, pc, cc){ g.fillStyle = pc; for(var k = 0; k < 5; k++){ var a = k * 1.2566 - 1.57; E(cx + Math.cos(a) * r, cy + Math.sin(a) * r, r * .8, r * .8); } g.fillStyle = cc; E(cx, cy, r * .55, r * .55); }
   var CHAPEU = {
+    tiara:function(g,x,y,E){
+      g.strokeStyle='#b96bf0';g.lineWidth=1.7;g.beginPath();g.arc(x+14,y+7,11,3.55,5.9);g.stroke();
+      g.fillStyle='#ffd865';E(x+10,y-4,3.2,2.4);g.fillStyle='#fff3b5';E(x+10,y-5,1.3,3.6);
+    },
+    tulipa:function(g,x,y,E){
+      g.strokeStyle='#57934d';g.lineWidth=1.6;g.beginPath();g.arc(x+14,y+7,11,3.45,5.85);g.stroke();
+      [[7,0],[13,-3],[19,-2]].forEach(function(p,i){
+        g.fillStyle=i===1?'#ee416e':'#ff80ac';E(x+p[0],y+p[1],2.4,3);
+        g.fillStyle='#ffc0d8';E(x+p[0]-.7,y+p[1]-.8,.9,1.6);
+      });
+    },
     boina:function(g, x, y, E){ g.fillStyle = '#b81f3a'; E(x + 13.6, y + 1, 12.4, 2.8, -.2); g.fillStyle = '#e02a4a'; E(x + 12.6, y - 1, 12.2, 4.8, -.24);
       g.fillStyle = 'rgba(255,255,255,.26)'; E(x + 9, y - 3.4, 4, 1.1, -.3); g.fillStyle = '#2a1a1a'; E(x + 13.4, y - 6, 1, 1.6, -.1); },
     palha:function(g, x, y, E){ g.fillStyle = '#e7bf74'; E(x + 14.6, y + 2.6, 17.4, 2.8, -.08);
@@ -127,6 +139,11 @@
   };
   // ---------- acessórios de cabelo do lado de cá (os mesmos da frente) ----------
   var ACESSORIO = {
+    torrada:function(g,x,y,E){
+      g.fillStyle='#b7723d';E(x+23,y+21,4.4,3.3,-.25);
+      g.fillStyle='#ffe3a3';E(x+23,y+20.5,3.6,2.5,-.25);
+      g.fillStyle='#e9ac58';E(x+22.2,y+20.7,.7,.8);
+    },
     laco:function(g, x, y, E){ g.fillStyle = '#2a5bd7'; g.beginPath(); g.moveTo(x + 7, y + 3); g.lineTo(x + 2.6, y - 1); g.lineTo(x + 3, y + 7); g.closePath(); g.fill(); g.beginPath(); g.moveTo(x + 7, y + 3); g.lineTo(x + 11.6, y - 1); g.lineTo(x + 11.2, y + 7); g.closePath(); g.fill(); g.fillStyle = '#173a9a'; E(x + 7, y + 3, 2, 2); },
     estrela:function(g, x, y){ g.fillStyle = '#ffd23f'; g.beginPath(); for(var k = 0; k < 10; k++){ var a = k * Math.PI / 5 - Math.PI / 2, r = k % 2 ? 1.6 : 3.8; g.lineTo(x + 8 + Math.cos(a) * r, y + 4 + Math.sin(a) * r); } g.closePath(); g.fill(); g.fillStyle = 'rgba(255,255,255,.6)'; g.fillRect(x + 7, y + 2.6, 1.2, 1.2); },
     hibisco:function(g, x, y, E){ flor(g, E, x + 8, y + 3, 3.2, '#ff3d5e', '#ffd23f'); },

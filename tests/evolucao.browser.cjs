@@ -6,7 +6,7 @@ const {readFile} = require('node:fs/promises');
 const path = require('node:path');
 
 const root = path.resolve(__dirname,'..'), origin = 'https://evolucao.test';
-const tipos = {'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml'};
+const tipos = {'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2'};
 async function preparar(browser){
   const context = await browser.newContext({viewport:{width:390,height:844},hasTouch:true});
   await context.route('**/*', async r => {
@@ -17,7 +17,9 @@ async function preparar(browser){
     try{
       let body=await readFile(arq);
       if(url.pathname==='/sora-jump.html')body=body.toString().replace('function soraStartGame(){','window.qaQuedaSora='+simularQueda.toString()+';\n$&');
+      if(url.pathname==='/sora-jump.html')body=body.toString().replace('function soraStartGame(){','window.qaIdolSora=soraGetActiveCharacter;\n$&');
       if(url.pathname === '/sora-jump.html') body = body.toString().replace('function soraStartGame(){', 'window.qaRotaSora='+testarRotaSora.toString()+';\n$&');
+      if(url.pathname==='/karaoke-time.html')body=body.toString().replace('function owner(){','window.qaIdolKaraoke=siteChar;\n$&');
       return await r.fulfill({body,contentType:tipos[path.extname(arq)]});
     }
     catch{ return await r.fulfill({status:404}); }
@@ -777,11 +779,13 @@ async function favoritoNoStudio(browser){
     await abrir(page,'',null,'qa-look');
     const antes=await page.evaluate(()=>{
       localStorage.setItem('brs48cr_favs',JSON.stringify([{hair:'#ff6fb5',outcol:'#445522'}]));
+      if(TW_CHARMAKER.favoritos().length || !TW_CHARMAKER.importarFavoritos())throw Error('herança de favoritos');
       window.qaStudio=[];
       contaRpc=n=>{qaStudio.push(n);return Promise.resolve([]);};
       shopAbrir();return CU.outcol;
     });
-    await page.getByRole('button',{name:'Fotografar favorito 1'}).click();
+    await page.locator('#shopOv [data-shop-aba="vestindo"]').click();
+    await page.getByRole('button',{name:/Fotografar favorito.*1/}).click();
     await page.locator('#studioOv [data-st="clique"]').click();
     await page.locator('#studioOv [data-st="outra"]').waitFor();
     assert.equal(await page.evaluate(()=>CU.outcol),antes);
@@ -801,6 +805,118 @@ async function compararBattleNoTreino(browser){
     const previa=batalha.locator('[data-battle-comparar]').first();
     assert.equal(await previa.locator('option').first().textContent(),'Momorin');
     await batalha.getByText(/Antes .*Com a troca/).first().waitFor();
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function referenciasDoIdol(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,null);
+    const looks=[
+      {hair:'#d34aa1',skin:'#886249',hair2:'#ed87ac',back:'longo',hat:'palha',out:'trainee',outcol:'#337799',a:'mic'},
+      {hair:'#554c99',skin:'#f3c5a5',hair2:'#408ad0',back:'chanel',hat:'tiara',out:'seifuku',outcol:'#a183bb',a:'torrada'},
+      {hair:'#361b47',skin:'#b57862',hair2:'#80c7a2',back:'marias',hat:'',out:'citypop',outcol:'#9f4343',a:'laco'}
+    ];
+    const foto=await page.evaluate(looks=>looks.map(o=>{
+      const av={c:o,a:o.a},c=perfChar(av);
+      const cv=document.createElement('canvas');cv.width=cv.height=160;
+      perfDesenharIdol(cv.getContext('2d'),160,160,av,true,false,0);
+      return {url:cv.toDataURL(),lateral:TW_LADO.sabe(c,o.a)};
+    }),looks);
+    assert.equal(new Set(foto.map(f=>f.url)).size,3);
+    assert(foto.every(f=>f.lateral));
+    for(const look of looks){
+      const carta=Object.fromEntries(Object.entries(look).filter(([campo])=>campo!=='a'));
+      await page.evaluate(({carta,a})=>{
+        localStorage.setItem('brs48cr_char','3');
+        localStorage.setItem('brs48cr_cu2',JSON.stringify(carta));
+        localStorage.setItem('brs48cr_acc',a);
+        localStorage.setItem('brs48cr_nick','Auditoria');
+      },{carta,a:look.a});
+      await page.goto(origin+'/sora-jump.html?lang=pt');
+      await page.waitForFunction(()=>typeof window.qaIdolSora==='function');
+      const visual=await page.evaluate(()=>window.qaIdolSora());
+      for(const campo of ['hair','skin','hat','out','outcol'])assert.equal(visual[campo],look[campo],campo+' no Sora');
+      await page.goto(origin+'/karaoke-time.html?lang=pt&embed=index2');
+      await page.waitForFunction(()=>typeof window.qaIdolKaraoke==='function');
+      const karaoke=await page.evaluate(()=>window.qaIdolKaraoke());
+      for(const campo of ['hair','skin','hat','out','outcol'])assert.equal(karaoke[campo],look[campo],campo+' no Karaoke');
+    }
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function mapaSobDemanda(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,null);
+    assert.equal(await page.evaluate(()=>!!document.querySelector('script[src*="tw-mapa.js"]')),false);
+    await page.locator('#twcTela [data-a="mapa"]').first().click();
+    await page.locator('#twMapa .tw-mapa-rolo').waitFor();
+    await page.goto(origin+'/index.html?celular=0&lang=pt');
+    await page.locator('#hubToque').press('Enter');
+    const tutorialClassico=page.locator('#hubTutPular');
+    if(await tutorialClassico.isVisible())await tutorialClassico.click();
+    await page.locator('#hubMapaCarregar').click();
+    await page.locator('#twMapa .tw-mapa-rolo').waitFor();
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function auditarStudio320(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await page.setViewportSize({width:320,height:640});
+    await page.emulateMedia({colorScheme:'dark',reducedMotion:'reduce'});
+    await abrir(page,'',null,'visual-320');
+    await page.evaluate(()=>{
+      localStorage.setItem('brs48cr_favs',JSON.stringify([{nome:'Céu',outcol:'#445522',hat:'tiara'}]));
+      if(TW_CHARMAKER.favoritos().length||!TW_CHARMAKER.importarFavoritos())throw Error('importação');
+    });
+    assert.equal(await page.evaluate(()=>TW_CHARMAKER.favoritos()[0]?.nome),'Céu');
+    await page.evaluate(()=>{contaJ={id:'segunda-conta',nick:'Idol B'};contaAuthUserId='segunda-conta';});
+    assert.equal(await page.evaluate(()=>TW_CHARMAKER.favoritos().length),0);
+    await page.evaluate(()=>{
+      perfDono=['roupa_brasil'];perfLojaSincronizar();
+      contaRpc=()=>Promise.resolve(null);shopAbrir();
+    });
+    await page.locator('#shopOv [data-shop-aba="minhas"]').click();
+    await page.locator('#shopOv [data-vestir="brasil"]').click();
+    assert.equal(await page.evaluate(()=>CU.out),'brasil');
+    await page.locator('#shopOv [data-shop-aba="vestindo"]').click();
+    await page.locator('#shopLookStudio').click();
+    const studio=page.locator('#studioOv');
+    const obturador=studio.locator('[data-st="clique"]');
+    await obturador.waitFor();
+    const pos=await obturador.boundingBox();
+    assert(pos && pos.y>=0 && pos.y+pos.height<=566,JSON.stringify(pos));
+    await studio.locator('[data-v="pose"][data-st="categoria"]').click();
+    await studio.locator('[data-st="pose"][data-v="coracao"]').click();
+    assert.equal(await studio.locator('.stgrupo').count(),1);
+    await obturador.click();
+    await studio.locator('[data-st="serie"]').click();
+    await studio.getByRole('button',{name:'Guardada na série.'}).waitFor();
+    assert.equal(await page.evaluate(()=>TW_LADO.sabe({hat:'tiara'},'torrada')),true);
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function duoNaRuaFofa(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'&piloto_bairro=1','2026-11-30T03:00:00Z','duo-na-rua');
+    await page.evaluate(()=>{
+      TW_BAIRRO.abrir();
+      contaRpc=n=>Promise.resolve(n==='duo_convidado'?{nick:'Tsu'}:[]);
+    });
+    await page.getByRole('button',{name:'Montar o look'}).click();
+    await page.locator('#shopVestindo [data-piloto-bairro="rua"]').click();
+    await page.getByRole('button',{name:'Fotografar no Moon⭐Duo!'}).click();
+    await page.locator('#duoOv [data-dnick]').first().click();
+    await page.locator('#duoRuaFofa').click();
+    await page.locator('#duoRuaStatus').getByText(/Sua foto em dupla/).waitFor();
+    assert.ok(await page.evaluate(()=>TW_PILOTO_BAIRRO.medidas()[1].etapas.concluiu));
+    await page.locator('#duoRuaGuardar').click();
+    await page.locator('#duoRuaGuardar').getByText('Guardada na série.').waitFor();
+    await page.locator('#duoVoltarRua').click();
+    await page.locator('#twBairroOv').getByAltText('Sua foto em exposição na Rua Fofa').waitFor();
     assert.deepEqual(erros,[]);
   }finally{await context.close();}
 }
@@ -917,6 +1033,10 @@ async function karaoke(browser){
 (async()=>{
   const browser = await chromium.launch();
   try{
+    await mapaSobDemanda(browser);console.log('✓ Mapa só carrega ao ser aberto.');
+    await referenciasDoIdol(browser);console.log('✓ Três visuais de referência passaram pelo Perfil, Sora e Karaoke.');
+    await auditarStudio320(browser);console.log('✓ Studio em 320 px: obturador visível, categoria e foto na série. Favoritos isolados por conta.');
+    await duoNaRuaFofa(browser);console.log('✓ Look e foto em dupla chegam à vitrine da Rua Fofa.');
     await estreiaCorrida(browser);console.log('✓ Visitante joga uma corrida com o nome em branco.');
     await reencontroDeUmaPista(browser);console.log('✓ Handshake recupera uma pista após recarga e registra o acerto.');
     await favoritoNoStudio(browser);console.log('✓ Studio fotografa o favorito sem aplicar o visual ao Idol.');

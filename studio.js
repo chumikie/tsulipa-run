@@ -239,20 +239,28 @@
   function logado(){ return typeof contaJ !== 'undefined' && contaJ && typeof contaRpc === 'function'; }
   function acertos(){ if(!pauta) return [false,false,false]; return [esc_.fundo === pauta.fundo, esc_.pose === pauta.pose, esc_[pauta.detalhe.tipo] === pauta.detalhe.valor]; }
 
+  var categoriaStudio='fundo', pautaAberta=false;
   function montarOv(){
     if(ov) return;
     ov = document.createElement('div'); ov.className = 'ov studioov tw-window-overlay'; ov.id = 'studioOv'; ov.hidden = true;
     ov.innerHTML = '<div class="panel studiop tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="studioTit">' +
       '<button type="button" class="perfx tw-window-control tw-window-close" id="studioX" aria-label="✕">✕</button>' +
       '<h2 class="tw-modal-title" id="studioTit"></h2><small class="tw-modal-jp" lang="ja">フォトスタジオ</small>' +
-      (typeof twLinkBotao === 'function' ? twLinkBotao('studio') : '') +
-      '<div class="stabas" id="studioAbas"></div><div id="studioPauta"></div><div id="studioVisor"><canvas id="studioCv" width="480" height="680"></canvas></div><div id="studioCorpo"></div><div id="studioMural" hidden></div></div>';
+      '<div class="stabas" id="studioAbas"></div><details id="studioPauta"><summary></summary><div></div></details>' +
+      '<div class="stbancada"><div id="studioVisor"><canvas id="studioCv" width="480" height="680"></canvas><div id="studioAcao"></div></div><div id="studioCorpo"></div></div><div id="studioMural" hidden></div>' +
+      (typeof twLinkBotao === 'function' ? twLinkBotao('studio') : '') + '</div>';
     document.body.appendChild(ov);
+    ov.querySelector('#studioPauta').addEventListener('toggle',function(){pautaAberta=this.open;});
     ov.addEventListener('click', function(e){
       if(e.target === ov || e.target.id === 'studioX'){ fechar(); return; }
       if(donoSessao !== donoFoto()){ fechar(); return; }
       var b = e.target.closest && e.target.closest('[data-st]'); if(!b || ocupado) return;
       var a = b.getAttribute('data-st'), v = b.getAttribute('data-v');
+      if(a === 'categoria'){
+        categoriaStudio=v;ui();
+        ov.querySelector('[data-st="categoria"][aria-pressed="true"]').focus({preventScroll:true});
+        return;
+      }
       if(a === 'aba'){ aba = v; ui(); if(aba === 'mural') carregarMural(); return; }
       if(a === 'guardar-composicao' || a === 'usar-composicao'){ composicaoAcao(a); return; }
       if(a === 'mural-retry'){ carregarMural(); return; }
@@ -288,7 +296,7 @@
   var pilotoStudio = null, lookTemporario=null;
   function abrir(atalho){
     montarOv();
-    limparReferencia(); arranjoStudio='';
+    limparReferencia(); arranjoStudio='';categoriaStudio='fundo';pautaAberta=false;
     pilotoStudio = window.TW_PILOTO_BAIRRO && atalho && atalho.piloto || null;
     var sess = ++sessao, dono = donoFoto();
     lookTemporario=atalho&&atalho.dono===dono&&atalho.look?{dono:dono,av:atalho.look}:null;
@@ -323,9 +331,9 @@
       contaRpc('jardim_estado').then(function(r){
         if(!sessaoAtiva(sess, dono) || !r || !r.ok) return;
         flores = r.flores || {};
-        if(flor && +flores[flor] > 0 && fase === 'monta' && !escolheuObjeto) esc_.objeto = 'flor_' + flor;
+        if(flor && +flores[flor] > 0 && fase === 'monta' && !escolheuObjeto){esc_.objeto = 'flor_' + flor;categoriaStudio='objeto';}
         var arranjo=atalho && atalho.dono === dono && Array.isArray(atalho.arranjo) ? 'arranjo_'+atalho.arranjo.join('+') : '';
-        if(arranjoDisponivel(arranjo) && fase==='monta' && !escolheuObjeto){arranjoStudio=arranjo;esc_.objeto=arranjo;}
+        if(arranjoDisponivel(arranjo) && fase==='monta' && !escolheuObjeto){arranjoStudio=arranjo;esc_.objeto=arranjo;categoriaStudio='objeto';}
         if(querReferencia)aplicarObjetoReferencia();
         ui();
       }).catch(function(){});
@@ -429,13 +437,28 @@
     abas.innerHTML = logado() ? ['estudio','mural'].map(function(k, i){ return '<button type="button" class="stabab' + (aba === k ? ' on' : '') + '" data-st="aba" data-v="' + k + '" aria-pressed="' + (aba === k) + '">' + esc(t(i ? 'aba2' : 'aba1')) + '</button>'; }).join('') : '';
     var visor = ov.querySelector('#studioVisor'), visorAnterior = visor.dataset.fase;
     visor.dataset.fase = fase;
-    ['#studioPauta','#studioVisor','#studioCorpo'].forEach(function(id){ ov.querySelector(id).hidden = noMural; });
+    ov.querySelector('.stbancada').hidden=noMural;
+    var pautaBox=ov.querySelector('#studioPauta');
+    pautaBox.hidden=noMural || (!pauta && !temaHtml(esc_));
+    pautaBox.open=pautaAberta;
     ov.querySelector('#studioMural').hidden = !noMural;
     if(noMural){ muralUI(); return; }
     var ac = acertos(), d = pauta && pauta.detalhe;
-    ov.querySelector('#studioPauta').innerHTML = pauta ? '<div class="stpauta"><b>' + esc(t('pauta')) + ': ' + esc(t('t_' + d.tipo)) + '</b><span>' +
+    pautaBox.querySelector('summary').textContent=pauta?t('pauta')+' · '+ac.filter(Boolean).length+'/3':t('pauta');
+    pautaBox.querySelector('div').innerHTML = pauta ? '<div class="stpauta"><b>' + esc(t('pauta')) + ': ' + esc(t('t_' + d.tipo)) + '</b><span>' +
       [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]]
         .map(function(p){ return '<i class="' + (p[0] ? 'ok' : '') + '">' + (p[0] ? '✓ ' : '') + esc(p[1]) + '</i>'; }).join('') + '</span></div>' + temaHtml(esc_) : temaHtml(esc_);
+    var acao=ov.querySelector('#studioAcao'), obturador=acao.querySelector('button');
+    var resultados=acao.querySelector('.stresultado-acoes');
+    if(!resultados){resultados=document.createElement('div');resultados.className='btns stresultado-acoes';acao.appendChild(resultados);}
+    resultados.hidden=fase!=='foto';
+    if(!obturador){
+      obturador=document.createElement('button');obturador.type='button';obturador.className='btn stclique';
+      obturador.dataset.st='clique';acao.appendChild(obturador);
+    }
+    obturador.hidden=fase==='foto';
+    obturador.textContent=t('clique');
+    obturador.disabled=ocupado||referenciaCarregando;
     var c = ov.querySelector('#studioCorpo'), hh = '';
     if(referenciaUrl && donoSessao===donoFoto()) hh+='<figure class="st-referencia"><img src="'+esc(referenciaUrl)+
       '" alt="'+esc(referenciaT()[0])+'"><figcaption>'+esc(referenciaT()[0])+'</figcaption></figure>';
@@ -443,17 +466,21 @@
     if(fase === 'foto'){
       // As estrelas já estão na polaroid: aqui vai o que faltou na pauta (ou que ela ficou completa).
       var fa = pauta ? [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]].filter(function(p){ return !p[0]; }).map(function(p){ return p[1]; }) : [];
+      resultados.innerHTML=(window.TW_ALBUM_FOTOS&&!foto.serie&&!foto.seriePendente?TW_ALBUM_FOTOS.botao('data-st="serie"'):'')+
+        '<button type="button" class="btn" data-st="salvar">💾 '+esc(t('salvar'))+'</button>';
       if(foto.verificada && !publicou) hh += '<p class="stdica">' + esc(PARTILHA[L()]) + '</p>';
       hh += '<p class="stres">' + esc(t('estrelas').replace('{n}', foto.estrelas)) + '</p>' +
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
-        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + '<button type="button" class="btn" data-st="salvar">💾 ' + esc(t('salvar')) + '</button>' + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') + (window.TW_ALBUM_FOTOS && !foto.serie && !foto.seriePendente ? TW_ALBUM_FOTOS.botao('data-st="serie"') : '') +
+        '<div class="btns">' + (foto.verificada && !publicou ? '<button type="button" class="btn" data-st="publicar"' + (ocupado ? ' disabled' : '') + '>' + esc(t('publicar')) + '</button>' : '') + (podeGuardar() ? '<button type="button" class="btn alt" data-st="guardar">💗 ' + esc(MOMENTOS[L()][0]) + '</button>' : '') +
         (pilotoStudio ? (window.TW_PILOTO_BAIRRO ? TW_PILOTO_BAIRRO.aposContribuicao() : '') + '<button type="button" class="btn alt" data-piloto-bairro="rua">Voltar à Rua Fofa</button>' : '') + (foto.guardada ? '<button type="button" class="btn alt" data-st="momentos">📖 ' + 'Momentos⭐' + '</button>' : '') + (logado() ? '<button type="button" class="btn alt" data-st="duo">Moon⭐Duo!</button>' : '') + '<button type="button" class="btn alt" data-st="outra">🔁 ' + esc(t('outra')) + '</button></div>';
     } else {
       var objs = OBJ.concat(FLORES.filter(function(k){ return +flores[k] > 0; }).map(function(k){ return 'flor_' + k; }));
       if(arranjoDisponivel(arranjoStudio))objs.push(arranjoStudio);
       if(esc_.objeto.indexOf('flor_') === 0 && objs.indexOf(esc_.objeto) < 0) esc_.objeto = 'nenhum';
-      hh += chips('fundo', FUNDOS) + chips('pose', POSES) + chips('luz', LUZES) + chips('quadro', QUADROS) + chips('objeto', objs) +
-        '<div class="btns"><button type="button" class="btn stclique" data-st="clique"' + (ocupado || referenciaCarregando ? ' disabled' : '') + '>' + esc(t('clique')) + '</button></div>';
+      var categorias={fundo:FUNDOS,pose:POSES,luz:LUZES,quadro:QUADROS,objeto:objs};
+      hh += '<div class="stcategorias" role="group" aria-label="'+esc(t('pauta'))+'">'+Object.keys(categorias).map(function(k){
+        return '<button type="button" class="stabab" data-st="categoria" data-v="'+k+'" aria-pressed="'+(k===categoriaStudio)+'">'+esc(t(k))+'</button>';
+      }).join('')+'</div>'+chips(categoriaStudio,categorias[categoriaStudio]);
       if(fase === 'monta'){
         var ft = FAVORITA_TR[L()];
         hh += '<div class="btns"><button type="button" class="btn alt" data-st="guardar-composicao">' + esc(ft[favorita ? 4 : 0]) + '</button>' +

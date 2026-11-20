@@ -24,7 +24,7 @@
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
 <script src="./tw-avatar-hair.js?v=14"></script>
-<script src="./tw-lado.js?v=3"></script>
+<script src="./tw-lado.js?v=4"></script>
 <script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
@@ -67,7 +67,7 @@
 .perfdica{text-align:center;font-size:13px}
 </style>
 <link rel="stylesheet" href="./hub.css?v=11">
-<link rel="stylesheet" href="./shop.css?v=6">
+<link rel="stylesheet" href="./shop.css?v=7">
 <link rel="stylesheet" href="./jornal.css?v=15">
 <style>
 
@@ -170,7 +170,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<link rel="stylesheet" href="./hub-polish.css?v=46">
+<link rel="stylesheet" href="./hub-polish.css?v=47">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=6"><'+'/script>');</script>
@@ -412,7 +412,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./centerrun.js?v=38"></script>
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=46"></script>
-<script src="./perfil.js?v=30"></script>
+<script src="./perfil.js?v=31"></script>
 <script src="./gacha.js?v=6"></script>
 <script src="./album-fotos.js?v=5"></script>
 <script src="./album.js?v=8"></script>
@@ -466,41 +466,51 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   window.twAbrirJogoDoHub = function(nome){ atalho(nome)(); };
   window.TW_JOGOS_SOB_DEMANDA=true;window.twJogosCarregar=carregar;window.hsAbrir=atalho('hsAbrir');window.cfAbrir=atalho('cfAbrir');})();
 </script>
-<script src="./duo-base.js?v=3"></script>
+<script src="./duo-base.js?v=4"></script>
 <script src="./encontro-base.js?v=2"></script>
 <script src="./hub.js?v=33"></script>
 <script src="./hub-layout.js?v=5"></script>
-<script src="./mapa-textos.js?v=3"></script>
-<script>/* Mapa da cidade (~100 KB): baixa logo depois da abertura, sem segurar a primeira tela. Quem usa o mapa
-   (twMapaVisitaAgora, twMapaCena, TW_MAPA_HORA…) já confere se ele existe; o painel aparece assim que ele chega. */
+<script>/* O mapa baixa na primeira abertura, pelo TsuPhone ou pela entrada clássica. */
 (function(){
   var pedido;
-  function carregar(){
-    if(!pedido) pedido = new Promise(function(ok, falhou){
-      var script = document.createElement('script');
-      script.src='./tw-mapa.js?v=70';
-      script.onload = ok;
-      script.onerror = function(){ script.remove(); pedido = null; falhou(new Error('mapa')); };
+  function carregarArquivo(url){
+    return new Promise(function(ok,falhou){
+      var script=document.createElement('script');script.src=url;
+      script.onload=ok;
+      script.onerror=function(){script.remove();falhou(new Error('mapa'));};
       document.body.appendChild(script);
     });
+  }
+  function carregar(){
+    if(!pedido){
+      var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=70');})
+        .catch(function(e){pedido=null;throw e;});
+    }
     return pedido;
   }
   window.twMapaCarregar = carregar;
-  function antecipar(){ carregar().catch(function(){}); }
-  if(document.readyState === 'complete') antecipar();
-  else window.addEventListener('load', function(){
-    if(window.requestIdleCallback) window.requestIdleCallback(antecipar, {timeout:1200});
-    else setTimeout(antecipar, 0);
+  document.addEventListener('click',function(e){
+    var botao=e.target.closest&&e.target.closest('#hubMapaCarregar');
+    if(!botao||botao.disabled)return;
+    botao.disabled=true;botao.textContent=TW_CARGA.texto(0);
+    carregar().then(function(){
+      var destino=document.querySelector('#twMapa .tw-mapa-botao');
+      if(!destino)throw Error('mapa');
+      botao.remove();
+      if(!document.getElementById('twMapa').classList.contains('aberto'))destino.click();
+      destino.focus();
+    }).catch(function(){botao.disabled=false;botao.textContent=TW_CARGA.texto(1);});
   });
 })();</script>
 <script src="./bloom.js?v=12"></script>
-<script src="./shop.js?v=10"></script>
-<script src="./tw-piloto-bairro.js?v=7"></script>
+<script src="./shop.js?v=11"></script>
+<script src="./tw-piloto-bairro.js?v=8"></script>
 <script src="./jornal.js?v=33"></script>
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=29';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=30';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
   function ligarJornal(){if(typeof window.jornalAbasIniciar!=='function'||window.jornalAbasIniciar.twStudio)return;var orig=window.jornalAbasIniciar;
@@ -518,7 +528,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 </script>
 <script src="./jogos-trilha.js?v=2"></script>
 <script src="./hub-novos.js?v=2"></script>
-<script src="./charmaker.js?v=16"></script>
+<script src="./charmaker.js?v=17"></script>
 <script src="./banner.js?v=6"></script>
 <script src="./conta.js?v=8"></script>
 <script src="./admin-base.js?v=1"></script>
@@ -1863,7 +1873,8 @@ shopOv.className = 'ov shopov tw-window-overlay'; shopOv.id = 'shopOv'; shopOv.h
 document.body.appendChild(shopOv);
 $('shopX').onclick = shopFechar;
 $('shopCv').addEventListener('click', shopReage);
-shopOv.addEventListener('click', function(e){ if(e.target.id === 'shopFotoPerfil') shopFotoPerfil(); else if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); else if(e.target.id === 'shopLookFoto') shopLookFoto(); else if(e.target.id === 'shopLookStudio') shopLookStudio(); else if(e.target.hasAttribute('data-shop-favorito')) shopLookStudio(+e.target.dataset.shopFavorito); else if(e.target.id==='shopLimparProva' && perfProva)shopProvar(perfProva); });
+document.addEventListener('tw-visual-favoritos',function(){if(!shopOv.hidden)shopLookUI();});
+shopOv.addEventListener('click', function(e){ var aba=e.target.closest('[data-shop-aba]');if(aba){shopExibirAba(aba.dataset.shopAba);return;} if(e.target.id === 'shopFotoPerfil') shopFotoPerfil(); else if(e.target.id === 'shopSalvar') shopSalvar(); else if(e.target.id === 'shopPng') shopPng(e.target); else if(e.target.id === 'shopLookFoto') shopLookFoto(); else if(e.target.id === 'shopLookStudio') shopLookStudio(); else if(e.target.hasAttribute('data-shop-favorito')) shopLookStudio(+e.target.dataset.shopFavorito); else if(e.target.id==='shopLimparProva' && perfProva)shopProvar(perfProva); });
 // Montar Idol: os mesmos controles no perfil e na Zipper⭐Shop! (a loja redesenha o provador)
 function montInput(e){ var el = e.target; if(!el.closest('#perfMont') || !el.dataset.m) return; if(el.type === 'color'){ perfMontMudou(el.dataset.m, el.value); if(!shopOv.hidden) shopProvador(); } }
 function montChange(e){
@@ -2216,7 +2227,7 @@ hubOv.innerHTML = '<div class="hubpart" id="hubPart" aria-hidden="true"></div><d
   '<div class="tw-rank-tv-buttons" id="twRankTvButtons" role="group" aria-label="Canais do ranking"></div></section></section>' +
   '<section class="hubbloco hubhoje" id="hubHoje" aria-labelledby="hubHojeT"><h2 class="hubblocot" id="hubHojeT"></h2>' +
   '<div class="hubhojelinha" id="hubHojeLinha"><button type="button" class="hubmusica" id="hubMusica"></button></div></section>' +
-  '<div class="hubcards" id="hubCards"></div>' +
+  '<button class="btn alt" type="button" id="hubMapaCarregar">'+escHtml(tr('Mapa'))+'</button><div class="hubcards" id="hubCards"></div>' +
   '<section class="hubpainel hubrec" id="hubRec"></section>' +
   '<section class="hubpainel tw-rank-hall" id="twRankHall" aria-label="Melhores Idols da semana">'+
   '<h2>🏆 Top Idols <small class="tw-jpsub" lang="ja">今週のトップアイドル</small></h2><p class="tw-rank-sub"></p>'+
@@ -2625,11 +2636,12 @@ var duoOv = document.createElement('div');
 duoOv.className = 'ov duoov tw-window-overlay'; duoOv.id = 'duoOv'; duoOv.hidden = true;
 duoOv.innerHTML = '<div class="panel duop tw-modal tw-modal-duo tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="duoTit"><button type="button" class="perfx tw-window-control tw-window-close" id="duoX" aria-label="✕">✕</button>' +
   '<h2 class="duotit tw-modal-title" id="duoTit" translate="no">🌙 Moon<span class="tw-modal-star">⭐</span>Duo!</h2><small class="tw-modal-jp" lang="ja">ムーン・デュオ</small><p class="duosub" id="duoSub"></p>' +
-  '<div id="duoEscolha"></div>' +
+  '<button class="btn alt" type="button" id="duoVoltarRua" data-piloto-bairro="rua" hidden>Voltar à Rua Fofa</button><div id="duoEscolha"></div>' +
   '<div id="duoPalco" hidden>' +
     '<div class="duoquem"><span id="duoNomes"></span><button type="button" class="btn alt" id="duoTrocar"></button></div>' +
     '<canvas id="duoCv" width="960" height="600"></canvas><p class="duodica" id="duoDica"></p>' +
     '<div class="duoacoes"><a class="btn" id="duoPng" href="#" download="moon-duo.png"></a><a class="btn alt" id="duoPngSem" href="#" download="moon-duo-sem-fundo.png"></a><button class="btn alt" type="button" id="duoPhone"></button><button class="btn alt" type="button" id="duoSerie"></button></div>' +
+    '<button class="btn alt" type="button" id="duoRuaFofa" hidden>Fotografar para a Rua Fofa</button><button class="btn alt" type="button" id="duoRuaGuardar" hidden></button><p id="duoRuaStatus" role="status"></p>' +
     '<p class="perfmsg" id="duoMsg" hidden></p>' +
     '<div class="duotabs" role="tablist" id="duoTabs"></div><div class="duopres duotrava" id="duoPresBox" hidden></div><div class="duotabc" id="duoTabC"></div>' +
   '</div></div>';

@@ -155,6 +155,9 @@ function duoTexto(){
   $('duoTrocar').textContent = '🔁 ' + tr('Trocar dupla');
   $('duoPng').textContent = '📸 ' + tr('Salvar PNG'); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo');
   $('duoPhone').textContent = '💗 ' + petPhoneMomentoTexto(0);
+  var rua=$('duoRuaFofa'),voltar=$('duoVoltarRua');
+  rua.hidden=!duoPiloto||!duoGu;
+  voltar.hidden=!duoPiloto;
   var serie = $('duoSerie');
   if(serie && window.TW_ALBUM_FOTOS){
     serie.textContent = TW_ALBUM_FOTOS.textoSalvar(); serie.hidden = !serie.textContent; serie.disabled = false;
@@ -283,10 +286,15 @@ function duoPresUI(){
 }
 var DUO_PRES_ERRO = { hoje:'Você já mandou um presente hoje para essa pessoa.', limite:'Você chegou ao limite de presentes de hoje.', saldo:'Estrelas insuficientes.', alvo:'Essa pessoa não está participando do Moon⭐Duo!', bloqueado:'Sua conta está bloqueada pela moderação.' };
 function duoMsg(t){var m=$('duoMsg');if(!m||duoOv.hidden)return;if(m._twTimeout){m._twTimeout.cancel();m._twTimeout=null;}m.textContent=t;m.hidden=!t;if(t)m._twTimeout=twTimeoutVisivel(m,function(){return !duoOv.hidden&&m.isConnected;},function(){m.hidden=true;m._twTimeout=null;},5000);}
-function duoAbrir(nick){
+var duoPiloto=null,duoPilotoFoto=null;
+function duoAbrir(nick,atalho){
+  duoPiloto=atalho&&atalho.piloto||null;duoPilotoFoto=null;
+  $('duoRuaGuardar').hidden=true;
+  if(atalho&&window.TW_JANELAS)TW_JANELAS.preparar(duoOv,atalho.origem);
   duoVeioHub = !hubOv.hidden; lookSalvar();   // abre por cima da tela de início
   if(typeof perfOv !== 'undefined' && !perfOv.hidden) perfFechar();
   duoOv.hidden = false; duoOv.scrollTop = 0; duoT = 0; duoBalao = null; duoTexto();
+  $('duoRuaStatus').textContent='';$('duoRuaFofa').disabled=false;
   if(duoTrava('data-dfundo', [duoFundo])){ var tk = typeof temaAtual === 'function' ? temaAtual() : ''; duoFundo = tk && tk !== 'halloween' && TEMA_INFO[tk] ? tk : 'basico'; }
   if(duoTrava('data-dcena', duoInfo())) duoCena = 'dueto';
   if(duoExEu !== '' && duoTrava('data-dexeu', [duoExEu])) duoExEu = ''; if(duoExGu !== '' && duoTrava('data-dexgu', [duoExGu])) duoExGu = '';
@@ -295,7 +303,7 @@ function duoAbrir(nick){
   if(sfx.card) sfx.card();
   if(typeof hubComecou !== 'undefined' && hubComecou) hubMusicaTocar();
 }
-function duoFechar(){ duoBuscaCancelar();var msg=$('duoMsg');if(msg&&msg._twTimeout){msg._twTimeout.cancel();msg._twTimeout=null;}duoLoadSeq++;duoOv.hidden = true; if(duoAnim){ cancelAnimationFrame(duoAnim); duoAnim = 0; } if(duoVeioHub) hubMostrar(); }   // o Halloween tem o fundo próprio da lojinha
+function duoFechar(){ duoPiloto=null;duoPilotoFoto=null;duoBuscaCancelar();var msg=$('duoMsg');if(msg&&msg._twTimeout){msg._twTimeout.cancel();msg._twTimeout=null;}duoLoadSeq++;duoOv.hidden = true; if(duoAnim){ cancelAnimationFrame(duoAnim); duoAnim = 0; } if(duoVeioHub) hubMostrar(); }   // o Halloween tem o fundo próprio da lojinha
 function duoTemaGratis(k){ return !!duoTemaK(k) && temaAtual() === k; }
 function temaProxTxt(k){   // quando o tema volta ("01/12")
   var md = dk().slice(5), prox = '', menor = '';

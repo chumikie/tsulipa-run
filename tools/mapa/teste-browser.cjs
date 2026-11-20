@@ -12,7 +12,8 @@ const raiz=path.resolve(__dirname,'../..');
 const docs=new Set(['tw-mapa.js','mapa-textos.js','hub-polish.css','battle.js','battle.css','kt-fonts.css',
   'mapa-mundo.svg','mapa-rua-palco.svg','mapa-rua-harajuku.svg',
   'mapa-rua-fofo.svg','mapa-rua-praca.svg','mapa-rua-arena.svg','mapa-rua-ceu.svg']);
-const mime={'css':'text/css','js':'text/javascript','svg':'image/svg+xml'};
+fs.readdirSync(path.join(raiz,'assets/kt-fonts')).filter(f=>f.endsWith('.woff2')).forEach(f=>docs.add('assets/kt-fonts/'+f));
+const mime={'css':'text/css','js':'text/javascript','svg':'image/svg+xml','woff2':'font/woff2'};
 const jogoMock=Array.from(new Set(['run','karaoke','sora','loja','gacha',
   'perfil','pet','cafe','handshake','duo'])).map(id=>
   '<button type="button" data-ir="'+id+'" onclick="window.abridos.push(this.dataset.ir)">'+id+'</button>').join('');

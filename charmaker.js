@@ -109,21 +109,61 @@
      A cor da pele não entra: ela só muda quando a pessoa escolhe. */
   var FAV_CHAVE = 'brs48cr_favs', FAV_CAMPOS = ['hair', 'hair2', 'eye', 'outcol', 'legcol', 'back', 'front', 'mecha', 'streak', 'det', 'olho',
     'sobrancelha', 'boca', 'bochecha', 'out', 'baixo', 'gl', 'hat'];
-  function favLer(){ try{ var v = JSON.parse(localStorage.getItem(FAV_CHAVE) || '[]'); return Array.isArray(v) ? v.slice(0, 3) : []; }catch(_){ return []; } }
-  function favGravar(l){ try{ localStorage.setItem(FAV_CHAVE, JSON.stringify(l.slice(0, 3))); }catch(_){} }
+  function favChave(){
+    var conta=typeof contaJ!=='undefined'&&contaJ;
+    var id=conta&&(window.contaAuthUserId||conta.id||String(conta.nick||'').toLowerCase());
+    return FAV_CHAVE+(id?':conta:'+encodeURIComponent(id):':visitante');
+  }
+  function favLer(chave){
+    try{
+      var v=JSON.parse(localStorage.getItem(chave||favChave())||'[]');
+      return Array.isArray(v)?v.slice(0,3):[];
+    }catch(_){return [];}
+  }
+  function favGravar(l){
+    try{localStorage.setItem(favChave(),JSON.stringify(l.slice(0,3)));return true;}catch(_){return false;}
+  }
+  function favPodeImportar(){
+    return favLer(FAV_CHAVE).some(Boolean)&&favLer().filter(Boolean).length<3;
+  }
+  function favImportar(){
+    var destino=favLer(),origem=favLer(FAV_CHAVE),importados=0;
+    origem.forEach(function(f,i){
+      if(!f)return;
+      var vaga=destino[i]?Array.from({length:3},function(_,j){return j;}).find(function(j){return !destino[j];}):i;
+      if(vaga===undefined)return;
+      destino[vaga]=f;origem[i]=null;importados++;
+    });
+    if(!importados||!favGravar(destino))return false;
+    try{localStorage.setItem(FAV_CHAVE,JSON.stringify(origem));}catch(_){}
+    return true;
+  }
+  var FAV_TX={
+    pt:['Nome do look','Importar favoritos deste navegador','Provar','Vestir','Prévia usa as peças atuais em:','Nome guardado.'],
+    en:['Look name','Import favorites from this browser','Try on','Wear','Preview uses current pieces for:','Name saved.'],
+    es:['Nombre del look','Importar favoritos de este navegador','Probar','Vestir','La vista previa usa piezas actuales en:','Nombre guardado.'],
+    id:['Nama penampilan','Impor favorit dari peramban ini','Coba','Pakai','Pratinjau memakai bagian saat ini pada:','Nama tersimpan.'],
+    th:['ชื่อลุค','นำเข้าลุคโปรดจากเบราว์เซอร์นี้','ลอง','สวม','ตัวอย่างใช้ชิ้นปัจจุบันใน:','บันทึกชื่อแล้ว'],
+    ja:['コーデ名','このブラウザーのお気に入りを取り込む','試着','着る','プレビューで現在のパーツを使う箇所：','名前を保存しました。']
+  };
+  function favTexto(i){return (FAV_TX[LANG]||FAV_TX.pt)[i];}
   function favGuardar(i){
-    var c = cu(); if(!c) return; var l = favLer(), f = {};
+    var c = cu(); if(!c) return; var l = favLer(), f = {nome:l[i]&&l[i].nome||''};
     FAV_CAMPOS.forEach(function(k){ f[k] = c[k] == null ? (k === 'streak' ? false : '') : c[k]; });   // vazio vira '' para voltar exatamente igual
     while(l.length < i) l.push(null); l[i] = f; favGravar(l);
   }
-  function favVisual(i){
+  function favVisual(i,trocas){
     var atual=cu(),f=favLer()[i];if(!atual||!f)return null;
     var c=Object.assign({},atual);
     FAV_CAMPOS.forEach(function(k){
       if(f[k] === undefined) return;
       if(f[k] === null) f[k] = '';
       var id = CAMPO_ID[k];
-      if(id && $(id) && $(id).tagName === 'SELECT' && livres(id).indexOf(String(f[k])) < 0 && !(k === 'hat' && f[k] === '')) return;   // peça trancada agora: fica a atual
+      if(id && $(id) && $(id).tagName === 'SELECT' && livres(id).indexOf(String(f[k])) < 0 && !(k === 'hat' && f[k] === '')){
+        var parte=PARTES.find(function(p){return p.campo===k;});
+        if(trocas)trocas.push(T(parte?parte.nome:k));
+        return;
+      }
       c[k] = f[k];
     });
     if(c.det === 'tulipa') c.hat = '';
@@ -160,9 +200,9 @@
      aoMudar(campo): avisa a tela dona (ex.: o Perfil refaz a foto). */
   function Estudio(el, chave, visivel, aoMudar, mudar){
     var st = ESTADOS[chave] || (ESTADOS[chave] = {aba:0, expr:0, virado:false, passo:0, prova:null});
-    var pedido = 0, pedidoMini = 0, eu = {};
+    var pedido = 0, pedidoMini = 0, eu = {}, provandoFavorito=null;
     function prev(){
-      var cv = el.cv, c = cu(); if(!cv || !c || !visivel()) return;
+      var cv = el.cv, c = provandoFavorito===null?cu():favVisual(provandoFavorito)||cu(); if(!cv || !c || !visivel()) return;
       if(typeof twNitido === 'function') twNitido(cv);   // prévia nítida no computador (17/11/2026)
       var x = cv.getContext('2d'), W = cv.width, H = cv.height, S = 6.3, chao = H - 28;
       x.clearRect(0, 0, W, H);
@@ -226,6 +266,7 @@
         pintar(cv, mod, S, 66 - 15 * S, 66 - meio * S, 0, false);
         b.addEventListener('click', function(){
           if(b.disabled) return;
+          provandoFavorito=null;
           if(podeProvar){ st.prova = st.prova && st.prova.campo === p.campo && st.prova.valor === o.value ? null : {campo:p.campo, valor:o.value}; eu.atualizar(); return; }
           st.prova = null;
           if(mudar) mudar(p.campo, o.value); else trocar(p.id, o.value); atualizarTudo(); });
@@ -273,20 +314,57 @@
       clearTimeout(pedidoMini); pedidoMini = setTimeout(miniaturas, 120);
     };
     function favoritos(){
-      var box = el.favs; if(!box || !visivel()) return;
-      var l = favLer(); box.innerHTML = '<span class="cmfavt">' + T('Favoritos') + '</span>';
-      for(var i = 0; i < 3; i++) (function(i){
-        var f = l[i], w = document.createElement('div'); w.className = 'cmfav';
-        var b = document.createElement('button'); b.type = 'button'; b.className = 'cmfavvestir';
-        if(f){ var cv = document.createElement('canvas'); cv.width = 96; cv.height = 96; cv.setAttribute('aria-hidden', 'true'); b.appendChild(cv);
-          b.setAttribute('aria-label', T('Vestir favorito') + ' ' + (i + 1)); pintar(cv, Object.assign({}, cu(), f), 3.2, 48 - 15 * 3.2, 48 - 13 * 3.2, 0, false);
-          b.addEventListener('click', function(){ favVestir(i, aoMudar); });
-        } else { b.textContent = '＋'; b.disabled = true; b.setAttribute('aria-label', T('Espaço vazio') + ' ' + (i + 1)); }
-        var g = document.createElement('button'); g.type = 'button'; g.className = 'cmfavguardar'; g.textContent = T('Salvar');
-        g.setAttribute('aria-label', T('Guardar visual atual no espaço') + ' ' + (i + 1));
-        g.addEventListener('click', function(){ favGuardar(i); favoritos(); });
-        w.appendChild(b); w.appendChild(g); box.appendChild(w);
+      var box=el.favs;
+      if(!box||!visivel()||box.contains(document.activeElement)&&document.activeElement.matches('input'))return;
+      var l=favLer(),dono=favChave();
+      box.innerHTML='<span class="cmfavt">'+T('Favoritos')+'</span>';
+      if(favPodeImportar()){
+        var importar=document.createElement('button');importar.type='button';importar.className='btn alt cmfav-importar';
+        importar.textContent=favTexto(1);
+        importar.onclick=function(){if(dono===favChave()&&favImportar())favoritos();};
+        box.append(importar);
+      }
+      var status=document.createElement('p');status.className='cmfav-status';status.setAttribute('role','status');status.hidden=true;
+      for(var i=0;i<3;i++)(function(i){
+        var f=l[i],w=document.createElement('div'); w.className='cmfav';
+        if(f){
+          var prova=document.createElement('button'),cv=document.createElement('canvas'),trocas=[];
+          var visual=favVisual(i,trocas),rotulo=f.nome||T('Favoritos')+' '+(i+1);
+          cv.width=cv.height=96;cv.setAttribute('aria-hidden','true');
+          prova.type='button';prova.className='cmfavvestir';prova.append(cv);
+          prova.setAttribute('aria-label',favTexto(2)+' · '+rotulo);
+          prova.setAttribute('aria-pressed',String(provandoFavorito===i));
+          pintar(cv,visual,3.2,0,6,0,false);
+          prova.onclick=function(){
+            if(dono!==favChave())return;
+            var ativo=provandoFavorito!==i;provandoFavorito=ativo?i:null;st.prova=null;
+            box.querySelectorAll('.cmfavvestir').forEach(function(b){b.setAttribute('aria-pressed',String(ativo&&b===prova));});
+            status.hidden=!ativo;status.textContent=trocas.length?favTexto(4)+' '+trocas.join(', '):favTexto(2)+' · '+rotulo;
+            prev();
+          };
+          var nome=document.createElement('input');nome.type='text';nome.maxLength=28;nome.value=f.nome||'';nome.placeholder=favTexto(0);
+          nome.setAttribute('aria-label',favTexto(0)+' '+(i+1));
+          nome.onchange=function(){
+            if(dono!==favChave())return;
+            var atuais=favLer();if(!atuais[i])return;
+            atuais[i].nome=nome.value.trim();
+            if(favGravar(atuais)){status.textContent=favTexto(5);status.hidden=false;document.dispatchEvent(new Event('tw-visual-favoritos'));}
+          };
+          var vestir=document.createElement('button');vestir.type='button';vestir.className='cmfavguardar';vestir.textContent=favTexto(3);
+          vestir.setAttribute('aria-label',favTexto(3)+' · '+rotulo);
+          vestir.onclick=function(){if(dono===favChave()){provandoFavorito=null;favVestir(i,aoMudar);}};
+          w.append(prova,nome,vestir);
+        }
+        var g=document.createElement('button');g.type='button';g.className='cmfavguardar';g.textContent=T('Salvar');
+        g.setAttribute('aria-label',T('Guardar visual atual no espaço')+' '+(i+1));
+        g.onclick=function(){
+          if(dono!==favChave())return;
+          favGuardar(i);favoritos();
+          document.dispatchEvent(new Event('tw-visual-favoritos'));
+        };
+        w.append(g);box.append(w);
       })(i);
+      box.append(status);
     }
     var atualizarBase = eu.atualizar;
     eu.atualizar = function(){ atualizarBase(); clearTimeout(eu.tf); eu.tf = setTimeout(favoritos, 140); };
@@ -330,5 +408,5 @@
     if(d && !d.dataset.ligado){ d.dataset.ligado = '1'; d.addEventListener('click', desfazer); }
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
-  window.TW_CHARMAKER = { paleta:PALETA.slice(), sortear:sortear, desfazer:desfazer, partes:PARTES.map(function(p){ return p.campo; }), atualizar:atualizarTudo, montar:montar, favoritos:favLer, favoritoVisual:favVisual };
+  window.TW_CHARMAKER = { paleta:PALETA.slice(), sortear:sortear, desfazer:desfazer, partes:PARTES.map(function(p){ return p.campo; }), atualizar:atualizarTudo, montar:montar, favoritos:function(){return favLer();}, favoritoVisual:favVisual, importarFavoritos:favImportar };
 })();

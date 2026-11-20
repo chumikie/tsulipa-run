@@ -85,6 +85,7 @@ const path = require('node:path');
     await page.waitForFunction(() => window.jardimA.length === 1);
     await conta('B');
     await page.evaluate(() => studioAbrir());
+    await page.locator('#studioOv [data-st="categoria"][data-v="objeto"]').click();
     await page.locator('#studioOv [data-v="flor_girassol"]').waitFor();
     await page.evaluate(() => window.jardimA[0]({ok:true,flores:{tulipa:2}}));
     assert.equal(await page.locator('#studioOv [data-v="flor_tulipa"]').count(),0);
@@ -110,8 +111,10 @@ const path = require('node:path');
     const flor = page.locator('#studioOv [data-v="flor_girassol"][aria-pressed="true"]');
     await flor.waitFor();
     for(const quadro of ['inteiro','meio','rosto']){
+      await page.locator('#studioOv [data-st="categoria"][data-v="quadro"]').click();
       await page.locator('#studioOv [data-st="quadro"][data-v="' + quadro + '"]').click();
-      assert.equal(await flor.count(),1);
+      await page.locator('#studioOv [data-st="categoria"][data-v="objeto"]').click();
+      await flor.waitFor();
     }
     await page.locator('#studioX').click();
 

@@ -782,11 +782,30 @@ function perfLojaSincronizar(){   // as compras do servidor valem também para a
   perfLojaOpcoes();
   if(typeof acessoriosSync==='function') acessoriosSync(); // libera imediatamente no menu de vestir após sincronizar compras
 }
+var perfMiniaturaObservador;
+function perfMiniaturaLoja(cv,desenhar){
+  if(!cv.closest('#shopOv')||!window.IntersectionObserver){desenhar();return;}
+  if(!perfMiniaturaObservador)perfMiniaturaObservador=new IntersectionObserver(function(entradas){
+    entradas.forEach(function(e){
+      if(!e.isIntersecting)return;
+      var cv=e.target, pintar=cv.perfMiniatura;perfMiniaturaObservador.unobserve(cv);
+      delete cv.perfMiniatura;
+      if(cv.isConnected&&pintar)pintar();
+    });
+  });
+  cv.perfMiniatura=desenhar;perfMiniaturaObservador.observe(cv);
+}
+function perfMiniaturasLiberar(box){
+  if(perfMiniaturaObservador)box.querySelectorAll('canvas').forEach(function(cv){
+    perfMiniaturaObservador.unobserve(cv);delete cv.perfMiniatura;
+  });
+}
 function perfLojaUI(){
   var box = $('perfLoja'); if(!box) return;
   var tmL = perfMeuAniverHoje ? 'aniversario' : (typeof temaAtual === 'function' ? temaAtual() : '');
   var lojaL = PERF_LOJA.filter(function(it){ return !it[4] || it[4] === tmL || perfLojaDono().indexOf(it[0]) >= 0; });
   lojaL.sort(function(a, b){ return (b[4] === tmL && !!tmL) - (a[4] === tmL && !!tmL); });   // a da temporada vem primeiro
+  perfMiniaturasLiberar(box);
   box.innerHTML = lojaL.map(function(it){
     var dono = perfLojaDono().indexOf(it[0]) >= 0, veste = CU.out === it[0], prov = perfProva === it[0];
     var acao = veste ? '<em class="ok">✓ ' + escHtml(tr('Vestindo')) + '</em>' : dono ? '<button type="button" class="btn alt" data-vestir="' + it[0] + '">' + escHtml(tr('Vestir')) + '</button>'
@@ -798,8 +817,10 @@ function perfLojaUI(){
     return '<div class="perfroupa' + (prov ? ' on' : '') + (it[4] ? ' temp' : '') + '" data-provar="' + it[0] + '"><canvas width="160" height="160" data-roupa="' + it[0] + '"></canvas><b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b>' + tag + provar + acao + '</div>';
   }).join('');
   [].forEach.call(box.querySelectorAll('canvas[data-roupa]'), function(cv){
-    var av = perfAvAtual({ pose:'v', fundo:'basico' }); av.c.out = cv.dataset.roupa;
-    perfDesenharIdol(cv.getContext('2d'), 160, 160, av, true, false, 0);
+    perfMiniaturaLoja(cv,function(){
+      var av=perfAvAtual({pose:'v',fundo:'basico'});av.c.out=cv.dataset.roupa;
+      perfDesenharIdol(cv.getContext('2d'),160,160,av,true,false,0);
+    });
   });
 }
 function perfTem(tipo, k){

@@ -56,15 +56,18 @@ function perfLoja2UI(){
     return '<div class="perfroupa">' + prev + '<b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b><small class="perftemp" translate="no">' + escHtml(tipo) + '</small>' +
       (dono ? '<em class="ok">✓ ' + escHtml(tr('Seu')) + '</em>' : '<button type="button" class="btn" data-comprar2="' + it[0] + '"' + (starT < it[3] ? ' disabled' : '') + '>★' + it[3] + '</button>') + '</div>';
   }).join('');}
+  [box,boxAcc,boxItens].forEach(perfMiniaturasLiberar);
   boxAcc.innerHTML=cards(L.filter(function(it){return it[4]==='acc';}));
   boxItens.innerHTML=cards(L.filter(function(it){return it[4]==='item';}));
   box.innerHTML=cards(L.filter(function(it){return it[4]!=='acc'&&it[4]!=='item';}));
   [].forEach.call(document.querySelectorAll('#perfLoja2 canvas[data-l2], #perfLojaAcessorios canvas[data-l2], #perfLojaItens canvas[data-l2]'), function(cv){
+    perfMiniaturaLoja(cv,function(){
     var k = cv.dataset.l2, av = perfAvAtual({ pose: /^pose_/.test(k) ? k.slice(5) : '', expr: /^expr_/.test(k) ? +k.slice(5) : 2, fundo: 'basico' });
     if(/^det_(coelho|tulipa|torrada)$/.test(k)){ av.c.det = k.slice(4); av.pose = 'v'; }
     if(k==='hat_palha'){ av.c.hat='palha'; av.pose='v'; }
     av.pose = /^pose_/.test(k) ? k.slice(5) : ''; av.expr = /^expr_/.test(k) ? +k.slice(5) : 2;
     try{ perfDesenharIdol(cv.getContext('2d'), 160, 160, av, true, /^expr_/.test(k), 0); }catch(e){}
+    });
   });
 }
 function lojaComprar(k, btn, depois){
@@ -108,7 +111,7 @@ function duoJogoCarregar(depois){
   if(depois) duoJogoFila.push(depois);
   if(duoJogoPedido) return; duoJogoPedido = true;
   // duo.js redeclara duoFechar; o index.html já embrulhou o duoFechar desta página (música), então guardamos o embrulho
-  var embrulho = window.duoFechar, arqs = ['./duo.js?v=8', './duo-tela.js?v=3', './duo-pedido.js?v=3'], i = 0;
+  var embrulho = window.duoFechar, arqs = ['./duo.js?v=9', './duo-tela.js?v=4', './duo-pedido.js?v=3'], i = 0;
   (function proximo(){
     if(i >= arqs.length){
       if(window.duoFechar !== embrulho){ duoFecharJogo = window.duoFechar; window.duoFechar = embrulho; }

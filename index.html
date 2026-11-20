@@ -84,7 +84,7 @@
 <link rel="stylesheet" href="./album.css?v=4">
 <link rel="stylesheet" href="./fa.css?v=3">
 <link rel="stylesheet" href="./handshake.css?v=4">
-<link rel="stylesheet" href="./cafe.css?v=4">
+<link rel="stylesheet" href="./cafe.css?v=7">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -170,7 +170,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<link rel="stylesheet" href="./hub-polish.css?v=43">
+<link rel="stylesheet" href="./hub-polish.css?v=45">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=6"><'+'/script>');</script>
@@ -411,8 +411,8 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=45"></script>
 <script src="./perfil.js?v=29"></script>
-<script src="./gacha.js?v=4"></script>
-<script src="./album-fotos.js?v=1"></script>
+<script src="./gacha.js?v=5"></script>
+<script src="./album-fotos.js?v=3"></script>
 <script src="./album.js?v=8"></script>
 <script src="./gacha-po.js?v=1"></script>
 <script src="./troca.js?v=1"></script>
@@ -443,7 +443,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=16','./cafe.js?v=27','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=7','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=16','./cafe.js?v=29','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=11','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
@@ -476,7 +476,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido) pedido = new Promise(function(ok, falhou){
       var script = document.createElement('script');
-      script.src='./tw-mapa.js?v=66';
+      script.src='./tw-mapa.js?v=69';
       script.onload = ok;
       script.onerror = function(){ script.remove(); pedido = null; falhou(new Error('mapa')); };
       document.body.appendChild(script);
@@ -493,12 +493,12 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 })();</script>
 <script src="./bloom.js?v=11"></script>
 <script src="./shop.js?v=8"></script>
-<script src="./tw-piloto-bairro.js?v=1"></script>
+<script src="./tw-piloto-bairro.js?v=5"></script>
 <script src="./jornal.js?v=31"></script>
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=24';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=27';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
   function ligarJornal(){if(typeof window.jornalAbasIniciar!=='function'||window.jornalAbasIniciar.twStudio)return;var orig=window.jornalAbasIniciar;
@@ -510,7 +510,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
 (function(){var p=null;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
   if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
-  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=16'),arq('script','./battle.js?v=22')]);
+  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=18'),arq('script','./battle.js?v=26')]);
     p.then(function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);}).catch(function(){p=null;});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>
@@ -2519,7 +2519,7 @@ var gachaOv = document.createElement('div');
 gachaOv.className = 'ov gachaov tw-window-overlay'; gachaOv.id = 'gachaOv'; gachaOv.hidden = true;
 gachaOv.innerHTML = '<div class="panel gachap tw-modal tw-modal-gacha tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="gachaTit"><button type="button" class="perfx tw-window-control tw-window-close" id="gachaX">✕</button><button type="button" class="ovsom tw-window-control tw-window-sound" data-som="1" aria-label="🔊"></button><h2 class="tw-modal-title" id="gachaTit" translate="no"></h2><small class="tw-modal-jp" lang="ja">スター・ガチャ</small><p class="tw-modal-lede" id="twGachaLede"></p>' +
   '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
-  '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div><div class="btns gachaalbum"><button type="button" class="btn alt" id="gachaAlbum"></button></div></div></div>';
+  '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button><button type="button" class="btn alt" id="gachaBattle" hidden></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div><div class="btns gachaalbum"><button type="button" class="btn alt" id="gachaAlbum"></button></div></div></div>';
 document.body.appendChild(gachaOv);
 // Handshake⭐Event! (handshake.js)
 var hsOv = document.createElement('div');
@@ -2564,12 +2564,15 @@ $('gachaX').onclick = gachaFechar;
 $('gachaGirar').onclick = function(){
   if(!contaJ){ contaEntrar(); return; }
   if(gachaFeito){ gachaFechar(); return; }
-  if(gachaGiro >= 0) return;
+  if(gachaGiro >= 0 || gachaPedido) return;
+  var dono=gachaContaAtual(), pedido={};
+  gachaDono=dono;gachaPedido=pedido;
   ac(); gachaGiro = 0; gachaUI();
   [523, 587, 659, 698, 784].forEach(function(f, i){ beep(f, .08, 'square', .03, i * .12); });
   contaRpc('gacha_girar').then(function(r){
     setTimeout(function(){
-      gachaGiro = -1;
+      if(gachaPedido!==pedido || gachaContaAtual()!==dono)return;
+      gachaPedido=null;gachaGiro=-1;
       if(r && r.ok){
         gachaFeito = true; gachaRes = r; gachaAgora = true;
         if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} setBest(); }
@@ -2581,7 +2584,10 @@ $('gachaGirar').onclick = function(){
       if(!hubOv.hidden)hubCardsUI();
       if(typeof gachaCardsCarregar==='function')setTimeout(function(){if(!gachaOv.hidden)gachaCardsCarregar();},600);
     }, 1600);
-  }).catch(function(){ gachaGiro = -1; if(!gachaOv.hidden)gachaUI(); });
+  }).catch(function(){
+    if(gachaPedido!==pedido || gachaContaAtual()!==dono)return;
+    gachaPedido=null;gachaGiro=-1;if(!gachaOv.hidden)gachaUI();
+  });
 };
 
 // ---------- Música da tela de início (chiptune leve, em loop, muda com o tema) ----------

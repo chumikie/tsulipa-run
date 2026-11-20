@@ -664,3 +664,8 @@ html body .stselo{display:inline-block;margin-right:6px;padding:1px 7px;border-r
 @media (prefers-color-scheme:dark){
   html:not([data-theme="light"]) .stchip.on{outline-color:#d4a0ff}
 }
+
+.st-referencia{display:flex;align-items:center;gap:10px;margin:8px 0;color:var(--ink)}
+.st-referencia img{width:84px;height:auto;max-height:128px;object-fit:contain;border-radius:8px}
+
+.tw-mapa-recado-rosa,.tw-piloto-rosa{margin:0;padding:10px 12px;border:1px solid currentColor;border-radius:10px}

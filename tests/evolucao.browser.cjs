@@ -14,7 +14,11 @@ async function preparar(browser){
     if(url.origin !== origin) return r.abort();
     const arq = path.resolve(root,'.'+url.pathname);
     if(!arq.startsWith(root+path.sep)) return r.abort();
-    try{ return await r.fulfill({body:await readFile(arq),contentType:tipos[path.extname(arq)]}); }
+    try{
+      let body=await readFile(arq);
+      if(url.pathname==='/sora-jump.html')body=body.toString().replace('function soraStartGame(){','window.qaQuedaSora='+simularQueda.toString()+';\n$&');
+      return await r.fulfill({body,contentType:tipos[path.extname(arq)]});
+    }
     catch{ return await r.fulfill({status:404}); }
   });
   const page = await context.newPage(), erros = [];
@@ -70,6 +74,14 @@ async function bairro(browser){
     await page.keyboard.press('Escape');
     await botao('rua').click();
     assert.equal(await botao('cafe').count(),0);
+    await page.locator('.tw-piloto-rosa').getByText(/foto e a plaquinha/).waitFor();
+    await page.keyboard.press('Escape');
+    await page.evaluate(()=>TW_BAIRRO.pularGuia());
+    await page.locator('.twc-palco [data-a="mapa"]').click();
+    await page.locator('#twMapa [data-tw-bairro="fofo"]').click();
+    await page.locator('.tw-mapa-recado-rosa').getByText(/na semana passada/).waitFor();
+    await page.locator('#twcNav [data-n="voltar"]').click();
+    await botao('rua').click();
     await botao('studio').click();
     await page.locator('#studioOv [data-st="fundo"][data-v="nuvens"][aria-pressed="true"]').waitFor();
     await page.locator('#studioOv [data-st="fundo"][data-v="rosa"]').click();
@@ -129,6 +141,161 @@ async function album(browser){
     assert.deepEqual(erros,[]);
   }finally{ await context.close(); }
 }
+async function gachaBattle(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,'battle-qa');
+    await page.evaluate(()=>{
+      const cards=[
+        {nick:'Tsu',canto:7,danca:3,carisma:2},
+        {nick:'Lirika',canto:4,danca:8,carisma:4},
+        {nick:'Pati',canto:2,danca:2,carisma:7},
+        {nick:'Mika',canto:9,danca:6,carisma:6}
+      ];
+      window.battleAcoes=[];
+      contaRpc=n=>{
+        battleAcoes.push(n);
+        if(n==='gacha_hoje')return Promise.resolve({tipo:'card',card:{nick:'Mika',best:0}});
+        if(n==='battle_arena')return Promise.resolve({ok:true,minha:{unit:cards.slice(0,3)},lista:[]});
+        if(n==='battle_status')return Promise.resolve({ok:true,starter:!!window.qaStarter,cards,rival:cards.slice(0,3)});
+        return Promise.resolve([]);
+      };
+      gachaAbrir();
+    });
+    const abrirPrevia=()=>page.getByRole('button',{name:'Testar no meu trio'}).click();
+    const batalha=page.locator('#battleOv');
+    await abrirPrevia();
+    const canto=batalha.getByRole('button',{name:'Canto 9'});
+    await canto.waitFor();
+    assert.equal(await batalha.locator('#battleCartaDiferenca').innerText(),'Canto · Tsu 7 → Mika 9');
+    await batalha.getByRole('button',{name:'Dança 6'}).click();
+    assert.equal(await batalha.locator('#battleCartaDiferenca').innerText(),'Dança · Lirika 8 → Mika 6');
+    await batalha.getByRole('button',{name:'Cancelar prévia'}).click();
+    await batalha.locator('[data-battle="abrir-slot"][data-slot="1"]').getByText('Lirika',{exact:true}).waitFor();
+    await batalha.locator('.tw-window-close').click();
+    await page.evaluate(()=>gachaAbrir());
+    await abrirPrevia();
+    await batalha.getByRole('button',{name:'Dança 6'}).click();
+    await batalha.getByRole('button',{name:'Confirmar no trio'}).click();
+    await batalha.locator('[data-battle="abrir-slot"][data-slot="1"]').getByText('Mika',{exact:true}).waitFor();
+    await batalha.locator('.tw-window-close').click();
+    await page.evaluate(()=>{window.qaStarter=true;gachaAbrir();});
+    await abrirPrevia();
+    await batalha.getByText(/Junte três Idols diferentes/).waitFor();
+    assert.equal(await batalha.getByRole('button',{name:'Confirmar no trio'}).count(),0);
+    assert.deepEqual(await page.evaluate(()=>battleAcoes.filter(n=>n==='battle_jogar'||n==='battle_unit_salvar')),[]);
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function cafeFoco(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,'cafe-qa');
+    await page.evaluate(async()=>{
+      await twJogosCarregar();
+      window.cafeRPC=[];
+      contaRpc=n=>{cafeRPC.push(n);return Promise.resolve([]);};
+      cfAbrir();
+    });
+    const cafe=page.locator('#cfOv');
+    await cafe.locator('[data-cfd-turno]').click();
+    await cafe.locator('[data-cfd-cliente]:enabled').first().click();
+    const escolher=async(m)=>{
+      for(const [tipo,i] of Object.entries(m))if(i>=0)await cafe.locator('[data-cf="'+tipo+':'+i+'"]').click();
+    };
+    await page.evaluate(()=>{cf.alvoBalcao.cli.pedido={base:0,cob:0,enf:0,doce:-1};});
+    await escolher({base:0,cob:1,enf:0});
+    await cafe.locator('[data-cfd-servir]').click();
+    await page.evaluate(()=>cfFim());
+    const antes=await page.evaluate(()=>({pontos:cf.pontos,atendidos:cf.atendidos,vidas:cf.vidas,caderno:cfLer(CF_RECEITAS_KEY,{})}));
+    await cafe.getByRole('button',{name:'Praticar Cobertura'}).click();
+    assert.deepEqual(await page.evaluate(()=>cf.pratica.pedidos.map(p=>p.cob)),[0,-1,1]);
+    for(let i=0;i<3;i++){
+      const pedido=await page.evaluate(i=>cf.pratica.pedidos[i],i);
+      await escolher(pedido);
+      await cafe.locator('[data-cf-pratica="conferir"]').click();
+      await cafe.locator('[data-cf-pratica="proximo"]').click();
+    }
+    await cafe.getByText('Três pedidos praticados.').waitFor();
+    await cafe.locator('[data-cf-pratica="voltar"]').click();
+    assert.equal(await cafe.getByRole('button',{name:'Praticar Cobertura'}).evaluate(b=>b===document.activeElement),true);
+    assert.deepEqual(await page.evaluate(()=>({pontos:cf.pontos,atendidos:cf.atendidos,vidas:cf.vidas,caderno:cfLer(CF_RECEITAS_KEY,{})})),antes);
+    assert.deepEqual(await page.evaluate(()=>cafeRPC.filter(n=>n.startsWith('cafe_run'))),[]);
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+async function copiaAlbum(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await abrir(page,'',null,'backup-origem');
+    await page.evaluate(()=>{
+      localStorage.setItem('tw_studio_composicao_v1:conta:backup-origem',JSON.stringify({fundo:'rosa',pose:'v',luz:'suave',quadro:'inteiro'}));
+      const c=document.createElement('canvas');c.width=c.height=24;
+      const btn=document.createElement('button');
+      return TW_ALBUM_FOTOS.salvar('studio',c,btn,{fundo:'nuvens',pose:'tchau',luz:'por',quadro:'meio',objeto:'balao'});
+    });
+    const ver=async()=>{
+      await page.locator('#twcNav [data-n="menu"]').click();
+      await page.locator('[data-a="album"]:visible').first().click();
+      await page.locator('details.album-fotos:visible summary').click();
+      return page.locator('details.album-fotos:visible');
+    };
+    let caixa=await ver();
+    const evento=page.waitForEvent('download');
+    await caixa.getByRole('button',{name:'Baixar cópia da série'}).click();
+    const stream=await (await evento).createReadStream(),dados=[];
+    for await(const chunk of stream)dados.push(chunk);
+    const arquivo=Buffer.concat(dados), copia=JSON.parse(arquivo);
+    assert.equal(copia.fotos[0].composicao.fundo,'nuvens');
+    assert.equal(copia.favorita.fundo,'rosa');
+    await abrir(page,'',null,'backup-destino');
+    await page.evaluate(()=>{
+      localStorage.setItem('tw_studio_composicao_v1:conta:backup-destino',JSON.stringify({fundo:'neon',pose:'v',luz:'suave',quadro:'inteiro'}));
+      const c=document.createElement('canvas');c.width=c.height=22;
+      return TW_ALBUM_FOTOS.salvar('duo',c,document.createElement('button'));
+    });
+    caixa=await ver();
+    async function enviar(buffer){ await caixa.locator('input[type=file]').setInputFiles({name:'copia.json',mimeType:'application/json',buffer}); }
+    await enviar(arquivo);
+    await caixa.getByText(/Fotos adicionadas: 1.*favorita atual foi mantida/).waitFor();
+    assert.equal(await caixa.locator('figure').count(),2);
+    await enviar(arquivo);
+    await caixa.getByText(/Fotos adicionadas: 0/).waitFor();
+    const excesso={...copia,fotos:Array.from({length:24},(_,i)=>({...copia.fotos[0],quando:copia.fotos[0].quando+i+1}))};
+    await enviar(Buffer.from(JSON.stringify(excesso)));
+    await caixa.getByText(/espaço para apenas 22/).waitFor();
+    const corrompida={...copia,fotos:[{...copia.fotos[0],imagem:'data:image/jpeg;base64,QQ=='}]};
+    await enviar(Buffer.from(JSON.stringify(corrompida)));
+    await caixa.getByText('Cópia inválida ou indisponível.').waitFor();
+    assert.equal(await caixa.locator('figure').count(),2);
+    await caixa.getByRole('button',{name:'Usar como referência'}).click();
+    await page.locator('#studioOv .st-referencia img').waitFor();
+    await page.locator('#studioOv [data-st="fundo"][data-v="nuvens"][aria-pressed="true"]').waitFor();
+    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('tw_studio_composicao_v1:conta:backup-destino')).fundo),'neon');
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
+function simularQueda(tipo){
+  const altura=tipo==='trampolim'?-1560:-1150;
+  soraState='play';soraUltimoSalto={tipo,rota:tipo==='trampolim'?'alta':'entrada',y:altura+110};
+  soraPousoPerdido=null;
+  soraP.x=tipo==='trampolim'?239:130;soraP.y=altura-soraP.h-2;soraP.vx=0;soraP.vy=3;
+  soraCamY=altura+50;soraHighestY=altura-50;
+  soraPlats=[{k:'nuvem',rota:tipo==='trampolim'?'':'alta',x:tipo==='trampolim'?170:215,y:altura,w:50,h:14,vx:0}];
+  soraHazards=[];soraUpdate(1);soraEndGame();
+}
+async function quedasSora(browser){
+  const {page,erros,context}=await preparar(browser);
+  try{
+    await page.goto(origin+'/sora-jump.html?lang=pt&embed=index2');
+    await page.locator('#soraPlayBtn').click();
+    await page.evaluate(()=>window.qaQuedaSora('nuvem'));
+    await page.locator('#soraDicaQueda').getByText(/Atalho alto \(115 m\).*direita/).waitFor();
+    await page.evaluate(()=>window.qaQuedaSora('trampolim'));
+    await page.locator('#soraDicaQueda').getByText(/Depois do trampolim.*156 m.*esquerda/).waitFor();
+    assert.deepEqual(erros,[]);
+  }finally{await context.close();}
+}
 async function karaoke(browser){
   const {page,erros,context} = await preparar(browser);
   try{
@@ -155,6 +322,10 @@ async function karaoke(browser){
   const browser = await chromium.launch();
   try{
     await bairro(browser); console.log('✓ Rua Fofa em dois ciclos e bico isolado.');
+    await gachaBattle(browser);console.log('✓ Prévia do Gacha aplica a troca só após confirmação.');
+    await cafeFoco(browser);console.log('✓ Café oferece três pedidos por categoria sem alterar o turno.');
+    await copiaAlbum(browser);console.log('✓ Cópia do Álbum preserva fotos, composição e duplicatas.');
+    await quedasSora(browser);console.log('✓ Sora explica a plataforma perdida e a correção lateral.');
     await album(browser); console.log('✓ Série persistente com Studio, Duo, Camarim, remoção e isolamento por conta.');
     await karaoke(browser); console.log('✓ Ensaio termina e repete sem gastar tentativa.');
   }finally{ await browser.close(); }

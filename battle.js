@@ -38,9 +38,77 @@ function rotulo(x,i,txt,cx,y,px,cor){
  contorno(x,txt,cx-total/2+ic+px*.3+w/2,y,cor);
 }
 var SW=560,SH=520,DUR=2;               // palco lógico (px) e duração de cada rodada (s)
+var CARTA_TR={
+ pt:['Testar no meu trio','Escolha a posição','Confirmar no trio','Cancelar prévia','Conferindo o card…','O card ainda não está disponível para escalar.','Junte três Idols diferentes para montar seu trio com os cards.','Nesta posição o trio já fica igual.'],
+ en:['Try in my unit','Choose a position','Confirm in my unit','Cancel preview','Checking the card…','This card is not yet available for your lineup.','Collect three different Idols to build a unit with your cards.','Your unit is already in this order.'],
+ es:['Probar en mi trío','Elige una posición','Confirmar en el trío','Cancelar vista previa','Comprobando la carta…','La carta aún no está disponible.','Reúne tres Idols diferentes para formar tu trío.','Tu trío ya está en ese orden.'],
+ id:['Uji di trioku','Pilih posisi','Konfirmasi trio','Batalkan pratinjau','Memeriksa kartu…','Kartu ini belum tersedia untuk dipilih.','Kumpulkan tiga Idol berbeda untuk menyusun trio.','Urutan triomu sudah sama.'],
+ th:['ลองในทีมของฉัน','เลือกตำแหน่ง','ยืนยันทีม','ยกเลิกตัวอย่าง','กำลังตรวจสอบการ์ด…','ยังจัดการ์ดนี้เข้าทีมไม่ได้','สะสมไอดอลต่างกันสามคนเพื่อจัดทีม','ทีมอยู่ในลำดับนี้แล้ว'],
+ ja:['自分のユニットで試す','ポジションを選ぶ','編成を確定','プレビューを閉じる','カードを確認中…','このカードはまだ編成できません。','異なるアイドルを3人集めると編成できます。','すでにこの順番で編成されています。']
+};
+var cartaTeste=null,battleSessao=0,battleDono='';
+function contaBattle(){return typeof gachaContaAtual==='function'?gachaContaAtual():'';}
+function ordemComCard(nick,i){
+ var outra=unit.slice(), j=outra.indexOf(nick);
+ if(j>=0&&j!==i)outra[j]=outra[i];
+ outra[i]=nick;return outra;
+}
+function cartaTesteHtml(){
+ if(!cartaTeste)return '';
+ var t=CARTA_TR[lang()]||CARTA_TR.pt,p=cartaTeste;
+ var h='<section class="battle-carta-teste" aria-labelledby="battleCartaTitulo"><h3 id="battleCartaTitulo" tabindex="-1">'+esc(t[0]+' · '+p.nick)+'</h3>';
+ if(!p.card){
+   h+='<p role="status">'+esc(p.pendente?t[4]:servidor&&estado.starter?t[6]:t[5])+'</p>';
+ }else{
+   var nova=ordemComCard(p.card.nick,p.posicao);
+   var linhas=unit.map(function(n,i){
+     if(n===nova[i])return '';
+     return '<li><b>'+esc(nomeRound(i))+'</b> · '+esc(n)+' '+valor(cardDe(n),i)+' → '+esc(nova[i])+' '+valor(cardDe(nova[i]),i)+'</li>';
+   }).join('');
+   h+='<div class="battle-carta-alvo">'+idolHtml(p.card,true,'',-1)+'</div>'+
+     '<div class="btns" role="group" aria-label="'+esc(t[1])+'">'+[0,1,2].map(function(i){
+     return '<button type="button" class="btn alt" data-battle="carta-posicao" data-slot="'+i+'" aria-pressed="'+(p.posicao===i)+'">'+
+       ico(i)+esc(nomeRound(i))+' '+valor(p.card,i)+'</button>';
+   }).join('')+'</div>'+(linhas?'<ul id="battleCartaDiferenca">'+linhas+'</ul>':'<p id="battleCartaDiferenca">'+esc(t[7])+'</p>')+
+     (linhas?'<button type="button" class="btn" data-battle="carta-confirmar" aria-describedby="battleCartaDiferenca">'+esc(t[2])+'</button> ':'');
+ }
+ return h+'<button type="button" class="btn alt" data-battle="carta-cancelar">'+esc(t[3])+'</button></section>';
+}
 var ov=null,estado=null,unit=[],rodadas=null,ocupado=false,msg='',servidor=false;
 var revanche=null;
 var fase='escalar',showT0=0,showRaf=0,rodadaCalma=0;
+var trocaTreino=false,trocaFeita=false,trocaResumo='';
+var TROCA_TR={
+ pt:['Cada posição usa o atributo da sua rodada.','Só no treino e na revanche','Troca feita'],
+ en:['Each position uses its round’s stat.','In practice and rematches','Positions swapped'],
+ es:['Cada posición usa el atributo de su ronda.','En práctica y revancha','Posiciones intercambiadas'],
+ id:['Tiap posisi memakai atribut rondenya.','Dalam latihan dan tanding ulang','Posisi ditukar'],
+ th:['แต่ละตำแหน่งใช้ค่าสถานะของรอบนั้น','ใช้ได้ในการฝึกและแข่งใหม่','สลับตำแหน่งแล้ว'],
+ ja:['各ポジションではそのラウンドの能力値を使います。','練習と再戦で利用可能','入れ替え完了']
+};
+function trocaTxt(i){return (TROCA_TR[lang()]||TROCA_TR.pt)[i];}
+function efeitoPosicao(i,antes,depois){
+ return nomeRound(i)+' '+antes+' → '+depois;
+}
+var PREVIA_TROCA_TR = {
+ pt:['Se trocar','Confirmar troca'],en:['If you swap','Confirm swap'],es:['Al intercambiar','Confirmar cambio'],
+ id:['Jika ditukar','Konfirmasi pertukaran'],th:['หากสลับ','ยืนยันการสลับ'],ja:['入れ替えると','入れ替えを確定']
+};
+function preverTroca(){
+ var ordem=unit.slice();ordem[1]=unit[2];ordem[2]=unit[1];
+ var novas=treinoShow(ordem);
+ return {ordem:ordem,rodadas:novas,efeito:efeitoPosicao(1,rodadas[1].eu,novas[1].eu)+' · '+efeitoPosicao(2,rodadas[2].eu,novas[2].eu)};
+}
+function trocarRestantes(){
+ if(!trocaTreino||trocaFeita||rodadaCalma!==0||!rodadas||
+    (fase!=='show-troca'&&fase!=='show-calmo'))return;
+ var previa=preverTroca();
+ unit=previa.ordem;rodadas[1]=previa.rodadas[1];rodadas[2]=previa.rodadas[2];trocaFeita=true;
+ trocaResumo=trocaTxt(2)+' · '+previa.efeito;
+ render();
+ var proxima=ov.querySelector('[data-battle="proxima-rodada"]');if(proxima)proxima.focus();
+}
+
 var ranking=null;                       // Top da Arena (só aparece se o servidor responder)
 var torcida=null;                       // v3: flor levada hoje para a torcida (Bloom⭐Garden! → Battle)
 var FLOR={sakura:['#ff93c0',0],tulipa:['#f26a93',1],girassol:['#f8b62a',2],lunar:['#ab8ef6',-1]};  // cor da flor, rodada do bônus
@@ -175,6 +243,12 @@ function montar(){
    var b=e.target.closest&&e.target.closest('[data-battle]');if(!b)return;
    var a=b.getAttribute('data-battle');
    if(a==='fechar'){fechar();return;}
+   if(a==='trocar-restantes'){ trocarRestantes(); return; }
+   if(a==='proxima-rodada' && fase==='show-troca'){
+     fase='show';rodadaCalma=1;showT0=agora()-DUR;render();quadroShow();
+     var agita=ov.querySelector('[data-battle="agitar"]');if(agita)agita.focus();
+     return;
+   }
    if(a==='proxima-rodada' && fase==='show-calmo'){
      if(rodadaCalma + 1 === rodadas.length){
        fimDoShow();
@@ -190,6 +264,15 @@ function montar(){
    if(a==='agitar'){agitar();return;}
    if(a==='pular'){fimDoShow();return;}
    if(ocupado)return;
+   if(cartaTeste && a==='carta-posicao'){
+     var i=Number(b.getAttribute('data-slot'));if(i<0||i>2)return;
+     cartaTeste.posicao=i;render();ov.querySelector('[data-battle="carta-posicao"][aria-pressed="true"]').focus();return;
+   }
+   if(cartaTeste && (a==='carta-confirmar'||a==='carta-cancelar')){
+     if(a==='carta-confirmar' && cartaTeste.card && battleDono===contaBattle())unit=ordemComCard(cartaTeste.card.nick,cartaTeste.posicao);
+     cartaTeste=null;render();var pos=ov.querySelector('[data-battle="abrir-slot"]');if(pos)pos.focus();return;
+   }
+   if(cartaTeste)return;
    if(a==='slot'){var si=Number(b.getAttribute('data-slot')),sv=b.getAttribute('data-nick'),sj=unit.indexOf(sv);if(sj>=0&&sj!==si)unit[sj]=unit[si];unit[si]=sv;slotAberto=-1;render();return;}
    if(a==='abrir-slot'){var so=Number(b.getAttribute('data-slot'));slotAberto=slotAberto===so?-1:so;render();var sl=ov.querySelector('.battle-slot');if(sl&&sl.scrollIntoView)try{sl.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}return;}
    if(a==='ir-gacha'){fechar();if(typeof gachaAbrir==='function')setTimeout(gachaAbrir,60);return;}
@@ -209,7 +292,7 @@ function montar(){
    if(a==='salvar'){salvar();return;}
  });
  ov.addEventListener('change',function(e){
-   if(e.target.matches&&e.target.matches('[data-battle-slot]')){
+   if(!cartaTeste&&e.target.matches&&e.target.matches('[data-battle-slot]')){
      // Escolher um Idol que já está em outra rodada troca os dois de lugar.
      var i=Number(e.target.getAttribute('data-battle-slot')),v=e.target.value,j=unit.indexOf(v);
      if(j>=0&&j!==i)unit[j]=unit[i];
@@ -218,22 +301,43 @@ function montar(){
  });
  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ov&&!ov.hidden){e.stopPropagation();fechar();}});
 }
-function abrir(){
+function abrir(atalho){
+ var dono=contaBattle(), sess=++battleSessao, anterior=dono&&dono===battleDono?unit.slice():[];
+ battleDono=dono;
+ cartaTeste=atalho && atalho.dono===dono && dono && typeof atalho.card==='string' ?
+   {nick:atalho.card,card:null,posicao:0,pendente:true} : null;
+ var previa=cartaTeste;
  montar();ov.hidden=false;estado=treino();unit=estado.cards.slice(0,3).map(function(c){return c.nick;});
  rodadas=null;revanche=null;ritmo=null;ocupado=false;msg='';servidor=false;fase='escalar';slotAberto=-1;ranking=null;torcida=null;modo='dia';arena=null;alvo=null;msgOk=false;render();
- // Os visuais dos cards vêm da vitrine que o Hub já usa (sem consulta nova só para o Battle).
+ if(previa)ov.querySelector('#battleCartaTitulo').focus();
  try{if(typeof hubIdolsCarregar==='function'&&!(typeof hubIdolsDados!=='undefined'&&hubIdolsDados)&&logado())hubIdolsCarregar();}catch(e){}
+ function atual(){return sess===battleSessao && dono===contaBattle() && ov&&!ov.hidden&&fase==='escalar'&&!ocupado;}
  if(logado()){
-   // Falha ou ausência da RPC nunca cria pontuação: mantém treino explícito.
-   contaRpc('battle_status').then(function(r){
-     if(!ov||ov.hidden||fase!=='escalar'||ocupado)return;
+   var arenaP=carregarArena();
+   var status=contaRpc('battle_status').catch(function(){return null;});
+   (previa ? Promise.all([status,arenaP]).then(function(rs){return rs[0];}) : status).then(function(r){
+     if(!atual())return;
      if(r&&r.ok&&Array.isArray(r.cards)&&r.cards.length>=3&&Array.isArray(r.rival)&&r.rival.length===3){
        estado=r;servidor=true;
        unit=melhorEscalacao(r.cards);
-       render();
+       if(previa && cartaTeste===previa){
+         var defesa=arena&&arena.minha&&Array.isArray(arena.minha.unit) ? arena.minha.unit.map(function(c){return typeof c==='string'?c:c&&c.nick;}) : [];
+         var base=[anterior,defesa].find(function(ordem){
+           return ordem.length===3 && new Set(ordem).size===3 && ordem.every(cardDe);
+         });
+         if(base)unit=base;
+         previa.card=r.starter?null:r.cards.find(function(c){return chave(c.nick)===chave(previa.nick);});
+         if(previa.card){
+           var atualPos=unit.indexOf(previa.card.nick);
+           previa.posicao=atualPos>=0?atualPos:habilidade(previa.card);
+         }
+       }
      }
-   }).catch(function(){});
-   carregarRanking();carregarArena();carregarTorcida();
+     if(previa)previa.pendente=false;
+     render();
+     if(cartaTeste===previa && previa && document.activeElement===document.body)ov.querySelector('#battleCartaTitulo').focus();
+   });
+   carregarRanking();carregarTorcida();
  }
 }
 // Ranking semanal de vitórias. Sem a função no servidor (ou com erro) a seção simplesmente não aparece.
@@ -283,8 +387,10 @@ function torcidaHtml(){
 }
 // Arena dos Idols (v2). Sem as funções no servidor a aba não aparece e nada muda.
 function carregarArena(){
- if(!logado())return;
- contaRpc('battle_arena').then(function(r){
+ if(!logado())return Promise.resolve();
+ var sess=battleSessao,dono=battleDono;
+ return contaRpc('battle_arena').then(function(r){
+   if(sess!==battleSessao || dono!==contaBattle())return;
    if(!r||!r.ok||!Array.isArray(r.lista))return;
    arena=r;if(ov&&!ov.hidden&&fase==='escalar'&&!ocupado)render();
  }).catch(function(){});
@@ -307,8 +413,14 @@ function slotsHtml(){
    var escolhido=cardDe(unit[i]),forca=Math.max(0,Math.min(10,valor(escolhido,i)));
    // 17/11: escolher tocando no card do Idol (em vez do select do navegador); quem já está em outra rodada troca de lugar
    h+='<div class="battle-slot" role="group" aria-label="'+esc(nomeRound(i))+'"><span class="battle-slot-tit">'+ico(i)+esc(nomeRound(i))+'</span><span class="battle-selection">'+
-    '<span class="battle-picks">'+estado.cards.map(function(c){var on=unit[i]===c.nick;return '<button type="button" class="battle-pick'+(on?' on':'')+'" data-battle="slot" data-slot="'+i+'" data-nick="'+esc(c.nick)+'" aria-pressed="'+on+'">'+
-     '<canvas class="battle-av battle-av-p" width="132" height="150" data-battle-av="'+esc(c.nick)+'" data-meu="1" aria-hidden="true"></canvas><b>'+esc(c.nick)+'</b><small>'+valor(c,i)+'/10</small></button>';}).join('')+'</span>'+
+    '<span class="battle-card-legend" aria-hidden="true">'+[0,1,2].map(function(j){
+      return '<span>'+ico(j)+esc(nomeRound(j))+'</span>';
+    }).join('')+'</span><span class="battle-picks">'+estado.cards.map(function(c){var on=unit[i]===c.nick;return '<button type="button" class="battle-pick'+(on?' on':'')+'" data-battle="slot" data-slot="'+i+'" data-nick="'+esc(c.nick)+'" aria-pressed="'+on+'">'+
+     '<canvas class="battle-av battle-av-p" width="132" height="150" data-battle-av="'+esc(c.nick)+'" data-meu="1" aria-hidden="true"></canvas><b>'+esc(c.nick)+'</b><span class="battle-card-attrs">'+[0,1,2].map(function(j){
+       var rotulo=nomeRound(j)+' '+valor(c,j)+'/10';
+       return '<small'+(i===j?' class="atual"':'')+' title="'+esc(rotulo)+'"><span aria-hidden="true">'+ico(j)+'</span>'+
+         '<span class="twc-sr">'+esc(nomeRound(j))+' </span>'+valor(c,j)+'</small>';
+     }).join('')+'</span></button>';}).join('')+'</span>'+
      '<span class="battle-power" role="img" aria-label="'+esc(nomeRound(i))+' '+forca+'/10"><i style="width:'+ (forca*10) +'%"></i><b>'+forca+'/10</b></span></span></div>';
  }
  return h;
@@ -354,7 +466,7 @@ function rankingHtml(){
  if(eu&&Number(eu.pos)>0)h+='<p class="battle-rank-eu">'+esc(trB('my'))+': '+Number(eu.pos)+'º · '+ico(3)+(Number(eu.score)||0)+'</p>';
  return h+'</section>';
 }
-function fechar(){pararShow();if(ov)ov.hidden=true;}
+function fechar(){battleSessao++;cartaTeste=null;pararShow();if(ov)ov.hidden=true;}
 function nomeRound(i){return trB(['cant','dance','charm'][i]);}
 function valor(c,i){return Number(c&&c[ATR[i]])||0;}
 function cardDe(n){return estado.cards.find(function(c){return c.nick===n;})||null;}
@@ -422,13 +534,18 @@ function render(){
  ov.querySelector('#battleSub').textContent=trB('subtitle');
  var area=ov.querySelector('#battleCorpo'),stage=ov.querySelector('#battleStage');
  stage.hidden=fase==='escalar';
- if(fase==='show-calmo'){
+ if(fase==='show-calmo'||fase==='show-troca'){
    var i = rodadaCalma, r = rodadas[i], textoCalmo = SHOW_CALMO[lang()] || SHOW_CALMO.pt;
    var meu = r.meu || unit[i], rival = r.rival || '?';
+   var previa = trocaTreino&&i===0&&!trocaFeita ? preverTroca() : null;
+   var previaTxt = PREVIA_TROCA_TR[lang()] || PREVIA_TROCA_TR.pt;
    area.innerHTML = '<div class="battle-showhud" role="status"><b>' + esc(nomeRound(i)) + ' · ' +
      (i + 1) + '/' + rodadas.length + '</b><span>' + esc(textoCalmo[2].replace('{n}', r.ganhou ? meu : rival)) + '</span></div>' +
      '<p class="battle-ritmo">' + esc(meu) + ' ' + Number(r.eu || 0) + ' × ' + Number(r.eles || 0) + ' ' + esc(rival) + '</p>' +
-     '<div class="btns"><button type="button" class="btn" data-battle="proxima-rodada">' +
+     (trocaTreino&&i===0 ? '<p class="battle-hint" role="status" id="battlePreviaTroca" data-battle-troca>' +
+       esc(trocaResumo || (previaTxt[0]+' · '+previa.efeito)) + '</p>' : '') +
+     '<div class="btns">' + (previa ? '<button type="button" class="btn alt" data-battle="trocar-restantes" aria-describedby="battlePreviaTroca">' +
+       esc(previaTxt[1]) + '</button>' : '') + '<button type="button" class="btn" data-battle="proxima-rodada">' +
      esc(textoCalmo[i + 1 === rodadas.length ? 1 : 0]) + '</button></div>';
    desenharPalco(i * DUR + DUR - .08);
    return;
@@ -462,6 +579,10 @@ function render(){
    '<button type="button" class="btn" data-battle="'+(revanche?'sair-revanche':'outra')+'"'+(limite?' disabled':'')+'>'+esc(limite?trB('locked'):trB('again'))+'</button></section>');
    area.innerHTML=texto+(emArena?'':rankingHtml());desenharMiniaturas();return;
  }
+ if(cartaTeste){
+   area.innerHTML=cartaTesteHtml();desenharMiniaturas();
+   return;
+ }
  texto+='<canvas class="battle-cena" id="battleCena" width="1120" height="380" aria-hidden="true"></canvas>';
  texto+='<section class="battle-rival"><h3>'+(emArena?esc(trB('vsUnit').replace('{n}',alvo.nick)):esc(trB('daily')))+'</h3><div class="battle-trio">'+
    (emArena?alvo.idols:estado.rival).map(function(c){return idolHtml(c,false,'',-1,oculto(c));}).join('')+
@@ -469,7 +590,8 @@ function render(){
  texto+='<section class="battle-escalar"><h3>'+esc(trB('stage'))+'</h3><div class="battle-trio">'+
    unit.map(function(n,i){var c=cardDe(n)||{nick:n},card=idolHtml(c,true,ico(i)+esc(nomeRound(i)),i).replace(/^<div /,'<span ').replace(/<\/div>$/,'</span>');
      return '<button type="button" class="battle-slotbtn'+(slotAberto===i?' on':'')+'" data-battle="abrir-slot" data-slot="'+i+'" aria-expanded="'+(slotAberto===i)+'">'+card+'</button>';}).join('')+
-   '</div><p class="battle-hint">'+esc(estado.starter?trB('none'):trB('tapSlot'))+'</p>'+
+   '</div><p class="battle-hint">'+esc(trocaTxt(0))+' · '+esc(trocaTxt(1))+'</p>'+
+   '<p class="battle-hint">'+esc(estado.starter?trB('none'):trB('tapSlot'))+'</p>'+
    (estado.starter?'<div class="btns battle-semcards"><button type="button" class="btn alt" data-battle="ir-gacha">'+esc(trB('toGacha'))+'</button></div>':'');
  texto+=slotsHtml()+'</section>'+torcidaHtml();
  if(revanche)texto+='<p class="battle-hint">'+esc(textoRevanche[1])+'</p>';
@@ -481,9 +603,9 @@ function render(){
  area.innerHTML=texto+(emArena?'':rankingHtml());
  desenharMiniaturas();
 }
-function treinoShow(){
+function treinoShow(ordem){
  var other=estado.rival;
- return unit.map(function(n,i){
+ return (ordem||unit).map(function(n,i){
    var eu=cardDe(n)||DEFAULT[i];
    var rival=other[(i+1)%3],a=valor(eu,i),b=valor(rival,i);
    if(revanche){
@@ -498,7 +620,7 @@ function jogar(){
  if(unit.length!==3||new Set(unit).size!==3||unit.some(function(x){return !cardDe(x);})){
    msg=trB('choose');render();return;
  }
- ocupado=true;msg='';render();
+ ocupado=true;msg='';trocaTreino=!servidor||!!revanche;trocaFeita=false;trocaResumo='';render();
  if(!servidor||revanche){
    rodadas=treinoShow();ocupado=false;comecarShow();return;
  }
@@ -625,10 +747,17 @@ function comecarShow(){
    ov.querySelector('[data-battle="proxima-rodada"]').focus();
    return;
  }
- fase='show';showT0=agora();showSom=-1;ritmo={n:0,erros:0,pegas:{},festa:[],cor:0,sk:{},skN:0};render();
- (function quadro(){
+ fase='show';rodadaCalma=0;showT0=agora();showSom=-1;ritmo={n:0,erros:0,pegas:{},festa:[],cor:0,sk:{},skN:0};render();
+ quadroShow();
+}
+function quadroShow(){
    showRaf=0;if(!ov||ov.hidden||fase!=='show')return;
    var t=agora()-showT0;
+   if(t>=DUR&&trocaTreino&&rodadaCalma===0){
+     rodadaCalma=0;fase='show-troca';render();
+     ov.querySelector('[data-battle="proxima-rodada"]').focus();
+     return;
+   }
    if(t>=DUR*3+.15){fimDoShow();return;}
    var ri=Math.min(2,Math.floor(t/DUR));
    var live=ov.querySelector('#battleLiveRodada'),progresso=ov.querySelector('#battleShowFill');
@@ -641,8 +770,7 @@ function comecarShow(){
      var nr=ov.querySelector('#battleNarra'),rr=rodadas[ri];
      if(nr)nr.textContent=nomeRound(ri)+': '+(rr.meu||unit[ri])+' '+Number(rr.eu||0)+' × '+Number(rr.eles||0)+' '+(rr.rival||'');
    }
-   desenharPalco(t);showRaf=requestAnimationFrame(quadro);
- })();
+   desenharPalco(t);showRaf=requestAnimationFrame(quadroShow);
 }
 function fimDoShow(){
  if(!rodadas || fase==='fim')return;

@@ -9,7 +9,150 @@
     th:['ชุดภาพถ่าย','บันทึกลงในชุดภาพ','บันทึกภาพแล้ว','บันทึกภาพไม่ได้','เก็บภาพจาก Studio, Duo และห้องแต่งตัวในเบราว์เซอร์นี้ สูงสุด 24 ภาพต่อบัญชี','ยังไม่มีภาพ','ดาวน์โหลดภาพ','ลบภาพ','เปิดภาพไม่ได้','กำลังโหลด…','ห้องแต่งตัว VIP'],
     ja:['写真シリーズ','シリーズに保存','シリーズに保存しました。','写真を保存できませんでした。','Studio、Duo、楽屋の写真をこのブラウザーに保存します。1アカウント24枚まで。','まだ写真がありません。','写真をダウンロード','写真を削除','写真を開けませんでした。','読み込み中…','VIP楽屋']
   };
+  var LEMBRANCA = {
+    pt:['Usar como referência','Antes e depois','Selecionar para comparação','Antes','Depois','Baixar antes e depois','Escolha duas fotos na ordem.'],
+    en:['Use as reference','Before and after','Select for comparison','Before','After','Download before and after','Choose two photos in order.'],
+    es:['Usar como referencia','Antes y después','Seleccionar para comparar','Antes','Después','Descargar antes y después','Elige dos fotos en orden.'],
+    id:['Gunakan sebagai referensi','Sebelum dan sesudah','Pilih untuk perbandingan','Sebelum','Sesudah','Unduh sebelum dan sesudah','Pilih dua foto berurutan.'],
+    th:['ใช้เป็นภาพอ้างอิง','ก่อนและหลัง','เลือกเพื่อเปรียบเทียบ','ก่อน','หลัง','ดาวน์โหลดก่อนและหลัง','เลือกภาพสองภาพตามลำดับ'],
+    ja:['参考写真にする','ビフォー・アフター','比較に選ぶ','ビフォー','アフター','比較画像をダウンロード','順番に写真を2枚選択。']
+  };
+  function lembrancaT(){ return LEMBRANCA[typeof LANG === 'string' && LANG] || LEMBRANCA.pt; }
   var dbPendente, LIMITE = 24, urls = new Map();
+  var COPIA_TR={
+    pt:['Baixar cópia da série','Restaurar cópia','Fotos adicionadas: {n}.','A série tem espaço para apenas {n} fotos novas.','Cópia inválida ou indisponível.','Lendo cópia…','Sua composição favorita atual foi mantida.','A composição favorita não pôde ser salva.'],
+    en:['Download a series backup','Restore backup','Photos added: {n}.','This series has room for only {n} new photos.','Invalid or unavailable backup.','Reading backup…','Your current favorite composition was kept.','Could not save the favorite composition.'],
+    es:['Descargar copia de la serie','Restaurar copia','Fotos añadidas: {n}.','En esta serie solo caben {n} fotos nuevas.','Copia inválida o no disponible.','Leyendo copia…','Se mantuvo tu composición favorita actual.','No se pudo guardar la composición favorita.'],
+    id:['Unduh cadangan seri','Pulihkan cadangan','Foto ditambahkan: {n}.','Seri ini hanya muat {n} foto baru.','Cadangan tidak valid atau tidak tersedia.','Membaca cadangan…','Komposisi favorit saat ini dipertahankan.','Komposisi favorit gagal disimpan.'],
+    th:['ดาวน์โหลดสำรองชุดภาพ','กู้คืนข้อมูลสำรอง','เพิ่มภาพแล้ว {n} ภาพ','ชุดภาพนี้เพิ่มได้อีก {n} ภาพเท่านั้น','ข้อมูลสำรองใช้ไม่ได้หรือไม่พร้อม','กำลังอ่านข้อมูลสำรอง…','เก็บองค์ประกอบโปรดเดิมไว้แล้ว','บันทึกองค์ประกอบโปรดไม่ได้'],
+    ja:['シリーズのバックアップを保存','バックアップを復元','写真を{n}枚追加しました。','追加できる写真はあと{n}枚です。','バックアップが無効か利用できません。','バックアップを読み込み中…','現在のお気に入り構図を保持しました。','お気に入り構図を保存できませんでした。']
+  };
+  var TIPOS=['studio','duo','vip','pet'], MAX_COPIA=24*1024*1024, MAX_JPEG_B64=1400000;
+  function copiaT(i,n){return (COPIA_TR[typeof LANG==='string'&&LANG]||COPIA_TR.pt)[i].replace('{n}',n);}
+  function composicao(dados){
+    var campos={fundo:['rosa','cortina','nuvens','neon'],pose:['normal','v','coracao','tchau'],
+      luz:['suave','neon','por'],quadro:['rosto','meio','inteiro']};
+    if(!dados || !Object.keys(campos).every(function(k){return campos[k].indexOf(dados[k])>=0;}))return undefined;
+    var c={fundo:dados.fundo,pose:dados.pose,luz:dados.luz,quadro:dados.quadro}, item=dados.objeto;
+    if(typeof item==='string' && (/^(nenhum|balao|microfone|lightstick|flor_(sakura|tulipa|girassol|lunar))$/.test(item) ||
+        /^arranjo_(sakura|tulipa|girassol|lunar)(\+(sakura|tulipa|girassol|lunar)){1,2}$/.test(item)))c.objeto=item;
+    return c;
+  }
+  function favoritaChave(){
+    var id=contaJ && ((typeof contaAuthUserId==='string' && contaAuthUserId)||contaJ.id||contaJ.nick);
+    return id?'tw_studio_composicao_v1:conta:'+encodeURIComponent(id):'';
+  }
+  function favoritaLer(chave){
+    try{return chave?composicao(JSON.parse(localStorage.getItem(chave))):undefined;}catch(e){return undefined;}
+  }
+  function blobUrlDados(blob){
+    return new Promise(function(ok,falha){
+      var r=new FileReader();r.onload=function(){ok(r.result);};r.onerror=falha;r.readAsDataURL(blob);
+    });
+  }
+  function fotoCopia(f,dados){
+    return {tipo:f.tipo,quando:f.quando,imagem:dados,composicao:f.tipo==='studio'?composicao(f.composicao):undefined};
+  }
+  async function baixarCopia(conta,chave,ativo){
+    var fotos=await lista(conta);
+    var codificadas=await Promise.all(fotos.map(async function(f){return fotoCopia(f,await blobUrlDados(f.blob));}));
+    if(!ativo())return;
+    var arquivo=new Blob([JSON.stringify({formato:'tsulipa-album',versao:1,fotos:codificadas,favorita:favoritaLer(chave)})],{type:'application/json'});
+    if(arquivo.size>MAX_COPIA)throw Error('tamanho');
+    var url=URL.createObjectURL(arquivo), a=document.createElement('a');a.href=url;a.download='tsulipa-serie-fotos.json';
+    document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);
+  }
+  // Valida o tamanho no cabeçalho antes de enviar os dados ao decodificador JPEG.
+  function jpegPequeno(bytes){
+    if(bytes.length<5 || bytes[0]!==255 || bytes[1]!==216)return false;
+    for(var i=2;i<bytes.length;){
+      if(bytes[i++]!==255)return false;
+      while(bytes[i]===255)i++;
+      var m=bytes[i++], n=(bytes[i]<<8)|bytes[i+1];
+      if(n<2 || i+n>bytes.length || m===218)return false;
+      if((m>=192&&m<=195)||(m>=197&&m<=199)||(m>=201&&m<=203)||(m>=205&&m<=207)){
+        if(n<8)return false;
+        var h=(bytes[i+3]<<8)|bytes[i+4],w=(bytes[i+5]<<8)|bytes[i+6];
+        return h>0&&w>0&&h<=800&&w<=800;
+      }
+      i+=n;
+    }
+    return false;
+  }
+  async function lerCopia(file){
+    if(!file || file.size>MAX_COPIA)throw Error('copia');
+    var d=JSON.parse(await file.text());
+    if(!d || d.formato!=='tsulipa-album'||d.versao!==1||!Array.isArray(d.fotos)||d.fotos.length>LIMITE)throw Error('copia');
+    for(var i=0;i<d.fotos.length;i++){
+      var f=d.fotos[i];
+      if(!f || TIPOS.indexOf(f.tipo)<0 || !Number.isSafeInteger(f.quando) || f.quando<=0 || f.quando>864e13 ||
+        typeof f.imagem!=='string'||f.imagem.length>MAX_JPEG_B64||!/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(f.imagem))throw Error('foto');
+      var bytes=Uint8Array.from(atob(f.imagem.slice(23)),function(c){return c.charCodeAt(0);});
+      if(!jpegPequeno(bytes))throw Error('jpeg');
+      f.blob=new Blob([bytes],{type:'image/jpeg'});
+      if(typeof createImageBitmap==='function'){
+        var bmp=await createImageBitmap(f.blob);bmp.close();
+      }
+      f.composicao=f.tipo==='studio'?composicao(f.composicao):undefined;
+    }
+    return d;
+  }
+  function assinaturaFoto(f,imagem){return f.tipo+'|'+f.quando+'|'+imagem;}
+  async function restaurarCopia(file,conta,chave,ativo){
+    var copia=await lerCopia(file), atuais=await lista(conta);
+    var assinaturas=new Set(await Promise.all(atuais.map(async function(f){return assinaturaFoto(f,await blobUrlDados(f.blob));})));
+    var novas=copia.fotos.filter(function(f){
+      var k=assinaturaFoto(f,f.imagem);
+      if(assinaturas.has(k))return false;
+      assinaturas.add(k);return true;
+    });
+    if(novas.length>LIMITE-atuais.length)return {texto:copiaT(3,LIMITE-atuais.length),atualizar:false};
+    if(!ativo())return null;
+    await transacao('readwrite',function(s,_,tx){
+      var q=s.index('dono').getAllKeys(conta);
+      q.onsuccess=function(){
+        if(!ativo() || q.result.length!==atuais.length || atuais.some(function(f,i){return f.id!==q.result[atuais.length-1-i];})){
+          tx.abort();return;
+        }
+        novas.slice().sort(function(a,b){return a.quando-b.quando;}).forEach(function(f){s.add({dono:conta,tipo:f.tipo,quando:f.quando,blob:f.blob,composicao:f.composicao});});
+      };
+    });
+    var texto=copiaT(2,novas.length), fav=composicao(copia.favorita);
+    if(ativo() && fav && chave){
+      if(favoritaLer(chave))texto+=' '+copiaT(6);
+      else try{localStorage.setItem(chave,JSON.stringify(fav));}catch(e){texto+=' '+copiaT(7);}
+    }
+    return {texto:texto,atualizar:true};
+  }
+  function acoesCopia(box,conta,ativo,mensagem){
+    var chave=favoritaChave(), area=document.createElement('div'), arquivo=document.createElement('input');
+    var salvar=document.createElement('button'), restaurar=document.createElement('button'), status=document.createElement('p');
+    area.className='btns';arquivo.type='file';arquivo.accept='.json,application/json';arquivo.hidden=true;
+    salvar.type=restaurar.type='button';salvar.textContent=copiaT(0);restaurar.textContent=copiaT(1);
+    status.setAttribute('role','status');status.textContent=mensagem||'';
+    area.append(salvar,restaurar,arquivo);
+    function ocupado(valor){salvar.disabled=restaurar.disabled=valor;}
+    salvar.onclick=async function(){
+      if(!ativo())return;
+      ocupado(true);
+      try{await baixarCopia(conta,chave,ativo);}catch(e){if(ativo())status.textContent=copiaT(4);}
+      finally{if(ativo())ocupado(false);}
+    };
+    restaurar.onclick=function(){if(ativo())arquivo.click();};
+    arquivo.onchange=async function(){
+      var file=arquivo.files[0];arquivo.value='';
+      if(!file||!ativo())return;
+      ocupado(true);status.textContent=copiaT(5);
+      try{
+        var r=await restaurarCopia(file,conta,chave,ativo);
+        if(!ativo()||!r)return;
+        if(r.atualizar)mostrar(box,r.texto);else status.textContent=r.texto;
+      }catch(e){if(ativo())status.textContent=copiaT(4);}
+      finally{if(ativo())ocupado(false);}
+    };
+    box.append(area,status);
+  }
+
   function t(i){ return (TX[typeof LANG === 'undefined' ? 'pt' : LANG] || TX.pt)[i]; }
   function dono(){
     if(typeof contaJ === 'undefined' || !contaJ) return '';
@@ -33,7 +176,7 @@
       var tx = db.transaction('fotos', modo), resultado;
       tx.oncomplete = function(){ ok(resultado); };
       tx.onabort = function(){ falha(tx.error); };
-      fn(tx.objectStore('fotos'), function(valor){ resultado = valor; });
+      fn(tx.objectStore('fotos'), function(valor){ resultado = valor; },tx);
     }); });
   }
   function imagem(cv){
@@ -43,18 +186,20 @@
     x.drawImage(cv,0,0,copia.width,copia.height);
     return new Promise(function(ok, falha){ copia.toBlob(function(blob){ if(blob)ok(blob);else falha(Error('foto')); },'image/jpeg',.87); });
   }
-  async function salvar(tipo, canvas, botao){
+  async function salvar(tipo, canvas, botao, composicaoDaFoto){
+    var validarComposicao=composicao(composicaoDaFoto);
     var conta = dono();
-    if(!conta || !canvas || ['studio','duo','vip'].indexOf(tipo) < 0) return false;
+    if(!conta || !canvas || TIPOS.indexOf(tipo) < 0) return false;
     botao.disabled = true;
     try{
       var blob = await imagem(canvas);
       if(dono() !== conta) return false;
       await transacao('readwrite', function(s){
-        var q = s.index('dono').getAllKeys(conta);
+        var q = s.index('dono').getAll(conta);
         q.onsuccess = function(){
-          q.result.slice(0, Math.max(0,q.result.length-LIMITE+1)).forEach(function(id){ s.delete(id); });
-          s.add({dono:conta,tipo:tipo,quando:Date.now(),blob:blob});
+          var antigas=q.result.sort(function(a,b){return a.quando-b.quando||a.id-b.id;});
+          antigas.slice(0,Math.max(0,antigas.length-LIMITE+1)).forEach(function(f){s.delete(f.id);});
+          s.add({dono:conta,tipo:tipo,quando:Date.now(),blob:blob,composicao:tipo==='studio' ? validarComposicao : undefined});
         };
       });
       if(dono() !== conta) return false;
@@ -100,7 +245,36 @@
       pedido.onsuccess = function(){ if(pedido.result && pedido.result.dono === conta) s.delete(id); };
     });
   }
-  async function mostrar(box){
+  async function referencia(id, conta){
+    if(!conta || conta !== dono() || !Number.isSafeInteger(id)) return null;
+    var foto = await transacao('readonly',function(s,set){
+      var pedido = s.get(id);
+      pedido.onsuccess = function(){ set(pedido.result); };
+    });
+    return foto && foto.dono===conta && dono()===conta && foto.tipo==='studio' ? foto : null;
+  }
+  async function baixarComparacao(escolhidas, ativo){
+    var tx = lembrancaT(), locais = escolhidas.map(function(f){return URL.createObjectURL(f.blob);});
+    try{
+      var imagens = await Promise.all(locais.map(function(url){
+        return new Promise(function(ok,erro){var img=new Image();img.onload=function(){ok(img);};img.onerror=erro;img.src=url;});
+      }));
+      if(!ativo())return;
+      var cv=document.createElement('canvas');cv.width=1240;cv.height=900;
+      var x=cv.getContext('2d');x.fillStyle='#f8edfa';x.fillRect(0,0,1240,900);
+      x.textAlign='center';x.fillStyle='#44245e';x.font='bold 40px system-ui';x.fillText(tx[1],620,59);
+      imagens.forEach(function(img,i){
+        var cx=320+i*600, escala=Math.min(550/img.naturalWidth,680/img.naturalHeight);
+        var w=img.naturalWidth*escala,h=img.naturalHeight*escala;
+        x.drawImage(img,cx-w/2,115+(680-h)/2,w,h);
+        x.font='bold 27px system-ui';x.fillText(tx[3+i],cx,104);
+        x.font='23px system-ui';x.fillText(new Date(escolhidas[i].quando).toLocaleDateString(),cx,841);
+      });
+      var a=document.createElement('a');a.download='tsulipa-antes-e-depois.png';a.href=cv.toDataURL('image/png');
+      document.body.appendChild(a);a.click();a.remove();
+    }finally{ locais.forEach(function(url){ URL.revokeObjectURL(url); }); }
+  }
+  async function mostrar(box,mensagem){
     var conta = dono(), detalhe = box.closest('details');
     if(!conta || !detalhe.open) return;
     conferir(); liberar(box); box.dataset.fotosDono = conta; box.textContent = t(9);
@@ -111,13 +285,25 @@
       var fotos = await lista(conta);
       if(!ativo()) return;
       box.replaceChildren();
-      if(!fotos.length){ box.textContent = t(5); return; }
+      acoesCopia(box,conta,ativo,mensagem);
+      if(!fotos.length){ box.append(t(5)); return; }
       var grade = document.createElement('div'); grade.className = 'album-fotos-grade';
       var objetos = []; urls.set(box,objetos);
-      fotos.forEach(function(f){
+      var tx=lembrancaT(), escolhas=[], seletores=[], acoes=document.createElement('div');
+      var dica=document.createElement('p');dica.textContent=tx[6];
+      var baixar=document.createElement('button');baixar.type='button';baixar.textContent=tx[5];baixar.disabled=true;
+      baixar.addEventListener('click',async function(){
+        if(!ativo() || escolhas.length!==2)return;
+        baixar.disabled=true;
+        try{ await baixarComparacao(escolhas.slice(),ativo); }
+        catch(e){ dica.textContent=t(8); }
+        finally{ if(ativo()) baixar.disabled=escolhas.length!==2; }
+      });
+      acoes.append(dica, baixar);
+      fotos.sort(function(a,b){return b.quando-a.quando||b.id-a.id;}).forEach(function(f){
         var url = URL.createObjectURL(f.blob), cartao = document.createElement('figure'), img = new Image(), cap = document.createElement('figcaption');
         objetos.push(url);
-        var nome = {studio:'Photo⭐Studio!',duo:'Moon⭐Duo!',vip:t(10)}[f.tipo];
+        var nome = {studio:'Photo⭐Studio!',duo:'Moon⭐Duo!',vip:t(10),pet:'Backstage⭐Pet!'}[f.tipo];
         img.src = url; img.alt = nome; img.loading = 'lazy';
         cap.textContent = nome + ' · ' + new Date(f.quando).toLocaleDateString();
         var dl = document.createElement('a'); dl.href = url; dl.download = 'tsulipa-' + f.tipo + '-' + f.id + '.jpg'; dl.textContent = t(6);
@@ -128,9 +314,32 @@
           try{ await remover(f.id,conta); if(ativo()){ mostrar(box); detalhe.querySelector('summary').focus(); } }
           catch(e){ if(ativo()){ apagar.disabled = false; apagar.textContent = t(8); } }
         });
-        cartao.append(img,cap,dl,apagar); grade.appendChild(cartao);
+        cartao.append(img,cap,dl,apagar);
+        if(f.tipo==='studio'){
+          var abrir=document.createElement('button');abrir.type='button';abrir.textContent=tx[0];
+          abrir.addEventListener('click',function(){
+            if(ativo() && typeof window.studioAbrir==='function') window.studioAbrir({referencia:f.id,donoAlbum:conta});
+          });
+          cartao.appendChild(abrir);
+        }
+        var escolher=document.createElement('button');escolher.type='button';escolher.textContent=tx[2];
+        escolher.setAttribute('aria-pressed','false');seletores.push({f:f,b:escolher});
+        escolher.addEventListener('click',function(){
+          if(!ativo())return;
+          var i=escolhas.indexOf(f);
+          if(i>=0)escolhas.splice(i,1);
+          else if(escolhas.length<2) escolhas.push(f);
+          seletores.forEach(function(s){
+            var p=escolhas.indexOf(s.f);
+            s.b.textContent=p<0?tx[2]:tx[3+p];
+            s.b.setAttribute('aria-pressed',String(p>=0));
+            s.b.disabled=p<0 && escolhas.length===2;
+          });
+          baixar.disabled=escolhas.length!==2;
+        });
+        cartao.appendChild(escolher);grade.appendChild(cartao);
       });
-      box.appendChild(grade);
+      box.append(acoes,grade);
     }catch(e){ if(ativo()) box.textContent = t(8); }
   }
   document.addEventListener('toggle',function(e){
@@ -146,5 +355,5 @@
       var detalhe = box.closest('details'); if(detalhe) detalhe.open = false;
     });
   });
-  window.TW_ALBUM_FOTOS = {html:html, botao:botao, textoSalvar:function(){ return dono() ? t(1) : ''; }, salvar:salvar, conferir:conferir};
+  window.TW_ALBUM_FOTOS = {html:html, referencia:referencia, botao:botao, textoSalvar:function(){ return dono() ? t(1) : ''; }, salvar:salvar, conferir:conferir};
 })();

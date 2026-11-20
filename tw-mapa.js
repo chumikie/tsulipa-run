@@ -90,7 +90,7 @@
   function montar(){
     var menu=document.getElementById('hubMenu');if(!menu)return;if(document.getElementById('twMapa')){posicionar();return;}
     var sec=document.createElement('section');sec.id='twMapa';sec.className='tw-mapa';
-    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-visao" hidden><button type="button" class="tw-mapa-zoom" aria-pressed="false">🔎 Aproximar</button></div><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><nav class="tw-mapa-bairros" aria-label="Explorar bairros" hidden></nav><span class="tw-mapa-dica" aria-hidden="true"></span>';
+    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-visao" hidden><button type="button" class="tw-mapa-zoom" aria-pressed="false">🔎 Aproximar</button></div><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><p class="tw-mapa-recado-rosa" hidden></p><nav class="tw-mapa-bairros" aria-label="Explorar bairros" hidden></nav><span class="tw-mapa-dica" aria-hidden="true"></span>';
     menu.appendChild(sec);posicionar();
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
     mostrarCena('mundo');
@@ -158,6 +158,7 @@
       if(document.querySelector('[aria-modal="true"]:not([hidden]),dialog[open]'))return;
       e.preventDefault();voltarAoMundo();
     });
+    window.addEventListener('tw-piloto-bairro',recadoRosa);
     window.addEventListener('popstate',function(e){
       if(!mapaAtivo())return;
       // Nunca disputar o botão Voltar com as rotas do Center ou Karaoke.
@@ -187,7 +188,8 @@
     aberto=!!sim;var sec=document.getElementById('twMapa');if(!sec)return;
     sec.classList.toggle('aberto',aberto);sec.querySelector('.tw-mapa-rolo').hidden=!aberto;sec.querySelector('.tw-mapa-botao').setAttribute('aria-expanded',aberto?'true':'false');
     if(!inicio){try{localStorage.setItem('tw_mapa_aberto',aberto?'1':'0');}catch(e){}}
-    textos();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
+    textos();recadoRosa();if(aberto){centrado=false;setTimeout(function(){centralizar();desenhar();laco();},30);}}
+
   function textos(){var b=document.querySelector('#twMapa .tw-mapa-txt b'),m=document.querySelector('#twMapa .tw-mapa-txt small');
     if(b)b.textContent=TIT[lang()]||TIT.pt;var dc=document.querySelector('#twMapa .tw-mapa-dica');if(dc)dc.textContent=DICA[lang()]||DICA.pt;if(m)m.textContent=(aberto?FECHA:PASSEIA)[lang()]||(aberto?FECHA:PASSEIA).pt;
     if(cv)cv.setAttribute('aria-label',cena==='mundo'?(TIT[lang()]||TIT.pt):(ui('rua')+rotulo(cena)));
@@ -254,6 +256,14 @@
       if(h&&h.state&&h.state[CHAVE_RUA_HIST]===rua&&typeof h.back==='function')h.back();
     }catch(e){if(window.TW_MAPA_DEBUG)console.warn('Voltar do mapa indisponível',e);}
   }
+  function recadoRosa(){
+    var p=document.querySelector('#twMapa .tw-mapa-recado-rosa');
+    if(!p)return;
+    var piloto=window.TW_PILOTO_BAIRRO;
+    var fala=cena==='fofo' && aberto && piloto && piloto.falaRosa ? piloto.falaRosa() : '';
+    p.hidden=!fala;
+    p.textContent=fala?'Rosa · '+fala:'';
+  }
   function mostrarCena(destino){
     if(destino!=='mundo'&&!CENAS_RUA[destino])return;
     mergulho=null;cena=destino;hover=null;centrado=false;meuPasseio=null;
@@ -282,7 +292,7 @@
       img.src='./'+arquivo+'?v=5';
     }
     arte=imagens[destino];if(arte.complete&&arte.naturalWidth){desenhar();centralizar();}
-    textos();
+    textos();recadoRosa();
   }
   function achar(e){var r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*MW/r.width+OX,y=(e.clientY-r.top)*MH/r.height+OY;
     if(cena==='mundo'){

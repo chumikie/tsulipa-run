@@ -54,6 +54,15 @@
     return h ? '<div class="twc-card twc-piloto-bairro">' + h + '</div>' : '';
   }
   function bicoAtivo(){ return parametros.get('piloto_bico') === '1' && !!atual(); }
+  function falaRosa(){
+    var i=semana();
+    if(i<1 || !pauta[i])return '';
+    var antes=ler(i-1);
+    if(antes.concluiu && antes.bicoConcluiu)return 'A foto e a plaquinha que você trouxe na semana passada ficaram lindas juntas. Quer ver o que estamos preparando agora?';
+    if(antes.concluiu)return 'Lembra da foto que você fez na semana passada? Ela fez parte da vitrine. Vem ver o que estamos preparando agora!';
+    if(antes.bicoConcluiu)return 'A plaquinha do pedido que você preparou na semana passada ainda está aqui. Obrigada por voltar!';
+    return '';
+  }
   function rua(){
     var i = semana(), p = atual(), d = desfechos()[0], ficha = ler(i);
     if(!p && !d) return '';
@@ -67,6 +76,8 @@
           ? '<img src="' + escHtml(foto) + '" alt="Sua foto em exposição na Rua Fofa">' : exposicao.concluiu ? '<span>🖼️ Sua foto</span>' : '') +
         (placa ? '<span>☕ Plaquinha da casa</span>' : '') + '</div>';
     }
+    var fala=falaRosa();
+    if(fala)h+='<p class="tw-piloto-rosa"><b>Rosa</b> · '+escHtml(fala)+'</p>';
     if(p) h += '<p>' + escHtml(ficha.concluiu ? '📷 Sua foto está na vitrine da Rua Fofa.' : p.tarefa) + '</p>' +
       (ficha.concluiu ? '' : botao('Abrir o Studio com este cenário','studio','twb-bt'));
     if(bicoAtivo()) h += '<p>' + (ficha.bicoConcluiu ? '☕ A plaquinha da casa está na vitrine. Você recebeu a lembrança da Rua Fofa.' :
@@ -143,7 +154,7 @@
       window.dispatchEvent(new Event('tw-piloto-bairro'));
     }
   });
-  window.TW_PILOTO_BAIRRO = {hoje:hoje, rua:rua, jornal:jornal, iniciar:iniciar, concluir:concluir,
+  window.TW_PILOTO_BAIRRO = {hoje:hoje, rua:rua, falaRosa:falaRosa, jornal:jornal, iniciar:iniciar, concluir:concluir,
     medidas:function(){
       return pauta.map(function(p, i){
         var etapas = ler(i); delete etapas.foto;

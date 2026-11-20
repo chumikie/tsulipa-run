@@ -205,6 +205,7 @@ function cfPedidoIlustrativo(p){
 function cfEscolher(tipo, i){
   if(!cf) return;
   if(cf.fase === 'fim' && cf.pratica){
+    if(cf.pratica.pedidos && cf.pratica.indice>=cf.pratica.pedidos.length)return;
     var m = cf.pratica.monta;
     if(Object.prototype.hasOwnProperty.call(m,tipo) && (tipo === 'base' || tipo === 'doce' || m.base >= 0)){
       m[tipo] = m[tipo] === i && (tipo === 'cob' || tipo === 'doce') ? -1 : i;
@@ -246,10 +247,38 @@ function cfLembrarErro(turno, numero, pedido){
     turno.erroPratica = {numero:numero,pedido:{base:pedido.base,cob:pedido.cob,enf:pedido.enf,doce:pedido.doce}};
   }
 }
+var CF_FOCO_TR = {
+  pt:['Praticar {x}','Pedido {i} de 3 · {x}','Próximo pedido','Três pedidos praticados.'],
+  en:['Practice {x}','Order {i} of 3 · {x}','Next order','Three orders practiced.'],
+  es:['Practicar {x}','Pedido {i} de 3 · {x}','Siguiente pedido','Tres pedidos practicados.'],
+  id:['Latih {x}','Pesanan {i} dari 3 · {x}','Pesanan berikutnya','Tiga pesanan selesai dilatih.'],
+  th:['ฝึก {x}','ออเดอร์ {i} จาก 3 · {x}','ออเดอร์ถัดไป','ฝึกครบสามออเดอร์แล้ว'],
+  ja:['{x}を練習','注文{i}/3 · {x}','次の注文','3つの注文を練習しました。']
+};
+var CF_FOCO_TIPOS = {base:[CF_BASES,'Base'],cob:[CF_COBERTURAS,'Cobertura'],enf:[CF_ENFEITES,'Enfeite'],doce:[CF_DOCES,'Docinho']};
+function cfFocoTexto(i,tipo,passo){
+  var t=CF_FOCO_TIPOS[tipo];
+  return (CF_FOCO_TR[LANG]||CF_FOCO_TR.pt)[i].replace('{x}',t?tr(t[1]):'').replace('{i}',passo);
+}
+function cfFocoAbrir(tipo){
+  var erros=cf && cf.errosCategorias && cf.errosCategorias[tipo], t=CF_FOCO_TIPOS[tipo];
+  if(!t || !erros || cf.fase!=='fim' || cf.pratica)return false;
+  var p=erros.pedido, total=t[0].length, primeiro=p[tipo] < 0 ? erros.servido : p[tipo];
+  if(primeiro<0 || primeiro>=total)primeiro=0;
+  var segundo=(primeiro+1)%total;
+  var valores=p[tipo]<0 ? [-1,primeiro,segundo] :
+    (tipo==='cob'||tipo==='doce') ? [primeiro,-1,segundo] : [primeiro,segundo,(primeiro+2)%total];
+  cf.pratica={categoria:tipo,pedidos:valores.map(function(v){return Object.assign({},p,{[tipo]:v});}),
+    indice:0,monta:{base:-1,cob:-1,enf:-1,doce:-1},conferiu:false};
+  return true;
+}
 function cfPraticaHtml(){
-  var p = cf.erroPratica.pedido, treino = cf.pratica, m = treino.monta;
+  var treino = cf.pratica, lista=treino.pedidos, m=treino.monta;
+  var p=lista?lista[treino.indice]:cf.erroPratica.pedido;
+  if(lista && !p)return '<p class="hsdica" id="cfPraticaTitulo" tabindex="-1" role="status">'+escHtml(cfFocoTexto(3))+
+    '</p><button type="button" class="btn alt" data-cf-pratica="voltar">'+escHtml(cfPraticaTexto(3))+'</button>';
   var completo = m.base >= 0 && m.enf >= 0;
-  var h = '<p class="hsdica" id="cfPraticaTitulo" tabindex="-1">' + escHtml(cf.piloto ? 'Pedido da Rua Fofa · um atendimento sem cronômetro' : cfPraticaTexto(1)) + '</p>' +
+  var h = '<p class="hsdica" id="cfPraticaTitulo" tabindex="-1">' + escHtml(cf.piloto ? 'Pedido da Rua Fofa · um atendimento sem cronômetro' : lista ? cfFocoTexto(1,treino.categoria,treino.indice+1) : cfPraticaTexto(1)) + '</p>' +
     '<p class="cfpedidotxt"><b>' + escHtml(tr('Pedido')) + '</b> · ' + escHtml(cfPedidoIlustrativo(p)) + '</p>' +
     cfBotoes('base', CF_BASES, '1. Base', m) + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)', m) +
     cfBotoes('enf', CF_ENFEITES, '3. Enfeite', m) + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)', m);
@@ -264,8 +293,10 @@ function cfPraticaHtml(){
       }).join('') + '</ul>' +
       (cf.piloto && certo ? '<p>' + (cf.pilotoEntregue ? '☕ Pedido entregue! A plaquinha da casa vai para a vitrine da Rua Fofa.' : 'O turno da Rua Fofa já terminou.') + '</p>' : '') + '</div>';
   }
-  return h + '<div class="btns"><button type="button" class="btn" data-cf-pratica="conferir"' + (completo ? '' : ' disabled') + '>' +
-    escHtml(cfPraticaTexto(2)) + '</button><button type="button" class="btn alt" data-cf-pratica="voltar">' +
+  var proximo=lista && treino.conferiu && ['base','cob','enf','doce'].every(function(k){return m[k]===p[k];});
+  return h + '<div class="btns"><button type="button" class="btn" data-cf-pratica="'+(proximo?'proximo':'conferir')+'"' +
+    (completo ? '' : ' disabled') + '>' + escHtml(proximo?cfFocoTexto(2):cfPraticaTexto(2)) +
+    '</button><button type="button" class="btn alt" data-cf-pratica="voltar">' +
     escHtml(cf.piloto ? 'Voltar à Rua Fofa' : cfPraticaTexto(3)) + '</button></div>';
 }
 function cfDetalhePedido(pedido, montado){
@@ -436,6 +467,7 @@ function cfFim(){
   if(!cf||cf.fase==='fim')return;
   var atual=cf;
   cf.fase='fim';
+  if(cf.alternado){ cfUI(); return; }
   if(cf.perfeitos>=12&&typeof conqGanhar==='function'&&conqGanhar('jogo_barista'))
     cf.conq.push('🧋 '+tr('Barista perfeito'));
   var rec=typeof recMaiorLocal==='function'?recMaiorLocal('cafe'):cfLer(CF_RECORDE_KEY,0);
@@ -720,9 +752,17 @@ function cfIniciarSeguro(){
 }
 function cfClique(e){
   var pratica = e.target.closest && e.target.closest('[data-cf-pratica]');
-  if(pratica && cf && cf.fase === 'fim' && cf.erroPratica){
+  if(pratica && cf && cf.fase === 'fim' && (cf.erroPratica || cf.errosCategorias)){
     var acao = pratica.dataset.cfPratica;
-    if(acao === 'abrir') cf.pratica = {monta:{base:-1,cob:-1,enf:-1,doce:-1},conferiu:false};
+    var focoCategoria = cf.pratica && cf.pratica.categoria;
+    if(acao==='foco' && !cfFocoAbrir(pratica.dataset.tipo))return;
+    if(acao==='proximo' && cf.pratica && cf.pratica.pedidos && cf.pratica.conferiu){
+      var exercicio=cf.pratica, p=exercicio.pedidos[exercicio.indice];
+      if(p && ['base','cob','enf','doce'].every(function(k){return exercicio.monta[k]===p[k];})){
+        exercicio.indice++;exercicio.monta={base:-1,cob:-1,enf:-1,doce:-1};exercicio.conferiu=false;
+      }
+    }
+    if(acao === 'abrir' && cf.erroPratica) cf.pratica = {monta:{base:-1,cob:-1,enf:-1,doce:-1},conferiu:false};
     if(acao === 'voltar' && cf.piloto){ cfFechar(); TW_BAIRRO.abrir(); return; }
     if(acao === 'voltar') cf.pratica = null;
     if(acao === 'conferir' && cf.pratica){
@@ -732,7 +772,10 @@ function cfClique(e){
       }
     }
     cfUI();
-    var selector = acao === 'abrir' ? '#cfPraticaTitulo' : '[data-cf-pratica="' + acao.replace('voltar','abrir') + '"]';
+    var selector = acao==='voltar' && focoCategoria ? '[data-cf-pratica="foco"][data-tipo="'+focoCategoria+'"]' :
+      acao==='abrir'||acao==='foco'||acao==='proximo' ? '#cfPraticaTitulo' :
+        '[data-cf-pratica="'+acao.replace('voltar','abrir')+'"]';
+    if(acao==='conferir' && $('cfCorpo').querySelector('[data-cf-pratica="proximo"]'))selector='[data-cf-pratica="proximo"]';
     var foco = $('cfCorpo').querySelector(selector);
     if(foco) foco.focus();
     return;

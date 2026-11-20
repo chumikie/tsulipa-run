@@ -19,7 +19,7 @@
 <!-- Mesmo com JS/CSS anterior em cache, nunca mostrar a espera decorativa. -->
 <style id="twSemEsperaDecorativa">.twc-carrega{display:none!important;pointer-events:none}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script src="./tw-nitidez.js?v=9"></script>
+<script src="./tw-nitidez.js?v=9"></script><script src="./tw-marca.js?v=1"></script>
 <script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=3"></script>
@@ -46,8 +46,12 @@
 <link rel="manifest" href="manifest.json">
 <meta name="google-site-verification" content="J49ekjyq4BDr6eOcluPFBIOG14ahyJAs0NrObrKJqOs" />
 <title>TsuLiPa⭐World</title>
-<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./centerrun.css?v=18">
+<!-- Fontes (20/11/2026): subconjuntos WOFF2 servidos pelo próprio site (latim, hiragana e katakana).
+     Só em japonês, que precisa dos kanji, entra a folha completa do Google Fonts (146 KB de CSS). -->
+<link rel="stylesheet" href="./kt-fonts.css?v=2">
+<script>function twFontesJa(){if(document.getElementById('twFontesJa'))return;var k=document.createElement('link');k.id='twFontesJa';k.rel='stylesheet';k.href='https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap';document.head.appendChild(k);}
+(function(){var l='';try{l=new URLSearchParams(location.search).get('lang')||localStorage.getItem('brs48cr_lang')||'';}catch(e){}if(l==='ja')twFontesJa();})();</script>
+<link rel="stylesheet" href="./centerrun.css?v=19">
 <link rel="stylesheet" href="./pet.css?v=15">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
@@ -66,7 +70,7 @@
 .perfp .btn.perfperigo{background:linear-gradient(90deg,#ff4f6d,#d6336c);box-shadow:0 3px 0 rgba(140,20,60,.45)}
 .perfdica{text-align:center;font-size:13px}
 </style>
-<link rel="stylesheet" href="./hub.css?v=11">
+<link rel="stylesheet" href="./hub.css?v=12">
 <link rel="stylesheet" href="./shop.css?v=7">
 <link rel="stylesheet" href="./jornal.css?v=15">
 <style>
@@ -406,15 +410,15 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 (function(){var l='';try{l=localStorage.getItem('brs48cr_lang')||'';}catch(e){}
 if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=2"><'+'/script>');})();</script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=5"><'+'/script>');</script>
-<script src="./karaoke-room-views.js?v=1"></script>
-<script src="./centerrun.js?v=38"></script>
-<script src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=48"></script>
-<script src="./perfil.js?v=31"></script>
-<script src="./gacha.js?v=6"></script>
-<script src="./album-fotos.js?v=7"></script>
+<script defer src="./karaoke-room-views.js?v=1"></script>
+<script src="./centerrun.js?v=40"></script>
+<script defer src="./center-recovery.js?v=1"></script>
+<script src="./pet.js?v=49"></script>
+<script src="./perfil.js?v=32"></script>
+<script src="./gacha.js?v=7"></script>
+<script src="./album-fotos.js?v=8"></script>
 <script src="./album.js?v=8"></script>
-<script src="./gacha-po.js?v=1"></script>
+<script defer src="./gacha-po.js?v=1"></script>
 <script src="./troca.js?v=1"></script>
 <script src="./fa.js?v=2"></script>
 <script src="./hoje.js?v=1"></script>
@@ -464,10 +468,10 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   window.twAbrirJogoDoHub = function(nome){ atalho(nome)(); };
   window.TW_JOGOS_SOB_DEMANDA=true;window.twJogosCarregar=carregar;window.hsAbrir=atalho('hsAbrir');window.cfAbrir=atalho('cfAbrir');})();
 </script>
-<script src="./duo-base.js?v=5"></script>
+<script src="./duo-base.js?v=6"></script>
 <script src="./encontro-base.js?v=2"></script>
-<script src="./hub.js?v=34"></script>
-<script src="./hub-layout.js?v=5"></script>
+<script src="./hub.js?v=35"></script>
+<script defer src="./hub-layout.js?v=5"></script>
 <script>/* O mapa baixa na primeira abertura, pelo TsuPhone ou pela entrada clássica. */
 (function(){
   var pedido;
@@ -502,7 +506,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   });
 })();</script>
 <script src="./bloom.js?v=12"></script>
-<script src="./shop.js?v=12"></script>
+<script src="./shop.js?v=13"></script>
 <script src="./tw-piloto-bairro.js?v=9"></script>
 <script>
 /* O jornal completo e as cenas do telão carregam ao abrir o Jornal, Calendário ou galeria do Pet. */
@@ -538,7 +542,7 @@ var jornalCarregar=(function(){
     if(!pedido)pedido=Promise.all([
       window.KaraokeClipUniforms || carregar('./karaoke-clip-uniforms.js?v=1'),
       window.KaraokeNewsPhoto || carregar('./karaoke-news-photo.js?v=1')
-    ]).then(function(){return carregar('./jornal.js?v=35');})
+    ]).then(function(){return carregar('./jornal.js?v=36');})
       .catch(function(e){pedido=null;throw e;});
     return pedido;
   };
@@ -547,7 +551,7 @@ var jornalCarregar=(function(){
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=32';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=33';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
   window.studioCarregar=carregar;})();
@@ -557,7 +561,7 @@ var jornalCarregar=(function(){
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
 (function(){var p=null;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
   if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
-  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=18'),arq('script','./battle.js?v=29')]);
+  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=18'),arq('script','./battle.js?v=30')]);
     p.then(function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);}).catch(function(){p=null;});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>
@@ -565,9 +569,9 @@ var jornalCarregar=(function(){
 <script src="./hub-novos.js?v=2"></script>
 <script src="./charmaker.js?v=18"></script>
 <script src="./banner.js?v=6"></script>
-<script src="./conta.js?v=9"></script>
-<script src="./admin-base.js?v=1"></script>
-<script src="./vida-cidade.js?v=6"></script>
+<script src="./conta.js?v=10"></script>
+<script src="./admin-base.js?v=2"></script>
+<script defer src="./vida-cidade.js?v=6"></script>
 <script>/* Visual novo (padrão nos telefones desde 16/11/2026; em todos os aparelhos desde 17/11/2026, pedido do dono):
    ?celular=1 liga e ?celular=0 desliga; a escolha fica em brs48cr_celular ('1' ligado, '0' clássico).
    Sem escolha guardada, liga em qualquer aparelho (telefone, tablet e computador). Ajustes → "Voltar ao visual clássico"
@@ -576,14 +580,14 @@ var jornalCarregar=(function(){
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=45"><script src="./tw-humor.js?v=10"><'+'/script><script src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=8"><'+'/script><script src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=61"><'+'/script><script src="./tw-presenca.js?v=3"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=46"><script src="./tw-humor.js?v=10"><'+'/script><script defer src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=8"><'+'/script><script defer src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=62"><'+'/script><script defer src="./tw-presenca.js?v=3"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=45';document.head.appendChild(l);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=46';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=10';hm.async=false;document.body.appendChild(hm);
   var vbi=document.createElement('script');vbi.src='./tw-bichos.js?v=2';vbi.async=false;document.body.appendChild(vbi);
   var vb=document.createElement('script');vb.src='./tw-bairro.js?v=8';vb.async=false;document.body.appendChild(vb);
   var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
-  var s=document.createElement('script');s.src='./tw-celular.js?v=61';s.async=false;document.body.appendChild(s);
+  var s=document.createElement('script');s.src='./tw-celular.js?v=62';s.async=false;document.body.appendChild(s);
   var p=document.createElement('script');p.src='./tw-presenca.js?v=3';document.body.appendChild(p);}
 var TX={pt:'📱 Visual de celular',en:'📱 Phone look',es:'📱 Estilo de celular',id:'📱 Tampilan ponsel',th:'📱 หน้าตาแบบมือถือ',ja:'📱 スマホ表示'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;
@@ -725,6 +729,9 @@ CH.forEach(function(c,i){
 // O 4º personagem aparece com o nome de quem joga (conta ou apelido digitado); a chave interna continua "Idol"
 function idolNomeVisivel(){
   var n=(typeof contaJ!=='undefined'&&contaJ&&contaJ.nick)||(($('nick')&&$('nick').value)||'').trim();
+  // 20/11/2026: se o nome é igual ao de um membro (ex.: a conta "Tsu"), o 4º botão vira "Meu Idol" para não repetir
+  var meu={pt:'Meu Idol',en:'My Idol',es:'Mi Idol',id:'Idol-ku',th:'ไอดอลของฉัน',ja:'マイアイドル'};
+  if(n&&CH.some(function(c,i){return i<3&&String(c.n).toLowerCase()===String(n).trim().toLowerCase();}))return meu[LANG]||meu.pt;
   return n?String(n).slice(0,12):'Idol';
 }
 function idolChipNome(){
@@ -1042,6 +1049,8 @@ function twSelecionarIdioma(novo){
     if(token!==twIdiomaEscolhaToken)return;
     LANG=novo;
     try{localStorage.setItem('brs48cr_lang',LANG)}catch(e){}
+    if(LANG==='ja'&&typeof twFontesJa==='function')twFontesJa();
+    if(typeof twA11yIdioma==='function')twA11yIdioma();
     // A home tem botões próprios: ambos só podem ser redesenhados com LANG definitivo.
     if(typeof hubMontar==='function')hubMontar();
     applyLang();
@@ -2360,7 +2369,7 @@ window.twKaraokeOnline={
   var base={p_run:run,p_score:r?r.score:null,p_hits:r?r.hits:null,p_attempts:r?r.attempts:null,p_combo:r?r.combo:null,p_notes:r?r.totalNotes:null};
   // Música da semana: envia a música; se o banco ainda não tiver o parâmetro p_song (PGRST202), repete sem ele.
   return (r&&r.song?contaRpc('kt_run_finish',Object.assign({p_song:String(r.song)},base)).catch(function(e){if(e&&e.code==='PGRST202')return contaRpc('kt_run_finish',base);throw e;}):contaRpc('kt_run_finish',base))
-   .then(function(x){if(contaJ&&owner===String(contaJ.nick||'').toLowerCase())twRankRefreshAfterSora();return x;});
+   .then(function(x){if(contaJ&&owner===String(contaJ.nick||'').toLowerCase()){twRankRefreshAfterSora();if(window.TW_SEMANA)window.TW_SEMANA.depoisDoKaraoke();}return x;});
  },
  ranking:function(){return contaRpc('kt_ranking');},
  posicao:function(){return contaRpc('kt_minha_posicao');},
@@ -2690,7 +2699,7 @@ window.TW_I18N.rows.moonDuoLabels.forEach(function(t){ ['en', 'es', 'th', 'ja'].
 var cardZOv = document.createElement('div');
 cardZOv.className = 'ov cardzov'; cardZOv.hidden = true;
 cardZOv.innerHTML = '<div class="panel cardzp" role="dialog" aria-modal="true"><button type="button" class="perfx tw-window-control tw-window-close" id="cardZX">✕</button><canvas id="cardZCv" width="360" height="504"></canvas>' +
-  '<div class="btns"><a class="btn" id="cardZDl" href="#" download="star-gacha-card.png"></a><button type="button" class="btn alt" id="cardZOk"></button></div></div>';
+  '<div class="btns"><a class="btn" id="cardZDl" href="#" download="star-gacha-card.png"></a><button type="button" class="btn alt" id="cardZBattle" hidden></button><button type="button" class="btn alt" id="cardZOk"></button></div></div>';
 document.body.appendChild(cardZOv);
 document.addEventListener('click', function(e){
   var b = e.target.closest && e.target.closest('[data-cardz]');
@@ -2698,7 +2707,12 @@ document.addEventListener('click', function(e){
     var p = b.dataset.cardz.split('|'), c = (cardsMem[p[0]] || [])[+p[1]]; if(!c || !c.card) return;
     var d = cardsDados(c), cv = $('cardZCv'); gachaCardDesenhar(cv, d);
     $('cardZDl').textContent = '⬇️ ' + tr('Salvar como imagem'); $('cardZOk').textContent = tr('Fechar');
-    $('cardZDl').onclick = function(){ this.href = cv.toDataURL('image/png'); this.download = (d.aniver ? 'feliz-aniversario-' : 'star-gacha-') + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
+    $('cardZDl').onclick = function(){ this.href = (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')); this.download = (d.aniver ? 'feliz-aniversario-' : 'star-gacha-') + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
+    // 20/11/2026: card do próprio álbum entra direto na unit do Idol⭐Battle!
+    var zb = $('cardZBattle'), dono = typeof gachaContaAtual === 'function' ? gachaContaAtual() : '';
+    if(zb){ zb.hidden = !(p[0] === 'album' && contaJ && dono && d.nick && typeof window.battleAbrir === 'function');
+      zb.textContent = (typeof GACHA_BATTLE_TR !== 'undefined' && (GACHA_BATTLE_TR[LANG] || GACHA_BATTLE_TR.pt)) || 'Idol⭐Battle!';
+      zb.onclick = function(){ if(zb.hidden) return; var origem = window.TW_JANELAS && TW_JANELAS.origem(zb); cardZOv.hidden = true; if(typeof albumFechar === 'function') albumFechar(); window.battleAbrir({card:d.nick, dono:dono, origem:origem}); }; }
     cardZOv.hidden = false; if(sfx.card) sfx.card(); return;
   }
   if(e.target.id === 'cardZX' || e.target.id === 'cardZOk' || e.target === cardZOv) cardZOv.hidden = true;
@@ -2724,7 +2738,7 @@ function aniverFesta(){
     var d = JSON.parse(JSON.stringify(r.card || { nick:nick })); d.aniver = true; d.nick = d.nick || nick;
     var cv = $('aniverCard'); try{ gachaCardDesenhar(cv, d); }catch(e){}
     $('aniverDl').textContent = '⬇️ ' + tr('Salvar card'); $('aniverOk').textContent = tr('Obrigado! 💖');
-    $('aniverDl').onclick = function(){ this.href = cv.toDataURL('image/png'); this.download = 'feliz-aniversario-' + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
+    $('aniverDl').onclick = function(){ this.href = (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')); this.download = 'feliz-aniversario-' + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
     aniverOv.hidden = false; aniverOv.scrollTop = 0; aniverT = 0; if(!aniverAnim) aniverAnim = requestAnimationFrame(aniverLoop);
     aniverMusica();
     if(typeof perfAtual!=='undefined'&&perfAtual&&perfMeu&&!perfOv.hidden){var perfilOrigem=perfPedido;twTimeoutVisivel(perfOv,function(){return !perfOv.hidden&&perfMeu&&perfilOrigem===perfPedido;},function(){perfAbrir();},400);}   // atualiza os cards apenas na mesma sessão do perfil
@@ -2992,7 +3006,7 @@ encOv.addEventListener('click', function(e){
     x.fillStyle = '#ff6fb5'; x.font = '700 15px "M PLUS Rounded 1c",sans-serif'; x.fillText(tr(encDados.fala), 230, 478, 410);
     x.fillStyle = '#5b7fa6'; x.font = '600 12px "M PLUS Rounded 1c",sans-serif'; x.fillText(encHoje().split('-').reverse().join('/'), 230, 506);
     x.font = '500 11px "M PLUS Rounded 1c",sans-serif'; x.fillText('🌟 ' + tr('Encontro do dia') + ' · TsuLiPa⭐World', 230, 532);
-    e.target.href = c.toDataURL('image/png'); e.target.download = 'encontro-' + String(encDados.nick).replace(/[^\w-]+/g, '') + '.png';
+    e.target.href = (window.twMarcaPng?window.twMarcaPng(c):c.toDataURL('image/png')); e.target.download = 'encontro-' + String(encDados.nick).replace(/[^\w-]+/g, '') + '.png';
     var fl = document.createElement('div'); fl.className = 'encflash'; $('encCv').parentNode.appendChild(fl); setTimeout(function(){ fl.remove(); }, 400);
     beep(1568, .05, 'square', .03); beep(2093, .08, 'triangle', .03, .05);
   }
@@ -3652,7 +3666,7 @@ applyLang();
 })();
 </script>
 <script>twLinkInicializar();</script>
-<script src="./tw-windows.js?v=3"></script>
+<script defer src="./tw-windows.js?v=3"></script><script defer src="./tw-acessibilidade.js?v=1"></script><script defer src="./tw-semana.js?v=1"></script>
 <script src="./karaoke-tickets.js?v=2"></script>
 <script>/* Quem abre o site já em outro idioma: alguns textos (rank, itens do Center Run…) eram montados antes de todas as
    traduções entrarem. Depois de tudo carregado, refaz a tela no idioma salvo — o mesmo caminho do botão de idioma. */

@@ -527,7 +527,7 @@ function hubMisUI(){
   box.innerHTML = '<ul class="hubmis">' + hubMisDados.map(function(m){
     var t = m.k === 'collect' ? hubCollectHoje() : HUB_MIS[m.k] || ['🎯', m.k], pc = Math.round(Math.min(1, m.prog / Math.max(1, m.meta)) * 100), pronto = m.prog >= m.meta;
     var acao = m.feito ? '<em class="ok">✓ ★' + m.premio + '</em>' : (m.k === 'collect' && !pronto) ? '<button type="button" class="btn alt" data-collect="1">' + escHtml(tr('Abrir')) + ' ↗</button>' : (m.k === 'duo' && !pronto) ? '<button type="button" class="btn alt" data-hduo="1">' + escHtml(tr('Abrir')) + ' 🌙</button>' : pronto ? '<button type="button" class="btn" data-resg="' + escHtml(m.k) + '">' + escHtml(tr('Resgatar')) + ' ★' + m.premio + '</button>' : '<em>' + (m.meta > 9 ? m.prog + '/' + m.meta : m.prog + '/' + m.meta) + ' · ★' + m.premio + '</em>';
-    return '<li class="' + (m.feito ? 'feita' : pronto ? 'pronta' : '') + '"><span>' + t[0] + '</span><div><b>' + escHtml(tr(t[1]).replace('{n}', m.meta)) + '</b><i style="--p:' + pc + '%"></i></div>' + acao + '</li>';
+    return '<li class="' + (m.feito ? 'feita' : pronto ? 'pronta' : '') + '"><span>' + t[0] + '</span><div><b>' + escHtml(tr(t[1]).replace('{n}', m.meta)) + (m.semana ? ' <small class="hubmis-semana">🌟 ' + escHtml(({pt:'Jogo da semana',en:'Game of the week',es:'Juego de la semana',id:'Game minggu ini',th:'เกมประจำสัปดาห์',ja:'今週のゲーム'})[LANG] || 'Jogo da semana') + '</small>' : '') + '</b><i style="--p:' + pc + '%"></i></div>' + acao + '</li>';
   }).join('') + '</ul>';
 }
 // V3.1: depois de um resultado confirmado (Handshake, Café), as missões mostram o progresso novo

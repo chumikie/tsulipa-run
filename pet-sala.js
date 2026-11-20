@@ -2473,7 +2473,7 @@ function petMakePhoto(){
   x.textAlign = 'center'; x.fillStyle = '#94a3b8'; x.font = '500 11px "M PLUS Rounded 1c",sans-serif';
   x.fillText('🌷 TsuLiPa⭐World · Backstage⭐Pet!', 200, 414);
 
-  return c2.toDataURL('image/png');
+  return (window.twMarcaPng?window.twMarcaPng(c2):c2.toDataURL('image/png'));
 }
 //←petDevUI
 function petDevUI(){

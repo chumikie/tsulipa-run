@@ -57,7 +57,7 @@ function gachaCardUI(){   // o card do Idol que saiu (estilo dos cards do BRS48 
   cv.hidden = !d; dl.hidden = !d; if(!d) return;
   gachaCardDesenhar(cv, d);
   dl.textContent = '⬇️ ' + tr('Baixar card');
-  dl.onclick = function(){ this.href = cv.toDataURL('image/png'); this.download = 'star-gacha-' + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
+  dl.onclick = function(){ this.href = (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')); this.download = 'star-gacha-' + String(d.nick).replace(/[^\w-]+/g, '') + '.png'; };
 }
 function gachaCardDesenhar(cv, d){
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, i, h = 0;

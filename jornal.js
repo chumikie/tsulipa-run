@@ -625,7 +625,7 @@ function jornalFotoDesenhar(cv, f, assinatura){
 function jornalFotoAmpliar(i){   // abre grande, com BAIXAR (a mesma tela de foto do jogo)
   var f = jornalFotosHoje[i]; if(!f) return;
   var cv = document.createElement('canvas'); cv.width = 1440; cv.height = 900; jornalFotoDesenhar(cv, f, true);
-  var u = cv.toDataURL('image/png'), dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+  var u = (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')), dia = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
   $('shimg').src = u; $('shimg').alt = jornalLegenda(f); $('shdl').href = u; $('shdl').download = 'idol-news-' + dia + '-' + (i + 1) + '.png';
   if(typeof petPhShow === 'function') petPhShow(false);
   $('shr').hidden = false; if(sfx && sfx.card) try{ sfx.card(); }catch(e){}
@@ -893,7 +893,7 @@ function jornalTrioDesenhar(cv, assinatura){   // a cena especial: o trio no pal
 }
 function jornalTrioAmpliar(){
   var cv = document.createElement('canvas'); cv.width = 1440; cv.height = 900; jornalTrioDesenhar(cv, true);
-  var u = cv.toDataURL('image/png'); $('shimg').src = u; $('shimg').alt = tr('Ensaio de trio'); $('shdl').href = u; $('shdl').download = 'ensaio-de-trio.png';
+  var u = (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')); $('shimg').src = u; $('shimg').alt = tr('Ensaio de trio'); $('shdl').href = u; $('shdl').download = 'ensaio-de-trio.png';
   if(typeof petPhShow === 'function') petPhShow(false); $('shr').hidden = false;
 }
 function jornalTrioCarregar(){

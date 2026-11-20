@@ -45,7 +45,8 @@ test('Studio photo and mural reuse the same camera and props renderer', () => {
 test('Studio saves and keeps a single clean PNG, independent of the animated visible canvas', () => {
   const s = fs.readFileSync(path.join(root,'studio.js'),'utf8');
   assert.match(s,/capturarCena\(capturada\)/);
-  assert.match(s,/a\.href = fotoUrl\(foto\)/);
+  // 20/11/2026: o download leva o selo do site (tw-marca.js) numa cópia da polaroid limpa; sem o selo, a mesma fotoUrl
+  assert.match(s,/a\.href = \(window\.twMarcaPng \? window\.twMarcaPng\(polaroidLimpa\(foto\)\) : fotoUrl\(foto\)\)/);
   assert.match(s,/petPhoneMomentoAbrir\(id\)/);
   assert.match(s,/petPhoneMomentoAdicionar\('studio', fotoUrl\(foto\), especie\)/);
   assert.doesNotMatch(s.slice(s.indexOf('function polaroidLimpa('),s.indexOf('function chips(')),/brilhos\(/);

@@ -403,7 +403,7 @@ function perfPng(){
     x.shadowColor = 'rgba(30,10,60,.6)'; x.shadowBlur = 6;
     x.fillText(perfAtual.nick + ' · TsuLiPa⭐World', 1000, 1004);
   }
-  return cv.toDataURL('image/png');
+  return perfGenAv.fundo ? (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')) : cv.toDataURL('image/png');   // com fundo: selo do site; transparente fica limpo
 }
 //←perfComprar
 function perfComprar(k, btn){

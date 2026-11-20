@@ -84,6 +84,7 @@ function contaAplicar(j, token, semRecuperar){
   if(typeof s2SyncProfile === 'function') s2SyncProfile();
   if(typeof petUI === 'function' && petOpen) petUI();
   perfAoEntrar();   // V2.1.3: nuvem + presente da conta
+  if(window.TW_CELULAR&&typeof window.TW_CELULAR.tutContaChegou==='function')window.TW_CELULAR.tutContaChegou(j);   // tutorial já visto acompanha a conta
   if(typeof twLinkRetomar === 'function' && twLinkRetomar()) twAbrirPeloEndereco();
   if(typeof duoAvisoAgendar==='function')duoAvisoAgendar();
   if(!semRecuperar)contaRecuperarCorridas();

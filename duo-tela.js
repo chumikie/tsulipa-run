@@ -95,7 +95,7 @@ duoOv.addEventListener('click', function(e){
   if(t.id === 'duoPng' || t.id === 'duoPngSem'){   // PNG com o cenário ou transparente (sem fundo)
     var cv = document.createElement('canvas'); cv.width = 960; cv.height = 600;
     try{ duoRender(cv.getContext('2d'), 960, 600, t.id === 'duoPng', false); }catch(er){}
-    t.href = cv.toDataURL('image/png'); t.download = 'moon-duo-' + String(duoGu.nick).replace(/[^\w-]+/g, '') + (t.id === 'duoPngSem' ? '-sem-fundo' : '') + '.png';
+    t.href = (t.id === 'duoPngSem' ? cv.toDataURL('image/png') : (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png'))); t.download = 'moon-duo-' + String(duoGu.nick).replace(/[^\w-]+/g, '') + (t.id === 'duoPngSem' ? '-sem-fundo' : '') + '.png';
     if(sfx.card) sfx.card();
   }
   if(t.id==='duoRuaFofa' && duoPiloto && duoGu && window.TW_PILOTO_BAIRRO){

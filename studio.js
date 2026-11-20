@@ -401,7 +401,7 @@
   }
   function salvar(){
     if(!foto || fase !== 'foto' || foto.dono !== donoFoto()) return;
-    try{ var a = document.createElement('a'); a.download = 'photo-studio-' + foto.dia + '.png'; a.href = fotoUrl(foto); document.body.appendChild(a); a.click(); a.remove(); }catch(e){ msg = t('erro'); ui(); }
+    try{ var a = document.createElement('a'); a.download = 'photo-studio-' + foto.dia + '.png'; a.href = (window.twMarcaPng ? window.twMarcaPng(polaroidLimpa(foto)) : fotoUrl(foto)); document.body.appendChild(a); a.click(); a.remove(); }catch(e){ msg = t('erro'); ui(); }
   }
   function guardar(){
     if(!podeGuardar() || fase !== 'foto') return;

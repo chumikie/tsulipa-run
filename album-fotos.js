@@ -373,7 +373,7 @@
         x.font='bold 27px system-ui';x.fillText(tx[3+i],cx,104);
         x.font='23px system-ui';x.fillText(new Date(escolhidas[i].quando).toLocaleDateString(),cx,841);
       });
-      var a=document.createElement('a');a.download='tsulipa-antes-e-depois.png';a.href=cv.toDataURL('image/png');
+      var a=document.createElement('a');a.download='tsulipa-antes-e-depois.png';a.href=(window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png'));
       document.body.appendChild(a);a.click();a.remove();
     }finally{ locais.forEach(function(url){ URL.revokeObjectURL(url); }); }
   }

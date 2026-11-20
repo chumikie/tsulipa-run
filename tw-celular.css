@@ -981,3 +981,29 @@ body.tw-cel .twc-novidades-conteudo li{padding:10px 12px;border-radius:14px;back
 #twcPinOpcoes .twc-chips{margin-top:8px}
 
 .twc-tela[data-tela=album]{scroll-padding-block:112px calc(100px + env(safe-area-inset-bottom))}
+
+/* ── Ajustes de 20/11/2026 (auditoria) ───────────────────────────────────────── */
+/* Center⭐Run!: o painel do menu termina acima da barra inferior e rola por dentro (antes o "Montar visual" ficava atrás da barra). */
+body.tw-cel-cr #menu>.panel{max-height:calc(100dvh - 84px - 104px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+@media (min-width:900px){
+  /* Faixa de título (ex.: "Jogos") alinhada à coluna dos cards, como um selo, em vez de sair da borda esquerda */
+  .twc-faixa{width:min(560px,var(--twc-col));margin:14px 0 0 max(12px,calc((100% - var(--twc-col))/2 + 14px));padding:10px 20px;border-radius:40px}
+  /* Palco do Center⭐Run! maior em telas largas, mantendo a proporção e cabendo entre o topo e a barra */
+  body.tw-cel-cr .stage{max-width:min(1100px,calc((100dvh - 84px - 120px) * 720 / 380))}
+}
+/* "Esta semana" (tw-semana.js): Show de sábado, Festa no mapa, Jogo da semana, visitante */
+.tws{margin-top:14px}
+.tws .tws-emo{font-size:18px;line-height:1}
+.tws-plateia{display:flex!important;flex-wrap:wrap;align-items:center;gap:4px;margin-top:4px}
+.tws-plateia em{font-style:normal;font-weight:800;margin-right:2px}
+.tws-chip{display:inline-block;padding:1px 8px;border-radius:999px;background:color-mix(in srgb,var(--twc-f2,#7b3ff0) 12%,#fff);color:var(--twc-f1,#5a2bc4);font-size:11px;font-weight:800}
+.tws-chip-mais{background:#ffe9f4;color:#c2367f}
+.tws-festa{margin:10px auto 0;max-width:var(--twc-col);padding:0 12px;box-sizing:border-box}
+.tws-band{display:flex;justify-content:space-between;height:20px;overflow:hidden;border-top:2px solid rgba(90,43,196,.35);border-radius:2px}
+.tws-band i{width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:16px solid var(--c);filter:drop-shadow(0 2px 0 rgba(40,10,90,.15));animation:twsBalanca 2.4s ease-in-out infinite}
+.tws-band i:nth-child(odd){animation-delay:-1.2s}
+@keyframes twsBalanca{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+@media (prefers-reduced-motion:reduce){.tws-band i{animation:none}}
+.tws-festa p{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0 0;padding:8px 12px;border-radius:16px;background:#fff;font-weight:800;color:var(--twc-f1,#5a2bc4);box-shadow:0 3px 10px rgba(80,40,160,.10)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tws-festa p{background:#2a1d4a;color:#e6d6ff}:root:not([data-theme="light"]) .tws-chip{background:#3a2a66;color:#e6d6ff}}
+@media (max-width:899px){.tws-visit{display:none!important}}   /* no celular o convite fica no fim da corrida e no topo; o Início não cresce */

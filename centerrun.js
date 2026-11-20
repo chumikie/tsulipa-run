@@ -210,7 +210,7 @@ function mk(){
 function layout(){
   var pt=window.matchMedia&&matchMedia('(max-width:700px) and (orientation:portrait)').matches;
   W=pt?380:720;H=pt?506:380;GY=H-80;SC=Math.max(.65,W/720);K=GY/300;cv.width=W;cv.height=H;g=cv.getContext('2d');   /* 17/11: pede o pincel de novo para a nitidez automática (tw-nitidez.js) valer no tamanho atual */
-  var st=document.getElementById('stage');st.style.aspectRatio=W+'/'+H;st.style.maxWidth=pt?'calc((100vh - 120px) * '+(W/H)+')':'760px';
+  var st=document.getElementById('stage');st.style.aspectRatio=W+'/'+H;st.style.maxWidth=pt?'calc((100vh - 120px) * '+(W/H)+')':'';   /* 20/11: deitado, a largura vem do CSS (760 px; maior no visual novo em tela larga) */
   mk();
 }
 var AC=null;
@@ -1760,7 +1760,7 @@ function s2ShowSlideButton(){
 // ---------- Corrida sob demanda (centerrun-corrida.js) ----------
 // O resto do site nunca chama a corrida; ela baixa quando o palco do Center Run aparece ou ao tocar em JOGAR.
 // twCorridaAoCarregar guarda o que precisa da corrida (os invólucros da Temporada 2 no index.html) e roda na ordem.
-var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=16',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
+var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=17',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
 function twCorridaAoCarregar(f){if(TW_CORRIDA_PRONTA)f();else twCorridaFila.push(f);}
 function twCorridaCarregar(){
   if(TW_CORRIDA_PRONTA)return Promise.resolve();

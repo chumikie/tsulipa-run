@@ -221,7 +221,7 @@ function shopPng(a){   // PNG 1024×1024 com assinatura, como o do perfil
   try{ perfDesenharIdol(x, 1024, 1024, shopAvAtual(), true); }catch(e){}
   x.font = '800 26px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'right'; x.fillStyle = 'rgba(255,255,255,.85)'; x.shadowColor = 'rgba(30,10,60,.6)'; x.shadowBlur = 6;
   x.fillText((contaJ && contaJ.nick ? contaJ.nick + ' · ' : '') + 'Zipper⭐Shop! · TsuLiPa⭐World', 1000, 1004);
-  a.href = cv.toDataURL('image/png'); a.download = 'zipper-shop' + (contaJ && contaJ.nick ? '-' + String(contaJ.nick).replace(/[^\w-]+/g, '') : '') + '.png';
+  a.href = (window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png')); a.download = 'zipper-shop' + (contaJ && contaJ.nick ? '-' + String(contaJ.nick).replace(/[^\w-]+/g, '') : '') + '.png';
 }
 function shopSalvar(){
   var m = $('shopProvMsg');

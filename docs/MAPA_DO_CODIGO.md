@@ -1,6 +1,6 @@
 # Mapa do código da página inicial
 
-Referência técnica atualizada em 18/11/2026. O estado do projeto e as pendências ficam em [RETOMADA.md](RETOMADA.md). A extração original dos módulos está descrita em [REFATORACAO_INDEX.md](REFATORACAO_INDEX.md).
+Referência técnica atualizada em 20/11/2026. O estado do projeto e as pendências ficam em [RETOMADA.md](RETOMADA.md). A extração original dos módulos está descrita em [REFATORACAO_INDEX.md](REFATORACAO_INDEX.md).
 
 ## Ordem de carregamento
 
@@ -8,6 +8,7 @@ Referência técnica atualizada em 18/11/2026. O estado do projeto e as pendênc
 2. Antes do script principal entram o cliente Supabase, `pet-sync.js`, `tw-i18n-base.js` e o arquivo do idioma ativo quando ele tem traduções separadas. Em seguida vêm os módulos de cada área e as funções que solicitam os arquivos adicionais.
 3. O visual novo é o padrão. Quando ativo, o HTML carrega `tw-celular.css`, `tw-humor.js`, `tw-bichos.js`, `tw-bairro.js`, `tw-calendario.js`, `tw-celular.js` e `tw-presenca.js`. Em Ajustes, o visual clássico também pode carregar esse conjunto ao voltar para o visual novo.
 4. O script principal inicializa o estado e liga os eventos das janelas. No fim do HTML entram `tw-windows.js` e `karaoke-tickets.js`. O Mapa começa a baixar após o evento `load`, usando um intervalo ocioso quando o navegador oferece essa opção.
+5. **Desde 20/11/2026:** as fontes vêm de `kt-fonts.css` (subconjuntos WOFF2 do próprio site); o Google Fonts só entra em japonês (`twFontesJa`). Dez scripts que nenhum código da abertura usa na hora do parse carregam com `defer`: `karaoke-room-views.js`, `center-recovery.js`, `gacha-po.js`, `hub-layout.js`, `vida-cidade.js`, `tw-bichos.js`, `tw-calendario.js`, `tw-presenca.js`, `tw-windows.js` e os novos `tw-acessibilidade.js` e `tw-semana.js`. **Antes de pôr `defer` em outro arquivo**, confira se o script principal (ou um arquivo síncrono) usa algum nome dele na abertura: `pet-sync.js` (`TWPetSync.create`), `bloom.js` (conta de jogos do Início) e os avatares precisam continuar síncronos. `tw-marca.js` é pequeno e fica síncrono no topo.
 
 ## Onde alterar cada área
 
@@ -35,3 +36,11 @@ Referência técnica atualizada em 18/11/2026. O estado do projeto e as pendênc
 - Ao alterar traduções da página inicial, edite `tw-i18n.js` e rode `node tools/i18n/dividir.js` para atualizar os arquivos servidos.
 - Ao mover código entre módulos, confira a ordem usada pelos testes de leitura em `tests/site-source.js`.
 - Rode `node tests/run-all.js` antes de enviar.
+
+## Novos em 20/11/2026
+
+| Arquivo | O que faz |
+|---|---|
+| `tw-semana.js` | Cartão "Esta semana" no Início (coluna da direita no computador): Show de sábado do Karaoke⭐Time!, Festa no mapa (bandeirinhas e lembrança grátis), Jogo da semana e convite para quem joga sem conta, também no fim do Center⭐Run!. RPCs em `supabase/migrations/20261120160000_semana_show_festa_jogos.sql`. |
+| `tw-marca.js` | `twMarcaPng(canvas)`: selo "tsulipa-world.vercel.app" no canto das imagens que a pessoa baixa (cards, fotos, resultados). |
+| `tw-acessibilidade.js` | Dá nome (aria-label) aos botões só de ícone (✕, ✏️, 🔊…) no idioma do jogo. |

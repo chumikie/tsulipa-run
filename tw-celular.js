@@ -614,7 +614,7 @@
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
     return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + estreiaHtml() + '</div>' +
-      '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
+      '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + (window.TW_SEMANA ? window.TW_SEMANA.html() : '') + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
@@ -791,7 +791,7 @@
   }
   function telaEmb(k){
     return faixa(esc(k === 'busca' ? twLinkTexto(5) : t(EMB[k][1])), k === 'mapa' ? visita() : t('menuSub')) + '<div class="twc-pag twc-emb twc-emb-' + k + '">' +
-      (k === 'mapa' ? '<span class="twc-online" data-twc-online hidden></span>' : '') + '<div id="twcEmbSlot"></div>' +
+      (k === 'mapa' ? '<span class="twc-online" data-twc-online hidden></span>' + (window.TW_SEMANA ? window.TW_SEMANA.mapaHtml() : '') : '') + '<div id="twcEmbSlot"></div>' +
       (k === 'busca' ? '<section id="twcBuscaAtalhos" class="twc-busca-atalhos" aria-label="'+esc(twLinkTexto(6))+'"></section>' : '') + (k === 'mapa' ? frasesHtml() : '') + '</div>';
   }
   /* ---------- Humor do Idol + Desejo do dia + passe do Camarim VIP (tw-humor.js; ideia do The Sims, arte nossa) ---------- */
@@ -836,6 +836,7 @@
   var desenhoPend = 0;
   function agendaDesenho(){ if(desenhoPend) return; desenhoPend = setTimeout(function(){ desenhoPend = 0; if(cel && !classico && topo() === 'inicio') desenhar(); }, 300); }
   if(window.TW_PILOTO_BAIRRO) window.addEventListener('tw-piloto-bairro',agendaDesenho);
+  if(window.addEventListener) window.addEventListener('tw-semana', agendaDesenho);   // "Esta semana" (tw-semana.js)
   function vipFoto(serie){   // Polaroid do Camarim VIP em PNG (canvas → toDataURL), sem servidor
     var cv = $id('twcDentroCv'); if(!cv || topo() !== 'dentro:vip') return;
     // A pose escolhida precisa estar no Canvas antes da captura, mesmo em toques rápidos.
@@ -845,7 +846,7 @@
     x.fillStyle = '#5b2bb5'; x.font = '26px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('👑 ' + t2('vip') + ' · TsuLiPa⭐World', W / 2, cv.height + 62);
     x.fillStyle = '#9a86c8'; x.font = '700 16px "M PLUS Rounded 1c",sans-serif'; x.fillText(nick() + ' · ' + new Date().toLocaleDateString(), W / 2, cv.height + 90);
     if(serie){ TW_ALBUM_FOTOS.salvar('vip',o,serie); return; }
-    try{ var a = document.createElement('a'); a.href = o.toDataURL('image/png'); a.download = 'tsulipa-camarim-vip.png'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
+    try{ var a = document.createElement('a'); a.href = (window.twMarcaPng?window.twMarcaPng(o):o.toDataURL('image/png')); a.download = 'tsulipa-camarim-vip.png'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
     // guarda uma cópia pequena (JPEG) para o álbum do app Humor no TsuPhone e para o tapete vermelho do camarim
     try{ var mini = document.createElement('canvas'), k = 360 / W; mini.width = 360; mini.height = Math.round(Hh * k);
       mini.getContext('2d').drawImage(o, 0, 0, mini.width, mini.height);
@@ -2046,7 +2047,23 @@
     folha.hidden = false;
     var b = folha.querySelector('[data-f="tutOk"]'); if(b) try{ b.focus(); }catch(e){}
   }
-  function tutTalvez(){ if(tutI < 0 && !tutVisto() && typeof hubComecou !== 'undefined' && hubComecou){ tutI = 0; tutMostrar(); } }
+  // 20/11/2026: o "já vi" acompanha a conta. Quem entra com uma conta que já jogou (estrelas ou recorde no servidor)
+  // não vê o tutorial de novo em outro aparelho; com sessão salva, espera a conta chegar (até 4 s) antes de decidir.
+  function tutContaVeterana(j){ return !!j && ((+j.best || 0) > 0 || (+j.stars || 0) > 0); }
+  function tutMarcarVisto(){ try{ localStorage.setItem(TUT_CHAVE, '1'); }catch(e){} }
+  function tutSessaoGuardada(){ try{ for(var i = 0; i < localStorage.length; i++){ var k = localStorage.key(i); if(/^sb-.*-auth-token$/.test(k)) return true; } }catch(e){} return false; }
+  var tutEsperaAte = 0;
+  function tutTalvez(){
+    if(tutI >= 0 || tutVisto() || typeof hubComecou === 'undefined' || !hubComecou) return;
+    var j = typeof contaJ !== 'undefined' ? contaJ : null;
+    if(tutContaVeterana(j)){ tutMarcarVisto(); return; }
+    if(!j && tutSessaoGuardada()){
+      if(!tutEsperaAte) tutEsperaAte = Date.now() + 4000;
+      if(Date.now() < tutEsperaAte){ setTimeout(tutTalvez, 300); return; }
+    }
+    tutI = 0; tutMostrar();
+  }
+  function tutContaChegou(j){ if(!tutContaVeterana(j)) return; tutMarcarVisto(); if(tutI >= 0){ tutI = -1; fecharFolha(); } }
 
   /* ---------- montar ---------- */
   // Ligar e desligar na hora, sem recarregar a página (o hub clássico nunca deixou de estar montado por baixo).
@@ -2120,5 +2137,5 @@
     var v = $id('twcVisita'); if(v){ var tx = visita(); if(v.textContent !== tx){ v.textContent = tx; if(tela && tela.getAttribute('data-tela') !== 'abre') agendarRedesenho(); } }   // trocou quem passeia: refaz o selinho com a bolinha certa
   }, 5000);
   if(document.readyState !== 'loading') montar(); else document.addEventListener('DOMContentLoaded', montar);
-  window.TW_CELULAR = {txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, rotaPronta:function(){return tutVisto()&&!classico&&(!folha||folha.hidden);}, pontoAtual:pontoAtual, restaurarPonto:restaurarPonto, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
+  window.TW_CELULAR = {toast:toast, tutContaChegou:tutContaChegou, txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, rotaPronta:function(){return tutVisto()&&!classico&&(!folha||folha.hidden);}, pontoAtual:pontoAtual, restaurarPonto:restaurarPonto, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
 })();

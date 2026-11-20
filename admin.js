@@ -99,7 +99,7 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
     if(!d || !d.ok){ box.innerHTML = '<p class="perfcarr">—</p>'; return; }
     var h = '<div class="admnums"><span>👥 ' + escHtml(tr('Contas')) + ': <b>' + (+d.contas || 0) + '</b></span></div>';
     if(typeof temaAvisoAdmin === 'function') h += temaAvisoAdmin();
-    h += '<div id="admResumo"></div><div id="admCorrida"></div>';
+    h += '<div id="admResumo"></div><div id="admUso"></div><div id="admCorrida"></div>';
     h += '<h3>👥 ' + escHtml(tr('Todas as contas')) + ' <span id="admContasN"></span></h3><input class="nick admbusca" id="admBusca" maxlength="24" autocomplete="off" placeholder="🔍 ' + escHtml(tr('Procurar Idol pelo nome')) + '"><div class="admcontas" id="admContas"><p class="perfcarr">…</p></div>';
     h += '<label class="perfrecon admon"><input type="checkbox" id="admRecOn"' + (d.recados_on ? ' checked' : '') + '> 💌 ' + escHtml(tr('Recados no jogo todo')) + '</label>';
     h += '<h3>💌 ' + escHtml(tr('Últimos recados')) + '</h3>' + (d.recados.length ? '<ul class="perfrecs">' + d.recados.map(function(r){
@@ -113,7 +113,7 @@ function admPainel(){   // aba 🛡️ Moderação do perfil da admin
     h += '<h3>🧪 ' + escHtml(tr('Ferramentas de teste')) + '</h3><div class="admtools">' + (typeof temaAdminHtml === 'function' ? temaAdminHtml() : '') +
          '<button type="button" class="btn alt" id="admTeste">🧪 ' + escHtml(tr('Ativar modo teste')) + '</button></div>';
     box.innerHTML = h;
-    admExtra(); admResumo(); admCorrida(); admContas();
+    admExtra(); admResumo(); admUso(); admCorrida(); admContas();
   }).catch(function(){});
 }
 function admResumo(){   // 📊 Hoje no jogo (Center Run, Star⭐Gacha!, Moon⭐Duo!, missões e aniversários)
@@ -124,6 +124,21 @@ function admResumo(){   // 📊 Hoje no jogo (Center Run, Star⭐Gacha!, Moon⭐
       n('🌙', 'Cenas no Moon⭐Duo!', d.duo) + n('🎁', 'Presentes do Moon⭐Duo!', d.duo_pres) + n('🎯', 'Missões feitas', d.missoes) + n('⭐', 'Estrelas ganhas', d.estrelas) + n('🙈', 'Fora do Moon⭐Duo!', d.fora_duo) + '</div>' +
       '<p class="perfdica">🎂 ' + escHtml(tr('Aniversariantes de hoje')) + ': ' + (d.aniver.length ? d.aniver.map(function(k){ return '<button type="button" class="lbn" data-nick="' + escHtml(k) + '">' + escHtml(k) + '</button>'; }).join(', ') : '—') + '</p>' +
       '<p class="perfdica">🌙 ' + escHtml(tr('Mais escolhidos no Moon⭐Duo! (7 dias)')) + ': ' + (d.duo_top.length ? d.duo_top.map(function(t){ return '<button type="button" class="lbn" data-nick="' + escHtml(t.nick) + '">' + escHtml(t.nick) + '</button> (' + t.n + ')'; }).join(', ') : '—') + '</p>';
+  }).catch(function(){});
+}
+// 🎮 Uso dos jogos (20/11/2026): quantas pessoas jogaram cada jogo nos últimos 7 dias e qual é o Jogo da semana
+var ADM_JOGOS = {run:'Center⭐Run!', karaoke:'Karaoke⭐Time!', sora:'Sora⭐Jump!', cafe:'Happy⭐Cafe!', handshake:'Handshake⭐Event!', jardim:'Bloom⭐Garden!', battle:'Idol⭐Battle!', foto:'Photo⭐Studio!', duo:'Moon⭐Duo!', gacha:'Star⭐Gacha!', pet:'Backstage⭐Pet! (minijogos)'};
+function admUso(){
+  contaRpc('admin_uso_jogos', {p_dias:7}).then(function(d){
+    var box = $('admUso'); if(!box || !d || !d.ok) return;
+    var L = d.jogos || [], max = Math.max(1, d.contas_ativas || 0);
+    var h = '<h3>🎮 ' + escHtml(tr('Quem jogou o quê (7 dias)')) + '</h3><p class="perfdica">👥 ' + escHtml(tr('Contas ativas')) + ': <b>' + (+d.contas_ativas || 0) + '</b>' +
+      (d.jogo_da_semana && d.jogo_da_semana.k ? ' · 🌟 ' + escHtml(tr('Jogo da semana')) + ': <b translate="no">' + escHtml(ADM_JOGOS[d.jogo_da_semana.k] || d.jogo_da_semana.k) + '</b>' : '') + '</p>';
+    h += '<ul class="admbarras">' + L.map(function(j){ var w = Math.max(3, Math.round(j.jogadores / max * 100));
+      return '<li><span translate="no">' + escHtml(ADM_JOGOS[j.k] || j.k) + '</span><i style="--w:' + w + '%"></i><b>' + j.jogadores + '</b><small>' + j.partidas + ' ' + escHtml(tr('partidas')) + '</small></li>'; }).join('') + '</ul>';
+    var poucos = L.filter(function(j){ return j.jogadores <= 1; }).map(function(j){ return ADM_JOGOS[j.k] || j.k; });
+    if(poucos.length) h += '<p class="perfdica">💡 ' + escHtml(tr('Pouco jogados na semana')) + ': ' + escHtml(poucos.join(', ')) + '. ' + escHtml(tr('O Jogo da semana já dá +★5 na missão do dia para um deles.')) + '</p>';
+    box.innerHTML = h;
   }).catch(function(){});
 }
 // 🏁 Center⭐Run: onde as corridas terminam e como vão as metas curtas (últimos 7 dias, de runs.causa/meta)

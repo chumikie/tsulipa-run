@@ -1068,7 +1068,7 @@ function desenharPolaroid(){
 function salvar(){
  var cv=ov&&ov.querySelector('#battleFoto');if(!cv||!rodadas)return;
  som('photo');
- var a=document.createElement('a');a.download='idol-battle-'+String(estado.dia||hoje())+'.png';a.href=cv.toDataURL('image/png');
+ var a=document.createElement('a');a.download='idol-battle-'+String(estado.dia||hoje())+'.png';a.href=(window.twMarcaPng?window.twMarcaPng(cv):cv.toDataURL('image/png'));
  document.body.appendChild(a);a.click();a.remove();
 }
 window.TW_BATTLE_ON=true;window.battleAbrir=abrir;window.TW_BATTLE_TR=T;

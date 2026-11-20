@@ -53,3 +53,9 @@ Migração `supabase/migrations/20261120150000_auditoria_seguranca_20261120.sql`
 - Recordes de Handshake e Café numa chamada (`meus_recordes_jogos`), no máximo 1 leitura por minuto ao abrir o Início; presença online pausa com a pessoa parada e só atualiza fora do mapa se o contador estiver na tela.
 - `private.sora_scores` ganhou chave primária.
 - Mantidos de propósito: teto de importação ★1.000 (migração `v212_teto_importacao_1000` de 27/10), os 11 índices sem uso e a proteção de senhas vazadas desligada (login só com Google). As RPCs públicas do modo visitante seguem abertas e só devolvem o que a página de privacidade já diz que é público.
+
+### Esta semana (20/11/2026)
+- **Show de sábado:** ★20 por semana para quem termina uma música do Karaoke⭐Time! no sábado (conferido em `private.kt_runs`).
+- **Jogo da semana:** a missão de nível 1 prefere o jogo menos jogado na semana anterior e vale ★5 a mais (★15 em vez de ★10).
+- **Festa no mapa:** a lembrança é o cenário do camarim do tema (item de ★60 na loja), grátis uma vez por festa; não mexe no saldo.
+- Somando tudo, um jogador muito ativo ganha no máximo +★25 por semana a mais.

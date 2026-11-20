@@ -1103,7 +1103,7 @@ g=x2;g.save();
     x2.fillText(t('Jogue também e entre no ranking!'),300,H2-44);
     petShareMoldura(x2, W2, H2);   // moldura na cor do Oshi + data (V2.1.2)
   
-  return c2.toDataURL('image/png');
+  return (window.twMarcaPng?window.twMarcaPng(c2):c2.toDataURL('image/png'));
 }
 function draw(){
   var P2=curPal();
@@ -1544,7 +1544,7 @@ function makeCard(){
   x2.font='500 11px "M PLUS Rounded 1c",sans-serif';
   x2.fillText('🌷 TsuLiPa⭐World · Center⭐Run! · BRS48 Official Photocard', 200, 524);
 	
-  return c2.toDataURL('image/png');
+  return (window.twMarcaPng?window.twMarcaPng(c2):c2.toDataURL('image/png'));
 }
 function cenaRGB(s){ var m = String(s).match(/\d+/g) || [0, 0, 0]; return [+m[0], +m[1], +m[2]]; }
 function cenaMix(a, b, t, al){ return 'rgba(' + Math.round(a[0] + (b[0] - a[0]) * t) + ',' + Math.round(a[1] + (b[1] - a[1]) * t) + ',' + Math.round(a[2] + (b[2] - a[2]) * t) + ',' + (al === undefined ? 1 : al) + ')'; }

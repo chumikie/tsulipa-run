@@ -866,11 +866,24 @@
     if(ev === 'studio' && typeof window.studioAbrir === 'function' && !card('studio')){ window.studioAbrir(); return; }
     abrirCard(ev);
   }
+  // Avisos em fila (21/11/2026): ao entrar podem chegar vários de uma vez (kit, trilha, bônus, sequência...);
+  // cada um aparece por inteiro, um depois do outro, sem repetir o mesmo texto. Ícone: nome do desenho ou um emoji.
   function toast(txt, icone){
-    if(!cel) return; var el = $id('twcToast');
+    if(!cel) return;
+    toast.fila = toast.fila || [];
+    if(toast.ativo){
+      if(toast.atual !== txt && !toast.fila.some(function(f){ return f[0] === txt; }) && toast.fila.length < 8) toast.fila.push([txt, icone]);
+      return;
+    }
+    var el = $id('twcToast');
     if(!el){ el = document.createElement('div'); el.id = 'twcToast'; el.className = 'twc-toast'; el.setAttribute('role', 'status'); cel.appendChild(el); }
-    el.innerHTML = (icone ? '<span class="twc-toast-ic" aria-hidden="true">' + ico(icone, 22) + '</span>' : '') + '<span>' + esc(txt) + '</span>'; el.classList.remove('twc-toast-on'); void el.offsetWidth; el.classList.add('twc-toast-on');
-    clearTimeout(toast.t); toast.t = setTimeout(function(){ el.classList.remove('twc-toast-on'); }, 3800);
+    var desenho = icone && /^[a-z0-9_]+$/.test(icone) ? ico(icone, 22) : icone ? '<span class="twc-toast-emo">' + esc(icone) + '</span>' : '';
+    el.innerHTML = (desenho ? '<span class="twc-toast-ic" aria-hidden="true">' + desenho + '</span>' : '') + '<span>' + esc(txt) + '</span>'; el.classList.remove('twc-toast-on'); void el.offsetWidth; el.classList.add('twc-toast-on');
+    toast.ativo = true; toast.atual = txt;
+    clearTimeout(toast.t); toast.t = setTimeout(function(){
+      el.classList.remove('twc-toast-on');
+      setTimeout(function(){ toast.ativo = false; toast.atual = ''; var n = toast.fila.shift(); if(n) toast(n[0], n[1]); }, 320);
+    }, toast.fila.length ? 2800 : 3800);
   }
   window.twcToast = function(txt){ toast(txt, 'estrela'); };   // usado pelo tw-bairro.js (nível novo no bico da rua)
   // Vida no bairro (tw-bairro.js): ponto, nível, bagunça e guia redesenham o Início

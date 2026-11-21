@@ -1101,3 +1101,4 @@ a.btn#twpBaixar{text-decoration:none}
 .twc-novo{position:absolute;top:4px;right:4px;padding:1px 6px;border-radius:999px;background:#ff6fb5;color:#fff;font:800 10px 'M PLUS Rounded 1c',sans-serif;font-style:normal;letter-spacing:.02em}
 :root[data-theme="dark"] .twc-hj-fogo{color:#ffb070}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-hj-fogo{color:#ffb070}}
+.twc-toast-emo{display:inline-block;font-size:20px;line-height:1}

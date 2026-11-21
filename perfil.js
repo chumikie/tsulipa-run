@@ -135,7 +135,7 @@ function perfChar(av){
   PERF_CAMPOS.forEach(function(f){
     var v = src[f];
     if(f === 'streak') c.streak = !!v;
-    else if(/^(hair|hair2|skin|eye|outcol|legcol)$/.test(f)){ if(typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v)) c[f] = v; }
+    else if(/^(hair|hair2|lado2|skin|eye|outcol|legcol)$/.test(f)){ if(typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v)) c[f] = v; }
     else if(f === 'baixo'){ if(v === 'saia' || v === 'bermuda') c.baixo = v; }   // saia ou bermuda; vazio = padrão da roupa
     else if(typeof v === 'string' && v.length <= 16) c[f] = v;
   });

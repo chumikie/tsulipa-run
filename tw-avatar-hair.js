@@ -2,13 +2,19 @@
    topo, costeletas, sombra HD atrás e franja em polígono com o degradê do cabelo).
    Cortes (combinam com qualquer franja):
    onduladom  = Ondulado: volume fofo e arredondado ao redor da cabeça
-   onduladom2 = Bicolor: metade na cor escolhida, metade preta (ref. Maruru)
+   onduladom2 = Bicolor: metade na cor escolhida, metade preta ou na cor de c.lado2 (ref. Maruru)
    onduladof  = Repicado: médio, pontas para fora (ref. Mimimila)
    Franjas novas: ondulada (rótulo "Rebelde"), risca (lateral longa, ref. Maruru), repicada (ref. Mimimila).
    Os valores salvos dos cortes continuam os mesmos para não quebrar saves. */
 (function(){
 'use strict';
 var PRETO_TOPO='#3a3644',PRETO_BASE='#121018',PRETO_SOMBRA='#0c0a12';
+// Bicolor (21/11/2026): a outra metade pode ter cor própria (c.lado2). Sem lado2 continua o preto de sempre.
+function ladoBicolor(c){
+ var l=c&&/^#[0-9a-f]{6}$/i.test(c.lado2||'')?c.lado2:'';
+ if(!l)return {topo:PRETO_TOPO,base:PRETO_BASE,sombra:PRETO_SOMBRA};
+ return {topo:clarear(l,22),base:escurecer(l,38),sombra:escurecer(l,58)};
+}
 function cabeca(g,x,y){g.beginPath();g.arc(x+15,y+12,12,Math.PI,0);g.lineTo(x+27,y+30);g.lineTo(x+3,y+30);g.closePath();}
 function oval(g,cx,cy,rx,ry){g.beginPath();g.ellipse(cx,cy,rx,ry,0,0,7);g.fill();}
 function topoOndulado(g,x,y){   // topo em ondas redondinhas (cachos macios), sem pontas
@@ -102,7 +108,7 @@ window.TWAvatarHair={
   if(b==='onduladom2'){
    // mesma base do Curto; a metade direita da nuca fica preta
    g.beginPath();g.arc(x+15,y+12,13.2,Math.PI,0);g.lineTo(x+28.2,y+20);g.lineTo(x+25,y+22);g.lineTo(x+5,y+22);g.lineTo(x+1.8,y+20);g.closePath();g.fill();
-   g.save();g.beginPath();g.rect(x+15,y-4,20,30);g.clip();g.fillStyle=PRETO_SOMBRA;
+   g.save();g.beginPath();g.rect(x+15,y-4,20,30);g.clip();g.fillStyle=ladoBicolor(c).sombra;
    g.beginPath();g.arc(x+15,y+12,13.2,Math.PI,0);g.lineTo(x+28.2,y+20);g.lineTo(x+25,y+22);g.lineTo(x+5,y+22);g.lineTo(x+1.8,y+20);g.closePath();g.fill();
    g.restore();
    return true;
@@ -222,7 +228,7 @@ window.TWAvatarHair={
   if(c.mecha==='antena'||c.mecha==='coracao'||c.det==='antena'||c.det==='coracao')this.detalhe(g,c,x,y); // legado de saves em det
   if(b!=='onduladom2'){this.frente(g,c,x,y,b);return;}
   // metade direita (de quem olha) em preto: topo, costeleta e a franja escolhida
-  var f=c.front||'bagunca',pg=g.createLinearGradient(0,y+5,0,y+24);pg.addColorStop(0,PRETO_TOPO);pg.addColorStop(1,PRETO_BASE);
+  var f=c.front||'bagunca',lb=ladoBicolor(c),pg=g.createLinearGradient(0,y+5,0,y+24);pg.addColorStop(0,lb.topo);pg.addColorStop(1,lb.base);
   var T=function(a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill();};
   g.save();if(f!=='espetada'){cabeca(g,x,y);g.clip();}g.beginPath();if(f==='arcoiris'){g.rect(x+15,y-10,16,16);g.rect(x+15,y+15,16,15);}else g.rect(x+15,y-10,16,40);g.clip();g.fillStyle=pg;   // o arco-íris fica por cima
  

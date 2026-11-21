@@ -57,7 +57,7 @@ function registrar(tipo,info){
   fa=hsMemLer().find(function(m){return m&&m.nome===info.nome&&m.pres===info.pres;});
   if(!fa)return false;
   visual={};
-  ['hair','hair2','skin','outcol','legcol'].forEach(function(k){
+  ['hair','hair2','lado2','skin','outcol','legcol'].forEach(function(k){
     var valor=fa.c&&fa.c[k];
     if(typeof valor==='string'&&/^#[0-9a-f]{6}$/i.test(valor))visual[k]=valor;
   });

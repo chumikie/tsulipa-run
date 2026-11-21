@@ -276,6 +276,13 @@ body:not(.jogando) #sb{display:none!important}
 
 /* Favoritos do charmaker: 3 espaços (vestir com um toque, 💾 guarda o visual atual) */
 .cmfavs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+/* Bicolor (21/11/2026): cor da outra metade e troca de lados, só com o corte Bicolor */
+.cmbicolor{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;margin:2px 0 6px}
+.cmbicolor[hidden]{display:none}
+.cmbicolor .cmfavt{flex:1 0 100%;text-align:center;font-weight:800;font-size:12.5px;color:var(--b1)}
+.cmbicolor label{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13px}
+.cmbicolor input[type=color]{width:44px;height:36px;padding:2px;border-radius:10px}
+.cmbicolor .btn{min-height:40px;padding:6px 14px}
 .cmfavs .cmfavt{flex:1 0 100%;text-align:center;font-weight:800;font-size:12.5px;color:var(--b1)}
 .cmfavs .cmfav{display:flex;align-items:center;gap:2px}
 .cmfavs .cmfavvestir{width:44px;height:44px;padding:0;border-radius:14px;border:2px dashed color-mix(in srgb,var(--b1) 35%,transparent);background:var(--card);

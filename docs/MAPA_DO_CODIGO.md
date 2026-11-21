@@ -48,5 +48,8 @@ Referência técnica atualizada em 20/11/2026. O estado do projeto e as pendênc
 ## Novos em 21/11/2026 (PR das melhorias)
 - `tw-marca.js` — também o **compartilhar**: no celular, todo link de imagem com `download` abre o compartilhar do aparelho (evento `tw-foto-salva` depois). `data-tw-baixar="1"` desliga num link.
 - `tw-comunidade.js` — convite com prêmio (`?convite=CODIGO`), concurso de visual da semana, instalar como app, lembrete do Show de sábado (.ics) e convite de conta para o visitante depois da foto. Atalhos no Menu (`data-twk`).
+- `tw-conquistas.js` — conquistas à vista (inspiradas no Habbo, em cima das insígnias de sempre): "faltam N" com barra, pontos de conquista, até 5 insígnias em destaque no topo do perfil, perfil completo, cartão "Seu perfil" no Início e pontinho no avatar quando chegam corações ou recados. RPCs `meu_progresso_conquistas`, `salvar_destaques`, `destaques_de`.
+- `tw-passatempos.js` — passatempos do dia (inspirados nos jogos antigos do site da Turma da Mônica): caça-palavras, 5 diferenças e labirinto, sorteados pelo dia de Brasília; ★5 cada (`passatempo_feito`); os 3 no mesmo dia dão a insígnia 🧩 (local, `conqGanhar`).
+- `pet.js` / `pet-sala.js` — rotina do pet (Tamagotchi): de 23h às 7h (Brasília) a queda vale pela metade, "jeitinho" que nasce do cuidado mais dado ao subir de fase (`p.jeito`), dias de carinho da semana (`p.diasCuidado`) e recepção com saudade depois de 20 h fora.
 - `sw.js` — service worker: guarda no aparelho os arquivos com `?v=` e a mídia; páginas e Supabase sempre pela rede. Emergência: `ATIVO = false`.
 - `tw-celular.js` — "Hoje" com até 3 itens de tipos diferentes (gira a cada dia); jogo da semana primeiro na tela de Jogos.

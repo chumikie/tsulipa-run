@@ -86,3 +86,8 @@ Migração `supabase/migrations/20261121180000_economia_e_estreia.sql` (ainda n�
 Migração `supabase/migrations/20261121200000_sequencia_missoes.sql` (ainda não aplicada).
 - **Sequência das Missões:** dia com 3+ missões conta; 3 dias seguidos = ★15, 7 dias = ★40, uma vez por sequência.
 - O Encontro do dia (★3) e o Rival do dia do Battle (★5) voltam a aparecer no "Hoje" — sem prêmio novo.
+
+### Parte 5 (21/11/2026)
+Migração `supabase/migrations/20261121220000_conquistas_perfil.sql` (ainda não aplicada).
+- **Passatempos do dia** (caça-palavras, 5 diferenças, labirinto): ★5 cada, uma vez por dia (`passatempo_feito`, motivo `passatempo`). No máximo ★15/dia.
+- Conquistas e destaques do Perfil não mexem em estrelas.

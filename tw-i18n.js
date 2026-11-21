@@ -4,6 +4,8 @@ window.TW_DICT={
  "en":{
   // Idol⭐News!: diário do dia e item da loja (14/11/2026)
   "Começo":"Beginning",
+  "Os 3 passatempos do dia no mesmo dia":"All 3 daily puzzles on the same day",
+  "Passatempo em dia":"Puzzles of the day",
   "Reviravolta":"Twist",
   "Final":"Ending",
   "{a} convidou {b} para ensaiar uma coreografia nova no palco.":"{a} invited {b} to rehearse a new routine on stage.",
@@ -597,6 +599,8 @@ window.TW_DICT={
  "es":{
   // Idol⭐News!: diário do dia e item da loja (14/11/2026)
   "Começo":"Inicio",
+  "Os 3 passatempos do dia no mesmo dia":"Los 3 pasatiempos del día en el mismo día",
+  "Passatempo em dia":"Pasatiempos al día",
   "Reviravolta":"Giro",
   "Final":"Final",
   "{a} convidou {b} para ensaiar uma coreografia nova no palco.":"{a} invitó a {b} a ensayar una coreografía nueva en el escenario.",
@@ -1191,6 +1195,8 @@ window.TW_DICT={
  "th":{
   // Idol⭐News!: diário do dia e item da loja (14/11/2026)
   "Começo":"ตอนต้น",
+  "Os 3 passatempos do dia no mesmo dia":"ทำเกมประจำวันครบ 3 อย่างในวันเดียว",
+  "Passatempo em dia":"เกมประจำวันครบ",
   "Reviravolta":"จุดพลิกผัน",
   "Final":"ตอนจบ",
   "{a} convidou {b} para ensaiar uma coreografia nova no palco.":"{a} ชวน {b} มาซ้อมท่าเต้นใหม่บนเวที",
@@ -1785,6 +1791,8 @@ window.TW_DICT={
  "ja":{
   // Idol⭐News!: diário do dia e item da loja (14/11/2026)
   "Começo":"はじまり",
+  "Os 3 passatempos do dia no mesmo dia":"今日のあそび3つを同じ日にクリア",
+  "Passatempo em dia":"あそびコンプリート",
   "Reviravolta":"ハプニング",
   "Final":"おしまい",
   "{a} convidou {b} para ensaiar uma coreografia nova no palco.":"{a}は{b}をさそって、ステージで新しいダンスを練習した。",

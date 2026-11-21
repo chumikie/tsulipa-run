@@ -159,3 +159,28 @@ test('parte 4: Encontro e Rival no Hoje, sequência das Missões, Sora e selo No
   assert.match(sql, /count\(distinct k\) >= 3/);
   assert.match(sql, /case m when 3 then 15 else 40 end/);
 });
+
+test('parte 5: conquistas à vista, destaques, pet com rotina e passatempos do dia', () => {
+  const idx = ler('index.html');
+  for (const f of ['tw-conquistas.js', 'tw-passatempos.js']) assert.ok(idx.includes(`src="./${f}?v=`), f);
+  const cq = ler('tw-conquistas.js');
+  for (const r of ['meu_progresso_conquistas', 'salvar_destaques', 'destaques_de']) assert.ok(cq.includes(`'${r}'`), r);
+  assert.match(cq, /if\(!lerLS\(chaveVisto\(\)\)\) marcarVisto\(\);/, 'sem pontinho falso na primeira vez');
+  const tela = ler('perfil-tela.js');
+  assert.match(tela, /TW_CONQ\.perfilMontar\(d, meu\)/); assert.match(tela, /TW_CONQ\.abaPerfil\(d, meu\)/);
+  const cel = ler('tw-celular.js');
+  assert.match(cel, /TW_CONQ\.cartaoHtml\(\)/); assert.match(cel, /twc-eu-ponto/); assert.match(cel, /data-twpa="abrir"/);
+  assert.match(cel, /var escolha = continuar \? \[continuar\] : \[\];/, 'o Continuar fica sempre à vista');
+  // pet: noite em Brasília conta pela metade
+  const pet = ler('pet.js'), i = pet.indexOf('function petDiaBR'), j = pet.indexOf('\n}\n', pet.indexOf('function petHorasNoite')) + 3;
+  const ctx = {}; require('vm').runInNewContext(pet.slice(i, j) + ';this.H=petHorasNoite;', ctx);
+  const t0 = Date.parse('2026-11-21T03:00:00Z');
+  assert.equal(ctx.H(t0, t0 + 24 * 36e5), 8); assert.equal(ctx.H(Date.parse('2026-11-21T13:00:00Z'), Date.parse('2026-11-21T19:00:00Z')), 0);
+  assert.match(ler('pet-sala.js'), /function petXP\(p, n, tipo\)/);
+  // passatempos: sorteio igual para todo mundo no mesmo dia
+  const pa = ler('tw-passatempos.js');
+  assert.match(pa, /sorteio\(hoje\(\) \+ ':caca'\)/); assert.match(pa, /rpc\('passatempo_feito', \{p_tipo:tipo\}\)/);
+  assert.ok(ler('perfil.js').includes("['jogo_passatempo', '🧩', 'Passatempo em dia'"));
+  const sql = ler('supabase/migrations/20261121220000_conquistas_perfil.sql');
+  assert.match(sql, /coalesce\(array_length\(p_ins, 1\), 0\) > 5/); assert.match(sql, /check \(tipo in \('caca', 'dif', 'lab'\)\)/);
+});

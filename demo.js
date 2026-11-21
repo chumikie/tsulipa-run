@@ -141,6 +141,13 @@
     function demoNovos(n, a){
       a = a || {};
       var c, i, r, p, ac, est;
+      /* ---- Conquistas do Perfil (20261121220000_conquistas_perfil.sql) ---- */
+      if(n === 'meu_progresso_conquistas'){ D.dest = D.dest || []; return { dias:5, corridas:42, recebidos:9, dados:4, recados:2, recados_rec:3, compras:3, duos:1, best:10854, sora:1079,
+        completo:{ foto:true, emoji:false, cor:false, frase:true, oshi:true, aniver:false, destaque:D.dest.length > 0 }, destaque:D.dest.slice(), insignias:['estreia', 'center', 'sora_500'] }; }
+      if(n === 'salvar_destaques'){ D.dest = (a.p_ins || []).filter(function(k){ return ['estreia', 'center', 'sora_500'].indexOf(k) >= 0; }).slice(0, 5); return { ok:true, destaque:D.dest.slice() }; }
+      if(n === 'destaques_de') return ['center', 'sora_500'];
+      if(n === 'passatempos_hoje') return { feitos:(D.passa || []).slice(), total:(D.passa || []).length, premio:5 };
+      if(n === 'passatempo_feito'){ D.passa = D.passa || []; var pg = D.passa.indexOf(a.p_tipo) < 0; if(pg){ D.passa.push(a.p_tipo); } return { ok:true, pago:pg, premio:pg ? 5 : 0, stars:saldo() + (pg ? 5 : 0), total:D.passa.length }; }
       /* ---- Bloom⭐Garden! (20261113_bloom_garden.sql e flores_e_caderno.sql) ---- */
       if(n === 'jardim_estado') return { ok:true, hoje:D.dia, stars:saldo(),
         canteiros:Object.keys(D.canteiros).sort().map(function(k){ var q = D.canteiros[k];

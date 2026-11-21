@@ -2113,7 +2113,7 @@ function petUseItem(list, k){
     [1318, 1568, 1760, 2093].forEach(function(f, i){ beep(f, .05, 'sine', .035, i * .09); });
   }
   petMenuK = '';
-  petXP(p, k === 'sorvete' ? 8 : 3);   // pontos de cuidado (V2.1)
+  petXP(p, k === 'sorvete' ? 8 : 3, list === PET_BATH ? 'banho' : 'comida');   // pontos de cuidado (V2.1)
   petSave(true); petUI();
   });
 }
@@ -2137,7 +2137,7 @@ function petPlay(){
   p.humor = petClamp(p.humor + 15); p.energia = petClamp(p.energia - 8); p.fome = petClamp(p.fome - 3);
   petData.rec.brincar = Date.now();
   petAnim = { k:'brincar', t:0 }; petMenuK = '';
-  petXP(p, 4);   // pontos de cuidado (V2.1)
+  petXP(p, 4, 'brincar');   // pontos de cuidado (V2.1)
   [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .07, 'square', .03, i * .1); });
   petSave(true); petUI();
 }
@@ -2840,7 +2840,7 @@ function petSing(){
   p.humor = petClamp(p.humor + 12); p.energia = petClamp(p.energia - 4);
   petData.rec.cantar = Date.now();
   petAnim = { k:'cantar', t:0 }; petMenuK = '';
-  petXP(p, 6);   // pontos de cuidado (V2.1)
+  petXP(p, 6, 'cantar');   // pontos de cuidado (V2.1)
   petSinging = true;
   PET_JINGLE.forEach(function(f, i){
     var w = i * .15;
@@ -2939,7 +2939,7 @@ function petTalk(){
     if(petRecLeft('falar', PET_TALK_CD) <= 0){
       petData.rec.falar = Date.now();
       p.humor = petClamp(p.humor + 5);
-      petXP(p, 3);   // pontos de cuidado (V2.1)
+      petXP(p, 3, 'conversa');   // pontos de cuidado (V2.1)
       petFx.push({ x:PET_X + 20, y:PET_FLOOR - 60, t:0, s:'💬' });
       petSave(true); petUI();
     }
@@ -2987,13 +2987,19 @@ function petNowS(){ return performance.now() / 1000; }
 //←petG
 function petG(fn){ var og = g; try{ fn(); } finally { g = og; } }
 //←petXP
-function petXP(p, n){
+function petXP(p, n, tipo){
   if(!p || !petData) return;
   var s0 = petStage(p);
   p.xp = Math.round((p.xp + n) * 10) / 10;
+  // dias de carinho (Brasília, últimos 14) e o tipo de cuidado, que decide o jeitinho na próxima fase
+  var hoje = typeof petDiaBR === 'function' ? petDiaBR() : '';
+  if(hoje){ p.diasCuidado = (Array.isArray(p.diasCuidado) ? p.diasCuidado : []).filter(function(d){ return d !== hoje; }).concat([hoje]).slice(-14); }
+  if(tipo){ p.cuidado = p.cuidado && typeof p.cuidado === 'object' ? p.cuidado : {}; p.cuidado[tipo] = (+p.cuidado[tipo] || 0) + 1; }
   var s1 = petStage(p);
   if(s1 > s0){
     var st = PET_STAGES[s1];
+    var top = Object.keys(p.cuidado || {}).sort(function(a, b){ return p.cuidado[b] - p.cuidado[a]; })[0];
+    if(top && typeof petT === 'function'){ p.jeito = top; p.cuidado = {}; setTimeout(function(){ if(typeof petSay === 'function') petSay(petT('jeitoNovo', {nome:p.nome || '', j:petT('j_' + top)})); }, 3200); }
     petData.roupas = petData.roupas || { '': 1 };
     if(st[3]) petData.roupas[st[3]] = 1;
     petPromo = { t:0, s:s1 };
@@ -3009,7 +3015,7 @@ function petRankUI(p){
   for(var i = 1; i <= s; i++) if(PET_STAGES[i][3]) petData.roupas[PET_STAGES[i][3]] = 1;   // garante os itens já conquistados
   var pct = nx ? Math.max(3, Math.round((p.xp - st[0]) / (nx[0] - st[0]) * 100)) : 100;
   el.innerHTML = '<b>' + st[2] + ' ' + escHtml(tr(st[1])) + '</b><i><u style="width:' + pct + '%"></u></i>' +
-                 '<small>' + (nx ? Math.floor(p.xp) + '/' + nx[0] + ' → ' + escHtml(tr(nx[1])) : '⭐ MAX') + '</small>';
+                 '<small>' + (nx ? Math.floor(p.xp) + '/' + nx[0] + ' → ' + escHtml(tr(nx[1])) : '⭐ MAX') + '</small>' + petSemanaHtml(p);
 }
 //←petDrawPromo
 // Banner de promoção
@@ -3189,7 +3195,7 @@ function petGameEnd(){
   if(G.fim.credito==='novo')petMiniConfirmar(G);
   if(rec){ if(sfx.rank) sfx.rank(); } else if(sfx.card) sfx.card();
   petSave(true);
-  if(p) petXP(p, 5 + Math.min(10, Math.floor(k === 'ritmo' ? G.perf / 8 : G.pulos / 3)));
+  if(p) petXP(p, 5 + Math.min(10, Math.floor(k === 'ritmo' ? G.perf / 8 : G.pulos / 3)), 'brincar');
   petUI();
 }
 //←petGameClose

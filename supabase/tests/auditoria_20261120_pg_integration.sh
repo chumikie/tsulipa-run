@@ -51,6 +51,9 @@ drop function if exists public.visual_preco(text);
 SQL
 db < "$repo_dir/supabase/migrations/20261121180000_economia_e_estreia.sql"
 db < "$repo_dir/supabase/migrations/20261121200000_sequencia_missoes.sql"
+# o que a produção já tem e a parte 5 (conquistas no Perfil) usa
+db -c "alter table public.players add column if not exists dias_jogados int, add column if not exists avatar jsonb, add column if not exists emoji text, add column if not exists cor text, add column if not exists frase text, add column if not exists oshi int, add column if not exists aniver date"
+db < "$repo_dir/supabase/migrations/20261121220000_conquistas_perfil.sql"
 
 # 1) ranking antigo fechado para leitura direta
 [[ "$(db -c "select has_table_privilege('anon','public.leaderboard','select')")" == f ]] || falha 'anon ainda lê leaderboard'
@@ -257,4 +260,20 @@ db -c "insert into public.missoes_feitas(user_id, k, dia) select '$c', 'm' || k,
 [[ "$(como "$c" "select (public.missoes_sequencia()->>'hoje_ok')")" == true ]] || falha 'hoje conta'
 [[ "$(como "$c" "select (public.missoes_sequencia()->>'dias')")" == 4 ]] || falha 'sequência com hoje'
 echo 'melhorias 21/11/2026 (parte 4): sequência das Missões verificada'
+# ── 21/11/2026 parte 5: conquistas e destaques do Perfil ──
+db -c "create or replace function public.insignias(uuid) returns text[] language sql stable as \$\$ select case when \$1 = '$c' then array['estreia','maratona:2','amada'] else array[]::text[] end \$\$"
+r="$(como "$c" "select public.salvar_destaques(array['amada','kami','maratona','amada'])")"
+[[ "$(como "$c" "select public.salvar_destaques(array['amada','kami','maratona','amada'])->>'destaque'")" == '["amada","maratona"]' ]] || falha "destaques filtrados e sem repetir: $r"
+[[ "$(como "$c" "select public.salvar_destaques(array['a','b','c','d','e','f'])->>'erro'")" == max ]] || falha 'no máximo 5 destaques'
+nk="$(db -c "select nick from public.players where id='$c'")"
+[[ "$(db -c "set role anon; select array_to_string(public.destaques_de(upper('$nk')), ',')")" == 'amada,maratona:2' ]] || falha 'destaques públicos com nível'
+[[ "$(como "$c" "select (public.meu_progresso_conquistas()->'completo'->>'destaque')")" == true ]] || falha 'perfil completo conta destaque'
+[[ "$(como "$c" "select (public.meu_progresso_conquistas()->>'corridas')::int >= 1")" == t ]] || falha 'contador de corridas'
+[[ "$(db -c "select has_function_privilege('anon','public.meu_progresso_conquistas()','execute')")" == f ]] || falha 'progresso só para quem entrou'
+[[ "$(como "$c" "select public.passatempo_feito('caca')->>'pago'")" == true ]] || falha 'passatempo pago'
+[[ "$(como "$c" "select public.passatempo_feito('caca')->>'pago'")" == false ]] || falha 'passatempo pago só uma vez por dia'
+[[ "$(como "$c" "select public.passatempo_feito('xadrez')->>'erro'")" == tipo ]] || falha 'tipo de passatempo validado'
+[[ "$(db -c "select sum(delta) from public.star_log where user_id='$c' and reason='passatempo'")" == 5 ]] || falha 'passatempo ★5'
+[[ "$(como "$c" "select public.passatempos_hoje()->>'feitos'")" == '["caca"]' ]] || falha 'passatempos de hoje'
+echo 'melhorias 21/11/2026 (parte 5): conquistas, destaques e passatempos verificados'
 

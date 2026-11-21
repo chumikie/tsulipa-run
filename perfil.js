@@ -66,7 +66,8 @@ var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, c
   ['esp_fundador',   '💎', 'Fundadores',         'Jogou desde o lançamento do TsuLiPa World'],
   ['jogo_barista', '🧋', 'Barista perfeito', '12 pedidos perfeitos em um turno do Happy⭐Cafe!'],
   ['jogo_memoria', '🤝', 'Memória de fã', 'Combo de 10 acertos no Handshake⭐Event!'],
-  ['jogo_caderno', '📒', 'Caderno completo', 'Todas as receitas do Caderno do Happy⭐Cafe!']
+  ['jogo_caderno', '📒', 'Caderno completo', 'Todas as receitas do Caderno do Happy⭐Cafe!'],
+  ['jogo_passatempo', '🧩', 'Passatempo em dia', 'Os 3 passatempos do dia no mesmo dia']
 ];
 // Oshi: membros atuais do BRS48, com a cor e o emoji de cada um (lista do Blog de Membros do BRS48, out/2026).
 // Para atualizar, é só mexer nesta lista: [apelido, emoji, cor].
@@ -1081,7 +1082,7 @@ function perfPresente(){
 // As abas do Perfil (perfil, diário, recados, insígnias, estúdio de foto) baixam ao abrir um Perfil, junto com os dados.
 // Cada "//→nome" acima marca o lugar de uma função que mora em perfil-tela.js; tests/fonte-dividida.js remonta a ordem.
 // Se mudar perfil-tela.js, suba a versão em PERF_TELA_ARQ.
-var PERF_TELA_ARQ='./perfil-tela.js?v=4',PERF_TELA_PRONTA=false,perfTelaP=null;
+var PERF_TELA_ARQ='./perfil-tela.js?v=5',PERF_TELA_PRONTA=false,perfTelaP=null;
 function perfTelaCarregar(){
   if(PERF_TELA_PRONTA)return Promise.resolve();
   if(!perfTelaP)perfTelaP=new Promise(function(ok,er){var e=document.createElement('script');e.src=PERF_TELA_ARQ;e.async=false;

@@ -52,7 +52,7 @@
 <script>function twFontesJa(){if(document.getElementById('twFontesJa'))return;var k=document.createElement('link');k.id='twFontesJa';k.rel='stylesheet';k.href='https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap';document.head.appendChild(k);}
 (function(){var l='';try{l=new URLSearchParams(location.search).get('lang')||localStorage.getItem('brs48cr_lang')||'';}catch(e){}if(l==='ja')twFontesJa();})();</script>
 <link rel="stylesheet" href="./centerrun.css?v=20">
-<link rel="stylesheet" href="./pet.css?v=15">
+<link rel="stylesheet" href="./pet.css?v=16">
 <link rel="stylesheet" href="./perfil.css?v=2">
 <style>
 .lbn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
@@ -177,7 +177,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./hub-polish.css?v=47">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <link rel="stylesheet" href="./tw-tema-cards.css?v=3">
-<script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=7"><'+'/script>');</script>
+<script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=8"><'+'/script>');</script>
 </head>
 <body>
 <header>
@@ -405,16 +405,16 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script src="./pet-sync.js?v=1"></script>
-<script src="./tw-i18n-base.js?v=4"></script>
+<script src="./tw-i18n-base.js?v=5"></script>
 <script>/* Só o idioma escolhido é baixado (o português já vem no próprio site). Fonte: tw-i18n.js → tools/i18n/dividir.js */
 (function(){var l='';try{l=localStorage.getItem('brs48cr_lang')||'';}catch(e){}
-if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=2"><'+'/script>');})();</script>
-<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=7"><'+'/script>');</script>
+if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=3"><'+'/script>');})();</script>
+<script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=8"><'+'/script>');</script>
 <script defer src="./karaoke-room-views.js?v=1"></script>
 <script src="./centerrun.js?v=42"></script>
 <script defer src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=50"></script>
-<script src="./perfil.js?v=35"></script>
+<script src="./pet.js?v=51"></script>
+<script src="./perfil.js?v=36"></script>
 <script src="./gacha.js?v=7"></script>
 <script src="./album-fotos.js?v=8"></script>
 <script src="./album.js?v=9"></script>
@@ -569,7 +569,7 @@ var jornalCarregar=(function(){
 <script src="./hub-novos.js?v=2"></script>
 <script src="./charmaker.js?v=19"></script>
 <script src="./banner.js?v=8"></script>
-<script src="./conta.js?v=14"></script>
+<script src="./conta.js?v=15"></script>
 <script src="./admin-base.js?v=4"></script>
 <script defer src="./vida-cidade.js?v=7"></script>
 <script>/* Visual novo (padrão nos telefones desde 16/11/2026; em todos os aparelhos desde 17/11/2026, pedido do dono):
@@ -580,14 +580,14 @@ var jornalCarregar=(function(){
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=53"><script src="./tw-humor.js?v=10"><'+'/script><script defer src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=8"><'+'/script><script defer src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=68"><'+'/script><script defer src="./tw-presenca.js?v=3"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=54"><script src="./tw-humor.js?v=10"><'+'/script><script defer src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=8"><'+'/script><script defer src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=69"><'+'/script><script defer src="./tw-presenca.js?v=3"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=53';document.head.appendChild(l);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=54';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=10';hm.async=false;document.body.appendChild(hm);
   var vbi=document.createElement('script');vbi.src='./tw-bichos.js?v=2';vbi.async=false;document.body.appendChild(vbi);
   var vb=document.createElement('script');vb.src='./tw-bairro.js?v=8';vb.async=false;document.body.appendChild(vb);
   var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
-  var s=document.createElement('script');s.src='./tw-celular.js?v=68';s.async=false;document.body.appendChild(s);
+  var s=document.createElement('script');s.src='./tw-celular.js?v=69';s.async=false;document.body.appendChild(s);
   var p=document.createElement('script');p.src='./tw-presenca.js?v=3';document.body.appendChild(p);}
 var TX={pt:'📱 Visual de celular',en:'📱 Phone look',es:'📱 Estilo de celular',id:'📱 Tampilan ponsel',th:'📱 หน้าตาแบบมือถือ',ja:'📱 スマホ表示'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;
@@ -1035,7 +1035,7 @@ function twCarregarIdiomaId(){
   if(twIdCarregamento)return twIdCarregamento;
   twIdCarregamento=new Promise(function(resolve,reject){
     var script=document.createElement('script');
-    script.src='./translations/id/preview-data.js?v=7';
+    script.src='./translations/id/preview-data.js?v=8';
     script.onload=function(){twIntegrarDicionariosId()?resolve():reject(new Error('Catálogo ID indisponível'));};
     script.onerror=function(){reject(new Error('Falha ao carregar idioma ID'));};
     document.head.appendChild(script);
@@ -3667,7 +3667,7 @@ applyLang();
 </script>
 <script>twLinkInicializar();</script>
 <script>window.TW_EMAIL_MENSAL_DISPONIVEL=false;</script>
-<script defer src="./tw-windows.js?v=3"></script><script defer src="./tw-acessibilidade.js?v=1"></script><script defer src="./tw-semana.js?v=5"></script><script defer src="./tw-pessoal.js?v=6"></script><script defer src="./tw-comunidade.js?v=2"></script><script defer src="./tw-estreia.js?v=2"></script>
+<script defer src="./tw-windows.js?v=3"></script><script defer src="./tw-acessibilidade.js?v=1"></script><script defer src="./tw-semana.js?v=5"></script><script defer src="./tw-pessoal.js?v=6"></script><script defer src="./tw-comunidade.js?v=2"></script><script defer src="./tw-estreia.js?v=2"></script><script defer src="./tw-conquistas.js?v=1"></script><script defer src="./tw-passatempos.js?v=1"></script>
 <script src="./karaoke-tickets.js?v=2"></script>
 <script>/* Quem abre o site já em outro idioma: alguns textos (rank, itens do Center Run…) eram montados antes de todas as
    traduções entrarem. Depois de tudo carregado, refaz a tela no idioma salvo — o mesmo caminho do botão de idioma. */

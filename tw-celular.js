@@ -194,7 +194,7 @@
   function barraTopo(){
     return '<div class="twc-topo"><div class="twc-topo-in">' +
       '<button type="button" class="twc-eu" data-ir="perfil" aria-label="' + esc(t('perfil') + ': ' + nick()) + '"><canvas class="twc-av" data-av="1" width="96" height="96" aria-hidden="true"></canvas>' +
-      '<span class="twc-eu-txt">' + (rankNome() ? '<small class="twc-lv">' + esc(rankNome()) + '</small>' : '') + '<b>' + esc(nick()) + '</b></span></button>' +
+      (window.TW_CONQ && logado() && TW_CONQ.novidade() ? '<i class="twc-eu-ponto" aria-hidden="true"></i>' : '') + '<span class="twc-eu-txt">' + (rankNome() ? '<small class="twc-lv">' + esc(rankNome()) + '</small>' : '') + '<b>' + esc(nick()) + '</b></span></button>' +
       '<span class="twc-st"><span class="twc-st-ico" aria-hidden="true">' + ico('estrela', 20) + '</span><b id="twcEstrelas">' + esc(estrelas()) + '</b>' +
       '<button type="button" class="twc-st-mais" data-ir="loja" aria-label="' + esc(t('estrelas')) + '">' + ico('mais', 16) + '</button></span>' +
       '<button type="button" class="twc-cfg" data-v="ajustes" aria-label="' + esc(t('ajustes')) + '">' + ico('ajustes', 22) + '</button>' +
@@ -473,6 +473,10 @@
     if(typeof encLer === 'function' && typeof encBtn !== 'undefined'){ var ef = encLer();
       linha(!!ef, 'rosa', 'coracao', esc(thj('enc')), esc(ef ? thj('encOk', {n:typeof encNomes === 'function' ? encNomes(ef) : ef.nick}) : thj('encSub')),
         ef ? '' : '<button type="button" class="twc-hj-bt" data-a="encontro">' + esc(thj('encBt')) + '</button>'); }
+    // Passatempos do dia (tw-passatempos.js): caça-palavras, 5 diferenças e labirinto, ★5 cada
+    if(window.TW_PASSA){ var pf = TW_PASSA.feitos().length;
+      linha(pf >= 3, 'ceu', 'estrela', esc(TW_PASSA.t('tit')), esc(pf >= 3 ? TW_PASSA.t('subOk') : TW_PASSA.t('sub', {f:pf, p:5})),
+        pf >= 3 ? '' : '<button type="button" class="twc-hj-bt" data-twpa="abrir">' + esc(TW_PASSA.t('jogar')) + '</button>'); }
     // Rival do dia do Idol⭐Battle! (battle_status, carregado pelo tw-estreia.js)
     var rv = window.TW_ESTREIA && TW_ESTREIA.rival ? TW_ESTREIA.rival() : null;
     if(rv && typeof window.battleAbrir === 'function')
@@ -514,7 +518,7 @@
       // "Continuar", e de tipos diferentes (jogo, gente, mapa, leitura). A ordem dos tipos gira a cada dia, para a
       // tela não pedir sempre as mesmas coisas; o resto fica no "Ver tudo".
       var cand = [festival, continuar].filter(Boolean).concat(itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }));
-      var tipo = function(h){ return /data-anivcor|data-hjaniv|data-v="trio"|data-a="encontro"/.test(h) ? 'gente' : /data-bairro|data-piloto-bairro/.test(h) ? 'mapa' : /ler-capitulo/.test(h) ? 'leitura' : 'jogo'; };
+      var tipo = function(h){ return /data-anivcor|data-hjaniv|data-v="trio"|data-a="encontro"/.test(h) ? 'gente' : /data-bairro|data-piloto-bairro/.test(h) ? 'mapa' : /ler-capitulo|data-twpa/.test(h) ? 'leitura' : 'jogo'; };
       var giro = ['jogo', 'gente', 'mapa', 'leitura'], dia = Math.floor((Date.now() - 3 * 36e5) / 864e5) % giro.length;
       giro = giro.slice(dia).concat(giro.slice(0, dia));
       var escolha = continuar ? [continuar] : [];   // o "Continuar" retoma algo já começado: fica sempre à vista
@@ -646,7 +650,7 @@
     }).join('');
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
-    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + estreiaHtml() + '</div>' +
+    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + estreiaHtml() + (window.TW_CONQ && logado() ? TW_CONQ.cartaoHtml() : '') + '</div>' +
       '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + (window.TW_SEMANA ? window.TW_SEMANA.html() : '') + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
   }
 
@@ -667,8 +671,9 @@
     if(gac) bs.push(banner('gacha', titulo(gac), tt('1 giro por dia'), tt('Abrir'), 'data-ir="gacha"', alerta(gac) ? '!' : ''));
     // Sem repetir o que já tem porta no Início (Missões, Calendário, Mapa, News, Camarim) nem a engrenagem do topo (Ajustes).
     // Sem repetir dentro do Menu: a TV já é o card do Ranking; o "Hoje", o Calendário e o desejo/VIP ficam no Início.
-    var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['coracao', thj('enc'), 'data-a="encontro"'], ['album', t('album'), 'data-a="album"'],
+    var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['coracao', thj('enc'), 'data-a="encontro"'], ['estrela', window.TW_PASSA ? TW_PASSA.t('tit') : '', 'data-twpa="abrir"'], ['album', t('album'), 'data-a="album"'],
               ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', tf('fichas'), 'data-v="trio"'], ['pata', tt2('tour'), 'data-v="tour"']];
+    at = at.filter(function(a){ return a[1]; });   // atalho de módulo que ainda não carregou fica de fora
     if(window.TW_BAIRRO) at.push(['pin', window.TW_BAIRRO.t('tit'), 'data-bairro="abrir"']);   // Vida no bairro (tw-bairro.js)
     if(window.TW_COMUNIDADE){   // comunidade (tw-comunidade.js): concurso, convite, lembrete do show e app
       var cm = window.TW_COMUNIDADE;
@@ -1813,7 +1818,7 @@
     var el=alvo||document.activeElement, seletor='';
     if(el && cel.contains(el)){
       if(el.id)seletor='#'+CSS.escape(el.id);
-      else ['data-a','data-ir','data-v','data-n','data-estreia','data-pin','data-pin-ir','data-piloto-bairro','data-cald','data-calmes','data-cal-ics','data-cal-cap','data-tw-bairro'].some(function(a){
+      else ['data-a','data-ir','data-v','data-n','data-twpa','data-estreia','data-pin','data-pin-ir','data-piloto-bairro','data-cald','data-calmes','data-cal-ics','data-cal-cap','data-tw-bairro'].some(function(a){
         if(!el.hasAttribute(a))return false;
         seletor='['+a+'="'+CSS.escape(el.getAttribute(a))+'"]';return true;
       });

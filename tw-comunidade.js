@@ -286,7 +286,9 @@
     d.innerHTML = '<button type="button" class="btn alt" data-twk="duo-album">📒 ' + esc(t('duoAlbum')) + '</button>' +
       '<button type="button" class="btn alt" data-twk="concurso">🏆 ' + esc(t('concurso')) + '</button>' +
       (typeof window.studioAbrir === 'function' ? '<button type="button" class="btn alt" data-twk="studio">📸 ' + esc(t('studio')) + '</button>' : '');
-    acoes.parentNode.insertBefore(d, acoes.nextSibling);
+    var destino = document.getElementById('duoAtalhos');
+    if(destino) destino.appendChild(d);
+    else acoes.parentNode.insertBefore(d, acoes.nextSibling);
   }
   function abrirDuoAlbum(){
     var meu = ++pedido;

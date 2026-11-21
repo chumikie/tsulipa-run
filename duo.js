@@ -159,7 +159,7 @@ function duoRotulo(k){
     th:['บันทึกภาพ','อัลบั้มและกิจกรรม','ฉากเพิ่มเติม'],
     id:['Simpan foto','Album dan aktivitas','Adegan lainnya']
   };
-  return (L[typeof lang === 'string' ? lang : 'pt'] || L.pt)[k];
+  return (L[typeof LANG === 'string' ? LANG : 'pt'] || L.pt)[k];
 }
 function duoTexto(){
   $('duoSalvarTitulo').textContent = duoRotulo(0);
@@ -369,3 +369,4 @@ function duoComprar(k, b){
     if(ok){ var it = lojaItem(k); if(it && it[4] === 'duo' && k !== 'duo_cafe'){ DUO_CENAS.forEach(function(c){ if(c[7] === k) duoCena = c[0]; }); duoRegistrar(); } else if(k === 'duo_cafe') duoFundo = 'cafe'; else if(/^fundo_/.test(k)) duoFundo = k.slice(6); else if(/^tema_/.test(k)) duoFundo = k.slice(5); $('duoPresBox').hidden = true; duoPalcoUI(); }
   });
 }
+

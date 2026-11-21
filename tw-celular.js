@@ -795,7 +795,7 @@
     [].slice.call(cel.querySelectorAll('canvas[data-idol]')).forEach(function(cv){
       var av = membroAv(+cv.getAttribute('data-idol')); if(!av || typeof perfDesenharIdol !== 'function') return;
       var x = cv.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height); x.scale(2, 2);
-      try{ perfDesenharIdol(x, 104, 112, av, false, false, 0); }catch(e){}
+      try{ perfDesenharIdol(x, 104, 112, av, false, false, 0, cv.closest('.twc-f2-palco') ? 'inteiro' : null); }catch(e){}
     });
   }
   // parallax: o dedo/mouse (e a inclinação do aparelho, quando o navegador deixa) mexe as camadas de leve
@@ -2210,3 +2210,4 @@
   if(document.readyState !== 'loading') montar(); else document.addEventListener('DOMContentLoaded', montar);
   window.TW_CELULAR = {toast:toast, tutContaChegou:tutContaChegou, txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, rotaPronta:function(){return tutVisto()&&!classico&&(!folha||folha.hidden);}, pontoAtual:pontoAtual, restaurarPonto:restaurarPonto, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
 })();
+

@@ -35,6 +35,8 @@
     destacar:{pt:'📌 Destacar no perfil',en:'📌 Highlight on profile',es:'📌 Destacar en el perfil',id:'📌 Sorot di profil',th:'📌 ไฮไลต์ในโปรไฟล์',ja:'📌 プロフィールにピックアップ'},
     tirar:{pt:'Tirar do destaque',en:'Remove highlight',es:'Quitar de destacadas',id:'Hapus sorotan',th:'เอาออกจากไฮไลต์',ja:'ピックアップから外す'},
     cheio:{pt:'Já são 5 em destaque: tire uma antes.',en:'You already have 5 highlights: remove one first.',es:'Ya hay 5 destacadas: quita una antes.',id:'Sudah 5 sorotan: hapus satu dulu.',th:'มีไฮไลต์ครบ 5 แล้ว: เอาออกก่อนหนึ่งอัน',ja:'もう5個あります。先にひとつ外してね。'},
+    todas:{pt:'Ver todas ({n})',en:'See all ({n})',es:'Ver todas ({n})',id:'Lihat semua ({n})',th:'ดูทั้งหมด ({n})',ja:'すべて見る（{n}）'},
+    menos:{pt:'Mostrar menos',en:'Show less',es:'Mostrar menos',id:'Tampilkan lebih sedikit',th:'แสดงน้อยลง',ja:'たたむ'},
     responder:{pt:'Responder',en:'Reply',es:'Responder',id:'Balas',th:'ตอบกลับ',ja:'返信'},
     erro:{pt:'Não deu para salvar. Tente de novo.',en:"Couldn't save. Try again.",es:'No se pudo guardar. Inténtalo de nuevo.',id:'Gagal menyimpan. Coba lagi.',th:'บันทึกไม่ได้ ลองอีกครั้ง',ja:'保存できませんでした。もう一度試してね。'},
     u_pontos:{pt:'pontos',en:'points',es:'puntos',id:'poin',th:'แต้ม',ja:'点'},
@@ -172,17 +174,34 @@
     if(destPublico[nick]) return pronto(destPublico[nick]);
     rpc('destaques_de', {p_nick:nick}).then(function(r){ if(Array.isArray(r)){ destPublico[nick] = r; pronto(r); } }).catch(function(){});
   }
+  // Estante mais curta: as conquistadas e só as 5 próximas com cadeado; o resto em "Ver todas"
+  function estanteCurta(){
+    var est = document.getElementById('perfIns'); if(!est || est.getAttribute('data-twq-curta')) return;
+    var fechadas = est.querySelectorAll('.perfin:not(.ok)'); if(fechadas.length <= 6) return;
+    est.setAttribute('data-twq-curta', '1');
+    for(var i = 5; i < fechadas.length; i++) fechadas[i].classList.add('twq-oculta');
+    est.insertAdjacentHTML('afterend', '<button type="button" class="twq-todas" data-twq-todas aria-expanded="false">' + esc(t('todas', {n:fechadas.length - 5})) + '</button>');
+  }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('[data-twq-todas]'); if(!b) return;
+    var est = document.getElementById('perfIns'); if(!est) return;
+    var ab = est.classList.toggle('twq-aberta'), n = est.querySelectorAll('.twq-oculta').length;
+    b.setAttribute('aria-expanded', ab); b.textContent = ab ? t('menos') : t('todas', {n:n});
+  });
   function abaPerfil(d, meu){
     if(!meu) return;
+    estanteCurta();
     var p = dados(), box = document.getElementById('perfAbaCorpo'); if(!p || !box) return;
     var v = document.getElementById('twqPerfil'); if(v) v.remove();
     var est = box.querySelector('.perfestconta') || box.querySelector('#perfIns'); if(!est) return;
     var h3 = est.previousElementSibling && est.previousElementSibling.tagName === 'H3' ? est.previousElementSibling : est;
-    var px = proximos(p, null, 3), cp = completo(p);
-    h3.insertAdjacentHTML('afterend', '<div class="twq-perfil" id="twqPerfil"><p class="twq-pts">✦ <b>' + esc(t('pontos', {n:pontos(p.insignias)})) + '</b></p>' +
-      (px.length ? '<h4 class="perfsub">' + esc(t('prox')) + '</h4><ul class="twq-lista">' + px.map(linhaProx).join('') + '</ul>' : '') +
-      (cp && cp.pct < 100 ? '<p class="twq-comp">' + barra(cp.pct, 100) + '<small>' + esc(t('completo', {p:cp.pct})) + ' · ' + esc(t('faltaItem', {i:cp.falta.join(', ')})) + '</small></p>' : '') +
-      (!(p.destaque || []).length ? '<p class="perfdica">📌 ' + esc(t('destDica')) + '</p>' : '') + '</div>');
+    // compacto (o Perfil já é longo): pontos + a conquista mais perto numa linha; o resto só em "ver mais"
+    var px = proximos(p, null, 3), cp = completo(p), um = px[0];
+    h3.insertAdjacentHTML('afterend', '<div class="twq-perfil" id="twqPerfil">' +
+      '<p class="twq-linha"><b class="twq-pts">✦ ' + esc(t('pontos', {n:pontos(p.insignias)})) + '</b>' +
+      (um ? '<span class="twq-um">' + esc(um.emo + ' ' + um.nome) + ' ' + barra(um.atual, um.alvo) + ' <small>' + esc(um.atual + '/' + um.alvo) + '</small></span>' : '') + '</p>' +
+      (px.length > 1 ? '<details class="twq-mais"><summary>' + esc(t('prox')) + ' (' + px.length + ')</summary><ul class="twq-lista">' + px.map(linhaProx).join('') + '</ul></details>' : '') +
+      (!(p.destaque || []).length ? '<p class="twq-comp-l">📌 ' + esc(t('destDica')) + '</p>' : '') + '</div>');
   }
 
   // Ao tocar numa insígnia da estante, a descrição de sempre ganha a barra do próximo nível e, no próprio perfil,

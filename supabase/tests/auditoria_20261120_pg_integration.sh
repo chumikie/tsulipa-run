@@ -33,6 +33,23 @@ db -c "alter table public.duo_log add column if not exists para uuid"
 db -c "create table public.t_album(user_id uuid primary key, n int)"
 db -c "create or replace function public.album_cards() returns json language sql stable as \$\$ select coalesce(json_agg(json_build_object('vezes', 1)), '[]'::json) from generate_series(1, coalesce((select n from public.t_album where user_id = auth.uid()), 0)) \$\$"
 db < "$repo_dir/supabase/migrations/20261121150000_duetos_metas_recorde_semana.sql"
+# o que a produção já tem e a parte 3 (economia) usa
+db <<'SQL'
+alter table public.players add column if not exists visuais text[], add column if not exists bonus_corrida text;
+alter table public.gacha add column if not exists valor text, add column if not exists created_at timestamptz default now();
+create table if not exists public.card_movimentos(user_id uuid, chave text, delta int, quando timestamptz default now());
+create table if not exists private.gacha_po_saldo(user_id uuid primary key, saldo int not null default 0, alterado timestamptz);
+create table if not exists private.gacha_po_log(user_id uuid, requisicao uuid, tipo text, nick text, delta int);
+create table if not exists private.kt_ticket_wallet(player_id uuid primary key, balance int, updated_at timestamptz);
+create table if not exists private.kt_ticket_events(player_id uuid, actor_id uuid, delta int, reason text);
+create or replace function private.cards_qtd(u uuid, k text) returns int language sql stable as $f$
+  select (select count(*) from public.gacha where user_id = u and tipo = 'card' and lower(btrim(valor)) = k)::int
+       + coalesce((select sum(delta) from public.card_movimentos where user_id = u and chave = k), 0)::int $f$;
+create or replace function public.gacha_card(n text) returns json language sql stable as $f$ select json_build_object('nick', n) $f$;
+-- o esboço do setup devolvia só o preço; a produção devolve (preco, pontos)
+drop function if exists public.visual_preco(text);
+SQL
+db < "$repo_dir/supabase/migrations/20261121180000_economia_e_estreia.sql"
 
 # 1) ranking antigo fechado para leitura direta
 [[ "$(db -c "select has_table_privilege('anon','public.leaderboard','select')")" == f ]] || falha 'anon ainda lê leaderboard'
@@ -184,3 +201,46 @@ db -c "insert into private.sora_history(player_id, score, finished_at) values ('
 [[ "$(como "$a" "select (public.meu_recorde_semana()->>'run') || '/' || (public.meu_recorde_semana()->>'sora')")" == 900/321 ]] || falha 'recorde da semana'
 [[ "$(db -c "set role anon; select has_function_privilege('anon','public.meu_recorde_semana()','execute')")" == f ]] || falha 'visitante lê recorde'
 echo 'melhorias 21/11/2026 (parte 2): duetos, metas e recorde da semana verificados'
+
+# ── 21/11/2026 parte 3: economia e começo do jogo ──
+n="00000000-0000-4000-8000-0000000000e1"
+db -c "insert into public.players(id, nick, stars, created_at, visuais) values ('$n', 'Estreante', 0, now(), '{}')"
+[[ "$(como "$n" "select public.kit_estreia_resgatar('roupa_rock')->>'erro'")" == item ]] || falha 'kit aceitou item caro'
+[[ "$(como "$n" "select public.kit_estreia_resgatar('det_tulipa')->>'premio'")" == 100 ]] || falha 'kit de estreia'
+[[ "$(db -c "select stars || ':' || ('det_tulipa' = any(visuais)) from public.players where id='$n'")" == '100:true' ]] || falha 'kit sem estrelas ou item'
+[[ "$(como "$n" "select public.kit_estreia_resgatar('det_coelho')->>'erro'")" == feito ]] || falha 'kit duas vezes'
+[[ "$(como "$n" "select public.trilha_estado()->>'ativa'")" == true ]] || falha 'trilha inativa para conta nova'
+[[ "$(como "$n" "select public.trilha_resgatar('gacha')->>'erro'")" == falta ]] || falha 'trilha pagou passo não feito'
+db -c "insert into public.gacha(user_id, dia, tipo, valor) values ('$n', current_date - 1, 'estrelas', '5')"
+[[ "$(como "$n" "select public.trilha_resgatar('gacha')->>'premio'")" == 20 ]] || falha 'passo do gacha'
+db -c "insert into public.star_log(user_id, delta, reason) values ('$n', 50, 'corrida'), ('$n', 9, 'missao'), ('$n', -50, 'visual:fundo_oshi'); insert into public.duo_log(de, para, dia) values ('$n', '$a', current_date)"
+for ps in corrida duo compra; do como "$n" "select public.trilha_resgatar('$ps')" >/dev/null; done
+r="$(como "$n" "select public.trilha_resgatar('missao')")"
+[[ "$(echo "$r" | grep -o '"fim" : true\|"fim":true')" != "" ]] || falha "trilha sem bônus final: $r"
+[[ "$(db -c "select 'trilha' = any(insignias_extra) from public.players where id='$n'")" == t ]] || falha 'insígnia da trilha'
+[[ "$(db -c "select sum(delta) from public.star_log where user_id='$n' and reason='trilha_estreia'")" == 140 ]] || falha 'total da trilha (5×20 + 40)'
+[[ "$(como "$b" "select public.trilha_resgatar('corrida')->>'erro'")" == prazo ]] || falha 'trilha para conta antiga'
+# primeiro resultado do dia nos outros jogos
+db -c "insert into private.sora_history(player_id, score, finished_at) values ('$n', 120, now()); insert into private.cafe_resultados(user_id, dia) values ('$n', (now() at time zone 'America/Sao_Paulo')::date)"
+[[ "$(como "$n" "select json_array_length(public.bonus_jogos_dia()->'pagos')")" == 2 ]] || falha 'bônus do dia (Sora e Café)'
+[[ "$(como "$n" "select json_array_length(public.bonus_jogos_dia()->'pagos')")" == 0 ]] || falha 'bônus do dia pago duas vezes'
+# promoção da semana: 30% só na roupa da semana; comprar_visual usa o mesmo preço
+pk="$(db -c "select private.promo_item(public.hoje_br())")"
+[[ "$(db -c "select (select preco from public.visual_preco('$pk')) * 10 = round((select preco from private.visual_preco_base('$pk')) * 7)")" == t ]] || falha "promoção de $pk"
+[[ "$(db -c "select preco from public.visual_preco('fundo_oshi')")" == 60 ]] || falha 'preço normal mudou'
+[[ "$(db -c "set role anon; select (public.promo_semana()->>'desconto')")" == 30 ]] || falha 'visitante não vê a promoção'
+# gacha: começo garantido, card novo primeiro, garantia e pó 3
+db -c "update public.players set avatar = '{\"c\":{}}' where id <> '$n'"
+g="00000000-0000-4000-8000-0000000000e2"
+db -c "insert into public.players(id, nick, stars, created_at, avatar) values ('$g', 'Giradora', 0, now(), '{\"c\":{}}')"
+for d in 3 2 1; do db -c "set request.jwt.claim.sub='$g'; select public.gacha_girar()" >/dev/null; db -c "update public.gacha set dia = dia - $d where user_id='$g' and dia = public.hoje_br()"; done
+[[ "$(db -c "select count(*) filter (where tipo='card') || '/' || count(distinct lower(valor)) filter (where tipo='card') from public.gacha where user_id='$g'")" == 3/3 ]] || falha 'começo garantido com 3 Idols diferentes'
+db -c "insert into public.gacha(user_id, dia, tipo, valor) values ('$g', current_date - 30, 'estrelas', '5')"
+db -c "update public.gacha g set dia = current_date - 40 - x.n::int from (select ctid c, row_number() over () n from public.gacha where user_id='$g' and tipo='card') x where g.ctid = x.c"
+db -c "insert into public.gacha(user_id, dia, tipo, valor) values ('$g', current_date - 3, 'estrelas', '5'), ('$g', current_date - 2, 'nada', '1'), ('$g', current_date - 1, 'estrelas', '7')"
+[[ "$(como "$g" "select public.gacha_girar()->>'tipo'")" == card ]] || falha 'garantia depois de 3 giros sem card'
+db -c "insert into private.gacha_po_saldo(user_id, saldo) values ('$g', 3)"
+faltando="$(como "$g" "select public.gacha_po_status()->'faltando'->0->>'nick'")"
+[[ "$(como "$g" "select public.gacha_po_status()->>'custo_troca'")" == 3 ]] || falha 'custo do pó'
+[[ "$(como "$g" "select public.gacha_resgatar_card('$faltando', gen_random_uuid())->>'po'")" == 0 ]] || falha 'troca de 3 pós'
+echo 'melhorias 21/11/2026 (parte 3): economia, estreia e gacha verificados'

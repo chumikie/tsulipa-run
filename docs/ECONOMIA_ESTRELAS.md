@@ -73,3 +73,11 @@ Migração `supabase/migrations/20261121150000_duetos_metas_recorde_semana.sql` 
 - **Álbum de duetos (Moon⭐Duo!):** 3, 6, 10 e 15 parceiros de cena diferentes pagam ★10, ★20, ★30 e ★50, uma vez cada (★110 no total, para sempre).
 - **Metas do álbum de Idols:** 5, 15, 30 e 50 Idols pagam ★10, ★25, ★40 e ★60, uma vez cada (★135 no total, para sempre).
 - **Recorde da semana:** só leitura (`meu_recorde_semana`), sem prêmio novo.
+
+### Parte 3 — economia e começo do jogo (21/11/2026)
+Migração `supabase/migrations/20261121180000_economia_e_estreia.sql` (ainda não aplicada). Diagnóstico de 30 dias: 76% das estrelas vinham do Center⭐Run!, 12 de 20 contas sem nenhum item, conta nova com ★0, só 8 de 20 seguiam depois do 7º dia.
+- **Kit de estreia:** ★100 + 1 item grátis (detalhes, chapéu, expressões, fundos baratos), uma vez por conta — também para quem já joga (até ★2.000 no total para as 20 contas atuais).
+- **Trilha da primeira semana:** contas com até 14 dias; corrida, giro do gacha, foto no Duo, compra e missão valem ★20 cada; completar dá +★40 e a insígnia `trilha` (★140 no total, uma vez).
+- **Primeiro resultado do dia** no Sora⭐Jump!, Happy⭐Cafe!, Handshake⭐Event! e Idol⭐Battle!: ★15 cada (até +★60/dia para quem joga os quatro).
+- **Promoção da semana:** uma roupa fora de temporada com 30% de desconto, em rodízio de 12 roupas (`private.promo_item`). Preços-base em `private.visual_preco_base`.
+- **Gacha:** 3 primeiros giros = card; 3 giros seguidos sem card → o próximo é card; card de Idol que falta enquanto faltarem 3+; pó: 3 repetidos = 1 card (antes 5).

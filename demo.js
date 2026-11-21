@@ -455,7 +455,7 @@
       /* ---- Pó de estrela do Gacha (20261113_gacha_po_garantia.sql) ---- */
       if(n === 'gacha_po_status' || n === 'gacha_converter_repetido' || n === 'gacha_resgatar_card'){
         album();
-        if(n === 'gacha_po_status') return { ok:true, po:D.po, custo_troca:5,
+        if(n === 'gacha_po_status') return { ok:true, po:D.po, custo_troca:3,
           repetidos:Object.keys(D.album).filter(function(k){ return D.album[k] >= 2; }).sort().map(function(k){ return { nick:k, vezes:D.album[k] }; }),
           faltando:idols().map(function(x){ return x.nick; }).filter(function(k){ return !(D.album[k] > 0); }).sort().slice(0, 80).map(function(k){ return { nick:k }; }) };
         if(!a.p_nick || !a.p_requisicao) return { ok:false, erro:'parametros' };

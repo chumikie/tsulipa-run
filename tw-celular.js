@@ -652,6 +652,7 @@
     if(window.TW_COMUNIDADE){   // comunidade (tw-comunidade.js): concurso, convite, lembrete do show e app
       var cm = window.TW_COMUNIDADE;
       at.push(['trofeu', cm.t('concurso'), 'data-twk="concurso"']);
+      if(window.TW_ESTREIA && TW_ESTREIA.trilhaAtiva()) at.push(['estrela', TW_ESTREIA.t('trilha'), 'data-twe="trilha"']);   // primeira semana (tw-estreia.js)
       if(logado()) at.push(['trio', cm.t('convite'), 'data-twk="convite"']);
       at.push(['cal', cm.t('lembrete'), 'data-twk="lembrete"']);
       if(cm.podeInstalar()) at.push(['estrela', cm.t('instalar'), 'data-twk="instalar"']);

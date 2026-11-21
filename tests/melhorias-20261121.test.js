@@ -115,3 +115,29 @@ test('parte 2: site — Duo, álbum, corrida, perfil e retrospectiva', () => {
   const i18n = ler('tw-i18n.js');
   assert.equal((i18n.match(/"Faltam \{n\} Idols para a próxima meta":/g) || []).length, 4, 'EN/ES/TH/JA');
 });
+
+test('parte 3: economia e começo do jogo no banco', () => {
+  const sql = ler('supabase/migrations/20261121180000_economia_e_estreia.sql');
+  assert.match(sql, /'kit_estreia'\)/);
+  assert.match(sql, /interval '14 days'/, 'trilha só para conta nova');
+  assert.match(sql, /15 \* cardinality\(v_pagos\)/, '★15 por jogo no primeiro resultado do dia');
+  assert.match(sql, /round\(b\.preco \* 0\.7\)/, 'promoção de 30%');
+  assert.match(sql, /if v_giros<3 or v_seca then r:=0; end if;/, 'começo garantido e garantia');
+  assert.match(sql, /if v_faltam>=3 then/, 'card novo primeiro');
+  assert.match(sql, /saldo>=3 returning saldo/, 'pó: 3 repetidos');
+  assert.match(sql, /'custo_troca',3/);
+  assert.match(ler('supabase/tests/auditoria_20261120_pg_integration.sh'), /20261121180000_economia_e_estreia\.sql/);
+});
+
+test('parte 3: site — kit, trilha, bônus, promoção, loja e pó', () => {
+  const src = ler('tw-estreia.js');
+  for (const r of ['kit_estreia_estado', 'kit_estreia_resgatar', 'trilha_estado', 'trilha_resgatar', 'bonus_jogos_dia', 'promo_semana'])
+    assert.ok(src.includes(`'${r}'`), r);
+  assert.match(index, /<script defer src="\.\/tw-estreia\.js\?v=\d+"><\/script>/);
+  assert.match(ler('conta.js'), /window\.TW_ESTREIA\.contaMudou\(\)/);
+  assert.match(ler('perfil.js'), /twPrecoLoja\(it\[0\], it\[3\]\)/);
+  assert.match(ler('perfil.js'), /\['trilha', +'🌱', 'Primeira semana'/);
+  const po = ler('gacha-po.js');
+  assert.doesNotMatch(po, /5 pós|5 dust|5 polvos|5 debu|ผง 5|5ダスト/);
+  assert.match(po, /custo_troca \|\| 3/);
+});

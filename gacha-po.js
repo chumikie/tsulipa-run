@@ -1,17 +1,17 @@
 /* TsuLiPa⭐World — Pó de estrela do Star⭐Gacha! (dentro do Álbum).
-   1 cópia repetida = 1 pó · 5 pós = 1 card que falta. Regras e segurança no servidor:
+   1 cópia repetida = 1 pó · 3 pós = 1 card que falta. Regras e segurança no servidor:
    supabase/sql/aplicado/20261113_gacha_po_garantia.sql (gacha_po_status,
    gacha_converter_repetido, gacha_resgatar_card).
    DESLIGADO POR CONSTRUÇÃO: a seção só aparece quando gacha_po_status() existe no banco e
    responde ok. Antes do SQL ser aplicado o Álbum continua exatamente igual.
    O navegador nunca decide quantidades: só pede, e mostra o que o servidor devolveu. */
 var GPO_TR = {
-  pt:['Pó de estrela','1 repetido = 1 pó · 5 pós = 1 card que falta','Converter repetidos','Converter 1 cópia de {n} em 1 pó? A primeira cópia fica no álbum.','Converter','Cancelar','Resgatar um card que falta','Resgatar o card de {n} por 5 pós?','Resgatar','Sem repetidos para converter.','Faltam {n} pós para resgatar.','+1 pó de estrela!','{n} chegou ao seu álbum!','Não deu certo. Tente de novo.','Seu álbum está completo!'],
-  en:['Star dust','1 duplicate = 1 dust · 5 dust = 1 missing card','Convert duplicates','Turn 1 copy of {n} into 1 dust? Your first copy stays in the album.','Convert','Cancel','Get a missing card','Get {n}\'s card for 5 dust?','Get card','No duplicates to convert.','{n} more dust to get a card.','+1 star dust!','{n} joined your album!','Something went wrong. Try again.','Your album is complete!'],
-  es:['Polvo de estrella','1 repetido = 1 polvo · 5 polvos = 1 card que falta','Convertir repetidos','¿Convertir 1 copia de {n} en 1 polvo? La primera copia se queda en el álbum.','Convertir','Cancelar','Conseguir un card que falta','¿Conseguir el card de {n} por 5 polvos?','Conseguir','No hay repetidos para convertir.','Faltan {n} polvos para conseguir un card.','¡+1 polvo de estrella!','¡{n} llegó a tu álbum!','No funcionó. Inténtalo de nuevo.','¡Tu álbum está completo!'],
-  id:['Debu bintang','1 duplikat = 1 debu · 5 debu = 1 kartu yang kurang','Tukar duplikat','Ubah 1 salinan {n} jadi 1 debu? Salinan pertama tetap di album.','Ubah','Batal','Ambil kartu yang kurang','Ambil kartu {n} dengan 5 debu?','Ambil','Tidak ada duplikat untuk ditukar.','Kurang {n} debu untuk mengambil kartu.','+1 debu bintang!','{n} masuk ke albummu!','Gagal. Coba lagi.','Albummu sudah lengkap!'],
-  th:['ผงดาว','การ์ดซ้ำ 1 ใบ = ผง 1 · ผง 5 = การ์ดที่ยังขาด 1 ใบ','แลกการ์ดซ้ำ','แลกการ์ด {n} 1 ใบเป็นผง 1? ใบแรกยังอยู่ในอัลบั้ม','แลก','ยกเลิก','รับการ์ดที่ยังขาด','รับการ์ดของ {n} ด้วยผง 5?','รับการ์ด','ไม่มีการ์ดซ้ำให้แลก','ขาดผงอีก {n} เพื่อรับการ์ด','+1 ผงดาว!','{n} เข้ามาในอัลบั้มแล้ว!','ไม่สำเร็จ ลองอีกครั้ง','อัลบั้มของคุณครบแล้ว!'],
-  ja:['スターダスト','ダブり1枚 = 1ダスト · 5ダスト = 足りないカード1枚','ダブりを変換','{n}のカード1枚を1ダストに変換しますか？最初の1枚はアルバムに残ります。','変換する','キャンセル','足りないカードをもらう','5ダストで{n}のカードをもらいますか？','もらう','変換できるダブりはありません。','カードまであと{n}ダスト。','スターダスト+1！','{n}がアルバムに加わりました！','うまくいきませんでした。もう一度試してね。','アルバムがコンプリート！']
+  pt:['Pó de estrela','1 repetido = 1 pó · 3 pós = 1 card que falta','Converter repetidos','Converter 1 cópia de {n} em 1 pó? A primeira cópia fica no álbum.','Converter','Cancelar','Resgatar um card que falta','Resgatar o card de {n} por 5 pós?','Resgatar','Sem repetidos para converter.','Faltam {n} pós para resgatar.','+1 pó de estrela!','{n} chegou ao seu álbum!','Não deu certo. Tente de novo.','Seu álbum está completo!'],
+  en:['Star dust','1 duplicate = 1 dust · 3 dust = 1 missing card','Convert duplicates','Turn 1 copy of {n} into 1 dust? Your first copy stays in the album.','Convert','Cancel','Get a missing card','Get {n}\'s card for 5 dust?','Get card','No duplicates to convert.','{n} more dust to get a card.','+1 star dust!','{n} joined your album!','Something went wrong. Try again.','Your album is complete!'],
+  es:['Polvo de estrella','1 repetido = 1 polvo · 3 polvos = 1 card que falta','Convertir repetidos','¿Convertir 1 copia de {n} en 1 polvo? La primera copia se queda en el álbum.','Convertir','Cancelar','Conseguir un card que falta','¿Conseguir el card de {n} por 5 polvos?','Conseguir','No hay repetidos para convertir.','Faltan {n} polvos para conseguir un card.','¡+1 polvo de estrella!','¡{n} llegó a tu álbum!','No funcionó. Inténtalo de nuevo.','¡Tu álbum está completo!'],
+  id:['Debu bintang','1 duplikat = 1 debu · 3 debu = 1 kartu yang kurang','Tukar duplikat','Ubah 1 salinan {n} jadi 1 debu? Salinan pertama tetap di album.','Ubah','Batal','Ambil kartu yang kurang','Ambil kartu {n} dengan 5 debu?','Ambil','Tidak ada duplikat untuk ditukar.','Kurang {n} debu untuk mengambil kartu.','+1 debu bintang!','{n} masuk ke albummu!','Gagal. Coba lagi.','Albummu sudah lengkap!'],
+  th:['ผงดาว','การ์ดซ้ำ 1 ใบ = ผง 1 · ผง 3 = การ์ดที่ยังขาด 1 ใบ','แลกการ์ดซ้ำ','แลกการ์ด {n} 1 ใบเป็นผง 1? ใบแรกยังอยู่ในอัลบั้ม','แลก','ยกเลิก','รับการ์ดที่ยังขาด','รับการ์ดของ {n} ด้วยผง 5?','รับการ์ด','ไม่มีการ์ดซ้ำให้แลก','ขาดผงอีก {n} เพื่อรับการ์ด','+1 ผงดาว!','{n} เข้ามาในอัลบั้มแล้ว!','ไม่สำเร็จ ลองอีกครั้ง','อัลบั้มของคุณครบแล้ว!'],
+  ja:['スターダスト','ダブり1枚 = 1ダスト · 3ダスト = 足りないカード1枚','ダブりを変換','{n}のカード1枚を1ダストに変換しますか？最初の1枚はアルバムに残ります。','変換する','キャンセル','足りないカードをもらう','5ダストで{n}のカードをもらいますか？','もらう','変換できるダブりはありません。','カードまであと{n}ダスト。','スターダスト+1！','{n}がアルバムに加わりました！','うまくいきませんでした。もう一度試してね。','アルバムがコンプリート！']
 };
 function gpoT(i, n){
   var l = typeof LANG === 'string' && GPO_TR[LANG] ? LANG : 'pt';
@@ -32,7 +32,7 @@ function gpoCarregar(){
 }
 function gpoHtml(){
   var st = gpoStatus; if(!st) return '';
-  var po = Math.max(0, +st.po || 0), custo = Math.max(1, +st.custo_troca || 5);
+  var po = Math.max(0, +st.po || 0), custo = Math.max(1, +st.custo_troca || 3);
   var rep = Array.isArray(st.repetidos) ? st.repetidos : [], falta = Array.isArray(st.faltando) ? st.faltando : [];
   var dis = gpoBusy ? ' disabled' : '';
   var h = '<section class="gpo" aria-live="polite"><h3>✨ ' + escHtml(gpoT(0)) + ': <b>' + po + '</b></h3><p class="gpoexp">' + escHtml(gpoT(1)) + '</p>';
@@ -79,7 +79,7 @@ function gpoEnviar(){
     }
     var e = r && r.erro;
     if(e !== 'parametros' && e !== 'sem_conta') gpoPend = null;   // falha definitiva: limpa e recarrega a lista
-    gpoMsg = e === 'po_insuficiente' ? gpoT(10, Math.max(1, (+gpoStatus.custo_troca || 5) - (+gpoStatus.po || 0))) : gpoT(13);
+    gpoMsg = e === 'po_insuficiente' ? gpoT(10, Math.max(1, (+gpoStatus.custo_troca || 3) - (+gpoStatus.po || 0))) : gpoT(13);
   }).catch(function(){ gpoMsg = gpoT(13); })            // rede: mantém o pedido (mesma requisição) para tentar de novo
     .then(function(){ gpoBusy = false; return gpoCarregar(); })
     .then(function(){ if(typeof albumUI === 'function') albumUI(); });

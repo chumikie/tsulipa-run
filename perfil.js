@@ -32,6 +32,7 @@ var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, c
   ['carteiro', '💌', 'Carteiro',         'Deixou 10 recados'],
   ['convite',  '🎉', 'Abre-alas',        'Trouxe uma pessoa nova para o TsuLiPa World'],
   ['look_semana', '📸', 'Look da semana', 'Venceu o Concurso de visual da semana'],
+  ['trilha',   '🌱', 'Primeira semana',  'Completou os cinco passos da primeira semana'],
   ['amizade',  '🤝', 'Amizade',          'Deu 10 corações'],
   ['duo',      '🌙', 'Moon⭐Duo!',        'Fez 5 cenas no Moon⭐Duo!'],
   ['guarda',   '👗', 'Guarda-roupa completo', 'Comprou todas as roupas fixas da lojinha'],
@@ -810,8 +811,12 @@ function perfLojaUI(){
   perfMiniaturasLiberar(box);
   box.innerHTML = lojaL.map(function(it){
     var dono = perfLojaDono().indexOf(it[0]) >= 0, veste = CU.out === it[0], prov = perfProva === it[0];
+    // 21/11/2026: promoção da semana (tw-estreia.js) e quanto falta, em estrelas e corridas
+    var preco = typeof twPrecoLoja === 'function' ? twPrecoLoja(it[0], it[3]) : it[3], promo = preco < it[3];
+    var falta = !dono && starT < preco && typeof twFaltaTxt === 'function' ? '<small class="perffalta">' + escHtml(twFaltaTxt(preco)) + '</small>' : '';
     var acao = veste ? '<em class="ok">✓ ' + escHtml(tr('Vestindo')) + '</em>' : dono ? '<button type="button" class="btn alt" data-vestir="' + it[0] + '">' + escHtml(tr('Vestir')) + '</button>'
-      : '<button type="button" class="btn" data-comprar="roupa_' + it[0] + '"' + (starT < it[3] ? ' disabled' : '') + '>★' + it[3] + '</button>';
+      : '<button type="button" class="btn" data-comprar="roupa_' + it[0] + '"' + (starT < preco ? ' disabled' : '') + '>' + (promo ? '<s>★' + it[3] + '</s> ' : '') + '★' + preco + '</button>' + falta;
+    if(promo && !dono) acao = '<small class="perfpromo">🏷️ −30%</small>' + acao;
     var tag = it[4] && !dono && typeof temaAteTxt === 'function' ? '<small class="perftemp">🗓️ ' + escHtml(tr('Só até')) + ' ' + temaAteTxt() + '</small>' : it[4] ? '<small class="perftemp">🗓️ ' + escHtml(tr('Da temporada')) + '</small>' : '';
     var provar=typeof shopOv!=='undefined' && !shopOv.hidden ?
       '<button type="button" class="btn alt" data-provar="'+it[0]+'" aria-pressed="'+prov+'">'+

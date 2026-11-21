@@ -10,13 +10,19 @@ const sora=fs.readFileSync(path.join(root,'sora-jump.html'),'utf8');
 const original=fs.readFileSync(path.join(root,'tw-avatar-items.js'),'utf8');
 
 for(const [name,html] of [['Center Run / Perfil',index],['Karaoke',karaoke]]){
- assert(html.includes('<script src="./tw-avatar-items.js?v=3"></script>'),name+': carregar os desenhos compartilhados');
+ assert(html.includes('<script src="./tw-avatar-items.js?v=4"></script>'),name+': carregar os desenhos compartilhados');
  assert(html.includes("if(hacc==='capitao') TWAvatarItems.capitao(g,x,y)"),name+': desenhar chapéu somente quando selecionado');
  assert(html.includes("if(A==='estrela') TWAvatarItems.estrela(g,x,y)"),name+': desenhar estrela somente quando selecionada');
  for(const key of ['boina','presilhas','fones','coala','hibisco','sakura']){
   assert(html.includes("'"+key+"'"),name+': preservar '+key);
  }
 }
+// Coroa de Tulipas, Chapéu de Palha e Torrada: o mesmo desenho compartilhado nos três jogos
+for(const [name,html] of [['Center Run',require('node:fs').readFileSync(path.join(root,'centerrun.js'),'utf8')],['Karaoke',karaoke],['Sora',sora]]){
+ for(const call of ["if(d==='tulipa') TWAvatarItems.tulipa(g,c,x,y)","if(hacc==='palha') TWAvatarItems.palha(g,x,y)","if(d==='torrada') TWAvatarItems.torrada(g,x,y)"])
+  assert(html.includes(call),name+': '+call);
+}
+assert(sora.includes('<script src="./tw-avatar-items.js?v=4"></script>'),'Sora: carregar os desenhos compartilhados');
 assert(index.includes('value="capitao" data-r="15000"'),'chapéu liberado no rank Capitão (15.000)');
 assert(index.includes("['estrela','Estrela',RANKS[8][0],8]"),'estrela liberada em Solo Center (10.000)');
 assert(index.includes("accSel = typeof av.a === 'string' ? av.a : ''"),'Perfil usa acessório salvo do avatar');
@@ -48,7 +54,7 @@ assert(calls.some(c=>c[0]==='createRadialGradient'),'estrela mantém sombreado o
 
  // Sora Jump's independent renderer must also display the shared Captain cap
  // and Star clip without replacing its existing accessories.
- assert(sora.includes('<script src="./tw-avatar-items.js?v=3"></script>'),'Sora Jump loads the shared avatar items');
+ assert(sora.includes('<script src="./tw-avatar-items.js?v=4"></script>'),'Sora Jump loads the shared avatar items');
  const soraDrawStart=sora.indexOf('function drawChar(c,x,y,run,expr,isPartner){');
  const soraDrawEnd=sora.indexOf('\nfunction ',soraDrawStart+20);
  assert(soraDrawStart>=0&&soraDrawEnd>soraDrawStart,'Sora Jump drawChar renderer exists for avatar items');

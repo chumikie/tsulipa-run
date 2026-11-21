@@ -19,7 +19,7 @@
 <script src="./tw-nitidez.js?v=9"></script>
 <script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
-<script src="./tw-avatar-items.js?v=3"></script>
+<script src="./tw-avatar-items.js?v=4"></script>
 <script src="./tw-avatar-hair.js?v=14"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time!, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
@@ -901,6 +901,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   TWAvatarHair.bicolor(g,c,x,y,b);
 
   if(c.streak)TWAvatarHair.mecha(g,c,x,y,f);
+  if(d==='tulipa') TWAvatarItems.tulipa(g,c,x,y);
 
  // Brilho (iluminação) do cabelo em TODOS os personagens e cortes de cabelo!
   g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();
@@ -942,6 +943,7 @@ if(hacc==='coala'){
     g.fillStyle='#0284c7'; g.beginPath(); g.arc(x+15, y-1, 1.8, 0, 7); g.fill(); // Nó central
   }
 
+  if(hacc==='palha') TWAvatarItems.palha(g,x,y);
   if(hacc==='capitao') TWAvatarItems.capitao(g,x,y);
   if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto.enfeite)TWAvatarRosto.enfeite(g,c,x,y,hacc);   // Arco estelar
   if(A==='estrela') TWAvatarItems.estrela(g,x,y);
@@ -978,6 +980,7 @@ if(hacc==='coala'){
 
   function bochechaPadrao(){g.fillStyle='rgba(255,111,181,.5)';g.fillRect(x+7,y+22,4,2);g.fillRect(x+21,y+22,4,2);}
   if(typeof TWAvatarRosto!=='undefined'){TWAvatarRosto.sobrancelha(g,c,x,y,expr);TWAvatarRosto.bochecha(g,c,x,y,bochechaPadrao);}else bochechaPadrao();   // bochecha à escolha (tw-avatar-rosto.js)
+  if(d==='torrada') TWAvatarItems.torrada(g,x,y);
 
 	if(c.gl){
   g.strokeStyle='#222'; g.lineWidth=1.2; g.beginPath();

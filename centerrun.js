@@ -587,18 +587,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   
   if(c.streak)TWAvatarHair.mecha(g,c,x,y,f);
 
-  if(d==='tulipa'){ // guirlanda mística: ramos, folhas ovais e tulipas de pétalas arredondadas
-    var tc=['#9b30d9','#b6ff3b','#4169e1',/^#[0-9a-f]{6}$/i.test(c.luz||'')?c.luz:'#ff6fb5'];
-    g.strokeStyle='#3b9d70';g.lineWidth=1.25;g.beginPath();g.moveTo(x+2,y+8);g.bezierCurveTo(x+7,y-2,x+23,y-2,x+28,y+8);g.stroke();
-    for(var tf=0;tf<4;tf++){
-      var fx=x+5.5+tf*6.3,fy=y+2.8-Math.sin(tf*Math.PI/3)*2;
-      g.fillStyle='#52b978';E(fx-3.5,fy+2.8,2.6,1.25,-.55);E(fx+3.5,fy+2.8,2.6,1.25,.55);
-      g.strokeStyle='#32875c';g.lineWidth=.7;g.beginPath();g.moveTo(fx,fy+5);g.lineTo(fx,fy);g.stroke();
-      g.fillStyle=tc[tf];g.beginPath();g.moveTo(fx-3,fy+1.5);g.bezierCurveTo(fx-4.3,fy-3.5,fx-1.8,fy-4.3,fx,fy-1.8);g.bezierCurveTo(fx+1.8,fy-4.3,fx+4.3,fy-3.5,fx+3,fy+1.5);g.quadraticCurveTo(fx,fy+4.6,fx-3,fy+1.5);g.fill();
-      g.fillStyle='rgba(255,255,255,.65)';E(fx-.9,fy-.7,.75,1.05,-.4);
-    }
-    g.fillStyle='#fff4b1';E(x+15,y-5.5,.9,.9);E(x+2,y+3,.65,.65);E(x+28,y+3,.65,.65);
-  }
+  if(d==='tulipa') TWAvatarItems.tulipa(g,c,x,y);
 
  // Brilho (iluminação) do cabelo em TODOS os personagens e cortes de cabelo!
   g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();
@@ -608,16 +597,7 @@ function drawChar(c,x,y,run,expr,isPartner){
     g.fillStyle='#e02a4a';g.beginPath();g.ellipse(x+16.2,y+3.2,12.8,4.9,-.16,0,7);g.fill();
     g.fillStyle='rgba(255,255,255,.26)';g.beginPath();g.ellipse(x+11.8,y+1.4,4.2,1.2,-.22,0,7);g.fill();
     g.fillStyle='#2a1a1a';g.beginPath();g.ellipse(x+16.2,y-1.9,1.1,1.7,.15,0,7);g.fill();}
-  if(hacc==='palha'){ // chapéu de palha que veste a cabeça: copa cobrindo o topo, aba na altura da testa e fita TsuLiPa
-    g.fillStyle='#e7bf74';g.beginPath();g.ellipse(x+15,y+7.4,16.6,3.2,-.05,0,7);g.fill();                      // aba (parte de trás)
-    g.fillStyle='#f7dc9b';g.beginPath();g.moveTo(x+4.6,y+7);g.quadraticCurveTo(x+4.2,y-3.6,x+15,y-4);g.quadraticCurveTo(x+25.8,y-3.6,x+25.4,y+7);g.closePath();g.fill();   // copa
-    g.strokeStyle='rgba(177,130,59,.4)';g.lineWidth=.5;g.beginPath();g.moveTo(x+7,y-.4);g.quadraticCurveTo(x+15,y-2.6,x+23,y-.4);g.moveTo(x+5.6,y+2.2);g.quadraticCurveTo(x+15,y+.4,x+24.4,y+2.2);g.stroke();   // trama
-    g.fillStyle='#9b30d9';g.fillRect(x+4.9,y+4,20.2,2);g.fillStyle='#b6ff3b';g.fillRect(x+12,y+4,3,2);g.fillStyle='#4169e1';g.fillRect(x+16,y+4,3,2);   // fita
-    g.fillStyle='#f9df9d';g.beginPath();g.ellipse(x+15,y+7.6,16,2.3,-.05,0,7);g.fill();                         // aba (frente)
-    g.strokeStyle='rgba(172,121,55,.5)';g.lineWidth=.6;g.beginPath();g.ellipse(x+15,y+7.6,16,2.3,-.05,0,7);g.stroke();
-    g.fillStyle='rgba(255,255,255,.3)';g.beginPath();g.ellipse(x+10,y-.6,3.6,1.1,-.3,0,7);g.fill();             // brilho da copa
-    g.fillStyle='#9b30d9';g.beginPath();g.ellipse(x+22.6,y+5,1.9,1.5,0,0,7);g.fill();g.fillStyle='#fff3b2';g.beginPath();g.ellipse(x+22.6,y+5,.7,.7,0,0,7);g.fill();   // florzinha
-  }
+  if(hacc==='palha') TWAvatarItems.palha(g,x,y);
   if(hacc==='presilhas'){g.strokeStyle='#ff3d5e';g.lineWidth=1.5;g.beginPath();g.moveTo(x+7,y+7);g.lineTo(x+11,y+11);g.moveTo(x+11,y+7);g.lineTo(x+7,y+11);g.stroke();g.strokeStyle='#4dd8ff';g.beginPath();g.moveTo(x+9,y+5);g.lineTo(x+13,y+9);g.moveTo(x+13,y+5);g.lineTo(x+9,y+9);g.stroke();}
   if(hacc==='fones'){g.strokeStyle='#111';g.lineWidth=1.5;g.beginPath();g.arc(x+15,y+12,14,Math.PI,0);g.stroke();g.fillStyle='#e02a4a';E(x+1,y+15,3,5);E(x+29,y+15,3,5);}
 
@@ -682,13 +662,7 @@ if(hacc==='coala'){
   function bochechaPadrao(){g.fillStyle='rgba(255,111,181,.32)';E(x+9,y+23,2.6,1.5);E(x+23,y+23,2.6,1.5);g.fillStyle='rgba(255,180,205,.22)';E(x+8.5,y+22.6,1.4,.6);E(x+22.5,y+22.6,1.4,.6);}
   if(typeof TWAvatarRosto!=='undefined'){TWAvatarRosto.sobrancelha(g,c,x,y,expr);TWAvatarRosto.bochecha(g,c,x,y,bochechaPadrao);}else bochechaPadrao();   // bochecha à escolha (tw-avatar-rosto.js)
 
-  if(d==='torrada'){ // a ponta fica entre os lábios, com o pão pendendo para fora
-    g.save();g.translate(x+15.5,y+24);g.rotate(-.24);
-    g.fillStyle='#bc7a40';g.beginPath();g.moveTo(-1,-1);g.lineTo(1,-2.4);g.lineTo(3,-1.5);g.quadraticCurveTo(9,-4,11,-1);g.lineTo(11,9);g.quadraticCurveTo(6,11,1,9);g.closePath();g.fill();
-    g.fillStyle='#f6ce86';g.beginPath();g.moveTo(1,.2);g.lineTo(3,-.2);g.quadraticCurveTo(8,-2,9,-.2);g.lineTo(9,7.6);g.quadraticCurveTo(5,9,2,7.4);g.closePath();g.fill();
-    g.fillStyle='#ffe9b1';g.fillRect(4,2,3.8,3.5);g.fillStyle='rgba(176,109,53,.28)';g.fillRect(3,6.7,5,1);g.restore();
-    g.strokeStyle='#643725';g.lineWidth=1.4;g.beginPath();g.moveTo(x+13.1,y+24);g.quadraticCurveTo(x+15.2,y+25.3,x+17,y+24);g.stroke(); // boca segura a ponta do pão
-  }
+  if(d==='torrada') TWAvatarItems.torrada(g,x,y);
 
 	if(c.gl){
   g.strokeStyle='#222'; g.lineWidth=1.2; g.beginPath();

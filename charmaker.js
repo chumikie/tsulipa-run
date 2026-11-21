@@ -159,6 +159,11 @@
     FAV_CAMPOS.forEach(function(k){
       if(f[k] === undefined || (k==='det' && f[k]==='torrada' && f.item==='torrada')) return;
       if(f[k] === null) f[k] = '';
+      // Coroa de Tulipas fica guardada em det, mas a opção mora no seletor de Acessório (chat)
+      if(k === 'det' && f[k] === 'tulipa'){
+        if(livres('chat').indexOf('tulipa') >= 0) c.det = 'tulipa'; else trocas.push(T('Acessório'));
+        return;
+      }
       var id = CAMPO_ID[k];
       if(id && $(id) && $(id).tagName === 'SELECT' && livres(id).indexOf(String(f[k])) < 0 && !(k === 'hat' && f[k] === '')){
         var parte=PARTES.find(function(p){return p.campo===k;});
@@ -353,7 +358,7 @@
         if(f){
           var prova=document.createElement('button'),cv=document.createElement('canvas');
           var visual=favVisual(i),rotulo=f.nome||T('Favoritos')+' '+(i+1);
-          cv.width=cv.height=96;cv.setAttribute('aria-hidden','true');
+          cv.width=cv.height=96;cv.setAttribute('aria-hidden','true');if(window.TW_NITIDEZ)TW_NITIDEZ.preparar(cv);
           prova.type='button';prova.className='cmfavvestir';prova.append(cv);
           prova.setAttribute('aria-label',favTexto(2)+' · '+rotulo);
           prova.setAttribute('aria-pressed',String(provandoFavorito===i));

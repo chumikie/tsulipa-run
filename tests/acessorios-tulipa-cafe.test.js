@@ -4,6 +4,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.join(__dirname, '..');
 const html = require('./site-source.js')();
+// os desenhos da coroa, da torrada e do chapéu de palha moram no módulo compartilhado (21/11/2026)
+const desenho = html + '\n' + fs.readFileSync(path.join(root, 'tw-avatar-items.js'), 'utf8');
 const sql = fs.readFileSync(path.join(root, 'supabase/sql/proposta/20261102140312_acessorios_tulipa_laco_fundo_cafe.sql'), 'utf8');
 
 test('coroa, torrada e chapéu têm itens e preços oficiais sem duplicar acessórios legados', () => {
@@ -22,13 +24,13 @@ test('coroa, torrada e chapéu têm itens e preços oficiais sem duplicar acess�
 });
 
 test('desenhos Canvas 2D respeitam camada do cabelo e paleta TsuLiPa + perfil', () => {
-  assert.match(html, /var tc=\['#9b30d9','#b6ff3b','#4169e1',/);
-  assert.match(html, /test\(c\.luz\|\|''\)\?c\.luz/);
-  assert.match(html, /g\.bezierCurveTo\(x\+7,y-2,x\+23,y-2,x\+28,y\+8\)/);
-  assert.match(html, /E\(fx-3\.5,fy\+2\.8,2\.6,1\.25,-\.55\)/);
-  assert.match(html, /g\.translate\(x\+15\.5,y\+24\);g\.rotate\(-\.24\)/);
-  assert.match(html, /boca segura a ponta do pão/);
-  assert.match(html, /g\.ellipse\(x\+15,y\+7\.6,16,2\.3,-\.05/);   // aba da frente, na altura da testa
+  assert.match(desenho, /var tc=\['#9b30d9','#b6ff3b','#4169e1',/);
+  assert.match(desenho, /test\(c\.luz\|\|''\)\?c\.luz/);
+  assert.match(desenho, /g\.bezierCurveTo\(x\+7,y-2,x\+23,y-2,x\+28,y\+8\)/);
+  assert.match(desenho, /E\(fx-3\.5,fy\+2\.8,2\.6,1\.25,-\.55\)/);
+  assert.match(desenho, /g\.translate\(x\+15\.5,y\+24\);g\.rotate\(-\.24\)/);
+  assert.match(desenho, /boca segura a ponta do pão/);
+  assert.match(desenho, /g\.ellipse\(x\+15,y\+7\.6,16,2\.3,-\.05/);   // aba da frente, na altura da testa
   assert.ok(html.indexOf("if(d==='torrada')") > html.indexOf("if(expr===1)"), 'torrada fica sobre a boca');
   assert.ok(html.indexOf("if(hacc==='palha')") > html.indexOf('TWAvatarHair.bicolor'), 'chapéu sobre o cabelo');
   assert.match(html, /id="perfLojaAcessorios"/);

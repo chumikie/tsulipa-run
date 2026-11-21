@@ -24,7 +24,7 @@ como(){ local uid="$1"; shift; db -c "set role authenticated; set request.jwt.cl
 db < "$repo_dir/supabase/tests/auditoria_20261120_pg_setup.sql"
 [[ "$(db -c "select to_regprocedure('public.mini_run_start(text)') is null")" == t ]] || falha 'backend antigo esperado'
 [[ "$(como "$a" "select public.ganhar_minijogo(1)->>'fixture'")" == true ]] || falha 'contrato antigo antes da troca'
-for arq in "$repo_dir"/supabase/migrations/202611201{5,6,7}0000_*.sql; do db < "$arq"; done
+for arq in "$repo_dir"/supabase/migrations/20261120{15,16,17,20}0000_*.sql; do db < "$arq"; done
 
 # 1) ranking antigo fechado para leitura direta
 [[ "$(db -c "select has_table_privilege('anon','public.leaderboard','select')")" == f ]] || falha 'anon ainda lê leaderboard'
@@ -93,6 +93,9 @@ r="$(como "$a" "select public.meus_recordes_jogos()")"
 [[ "$(como "$a" "select public.retro_mes('2026-11-01')->>'melhor'")" == 321 ]] || falha 'retrospectiva de A'
 [[ "$(como "$b" "select public.retro_mes('2026-11-01')->>'melhor'")" == 123 ]] || falha 'retrospectiva de B'
 [[ "$(db -c "select has_function_privilege('anon','public.retro_mes(date)','execute')")" == f ]] || falha 'visitante lê retrospectiva'
+# corridas do mês também pelo extrato (o leaderboard é podado pela limpeza semanal)
+db -c "insert into public.star_log(user_id, delta, reason, created_at) select '$a', 5, 'corrida', timestamptz '2026-11-05 15:00-03' from generate_series(1,7)"
+[[ "$(como "$a" "select (public.retro_mes('2026-11-01')->>'corridas')::int >= 7")" == t ]] || falha 'retrospectiva ignora corridas do extrato'
 [[ "$(como "$a" "select public.recado_tsulipa_enviar('Mensagem de teste')->>'ok'")" == true ]] || falha 'recado não salvo'
 [[ "$(como "$a" "select public.admin_recados_tsulipa()->>'erro'")" == admin ]] || falha 'jogador acessa moderação'
 recado="$(como "$b" "select public.admin_recados_tsulipa()->'recados'->0->>'id'")"

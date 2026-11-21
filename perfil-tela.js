@@ -1,3 +1,14 @@
+function perfEmojiOpcoes(valor){
+  var atual=String(valor||'').trim(),lista=PERF_EMOJIS.slice();if(atual&&lista.indexOf(atual)<0)lista.unshift(atual);
+  return lista.map(function(e){return '<button type="button" data-pemo="'+escHtml(e)+'" aria-pressed="'+(e===atual)+'">'+escHtml(e)+'</button>';}).join('');
+}
+function perfEmojiSincronizar(){var ip=$('perfBioEmoji'),box=document.querySelector('#perfCorpo .perfemolist');if(ip&&box)box.innerHTML=perfEmojiOpcoes(ip.value);}
+function perfPerfilOrganizar(box){
+  // Mantém troféus e recados à vista; coleções e histórico abrem sob demanda.
+  var titulos=Array.from(box.querySelectorAll(':scope > h3'));
+  titulos.slice(1,-1).forEach(function(h){var sec=document.createElement('details'),sum=document.createElement('summary');sec.className='perf-secao';sum.textContent=h.textContent;h.before(sec);sec.appendChild(sum);var n=h.nextSibling;while(n&&!(n.nodeType===1&&n.tagName==='H3')){var proximo=n.nextSibling;sec.appendChild(n);n=proximo;}h.remove();});
+  var bio=box.querySelector('.perfbio');if(bio){var sec=document.createElement('details'),sum=document.createElement('summary'),h=bio.querySelector('h3');sec.className='perf-secao perf-edicao';sum.textContent=h?h.textContent:tr('Editar perfil');bio.before(sec);sec.appendChild(sum);sec.appendChild(bio);if(h)h.remove();}
+}
 //←perfGrupoCodigo
 function perfGrupoCodigo(d){ return d && d.grupo || 'BRS48'; }
 //←perfGrupo
@@ -54,7 +65,7 @@ function perfMontar(){
   h += '<p class="perfmsg" id="perfTopoMsg" hidden></p><div id="perfAbaCorpo"></div>';
   h += '<div class="btns" style="margin-top:14px"><button type="button" class="btn alt" id="perfVoltar">' + escHtml(tr('VOLTAR')) + '</button></div>';
   $('perfCorpo').innerHTML = h;
-  if(window.TW_PESSOAL) try{ window.TW_PESSOAL.vitrineMontar(d, meu); }catch(e){}   // vitrine do perfil (tw-pessoal.js)
+  // A vitrine acompanha a aba Perfil, abaixo dos números, sem separar o hero das abas.   // vitrine do perfil (tw-pessoal.js)
   if(window.TW_CONQ) try{ window.TW_CONQ.perfilMontar(d, meu); }catch(e){}   // destaques e conquistas à vista (tw-conquistas.js)
   $('perfVoltar').onclick = perfFechar;
   $('perfFotoBtn').onclick = function(){ perfZoom = !perfZoom; perfFotoAtual(); beep(perfZoom ? 784 : 988, .05, 'triangle', .04); };
@@ -101,11 +112,14 @@ function perfAbaMostrar(){
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
     if(meu) h += perfBioHtml(d) + perfApagarHtml();
     box.innerHTML = h;
+    perfPerfilOrganizar(box);
+    if(window.TW_PESSOAL)try{TW_PESSOAL.vitrineMontar(d,meu);}catch(e){}
     if(window.TW_CONQ) try{ window.TW_CONQ.abaPerfil(d, meu); }catch(e){}   // "Quase lá" e perfil completo, acima da estante
     var profileStyleCta = $('perfProfileStyleCta');
     if(profileStyleCta) profileStyleCta.onclick = function(){
       var target = $('perfBioEmoji') || $('perfBioCor');
       if(!target) return;
+      var sec=target.closest('details');if(sec)sec.open=true;
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       if(target.scrollIntoView) target.scrollIntoView({ behavior:reduce?'auto':'smooth', block:'center' });
       try{ target.focus({ preventScroll:true }); }catch(e){ target.focus(); }
@@ -233,7 +247,7 @@ function perfBioMontar(d, sel2){
   var tm = d.time || '', grupo=perfGrupoCodigo(d), cor = /^#[0-9a-f]{6}$/i.test(d.cor || '') ? d.cor : '#ff6fb5';
   return '<div class="perfbio"><h3>✏️ ' + escHtml(tr('Editar perfil')) + '</h3>' +
     '<label>' + escHtml(tr('Seu emoji')) + ' <input class="nick perfcampo perfemoin" id="perfBioEmoji" maxlength="8" autocomplete="off" value="' + escHtml(d.emoji || '') + '" placeholder="🎤"></label>' +
-    '<div class="perfemolist" role="group" aria-label="' + escHtml(tr('Seu emoji')) + '">' + PERF_EMOJIS.map(function(e){ return '<button type="button" data-pemo="' + e + '">' + e + '</button>'; }).join('') + '</div>' +
+    '<div class="perfemolist" role="group" aria-label="' + escHtml(tr('Seu emoji')) + '">' + perfEmojiOpcoes(d.emoji) + '</div>' +
     '<label>' + escHtml(tr('Sua cor')) + ' <input type="color" id="perfBioCor" value="' + cor + '"></label>' +
     '<label>🌏 ' + escHtml(tr('Grupo')) + ' <select id="perfBioGrupo">' + PERF_GRUPOS.map(function(g){return '<option value="'+escHtml(g.codigo)+'"'+(grupo===g.codigo?' selected':'')+'>'+perfGrupoBandeira(g)+' '+escHtml(g.nome)+'</option>';}).join('')+'</select></label>' +
     '<label>' + escHtml(tr('Seu time')) + ' <select id="perfBioTime"><option value="">' + escHtml(tr('Sem time')) + '</option>' +
@@ -500,3 +514,4 @@ function perfDiarioHtml(d, meu){
   if(!itens.length) return hoje + memoria + '<p class="perfcarr">' + escHtml(tr('A sua história começa na primeira corrida!')) + '</p>';
   return hoje + memoria + '<ol class="perfdiario">' + itens.map(function(i){ return '<li><span class="pdemo">' + i[0] + '</span><b>' + escHtml(i[1]) + '</b>' + (i[2] ? '<small>' + escHtml(i[2]) + '</small>' : '') + '</li>'; }).join('') + '</ol>';
 }
+

@@ -23,3 +23,14 @@
 ## Limites
 
 Conta, RPC e rede externa foram isolados nos testes. Não houve teste com conta real ou aparelho físico, nem avaliação de todas as combinações de figurino/acessórios. A suíte geral completa não foi executada. CI não foi aguardado. A PR continua em rascunho para os próximos itens da conferência; sem SQL, merge ou publicação.
+
+
+## Segunda conferência: perfil, jardim e fotografia
+
+- Emoji livre: as sugestões exibem a escolha salva com aria-pressed, inclusive quando não consta na lista; digitação atualiza a seleção. O cálculo visual de perfil completo usa o emoji salvo da própria conta. Não há nova restrição por lista nem alteração de SQL.
+- Vitrine dentro da aba Perfil, abaixo dos números; card desenhado em 360×504, com grade responsiva de card, insígnia e música. Mantidos os bloqueios de sessão e respostas antigas existentes no módulo.
+- Histórico, coleções e edição do perfil em seções expansíveis; troféus e recados continuam visíveis.
+- Bloom: enfeites e caminho desenhados antes da cerca.
+- Studio: palma e pulso na escala dos braços; dedos e polegar envolvem a haste. Inspeção com microfone, lightstick e flor, nas poses V, aceno e coração. Não foram conferidas todas as combinações possíveis de objetos/poses.
+- Missões: título interno oculto somente quando o painel é exibido na tela nova de missões.
+- Browser suite ampliada: seleção do emoji 🎙️ e digitação 🪷, perfil completo com emoji livre, card em resolução correta, saída da vitrine na troca de aba, perfil em 320/390 px, título único das missões, captura do Bloom e grade de mãos do Studio. RPCs simulados, nenhuma conta real.

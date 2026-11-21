@@ -80,6 +80,43 @@ async function setup(){
   await p.evaluate(()=>{const orig=hubAv;window.__hubAvOriginal=orig;hubAv=()=>({c:{...perfChar(orig()),hair:'#7b3ff0',skin:'#a76c40',front:'arcoiris',back:'longo',hat:'coroa',out:'zipper'},expr:2});__abrir('colorir');__assert(document.querySelector('.twpa-colorir'),'avatar personalizado sem desenho');});
   await foto('colorir-figurino');
   await p.evaluate(()=>{hubAv=__hubAvOriginal;TW_PASSA.contaMudou();__assert(document.querySelector('.twpa-ov').hidden,'troca de conta manteve atividade aberta');});
+  // Perfil: emoji livre salvo, vitrine em escala correta e seções sob demanda.
+  console.log(await p.evaluate(async()=>{
+    await perfTelaCarregar();
+    const rpc=contaRpc;
+    contaRpc=(n,a)=>n==='minha_vitrine'?Promise.resolve({vitrine:{card:'QA',insignia:'halloween',musica:'Zipper'},vitrine_card:{nick:'QA',best:9000,avatar:hubAv()}}):rpc(n,a);
+    perfAtual={nick:'QA',emoji:'🎙️',cor:'#9b30d9',best:0,insignias:[],cards:[],visuais:[],time:'S',grupo:'BRS48',frase:'Teste'};perfMeu=true;perfAba='perfil';perfOv.hidden=false;perfMontar();
+    await new Promise(r=>setTimeout(r,100));
+    __assert(document.querySelector('#perfAbaCorpo .twp-vitrine'),'vitrine fora da aba');
+    __assert(document.querySelector('#twpVitCard').width>=360,'card ainda em resolução recortada');
+    const e=document.querySelector('[data-pemo="🎙️"]');__assert(e&&e.getAttribute('aria-pressed')==='true','emoji livre não selecionado');
+    const completo=TW_CONQ.completo({completo:{foto:true,emoji:false,cor:true,frase:true,oshi:true,aniver:true,destaque:true}});__assert(completo.pct===100,'perfil salvo perdeu o emoji livre');
+    const input=document.querySelector('#perfBioEmoji');input.value='🪷';input.dispatchEvent(new Event('input',{bubbles:true}));__assert(document.querySelector('[data-pemo="🪷"][aria-pressed="true"]'),'digitação livre não refletida');
+    return {emoji:true,vitrine:true,secoes:document.querySelectorAll('.perf-secao').length};
+  }));
+  await foto('perfil-refinado');
+  for(const width of [320,390]){
+    if(p.setViewportSize)await p.setViewportSize({width,height:920});else await p.setViewport({width,height:920,deviceScaleFactor:1});
+    const overflow=await p.evaluate(()=>{const box=document.querySelector('#perfCorpo'),v=box.querySelector('.twp-vitrine');return v.getBoundingClientRect().right>box.getBoundingClientRect().right+1;});assert.equal(overflow,false,'vitrine mobile');await foto('perfil-'+width);
+  }
+  if(p.setViewportSize)await p.setViewportSize({width:1440,height:1000});else await p.setViewport({width:1440,height:1000,deviceScaleFactor:1});
+  await p.evaluate(()=>{perfAba='montar';perfAbaMostrar();});
+  assert.equal(await p.evaluate(()=>!!document.querySelector('.twp-vitrine')),false,'vitrine sai da aba de edição');
+  // Missões: título único no novo layout, sem remover o título do hub clássico.
+  await p.evaluate(()=>{perfOv.hidden=true;const b=document.createElement('button');b.dataset.a='missoes';document.querySelector('#twCel').appendChild(b);b.click();b.remove();});
+  assert.equal(await p.evaluate(()=>getComputedStyle(document.querySelector('#hubMisT')).display),'none');
+  await p.evaluate(()=>{const rpc=contaRpc;contaRpc=(n,a)=>n==='jardim_estado'?Promise.resolve({ok:true,canteiros:[],sementes:[],flores:[],stars:5}):rpc(n,a);bloomAbrir();});
+  await p.evaluate(()=>new Promise(r=>setTimeout(r,150)));
+  await foto('bloom-cerca');
+  const studioSource=fs.readFileSync(path.join(root,'studio.js'),'utf8');
+  const grip=studioSource.slice(studioSource.indexOf('  function objetoNaMao('),studioSource.indexOf('  function cena(',studioSource.indexOf('  function objetoNaMao(')));
+  await p.evaluate(code=>{
+    document.querySelector('#bloomX').click();const grip=Function('arranjoFlores','return '+code)(()=>[]);
+    const cv=document.createElement('canvas');cv.width=720;cv.height=900;cv.style.cssText='position:fixed;z-index:1000;top:0;left:0;width:720px;background:white';document.body.appendChild(cv);
+    const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,720,900);
+    ['v','tchau','coracao'].forEach((pose,j)=>['microfone','lightstick','flor_sakura'].forEach((item,i)=>{x.save();x.translate(i*240,j*300);const av=JSON.parse(JSON.stringify(hubAv()));av.pose=pose;const corpo=perfDesenharIdol(x,240,270,av,false,false,0,'inteiro');grip(x,item,pose,corpo,'#9b30d9','inteiro');x.fillStyle='#38265e';x.font='14px sans-serif';x.textAlign='center';x.fillText(pose+' · '+item,120,288);x.restore();}));window.__gripCanvas=cv;
+  },grip);
+  await foto('studio-maos');await p.evaluate(()=>__gripCanvas.remove());
   assert.deepEqual(await p.evaluate(()=>__errors),[],'JavaScript sem erros');
   console.log('OK: pintura/desfazer/limpar/PNG, fundo e avatar preservados; fichas em 4 larguras; 3 partidas completas; nenhum servidor real.');
  }finally{await qa.close();server.close();}

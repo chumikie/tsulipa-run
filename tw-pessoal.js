@@ -196,7 +196,7 @@
     if(!v.card && !v.insignia && !v.musica) return meu ? '<section class="twp-vitrine twp-vazia"><p>' + esc(t('vazio')) + '</p><button type="button" class="btn alt" data-twp="vitrine-editar">✏️ ' + esc(t('editar')) + '</button></section>' : '';
     var ins = v.insignia ? insInfo(v.insignia) : null;
     return '<section class="twp-vitrine" aria-label="' + esc(t('vitrine')) + '"><h3>✨ ' + esc(t('vitrine')) + '</h3><div class="twp-vit-grade">' +
-      (v.card ? '<figure class="twp-vit-card"><canvas id="twpVitCard" width="180" height="252"></canvas><figcaption>' + esc(t('cardFav')) + '</figcaption></figure>' : '') +
+      (v.card ? '<figure class="twp-vit-card"><canvas id="twpVitCard" width="360" height="504"></canvas><figcaption>' + esc(t('cardFav')) + '</figcaption></figure>' : '') +
       '<div class="twp-vit-lado">' +
       (ins ? '<p class="twp-vit-ins"><span aria-hidden="true">' + ins[0] + '</span><b>' + esc(ins[1]) + '</b><small>' + esc(t('insDest')) + '</small></p>' : '') +
       (v.musica ? '<p class="twp-vit-mus"><span aria-hidden="true">🎵</span><b translate="no">' + esc(v.musica) + '</b><small>' + esc(t('musica')) + '</small></p>' : '') +
@@ -212,7 +212,9 @@
       if(!conta()||!hero.isConnected||corpo.querySelector('.perfhero')!==hero)return;
       var anterior=corpo.querySelector('.twp-vitrine');if(anterior)anterior.remove();
       var w = document.createElement('div'); w.innerHTML = vitrineHtml(v, meu); var sec = w.firstElementChild; if(!sec) return;
-      hero.parentNode.insertBefore(sec, hero.nextSibling);
+      var aba=document.getElementById('perfAbaCorpo');
+      if(!aba||(meu&&typeof perfAba!=='undefined'&&perfAba!=='perfil'))return;
+      var nums=aba.querySelector('.perfnums');if(nums)nums.after(sec);else aba.prepend(sec);
       var cv = sec.querySelector('#twpVitCard');
       if(cv && card && typeof gachaCardDesenhar === 'function' && typeof cardsDados === 'function') try{ gachaCardDesenhar(cv, cardsDados({card:card})); }catch(e){}
     }
@@ -282,3 +284,4 @@
 
   window.TW_PESSOAL = {retroMes:retroMes, contaMudou:contaMudou,retroItemHtml:retroItemHtml, abrirRetro:abrirRetro, vitrineMontar:vitrineMontar, recadoAbrir:recadoAbrir, t:t, desenharRetro:desenharRetro};
 })();
+

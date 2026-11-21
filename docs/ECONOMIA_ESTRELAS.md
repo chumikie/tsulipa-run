@@ -81,3 +81,8 @@ Migração `supabase/migrations/20261121180000_economia_e_estreia.sql` (ainda n�
 - **Primeiro resultado do dia** no Sora⭐Jump!, Happy⭐Cafe!, Handshake⭐Event! e Idol⭐Battle!: ★15 cada (até +★60/dia para quem joga os quatro).
 - **Promoção da semana:** uma roupa fora de temporada com 30% de desconto, em rodízio de 12 roupas (`private.promo_item`). Preços-base em `private.visual_preco_base`.
 - **Gacha:** 3 primeiros giros = card; 3 giros seguidos sem card → o próximo é card; card de Idol que falta enquanto faltarem 3+; pó: 3 repetidos = 1 card (antes 5).
+
+### Parte 4 (21/11/2026)
+Migração `supabase/migrations/20261121200000_sequencia_missoes.sql` (ainda não aplicada).
+- **Sequência das Missões:** dia com 3+ missões conta; 3 dias seguidos = ★15, 7 dias = ★40, uma vez por sequência.
+- O Encontro do dia (★3) e o Rival do dia do Battle (★5) voltam a aparecer no "Hoje" — sem prêmio novo.

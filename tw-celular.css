@@ -1096,3 +1096,8 @@ a.btn#twpBaixar{text-decoration:none}
 .perfroupa s{opacity:.65;font-weight:600}
 :root[data-theme="dark"] .perffalta{color:#c9bde8}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .perffalta{color:#c9bde8}}
+/* Hoje: sequência das Missões e selo Novo da loja (21/11/2026) */
+.twc-hj-fogo{display:block;margin-top:2px;font-size:11.5px;font-weight:800;color:#d2560a}
+.twc-novo{position:absolute;top:4px;right:4px;padding:1px 6px;border-radius:999px;background:#ff6fb5;color:#fff;font:800 10px 'M PLUS Rounded 1c',sans-serif;font-style:normal;letter-spacing:.02em}
+:root[data-theme="dark"] .twc-hj-fogo{color:#ffb070}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-hj-fogo{color:#ffb070}}

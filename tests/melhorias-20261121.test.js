@@ -141,3 +141,21 @@ test('parte 3: site — kit, trilha, bônus, promoção, loja e pó', () => {
   assert.doesNotMatch(po, /5 pós|5 dust|5 polvos|5 debu|ผง 5|5ダスト/);
   assert.match(po, /custo_troca \|\| 3/);
 });
+
+test('parte 4: Encontro e Rival no Hoje, sequência das Missões, Sora e selo Novo', () => {
+  const cel = ler('tw-celular.js');
+  assert.match(cel, /data-a="encontro"/, 'Encontro do dia no Hoje e no Menu');
+  assert.match(cel, /if\(a === 'encontro'\)\{ if\(typeof encBtn !== 'undefined' && encBtn\.onclick\) encBtn\.onclick\(\); return; \}/);
+  assert.match(cel, /data-a="battle-rival"/);
+  assert.match(cel, /data-a="encontro"\/\.test\(h\) \? 'gente'/, 'Encontro conta como tarefa de gente');
+  assert.match(cel, /twc-novo/);
+  const est = ler('tw-estreia.js');
+  for (const r of ['battle_status', 'missoes_sequencia']) assert.ok(est.includes(`'${r}'`), r);
+  assert.match(est, /if\(v === null\)\{ gravarLS\('tw_loja_vista', a\); return false; \}/, 'sem selo falso na primeira visita');
+  const sora = ler('sora-jump.html');
+  assert.match(sora, /_supabase\.rpc\('meu_recorde_semana'\)/);
+  assert.match(sora, /if\(typeof soraSemanaCarregar === 'function'\) soraSemanaCarregar\(\);[^\n]*\n  if\(soraOnlineUserId\) soraOnlineLoadProfile\(\);\n  else \{/, 'não separa o if do else');
+  const sql = ler('supabase/migrations/20261121200000_sequencia_missoes.sql');
+  assert.match(sql, /count\(distinct k\) >= 3/);
+  assert.match(sql, /case m when 3 then 15 else 40 end/);
+});

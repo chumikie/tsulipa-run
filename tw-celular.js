@@ -392,6 +392,16 @@
     verTudo:{pt:'Ver tudo (+{n})',en:'See all (+{n})',es:'Ver todo (+{n})',id:'Lihat semua (+{n})',th:'ดูทั้งหมด (+{n})',ja:'ぜんぶ見る（+{n}）'},
     recolher:{pt:'Recolher',en:'Collapse',es:'Recoger',id:'Tutup',th:'ย่อ',ja:'とじる'},
     tudo:{pt:'Tudo feito por hoje! ✨',en:'All done for today! ✨',es:'¡Todo listo por hoy! ✨',id:'Semua beres hari ini! ✨',th:'วันนี้ทำครบแล้ว! ✨',ja:'きょうはぜんぶできた！✨'},
+    enc:{pt:'Encontro do dia',en:'Daily meetup',es:'Encuentro del día',id:'Temu hari ini',th:'นัดพบวันนี้',ja:'今日の出会い'},
+    encSub:{pt:'Quem vai aparecer hoje? Vale ★3.',en:'Who will show up today? Worth ★3.',es:'¿Quién aparecerá hoy? Vale ★3.',id:'Siapa yang muncul hari ini? Dapat ★3.',th:'วันนี้ใครจะมา? ได้ ★3',ja:'今日は誰に会える？★3'},
+    encOk:{pt:'Hoje: {n}',en:'Today: {n}',es:'Hoy: {n}',id:'Hari ini: {n}',th:'วันนี้: {n}',ja:'今日：{n}'},
+    encBt:{pt:'Descobrir',en:'Find out',es:'Descubrir',id:'Lihat',th:'ดูเลย',ja:'見る'},
+    rival:{pt:'Rival do dia no Idol⭐Battle!',en:'Rival of the day in Idol⭐Battle!',es:'Rival del día en Idol⭐Battle!',id:'Rival hari ini di Idol⭐Battle!',th:'คู่แข่งประจำวันใน Idol⭐Battle!',ja:'Idol⭐Battle!の今日のライバル'},
+    rivalSub:{pt:'Vença a unit rival: ★5, e o primeiro Battle do dia vale mais ★15.',en:'Beat the rival unit: ★5, plus ★15 for your first Battle of the day.',es:'Vence a la unit rival: ★5, y la primera Battle del día vale ★15 más.',id:'Kalahkan unit rival: ★5, plus ★15 untuk Battle pertama hari ini.',th:'ชนะยูนิตคู่แข่ง: ★5 และแบตเทิลแรกของวันได้อีก ★15',ja:'ライバルユニットに勝って★5、今日最初のBattleで+★15'},
+    rivalOk:{pt:'Rival vencido hoje!',en:'Rival beaten today!',es:'¡Rival vencido hoy!',id:'Rival dikalahkan hari ini!',th:'ชนะคู่แข่งวันนี้แล้ว!',ja:'今日のライバルに勝利！'},
+    jogar:{pt:'Jogar',en:'Play',es:'Jugar',id:'Main',th:'เล่น',ja:'遊ぶ'},
+    seq:{pt:'🔥 {n} dias seguidos',en:'🔥 {n}-day streak',es:'🔥 {n} días seguidos',id:'🔥 {n} hari berturut-turut',th:'🔥 ต่อเนื่อง {n} วัน',ja:'🔥 {n}日連続'},
+    seqProx:{pt:' · {n} dias = prêmio',en:' · {n} days = prize',es:' · {n} días = premio',id:' · {n} hari = hadiah',th:' · {n} วัน = รางวัล',ja:' · {n}日でごほうび'},
     tambem:{pt:'Também hoje',en:'Also today',es:'También hoy',id:'Juga hari ini',th:'วันนี้ยังมี',ja:'ほかにも'},
     erro:{pt:'Não deu agora. Tente de novo!',en:"Couldn't do it now. Try again!",es:'No se pudo ahora. ¡Inténtalo de nuevo!',id:'Belum bisa sekarang. Coba lagi!',th:'ตอนนี้ยังไม่ได้ ลองใหม่นะ!',ja:'いまはできなかった。もう一度ためしてね！'}
   };
@@ -455,7 +465,18 @@
     // 2. missões do dia (com conta)
     var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
     if(mis && mis.length){ var mf = mis.filter(function(m){ return m.feito; }).length, ok2 = mf >= mis.length;
-      linha(ok2, 'lima', 'missoes', esc(thj('mis')), esc(ok2 ? thj('misOk') : thj('misFalta', {f:mf, n:mis.length})), ok2 ? '' : '<button type="button" class="twc-hj-bt" data-a="missoes">' + esc(thj('ver')) + '</button>'); }
+      // sequência: dias seguidos com 3+ missões (tw-estreia.js → missoes_sequencia)
+      var sq = window.TW_ESTREIA && TW_ESTREIA.sequencia ? TW_ESTREIA.sequencia() : null;
+      var fogo = sq && sq.dias > 0 ? '<span class="twc-hj-fogo">' + esc(thj('seq', {n:sq.dias}) + (sq.proximo ? thj('seqProx', {n:sq.proximo}) : '')) + '</span>' : '';
+      linha(ok2, 'lima', 'missoes', esc(thj('mis')), esc(ok2 ? thj('misOk') : thj('misFalta', {f:mf, n:mis.length})), ok2 ? '' : '<button type="button" class="twc-hj-bt" data-a="missoes">' + esc(thj('ver')) + '</button>', fogo); }
+    // Encontro do dia (o botão antigo ficou só no hub clássico e no mapa: desde 09/11 ninguém achava)
+    if(typeof encLer === 'function' && typeof encBtn !== 'undefined'){ var ef = encLer();
+      linha(!!ef, 'rosa', 'coracao', esc(thj('enc')), esc(ef ? thj('encOk', {n:typeof encNomes === 'function' ? encNomes(ef) : ef.nick}) : thj('encSub')),
+        ef ? '' : '<button type="button" class="twc-hj-bt" data-a="encontro">' + esc(thj('encBt')) + '</button>'); }
+    // Rival do dia do Idol⭐Battle! (battle_status, carregado pelo tw-estreia.js)
+    var rv = window.TW_ESTREIA && TW_ESTREIA.rival ? TW_ESTREIA.rival() : null;
+    if(rv && typeof window.battleAbrir === 'function')
+      linha(rv.premiado, 'uva', 'trofeu', esc(thj('rival')), esc(rv.premiado ? thj('rivalOk') : thj('rivalSub')), rv.premiado ? '' : '<button type="button" class="twc-hj-bt" data-a="battle-rival">' + esc(thj('jogar')) + '</button>');
     // 3. capítulo do domingo (aparece na semana em que saiu)
     var cp = capHoje(), hj = C ? C.hoje() : '';
     if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLidos().includes(cp.n);
@@ -493,7 +514,7 @@
       // "Continuar", e de tipos diferentes (jogo, gente, mapa, leitura). A ordem dos tipos gira a cada dia, para a
       // tela não pedir sempre as mesmas coisas; o resto fica no "Ver tudo".
       var cand = [festival, continuar].filter(Boolean).concat(itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }));
-      var tipo = function(h){ return /data-anivcor|data-hjaniv|data-v="trio"/.test(h) ? 'gente' : /data-bairro|data-piloto-bairro/.test(h) ? 'mapa' : /ler-capitulo/.test(h) ? 'leitura' : 'jogo'; };
+      var tipo = function(h){ return /data-anivcor|data-hjaniv|data-v="trio"|data-a="encontro"/.test(h) ? 'gente' : /data-bairro|data-piloto-bairro/.test(h) ? 'mapa' : /ler-capitulo/.test(h) ? 'leitura' : 'jogo'; };
       var giro = ['jogo', 'gente', 'mapa', 'leitura'], dia = Math.floor((Date.now() - 3 * 36e5) / 864e5) % giro.length;
       giro = giro.slice(dia).concat(giro.slice(0, dia));
       var escolha = [];
@@ -646,7 +667,7 @@
     if(gac) bs.push(banner('gacha', titulo(gac), tt('1 giro por dia'), tt('Abrir'), 'data-ir="gacha"', alerta(gac) ? '!' : ''));
     // Sem repetir o que já tem porta no Início (Missões, Calendário, Mapa, News, Camarim) nem a engrenagem do topo (Ajustes).
     // Sem repetir dentro do Menu: a TV já é o card do Ranking; o "Hoje", o Calendário e o desejo/VIP ficam no Início.
-    var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
+    var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['coracao', thj('enc'), 'data-a="encontro"'], ['album', t('album'), 'data-a="album"'],
               ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', tf('fichas'), 'data-v="trio"'], ['pata', tt2('tour'), 'data-v="tour"']];
     if(window.TW_BAIRRO) at.push(['pin', window.TW_BAIRRO.t('tit'), 'data-bairro="abrir"']);   // Vida no bairro (tw-bairro.js)
     if(window.TW_COMUNIDADE){   // comunidade (tw-comunidade.js): concurso, convite, lembrete do show e app
@@ -672,7 +693,8 @@
       '<div class="twc-banners">' + bs.join('') + '</div>' + idols() +
       '<section class="twc-atalhos" aria-label="' + esc(t('menu')) + '">' + at.map(function(a){
         var c = a[0] === 'nov' ? novTemNovo() : a[2].indexOf('data-ir') === 0 ? card(a[0]) : null;
-        return '<button type="button" class="twc-atalho" ' + a[2] + '>' + ico(a[0], 26) + '<span>' + esc(a[1]) + '</span>' + badge(c) + cadeado(a[0]) + '</button>';
+        var novo = a[0] === 'loja' && window.TW_ESTREIA && TW_ESTREIA.lojaNovo && TW_ESTREIA.lojaNovo() ? '<em class="twc-novo">' + esc(TW_ESTREIA.t('novo')) + '</em>' : '';   // selo "Novo" na Zipper⭐Shop!
+        return '<button type="button" class="twc-atalho" ' + a[2] + '>' + ico(a[0], 26) + '<span>' + esc(a[1]) + '</span>' + (novo || badge(c)) + cadeado(a[0]) + '</button>';
       }).join('') + '</section></div>';
   }
 
@@ -1847,6 +1869,8 @@
       return;
     }
     if(a === 'mapa' || a === 'missoes' || a === 'busca' || a === 'nov'){ ir('emb:' + a); return; }
+    if(a === 'encontro'){ if(typeof encBtn !== 'undefined' && encBtn.onclick) encBtn.onclick(); return; }   // Encontro do dia
+    if(a === 'battle-rival'){ if(typeof window.battleAbrir === 'function') window.battleAbrir(); return; }
     if(a === 'momentos'){
       if(!logado()){pedirLogin('Momentos⭐');return;}
       TW_CARGA.abrir('Momentos⭐', petSalaCarregar, function(){

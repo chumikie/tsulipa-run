@@ -32,6 +32,8 @@
     falta:{pt:'Faltam ★{n} · ~{c} corridas',en:'★{n} to go · ~{c} runs',es:'Faltan ★{n} · ~{c} carreras',id:'Kurang ★{n} · ~{c} lari',th:'ขาด ★{n} · ~{c} รอบ',ja:'あと★{n}・約{c}ラン'},
     falta1:{pt:'Faltam ★{n} · ~1 corrida',en:'★{n} to go · ~1 run',es:'Faltan ★{n} · ~1 carrera',id:'Kurang ★{n} · ~1 lari',th:'ขาด ★{n} · ~1 รอบ',ja:'あと★{n}・約1ラン'},
     podeComprar:{pt:'Você já pode comprar {i}, que provou na Zipper⭐Shop!',en:'You can now buy {i}, which you tried on at Zipper⭐Shop!',es:'¡Ya puedes comprar {i}, que te probaste en Zipper⭐Shop!',id:'Sekarang kamu bisa membeli {i} yang kamu coba di Zipper⭐Shop!',th:'ตอนนี้ซื้อ {i} ที่ลองใส่ใน Zipper⭐Shop! ได้แล้ว!',ja:'Zipper⭐Shop!で試着した{i}が買えるようになりました！'},
+    novo:{pt:'Novo',en:'New',es:'Nuevo',id:'Baru',th:'ใหม่',ja:'NEW'},
+    seqOk:{pt:'🔥 {n} dias seguidos de missões! +★{p}',en:'🔥 {n}-day mission streak! +★{p}',es:'🔥 ¡{n} días seguidos de misiones! +★{p}',id:'🔥 Misi {n} hari berturut-turut! +★{p}',th:'🔥 ทำภารกิจต่อเนื่อง {n} วัน! +★{p}',ja:'🔥 ミッション{n}日連続！+★{p}'},
     fechar:{pt:'Fechar',en:'Close',es:'Cerrar',id:'Tutup',th:'ปิด',ja:'閉じる'},
     erro:{pt:'Não deu certo agora. Tente de novo daqui a pouco.',en:'That didn\'t work. Please try again soon.',es:'No funcionó. Inténtalo de nuevo en un rato.',id:'Belum berhasil. Coba lagi sebentar lagi.',th:'ยังไม่สำเร็จ ลองใหม่อีกครั้งนะ',ja:'うまくいきませんでした。少ししてからもう一度試してください。'}
   };
@@ -179,6 +181,49 @@
     });
   }
 
+  // ───── Rival do dia (Idol⭐Battle!) e sequência das Missões, para o "Hoje" ─────
+  var rivalD = null, seqD = null, hojePedido = 0;
+  function redesenharHoje(){ try{ window.dispatchEvent(new Event('tw-semana')); }catch(e){} }
+  function hojeCarregar(){
+    if(!logado()){ rivalD = seqD = null; redesenharHoje(); return; }
+    var meu = ++hojePedido, dono = conta();
+    rpc('battle_status').then(function(r){
+      if(meu !== hojePedido || dono !== conta() || !r || !r.ok) return;
+      rivalD = {premiado:!!r.premiado, tentativas:+r.tentativas || 0}; redesenharHoje();
+    }).catch(function(){});
+    rpc('missoes_sequencia').then(function(r){
+      if(meu !== hojePedido || dono !== conta() || !r || !r.ok) return;
+      seqD = {dias:+r.dias || 0, proximo:r.proximo || null, hoje:!!r.hoje_ok};
+      if(r.premio > 0){ estrelas(r.stars); aviso(t('seqOk', {n:seqD.dias, p:r.premio}), '🔥'); }
+      redesenharHoje();
+    }).catch(function(){});
+  }
+  // depois de missões e partidas a tela volta para o Início: recarrega sem pressa (no máximo 1 vez a cada 40 s)
+  var hojeUltimo = 0;
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden && Date.now() - hojeUltimo > 40000){ hojeUltimo = Date.now(); hojeCarregar(); } });
+  setInterval(function(){ if(!document.hidden && logado()){ hojeUltimo = Date.now(); hojeCarregar(); } }, 180000);
+
+  // ───── Selo "Novo" na Zipper⭐Shop!: muda quando entra item novo no catálogo ─────
+  function lojaAssinatura(){
+    var k = [];
+    try{ if(typeof PERF_LOJA !== 'undefined') PERF_LOJA.forEach(function(it){ k.push(it[0]); }); }catch(e){}
+    try{ if(typeof LOJA_EXTRA !== 'undefined') LOJA_EXTRA.forEach(function(it){ k.push(it[0]); }); }catch(e){}
+    return k.length ? k.sort().join(',') : '';
+  }
+  function lojaVista(){
+    var a = lojaAssinatura(); if(a) gravarLS('tw_loja_vista', a);
+  }
+  function lojaNovo(){
+    var a = lojaAssinatura(), v = lerLS('tw_loja_vista'); if(!a) return false;
+    if(v === null){ gravarLS('tw_loja_vista', a); return false; }   // primeira vez neste aparelho: só guarda
+    var vistos = v.split(',');
+    return a.split(',').some(function(k){ return vistos.indexOf(k) < 0; });
+  }
+  document.addEventListener('click', function(e){
+    var b = e.target && e.target.closest && e.target.closest('[data-ir="loja"]'); if(b) lojaVista();
+  }, true);
+  setInterval(function(){ if(typeof shopOv !== 'undefined' && shopOv && !shopOv.hidden) lojaVista(); }, 5000);
+
   // ───── cliques ─────
   document.addEventListener('click', function(e){
     var b = e.target && e.target.closest && e.target.closest('[data-twe]'); if(!b) return;
@@ -191,12 +236,14 @@
   promoCarregar();
   window.TW_ESTREIA = {
     t:t, trilhaAtiva:function(){ return !!(trilha && trilha.ativa); },
+    rival:function(){ return rivalD; }, sequencia:function(){ return seqD; }, lojaNovo:lojaNovo,
     contaMudou:function(){
-      if(!logado()){ trilha = null; return; }
+      if(!logado()){ trilha = null; hojeCarregar(); return; }
       setTimeout(function(){ kitConferir(); }, 3500);
       setTimeout(trilhaConferir, 2500);
       setTimeout(function(){ bonusUltimo = 0; bonusConferir(); }, 5000);
       setTimeout(provadosConferir, 7000);
+      setTimeout(function(){ hojeUltimo = Date.now(); hojeCarregar(); }, 2000);
     }
   };
 })();

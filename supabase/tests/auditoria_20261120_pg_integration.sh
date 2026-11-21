@@ -50,6 +50,7 @@ create or replace function public.gacha_card(n text) returns json language sql s
 drop function if exists public.visual_preco(text);
 SQL
 db < "$repo_dir/supabase/migrations/20261121180000_economia_e_estreia.sql"
+db < "$repo_dir/supabase/migrations/20261121200000_sequencia_missoes.sql"
 
 # 1) ranking antigo fechado para leitura direta
 [[ "$(db -c "select has_table_privilege('anon','public.leaderboard','select')")" == f ]] || falha 'anon ainda lê leaderboard'
@@ -244,3 +245,16 @@ faltando="$(como "$g" "select public.gacha_po_status()->'faltando'->0->>'nick'")
 [[ "$(como "$g" "select public.gacha_po_status()->>'custo_troca'")" == 3 ]] || falha 'custo do pó'
 [[ "$(como "$g" "select public.gacha_resgatar_card('$faltando', gen_random_uuid())->>'po'")" == 0 ]] || falha 'troca de 3 pós'
 echo 'melhorias 21/11/2026 (parte 3): economia, estreia e gacha verificados'
+# ── 21/11/2026 parte 4: sequência das Missões ──
+db -c "insert into public.missoes_feitas(user_id, k, dia) select '$c', 'm' || k, public.hoje_br() - d from generate_series(1,3) d, generate_series(1,3) k"
+db -c "insert into public.missoes_feitas(user_id, k, dia) select '$c', 'm' || k, public.hoje_br() - 5 from generate_series(1,3) k"
+r="$(como "$c" "select public.missoes_sequencia()")"
+[[ "$(como "$c" "select (public.missoes_sequencia()->>'dias')")" == 3 ]] || falha "sequência de 3 dias (até ontem): $r"
+[[ "$(db -c "select sum(delta) from public.star_log where user_id='$c' and reason='missao_sequencia'")" == 15 ]] || falha 'prêmio dos 3 dias pago uma vez'
+db -c "insert into public.missoes_feitas(user_id, k, dia) select '$c', 'm' || k, public.hoje_br() - 4 from generate_series(1,2) k"
+[[ "$(como "$c" "select (public.missoes_sequencia()->>'dias')")" == 3 ]] || falha 'dia com 2 missões quebrou a regra'
+db -c "insert into public.missoes_feitas(user_id, k, dia) select '$c', 'm' || k, public.hoje_br() from generate_series(1,3) k"
+[[ "$(como "$c" "select (public.missoes_sequencia()->>'hoje_ok')")" == true ]] || falha 'hoje conta'
+[[ "$(como "$c" "select (public.missoes_sequencia()->>'dias')")" == 4 ]] || falha 'sequência com hoje'
+echo 'melhorias 21/11/2026 (parte 4): sequência das Missões verificada'
+

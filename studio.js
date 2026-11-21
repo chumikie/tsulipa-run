@@ -206,7 +206,7 @@
     var src = r.avatar, c = {}, av = {c:c};
     function cor(v){ return typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v); }
     function chave(v){ return typeof v === 'string' && /^[a-z0-9_-]{0,32}$/i.test(v); }
-    ['hair','hair2','skin','eye','outcol','legcol'].forEach(function(k){ if(cor(src.c[k])) c[k] = src.c[k]; });
+    ['hair','hair2','lado2','skin','eye','outcol','legcol'].forEach(function(k){ if(cor(src.c[k])) c[k] = src.c[k]; });
     ['mecha','back','front','det','gl','out','baixo','hat','olho','boca','bochecha','sobrancelha'].forEach(function(k){ if(chave(src.c[k])) c[k] = src.c[k]; });
     if(typeof src.c.streak === 'boolean') c.streak = src.c.streak;
     ['a','visual'].forEach(function(k){ if(chave(src[k])) av[k] = src[k]; });

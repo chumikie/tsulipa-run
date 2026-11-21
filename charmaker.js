@@ -102,13 +102,30 @@
     provando:{pt:'Provando 👀 (não salva) · toque de novo para tirar',en:'Trying on 👀 (not saved) · tap again to remove',es:'Probando 👀 (no se guarda) · toca otra vez para quitar',
       id:'Mencoba 👀 (tidak disimpan) · ketuk lagi untuk melepas',th:'กำลังลอง 👀 (ไม่บันทึก) · แตะอีกครั้งเพื่อถอด',ja:'試着中 👀（保存されません）· もう一度タップで外す'},
     provar:{pt:'Provar',en:'Try on',es:'Probar',id:'Coba',th:'ลอง',ja:'試着'}};
+  var TXT_BI = {
+    lado:{pt:'Cor do outro lado',en:'Other side color',es:'Color del otro lado',id:'Warna sisi lain',th:'สีอีกด้าน',ja:'反対側の色'},
+    trocar:{pt:'⇄ Trocar lados',en:'⇄ Swap sides',es:'⇄ Cambiar lados',id:'⇄ Tukar sisi',th:'⇄ สลับด้าน',ja:'⇄ 左右を入れ替え'},
+    titulo:{pt:'Bicolor',en:'Two-tone',es:'Bicolor',id:'Dua warna',th:'ทูโทน',ja:'ツートン'}};
+  function tb(k){ var l = typeof LANG === 'string' ? LANG : 'pt'; return TXT_BI[k][l] || TXT_BI[k].pt; }
+  var LADO_PADRAO = '#121018';   // o preto de sempre do Bicolor
+  // Bicolor: muda a cor da outra metade (c.lado2) ou troca as duas cores de lugar. Só vale para o "Você".
+  function bicolorMudar(lado2, trocarLados){
+    var c = cu(); if(!c) return;
+    anterior = {c:JSON.parse(JSON.stringify(c)), a:accSel};
+    if(trocarLados){ var a = c.hair || '#ff7eb6'; c.hair = c.lado2 || LADO_PADRAO; c.lado2 = a; c.img = c.hair; }
+    else c.lado2 = lado2;
+    var chair = $('chair'); if(chair) chair.value = c.hair;
+    if(typeof saveCu === 'function') saveCu();
+    if(typeof sel !== 'undefined' && sel === 3 && typeof pick === 'function') pick(3);
+    depois(); atualizarTudo();
+  }
   function celLigado(){ return !!window.TW_CELULAR_LIGADO; }
   function tc(k){ var l = typeof LANG === 'string' ? LANG : 'pt', d = TXT_CEL[k]; return d ? (d[l] || d.pt) : k; }
   var EXPR = [[0, '🙂', 'Normal'], [2, '😆', 'Feliz'], [3, '😉', 'Piscadinha'], [4, '😮', 'Surpresa'], [5, '😢', 'Chorinho'], [6, '😍', 'Apaixonado'], [1, '😣', 'Concentrado']];
   /* Favoritos: 3 visuais guardados neste aparelho (chave nova brs48cr_favs). Tocar num espaço cheio veste o
      visual; 💾 guarda o visual atual naquele espaço. Ao vestir, peças que não estão liberadas são ignoradas.
      A cor da pele não entra: ela só muda quando a pessoa escolhe. */
-  var FAV_CHAVE = 'brs48cr_favs', FAV_CAMPOS = ['hair', 'hair2', 'eye', 'outcol', 'legcol', 'back', 'front', 'mecha', 'streak', 'det', 'olho',
+  var FAV_CHAVE = 'brs48cr_favs', FAV_CAMPOS = ['hair', 'hair2', 'lado2', 'eye', 'outcol', 'legcol', 'back', 'front', 'mecha', 'streak', 'det', 'olho',
     'sobrancelha', 'boca', 'bochecha', 'out', 'baixo', 'gl', 'hat'];
   function favChave(){
     var conta=typeof contaJ!=='undefined'&&contaJ;
@@ -159,6 +176,11 @@
     FAV_CAMPOS.forEach(function(k){
       if(f[k] === undefined || (k==='det' && f[k]==='torrada' && f.item==='torrada')) return;
       if(f[k] === null) f[k] = '';
+      // Coroa de Tulipas fica guardada em det, mas a opção mora no seletor de Acessório (chat)
+      if(k === 'det' && f[k] === 'tulipa'){
+        if(livres('chat').indexOf('tulipa') >= 0) c.det = 'tulipa'; else trocas.push(T('Acessório'));
+        return;
+      }
       var id = CAMPO_ID[k];
       if(id && $(id) && $(id).tagName === 'SELECT' && livres(id).indexOf(String(f[k])) < 0 && !(k === 'hat' && f[k] === '')){
         var parte=PARTES.find(function(p){return p.campo===k;});
@@ -353,7 +375,7 @@
         if(f){
           var prova=document.createElement('button'),cv=document.createElement('canvas');
           var visual=favVisual(i),rotulo=f.nome||T('Favoritos')+' '+(i+1);
-          cv.width=cv.height=96;cv.setAttribute('aria-hidden','true');
+          cv.width=cv.height=96;cv.setAttribute('aria-hidden','true');if(window.TW_NITIDEZ)TW_NITIDEZ.preparar(cv);
           prova.type='button';prova.className='cmfavvestir';prova.append(cv);
           prova.setAttribute('aria-label',favTexto(2)+' · '+rotulo);
           prova.setAttribute('aria-pressed',String(provandoFavorito===i));
@@ -389,8 +411,30 @@
       })(i);
       box.append(status);
     }
+    var bi = null;
+    function bicolorUI(){   // aparece só com o corte Bicolor
+      var c = cu(); if(!c || !el.favs || !el.favs.parentNode) return;
+      if(!bi){
+        bi = document.createElement('div'); bi.className = 'cmbicolor'; bi.setAttribute('role', 'group');
+        bi.innerHTML = '<span class="cmfavt"></span><label><span></span> <input type="color"></label><button type="button" class="btn alt"></button>';
+        var cor = bi.querySelector('input');
+        cor.addEventListener('input', function(){ bi.dataset.v = cor.value; bicolorMudar(cor.value); aoMudarSeguro(); });
+        bi.querySelector('button').addEventListener('click', function(){ bicolorMudar(null, true); aoMudarSeguro(); });
+        el.favs.parentNode.insertBefore(bi, el.favs);
+      }
+      bi.hidden = c.back !== 'onduladom2';
+      bi.setAttribute('aria-label', tb('titulo'));
+      bi.querySelector('.cmfavt').textContent = tb('titulo');
+      bi.querySelector('label span').textContent = tb('lado');
+      bi.querySelector('button').textContent = tb('trocar');
+      // só reescreve o campo quando o valor salvo mudou por fora (desfazer, favorito, trocar lados):
+      // o evento "input" passa primeiro pelos ouvintes do editor e não pode apagar a cor que a pessoa está escolhendo
+      var inp = bi.querySelector('input'), v = c.lado2 || LADO_PADRAO;
+      if(bi.dataset.v !== v){ bi.dataset.v = v; inp.value = v; }
+    }
+    function aoMudarSeguro(){ if(aoMudar) try{ aoMudar('*'); }catch(_){} }
     var atualizarBase = eu.atualizar;
-    eu.atualizar = function(){ atualizarBase(); clearTimeout(eu.tf); eu.tf = setTimeout(favoritos, 140); };
+    eu.atualizar = function(){ atualizarBase(); bicolorUI(); clearTimeout(eu.tf); eu.tf = setTimeout(favoritos, 140); };
     eu.vivo = function(){ return !!(el.cv && el.cv.isConnected); };
     abas(); expressoes(); eu.atualizar();
     return eu;
@@ -400,7 +444,8 @@
   function estudio(){
     var cust = $('cust'); if(!cust || !$('cmCv')) return;
     INSTANCIAS.push(Estudio({cv:$('cmCv'), expr:$('cmExpr'), abas:$('cmAbas'), grade:$('cmGrade'), favs:$('cmFavs')}, 'cm', function(){ return !cust.hidden; }));
-    ['cust', 'cust_roupa'].forEach(function(id){ var e = $(id); if(e && !e.dataset.cmOuvindo){ e.dataset.cmOuvindo = '1'; e.addEventListener('input', atualizarTudo, true); e.addEventListener('change', atualizarTudo, true); e.addEventListener('click', atualizarTudo, true); } });
+    ['cust', 'cust_roupa'].forEach(function(id){ var e = $(id); if(e && !e.dataset.cmOuvindo){ e.dataset.cmOuvindo = '1'; var depoisDoCampo = function(){ setTimeout(atualizarTudo, 0); };   // depois do onchange do campo, que grava o valor no CU
+      e.addEventListener('input', depoisDoCampo, true); e.addEventListener('change', depoisDoCampo, true); e.addEventListener('click', depoisDoCampo, true); } });
     // a aba do Você abre por pick(3): redesenha quando o editor aparece
     if(typeof MutationObserver === 'function' && !cust.dataset.cmObs){ cust.dataset.cmObs = '1'; new MutationObserver(function(){ if(!cust.hidden) atualizarTudo(); }).observe(cust, {attributes:true, attributeFilter:['hidden']}); }
   }

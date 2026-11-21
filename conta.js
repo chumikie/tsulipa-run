@@ -23,6 +23,10 @@ function contaSessaoAtual(){
 function contaUI(){
   if(window.TW_PESSOAL)window.TW_PESSOAL.contaMudou();
   if(window.TW_SEMANA)window.TW_SEMANA.contaMudou();
+  if(window.TW_COMUNIDADE)window.TW_COMUNIDADE.contaMudou();   // convite com prêmio (tw-comunidade.js)
+  if(window.TW_ESTREIA)window.TW_ESTREIA.contaMudou();   // kit de estreia, trilha e bônus dos jogos (tw-estreia.js)
+  if(window.TW_CONQ)window.TW_CONQ.contaMudou();   // conquistas e destaques do Perfil (tw-conquistas.js)
+  if(window.TW_PASSA)window.TW_PASSA.contaMudou();   // passatempos do dia (tw-passatempos.js)
   if(typeof twMapaVitrineAtualizar === 'function') twMapaVitrineAtualizar();
   if(typeof TW_ALBUM_FOTOS !== 'undefined') TW_ALBUM_FOTOS.conferir();
   if(typeof idolChipNome === 'function') idolChipNome();

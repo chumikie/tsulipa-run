@@ -188,7 +188,9 @@
   }
 
   window.TW_SEMANA = {
-    html:html, mapaHtml:mapaHtml, carregar:carregar, contaMudou:contaMudou,
+    html:html, mapaHtml:mapaHtml, carregar:carregar, contaMudou:contaMudou, t:t,
+    // rota do jogo da semana (ex.: 'bloom'), para destacar na tela de Jogos; null enquanto não carregou
+    jogoDaSemana:function(){ var j = S && S.jogo; return j && JOGOS[j.k] ? JOGOS[j.k][0] : null; },
     depoisDoKaraoke:function(){   // Karaoke⭐Time! confirmado pelo servidor: no sábado, entra na plateia sozinho
       carregar(true);
       var d = new Date(Date.now() - 3 * 36e5); if(d.getUTCDay() !== 6 || !logado()) return;

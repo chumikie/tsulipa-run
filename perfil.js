@@ -30,6 +30,9 @@ var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, c
   ['amada',    '💖', 'Coração de ouro',  'Recebeu 10 corações'],
   ['quarteto', '🎤', 'Quarteto TsuLiPa', 'Com o Idol, pegou os 3 microfones na mesma corrida e salvou a foto do quarteto'],
   ['carteiro', '💌', 'Carteiro',         'Deixou 10 recados'],
+  ['convite',  '🎉', 'Abre-alas',        'Trouxe uma pessoa nova para o TsuLiPa World'],
+  ['look_semana', '📸', 'Look da semana', 'Venceu o Concurso de visual da semana'],
+  ['trilha',   '🌱', 'Primeira semana',  'Completou os cinco passos da primeira semana'],
   ['amizade',  '🤝', 'Amizade',          'Deu 10 corações'],
   ['duo',      '🌙', 'Moon⭐Duo!',        'Fez 5 cenas no Moon⭐Duo!'],
   ['guarda',   '👗', 'Guarda-roupa completo', 'Comprou todas as roupas fixas da lojinha'],
@@ -63,7 +66,8 @@ var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, c
   ['esp_fundador',   '💎', 'Fundadores',         'Jogou desde o lançamento do TsuLiPa World'],
   ['jogo_barista', '🧋', 'Barista perfeito', '12 pedidos perfeitos em um turno do Happy⭐Cafe!'],
   ['jogo_memoria', '🤝', 'Memória de fã', 'Combo de 10 acertos no Handshake⭐Event!'],
-  ['jogo_caderno', '📒', 'Caderno completo', 'Todas as receitas do Caderno do Happy⭐Cafe!']
+  ['jogo_caderno', '📒', 'Caderno completo', 'Todas as receitas do Caderno do Happy⭐Cafe!'],
+  ['jogo_passatempo', '🧩', 'Passatempo em dia', 'Os 3 passatempos do dia no mesmo dia']
 ];
 // Oshi: membros atuais do BRS48, com a cor e o emoji de cada um (lista do Blog de Membros do BRS48, out/2026).
 // Para atualizar, é só mexer nesta lista: [apelido, emoji, cor].
@@ -808,8 +812,12 @@ function perfLojaUI(){
   perfMiniaturasLiberar(box);
   box.innerHTML = lojaL.map(function(it){
     var dono = perfLojaDono().indexOf(it[0]) >= 0, veste = CU.out === it[0], prov = perfProva === it[0];
+    // 21/11/2026: promoção da semana (tw-estreia.js) e quanto falta, em estrelas e corridas
+    var preco = typeof twPrecoLoja === 'function' ? twPrecoLoja(it[0], it[3]) : it[3], promo = preco < it[3];
+    var falta = !dono && starT < preco && typeof twFaltaTxt === 'function' ? '<small class="perffalta">' + escHtml(twFaltaTxt(preco)) + '</small>' : '';
     var acao = veste ? '<em class="ok">✓ ' + escHtml(tr('Vestindo')) + '</em>' : dono ? '<button type="button" class="btn alt" data-vestir="' + it[0] + '">' + escHtml(tr('Vestir')) + '</button>'
-      : '<button type="button" class="btn" data-comprar="roupa_' + it[0] + '"' + (starT < it[3] ? ' disabled' : '') + '>★' + it[3] + '</button>';
+      : '<button type="button" class="btn" data-comprar="roupa_' + it[0] + '"' + (starT < preco ? ' disabled' : '') + '>' + (promo ? '<s>★' + it[3] + '</s> ' : '') + '★' + preco + '</button>' + falta;
+    if(promo && !dono) acao = '<small class="perfpromo">🏷️ −30%</small>' + acao;
     var tag = it[4] && !dono && typeof temaAteTxt === 'function' ? '<small class="perftemp">🗓️ ' + escHtml(tr('Só até')) + ' ' + temaAteTxt() + '</small>' : it[4] ? '<small class="perftemp">🗓️ ' + escHtml(tr('Da temporada')) + '</small>' : '';
     var provar=typeof shopOv!=='undefined' && !shopOv.hidden ?
       '<button type="button" class="btn alt" data-provar="'+it[0]+'" aria-pressed="'+prov+'">'+
@@ -1074,7 +1082,7 @@ function perfPresente(){
 // As abas do Perfil (perfil, diário, recados, insígnias, estúdio de foto) baixam ao abrir um Perfil, junto com os dados.
 // Cada "//→nome" acima marca o lugar de uma função que mora em perfil-tela.js; tests/fonte-dividida.js remonta a ordem.
 // Se mudar perfil-tela.js, suba a versão em PERF_TELA_ARQ.
-var PERF_TELA_ARQ='./perfil-tela.js?v=4',PERF_TELA_PRONTA=false,perfTelaP=null;
+var PERF_TELA_ARQ='./perfil-tela.js?v=5',PERF_TELA_PRONTA=false,perfTelaP=null;
 function perfTelaCarregar(){
   if(PERF_TELA_PRONTA)return Promise.resolve();
   if(!perfTelaP)perfTelaP=new Promise(function(ok,er){var e=document.createElement('script');e.src=PERF_TELA_ARQ;e.async=false;

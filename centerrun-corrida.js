@@ -406,6 +406,7 @@ function end(impacto){
   finalExpr = typeof exprFinal === 'function' ? exprFinal(s, nb) : (s < 450 ? 1 : (Math.random() < 0.5 ? 0 : 2));   // V2.1.3
   
   var rId = rankOf(s);
+  try{ document.dispatchEvent(new CustomEvent('tw-corrida-fim', {detail:{pontos:s, teste:!!(typeof isTestGame !== 'undefined' && isTestGame)}})); }catch(_){}   // recorde da semana (tw-comunidade.js)
   // Este acabamento é opcional: se refreshAcc falhar, a confirmação online não pode parar.
   var novosItens='';
   try{novosItens=newItems(ob,s)}catch(err){if(typeof console!=='undefined'&&console.error)console.error('Center⭐Run!: acabamento dos itens indisponível',err);}

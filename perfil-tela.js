@@ -55,6 +55,7 @@ function perfMontar(){
   h += '<div class="btns" style="margin-top:14px"><button type="button" class="btn alt" id="perfVoltar">' + escHtml(tr('VOLTAR')) + '</button></div>';
   $('perfCorpo').innerHTML = h;
   if(window.TW_PESSOAL) try{ window.TW_PESSOAL.vitrineMontar(d, meu); }catch(e){}   // vitrine do perfil (tw-pessoal.js)
+  if(window.TW_CONQ) try{ window.TW_CONQ.perfilMontar(d, meu); }catch(e){}   // destaques e conquistas à vista (tw-conquistas.js)
   $('perfVoltar').onclick = perfFechar;
   $('perfFotoBtn').onclick = function(){ perfZoom = !perfZoom; perfFotoAtual(); beep(perfZoom ? 784 : 988, .05, 'triangle', .04); };
   if(!meu) $('perfCora').onclick = perfDarCoracao;
@@ -100,6 +101,7 @@ function perfAbaMostrar(){
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
     if(meu) h += perfBioHtml(d) + perfApagarHtml();
     box.innerHTML = h;
+    if(window.TW_CONQ) try{ window.TW_CONQ.abaPerfil(d, meu); }catch(e){}   // "Quase lá" e perfil completo, acima da estante
     var profileStyleCta = $('perfProfileStyleCta');
     if(profileStyleCta) profileStyleCta.onclick = function(){
       var target = $('perfBioEmoji') || $('perfBioCor');

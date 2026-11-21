@@ -1688,6 +1688,7 @@ function soraOnlineSetSession(session){
   soraOnlineProfile = null;
   soraOnlineProfileLoaded = false;
   soraOnlineProfilePromise = null;
+  if(typeof soraSemanaCarregar === 'function') soraSemanaCarregar();   // recorde da semana (meu_recorde_semana)
   if(soraOnlineUserId) soraOnlineLoadProfile();
   else {
     soraOnlineProfile = null;
@@ -1809,6 +1810,7 @@ function soraOnlineFinishRun(score, recibo){
     if(result && result.error) throw result.error;
     var d=result&&result.data, atual=owner===soraOnlineUserId&&sessao===soraOnlineSessionGeneration;
     var creditou=d && d.ok === true && d.stars_credited > 0;
+    if(d && d.ok === true && atual && typeof soraSemanaUI === 'function' && soraSemana !== null && score > soraSemana){ soraSemana = score; soraSemanaUI(); }
     if(creditou && atual){
       starT += d.stars_credited; try{ window.__TW_TEST_STORAGE.setItem('brs48cr_st', starT); }catch(e){}
       try{ if(typeof setBest === 'function') setBest(); }catch(e){}
@@ -4266,8 +4268,27 @@ function soraStartGame(){
   if($('soraOverBox')) $('soraOverBox').hidden = true;
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;   // sem botão "Início" sobre a tela durante a partida
 }
+// Recorde da semana (21/11/2026): meu_recorde_semana no servidor (segunda a domingo, horário de Brasília)
+var soraSemana=null,soraSemanaDono=null;
+var SORA_SEMANA_TXT={pt:'Semana',en:'This week',es:'Semana',id:'Minggu ini',th:'สัปดาห์นี้',ja:'今週'};
+function soraSemanaCarregar(){
+  soraSemana=null;soraSemanaDono=soraOnlineUserId;soraSemanaUI();
+  if(!soraOnlineUserId||!_supabase||typeof _supabase.rpc!=='function')return;
+  var dono=soraOnlineUserId;
+  _supabase.rpc('meu_recorde_semana').then(function(r){
+    if(dono!==soraOnlineUserId)return;
+    var d=r&&r.data; soraSemana=d&&d.ok?(+d.sora||0):null; soraSemanaUI();
+  }).catch(function(){});
+}
+function soraSemanaUI(){
+  var best=$('soraMenuBest'),pai=best&&best.closest('.sora-quick-stats');if(!pai)return;
+  var chip=$('soraMenuSemana');
+  if(!chip){chip=document.createElement('span');chip.className='sora-mini-chip';chip.id='soraMenuSemana';pai.appendChild(chip);}
+  chip.hidden=soraSemana===null||soraSemanaDono!==soraOnlineUserId;
+  if(!chip.hidden)chip.textContent='📅 '+((typeof LANG==='string'&&SORA_SEMANA_TXT[LANG])||SORA_SEMANA_TXT.pt)+': '+soraSemana+' m';
+}
 function soraMenuAtualizarRecorde(){
-  soraPremioMenu();soraMetaTreinoUI();
+  soraPremioMenu();soraMetaTreinoUI();soraSemanaUI();
   var recorde = $('soraMenuBest'), meta = $('soraMenuMeta');
   if(recorde) recorde.textContent = soraBest + ' m';
   if(meta){

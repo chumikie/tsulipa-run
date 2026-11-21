@@ -13,6 +13,33 @@ var PET_SP = {   // chaves internas iguais às do drawPet; nomes de exibição
 var PET_NEEDS = [['fome','🍙','Fome','#ff6fb5'],['energia','⚡','Energia','#4169e1'],['humor','💖','Humor','#9b30d9'],['higiene','🫧','Higiene','#7ed321']];
 var PET_RATE = { fome:7.0, energia:5.0, humor:6.0, higiene:4.0 }; // dobro da velocidade original
 var PET_CAP = 12 * 36e5;                                           // queda máxima contada: 12h fora
+// Rotina do pet (21/11/2026 · PR das melhorias, parte 5, inspirada no Tamagotchi): de 23h às 7h (Brasília) o pet
+// dorme junto com você, então a queda vale pela metade; o "jeitinho" nasce do cuidado que ele mais recebeu até
+// subir de fase; e o camarim mostra em quantos dias da semana ele teve carinho. Sumir não pune: ele só recebe com saudade.
+var PET_TXT = {
+  saudade:{pt:'Que saudade! Você voltou! 💖',en:'I missed you! You came back! 💖',es:'¡Te extrañé! ¡Volviste! 💖',id:'Kangen banget! Kamu kembali! 💖',th:'คิดถึงจัง! กลับมาแล้ว! 💖',ja:'会いたかった！おかえり！💖'},
+  semana:{pt:'{n}/7 dias de carinho nesta semana',en:'{n}/7 days of care this week',es:'{n}/7 días de cariño esta semana',id:'{n}/7 hari disayang minggu ini',th:'ดูแล {n}/7 วันในสัปดาห์นี้',ja:'今週のお世話 {n}/7日'},
+  jeito:{pt:'Jeitinho',en:'Personality',es:'Forma de ser',id:'Sifat',th:'นิสัย',ja:'せいかく'},
+  j_comida:{pt:'🍙 Gulosinho',en:'🍙 Little foodie',es:'🍙 Glotoncito',id:'🍙 Si Rakus',th:'🍙 จอมกิน',ja:'🍙 くいしんぼう'},
+  j_banho:{pt:'🫧 Cheirosinho',en:'🫧 Squeaky clean',es:'🫧 Perfumadito',id:'🫧 Si Wangi',th:'🫧 หอมฟุ้ง',ja:'🫧 きれいずき'},
+  j_brincar:{pt:'⚡ Agitadinho',en:'⚡ Bouncy',es:'⚡ Inquietito',id:'⚡ Si Lincah',th:'⚡ จอมซน',ja:'⚡ げんきっこ'},
+  j_cantar:{pt:'🎤 Cantorzinho',en:'🎤 Little singer',es:'🎤 Cantorcito',id:'🎤 Si Penyanyi',th:'🎤 นักร้องตัวน้อย',ja:'🎤 うたうたい'},
+  j_conversa:{pt:'💬 Tagarela',en:'💬 Chatterbox',es:'💬 Parlanchín',id:'💬 Si Cerewet',th:'💬 ช่างพูด',ja:'💬 おしゃべり'},
+  jeitoNovo:{pt:'{nome} virou {j}!',en:'{nome} became {j}!',es:'¡{nome} se volvió {j}!',id:'{nome} jadi {j}!',th:'{nome} กลายเป็น {j}!',ja:'{nome}は{j}になった！'}
+};
+function petTxt(k, v){ var l = typeof LANG === 'string' && PET_TXT.saudade[l] ? LANG : 'pt', s = PET_TXT[k] ? (PET_TXT[k][l] || PET_TXT[k].pt) : k; return s.replace(/\{(\w+)\}/g, function(_, n){ return v && v[n] != null ? v[n] : ''; }); }
+function petDiaBR(ms){ return new Date((ms || Date.now()) - 3 * 36e5).toISOString().slice(0, 10); }   // Brasília (UTC−3, sem horário de verão)
+function petHorasNoite(t0, t1){   // quantas horas entre t0 e t1 caem de 23h às 7h em Brasília
+  var h = 0, t = t0;
+  while(t < t1){ var fim = Math.min(t1, t + 36e5), hr = new Date(t - 3 * 36e5).getUTCHours(); if(hr >= 23 || hr < 7) h += (fim - t) / 36e5; t = fim; }
+  return h;
+}
+function petSemanaHtml(p){   // jeitinho e dias de carinho da semana (segunda a domingo, Brasília)
+  if(typeof petDiaBR !== 'function') return '';
+  var hoje = new Date(Date.now() - 3 * 36e5), dow = (hoje.getUTCDay() + 6) % 7, seg = petDiaBR(Date.now() - dow * 864e5);
+  var n = (p.diasCuidado || []).filter(function(d){ return d >= seg; }).length;
+  return '<small class="petsemana">' + (p.jeito ? '<em>' + escHtml(petTxt('j_' + p.jeito)) + '</em> · ' : '') + '🗓️ ' + escHtml(petTxt('semana', {n:n})) + '</small>';
+}
 var PET_FLOOR = 196, PET_X = 250, PET_SC = 2.4;                  // chão e posição do pet no camarim
 // ML1.3-A: estado exclusivamente visual; nunca entra em petData ou no save.
 var petLifePose = '', petLifePoseInicio = 0;
@@ -95,11 +122,12 @@ function petTick(){
   var now = Date.now(), el = now - (p.t || now);
   if(el < 0) el = 0;
   if(el > PET_CAP) el = PET_CAP;
-  var h = el / 36e5;
+  var h = el / 36e5, noite = p.dorme ? 0 : Math.min(h, petHorasNoite(now - el, now)), hq = h - noite / 2;   // à noite cai pela metade, como dormindo
   Object.keys(PET_RATE).forEach(function(k){
     if(p.dorme && k === 'energia') p[k] = petClamp(p[k] + PET_SLEEP_RATE * h);   // dormindo: recupera energia
-    else p[k] = petClamp(p[k] - PET_RATE[k] * h * (p.dorme ? .5 : 1));          // dormindo: o resto cai pela metade
+    else p[k] = petClamp(p[k] - PET_RATE[k] * (p.dorme ? h * .5 : hq));          // dormindo: o resto cai pela metade
   });
+  if(p.t && now - p.t >= 20 * 36e5 && typeof petSay === 'function') petSay(petTxt('saudade'));   // voltou depois de um tempão
   if(p.dorme && p.energia >= 100){ p.dorme = false; petSay(tr('Bom dia!') + ' ☀️'); }   // acorda sozinho quando descansou
   p.t = now;
 }
@@ -1179,7 +1207,7 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
 // O quarto, o celular, a agenda, o camarim, o minijogo e a adoção baixam ao abrir o pet. Cada "//→nome" acima marca o
 // lugar de uma função que mora em pet-sala.js (lá ela vem depois de "//←nome"); tests/pet-fonte.js remonta a ordem.
 // Se mudar pet-sala.js, suba a versão em PET_SALA_ARQ.
-var PET_SALA_ARQ='./pet-sala.js?v=21',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
+var PET_SALA_ARQ='./pet-sala.js?v=23',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
 function petSalaAoCarregar(f){if(PET_SALA_PRONTA)f();else petSalaFila.push(f);}
 function petSalaCarregar(){
   if(PET_SALA_PRONTA)return Promise.resolve();

@@ -194,7 +194,7 @@
   function barraTopo(){
     return '<div class="twc-topo"><div class="twc-topo-in">' +
       '<button type="button" class="twc-eu" data-ir="perfil" aria-label="' + esc(t('perfil') + ': ' + nick()) + '"><canvas class="twc-av" data-av="1" width="96" height="96" aria-hidden="true"></canvas>' +
-      '<span class="twc-eu-txt">' + (rankNome() ? '<small class="twc-lv">' + esc(rankNome()) + '</small>' : '') + '<b>' + esc(nick()) + '</b></span></button>' +
+      (window.TW_CONQ && logado() && TW_CONQ.novidade() ? '<i class="twc-eu-ponto" aria-hidden="true"></i>' : '') + '<span class="twc-eu-txt">' + (rankNome() ? '<small class="twc-lv">' + esc(rankNome()) + '</small>' : '') + '<b>' + esc(nick()) + '</b></span></button>' +
       '<span class="twc-st"><span class="twc-st-ico" aria-hidden="true">' + ico('estrela', 20) + '</span><b id="twcEstrelas">' + esc(estrelas()) + '</b>' +
       '<button type="button" class="twc-st-mais" data-ir="loja" aria-label="' + esc(t('estrelas')) + '">' + ico('mais', 16) + '</button></span>' +
       '<button type="button" class="twc-cfg" data-v="ajustes" aria-label="' + esc(t('ajustes')) + '">' + ico('ajustes', 22) + '</button>' +
@@ -392,6 +392,16 @@
     verTudo:{pt:'Ver tudo (+{n})',en:'See all (+{n})',es:'Ver todo (+{n})',id:'Lihat semua (+{n})',th:'ดูทั้งหมด (+{n})',ja:'ぜんぶ見る（+{n}）'},
     recolher:{pt:'Recolher',en:'Collapse',es:'Recoger',id:'Tutup',th:'ย่อ',ja:'とじる'},
     tudo:{pt:'Tudo feito por hoje! ✨',en:'All done for today! ✨',es:'¡Todo listo por hoy! ✨',id:'Semua beres hari ini! ✨',th:'วันนี้ทำครบแล้ว! ✨',ja:'きょうはぜんぶできた！✨'},
+    enc:{pt:'Encontro do dia',en:'Daily meetup',es:'Encuentro del día',id:'Temu hari ini',th:'นัดพบวันนี้',ja:'今日の出会い'},
+    encSub:{pt:'Quem vai aparecer hoje? Vale ★3.',en:'Who will show up today? Worth ★3.',es:'¿Quién aparecerá hoy? Vale ★3.',id:'Siapa yang muncul hari ini? Dapat ★3.',th:'วันนี้ใครจะมา? ได้ ★3',ja:'今日は誰に会える？★3'},
+    encOk:{pt:'Hoje: {n}',en:'Today: {n}',es:'Hoy: {n}',id:'Hari ini: {n}',th:'วันนี้: {n}',ja:'今日：{n}'},
+    encBt:{pt:'Descobrir',en:'Find out',es:'Descubrir',id:'Lihat',th:'ดูเลย',ja:'見る'},
+    rival:{pt:'Rival do dia no Idol⭐Battle!',en:'Rival of the day in Idol⭐Battle!',es:'Rival del día en Idol⭐Battle!',id:'Rival hari ini di Idol⭐Battle!',th:'คู่แข่งประจำวันใน Idol⭐Battle!',ja:'Idol⭐Battle!の今日のライバル'},
+    rivalSub:{pt:'Vença a unit rival: ★5, e o primeiro Battle do dia vale mais ★15.',en:'Beat the rival unit: ★5, plus ★15 for your first Battle of the day.',es:'Vence a la unit rival: ★5, y la primera Battle del día vale ★15 más.',id:'Kalahkan unit rival: ★5, plus ★15 untuk Battle pertama hari ini.',th:'ชนะยูนิตคู่แข่ง: ★5 และแบตเทิลแรกของวันได้อีก ★15',ja:'ライバルユニットに勝って★5、今日最初のBattleで+★15'},
+    rivalOk:{pt:'Rival vencido hoje!',en:'Rival beaten today!',es:'¡Rival vencido hoy!',id:'Rival dikalahkan hari ini!',th:'ชนะคู่แข่งวันนี้แล้ว!',ja:'今日のライバルに勝利！'},
+    jogar:{pt:'Jogar',en:'Play',es:'Jugar',id:'Main',th:'เล่น',ja:'遊ぶ'},
+    seq:{pt:'🔥 {n} dias seguidos',en:'🔥 {n}-day streak',es:'🔥 {n} días seguidos',id:'🔥 {n} hari berturut-turut',th:'🔥 ต่อเนื่อง {n} วัน',ja:'🔥 {n}日連続'},
+    seqProx:{pt:' · {n} dias = prêmio',en:' · {n} days = prize',es:' · {n} días = premio',id:' · {n} hari = hadiah',th:' · {n} วัน = รางวัล',ja:' · {n}日でごほうび'},
     tambem:{pt:'Também hoje',en:'Also today',es:'También hoy',id:'Juga hari ini',th:'วันนี้ยังมี',ja:'ほかにも'},
     erro:{pt:'Não deu agora. Tente de novo!',en:"Couldn't do it now. Try again!",es:'No se pudo ahora. ¡Inténtalo de nuevo!',id:'Belum bisa sekarang. Coba lagi!',th:'ตอนนี้ยังไม่ได้ ลองใหม่นะ!',ja:'いまはできなかった。もう一度ためしてね！'}
   };
@@ -455,7 +465,22 @@
     // 2. missões do dia (com conta)
     var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;
     if(mis && mis.length){ var mf = mis.filter(function(m){ return m.feito; }).length, ok2 = mf >= mis.length;
-      linha(ok2, 'lima', 'missoes', esc(thj('mis')), esc(ok2 ? thj('misOk') : thj('misFalta', {f:mf, n:mis.length})), ok2 ? '' : '<button type="button" class="twc-hj-bt" data-a="missoes">' + esc(thj('ver')) + '</button>'); }
+      // sequência: dias seguidos com 3+ missões (tw-estreia.js → missoes_sequencia)
+      var sq = window.TW_ESTREIA && TW_ESTREIA.sequencia ? TW_ESTREIA.sequencia() : null;
+      var fogo = sq && sq.dias > 0 ? '<span class="twc-hj-fogo">' + esc(thj('seq', {n:sq.dias}) + (sq.proximo ? thj('seqProx', {n:sq.proximo}) : '')) + '</span>' : '';
+      linha(ok2, 'lima', 'missoes', esc(thj('mis')), esc(ok2 ? thj('misOk') : thj('misFalta', {f:mf, n:mis.length})), ok2 ? '' : '<button type="button" class="twc-hj-bt" data-a="missoes">' + esc(thj('ver')) + '</button>', fogo); }
+    // Encontro do dia (o botão antigo ficou só no hub clássico e no mapa: desde 09/11 ninguém achava)
+    if(typeof encLer === 'function' && typeof encBtn !== 'undefined'){ var ef = encLer();
+      linha(!!ef, 'rosa', 'coracao', esc(thj('enc')), esc(ef ? thj('encOk', {n:typeof encNomes === 'function' ? encNomes(ef) : ef.nick}) : thj('encSub')),
+        ef ? '' : '<button type="button" class="twc-hj-bt" data-a="encontro">' + esc(thj('encBt')) + '</button>'); }
+    // Passatempos do dia (tw-passatempos.js): caça-palavras, 5 diferenças e labirinto, ★5 cada
+    if(window.TW_PASSA){ var pf = TW_PASSA.feitos().length;
+      linha(pf >= 3, 'ceu', 'estrela', esc(TW_PASSA.t('tit')), esc(pf >= 3 ? TW_PASSA.t('subOk') : TW_PASSA.t('sub', {f:pf, p:5})),
+        pf >= 3 ? '' : '<button type="button" class="twc-hj-bt" data-twpa="abrir">' + esc(TW_PASSA.t('jogar')) + '</button>'); }
+    // Rival do dia do Idol⭐Battle! (battle_status, carregado pelo tw-estreia.js)
+    var rv = window.TW_ESTREIA && TW_ESTREIA.rival ? TW_ESTREIA.rival() : null;
+    if(rv && typeof window.battleAbrir === 'function')
+      linha(rv.premiado, 'uva', 'trofeu', esc(thj('rival')), esc(rv.premiado ? thj('rivalOk') : thj('rivalSub')), rv.premiado ? '' : '<button type="button" class="twc-hj-bt" data-a="battle-rival">' + esc(thj('jogar')) + '</button>');
     // 3. capítulo do domingo (aparece na semana em que saiu)
     var cp = capHoje(), hj = C ? C.hoje() : '';
     if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLidos().includes(cp.n);
@@ -486,16 +511,28 @@
     var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
       (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
     var todos = extra ? itens.concat([extra]) : itens, fechar = '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('recolher')) + '</button>';
+    var topo = continuar + festival;
     if(feitos === tot) lista = hojeAberto ? todos.join('') : extra;   // tudo feito: a lista recolhe (abre no "Ver lista"); o próximo evento fica à vista
-    else {   // Início curto: as 2 pendências mais importantes (a ordem acima já é a de importância); o resto no "Ver tudo"
-      var pend = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }).slice(0, 2), sobra = todos.length - pend.length;
-      if(sobra <= 1) lista = todos.join('');   // só 1 escondido: mostra direto, sem botão
-      else lista = hojeAberto ? todos.join('') + fechar : pend.join('') + '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('verTudo', {n:sobra})) + '</button>';
+    else {
+      // Início curto (PR das melhorias, 21/11/2026): no máximo 3 pendências à vista, contando o Festival e o
+      // "Continuar", e de tipos diferentes (jogo, gente, mapa, leitura). A ordem dos tipos gira a cada dia, para a
+      // tela não pedir sempre as mesmas coisas; o resto fica no "Ver tudo".
+      var cand = [festival, continuar].filter(Boolean).concat(itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }));
+      var tipo = function(h){ return /data-anivcor|data-hjaniv|data-v="trio"|data-a="encontro"/.test(h) ? 'gente' : /data-bairro|data-piloto-bairro/.test(h) ? 'mapa' : /ler-capitulo|data-twpa/.test(h) ? 'leitura' : 'jogo'; };
+      var giro = ['jogo', 'gente', 'mapa', 'leitura'], dia = Math.floor((Date.now() - 3 * 36e5) / 864e5) % giro.length;
+      giro = giro.slice(dia).concat(giro.slice(0, dia));
+      var escolha = continuar ? [continuar] : [];   // o "Continuar" retoma algo já começado: fica sempre à vista
+      giro.forEach(function(tp){ if(escolha.length < 3){ var h = cand.filter(function(x){ return tipo(x) === tp && escolha.indexOf(x) < 0; })[0]; if(h) escolha.push(h); } });
+      cand.forEach(function(h){ if(escolha.length < 3 && escolha.indexOf(h) < 0) escolha.push(h); });
+      escolha.sort(function(a, b){ return cand.indexOf(a) - cand.indexOf(b); });   // na tela, a ordem de importância de sempre
+      var sobra = [festival, continuar].filter(Boolean).length + todos.length - escolha.length;
+      if(sobra <= 1 || hojeAberto) lista = todos.join('') + (hojeAberto && sobra > 1 ? fechar : '');
+      else { topo = ''; lista = escolha.join('') + '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('verTudo', {n:sobra})) + '</button>'; }
     }
     return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
       '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
       (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
-      continuar + festival + lista + '</section>';
+      topo + lista + '</section>';
   }
 
   var ESTREIA_TR = {
@@ -613,7 +650,7 @@
     }).join('');
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
-    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + estreiaHtml() + '</div>' +
+    return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + estreiaHtml() + (window.TW_CONQ && logado() ? TW_CONQ.cartaoHtml() : '') + '</div>' +
       '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + (window.TW_SEMANA ? window.TW_SEMANA.html() : '') + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
   }
 
@@ -634,9 +671,18 @@
     if(gac) bs.push(banner('gacha', titulo(gac), tt('1 giro por dia'), tt('Abrir'), 'data-ir="gacha"', alerta(gac) ? '!' : ''));
     // Sem repetir o que já tem porta no Início (Missões, Calendário, Mapa, News, Camarim) nem a engrenagem do topo (Ajustes).
     // Sem repetir dentro do Menu: a TV já é o card do Ranking; o "Hoje", o Calendário e o desejo/VIP ficam no Início.
-    var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
+    var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['coracao', thj('enc'), 'data-a="encontro"'], ['estrela', window.TW_PASSA ? TW_PASSA.t('tit') : '', 'data-twpa="abrir"'], ['album', t('album'), 'data-a="album"'],
               ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', tf('fichas'), 'data-v="trio"'], ['pata', tt2('tour'), 'data-v="tour"']];
+    at = at.filter(function(a){ return a[1]; });   // atalho de módulo que ainda não carregou fica de fora
     if(window.TW_BAIRRO) at.push(['pin', window.TW_BAIRRO.t('tit'), 'data-bairro="abrir"']);   // Vida no bairro (tw-bairro.js)
+    if(window.TW_COMUNIDADE){   // comunidade (tw-comunidade.js): concurso, convite, lembrete do show e app
+      var cm = window.TW_COMUNIDADE;
+      at.push(['trofeu', cm.t('concurso'), 'data-twk="concurso"']);
+      if(window.TW_ESTREIA && TW_ESTREIA.trilhaAtiva()) at.push(['estrela', TW_ESTREIA.t('trilha'), 'data-twe="trilha"']);   // primeira semana (tw-estreia.js)
+      if(logado()) at.push(['trio', cm.t('convite'), 'data-twk="convite"']);
+      at.push(['cal', cm.t('lembrete'), 'data-twk="lembrete"']);
+      if(cm.podeInstalar()) at.push(['estrela', cm.t('instalar'), 'data-twk="instalar"']);
+    }
     if(window.TW_PESSOAL && logado()){
       // No celular o cartão "Esta semana" não aparece no Início: a retrospectiva do mês fica aqui no Menu.
       if(window.matchMedia && matchMedia('(max-width:899px)').matches) at.push(['cal', window.TW_PESSOAL.t('retro'), 'data-twp="retro" data-mes="' + window.TW_PESSOAL.retroMes() + '"']);
@@ -652,7 +698,8 @@
       '<div class="twc-banners">' + bs.join('') + '</div>' + idols() +
       '<section class="twc-atalhos" aria-label="' + esc(t('menu')) + '">' + at.map(function(a){
         var c = a[0] === 'nov' ? novTemNovo() : a[2].indexOf('data-ir') === 0 ? card(a[0]) : null;
-        return '<button type="button" class="twc-atalho" ' + a[2] + '>' + ico(a[0], 26) + '<span>' + esc(a[1]) + '</span>' + badge(c) + cadeado(a[0]) + '</button>';
+        var novo = a[0] === 'loja' && window.TW_ESTREIA && TW_ESTREIA.lojaNovo && TW_ESTREIA.lojaNovo() ? '<em class="twc-novo">' + esc(TW_ESTREIA.t('novo')) + '</em>' : '';   // selo "Novo" na Zipper⭐Shop!
+        return '<button type="button" class="twc-atalho" ' + a[2] + '>' + ico(a[0], 26) + '<span>' + esc(a[1]) + '</span>' + (novo || badge(c)) + cadeado(a[0]) + '</button>';
       }).join('') + '</section></div>';
   }
 
@@ -704,11 +751,13 @@
     })();
   }
   function telaJogos(){
-    var ks = jogosNaTela();
+    var ks = jogosNaTela(), sem = window.TW_SEMANA && window.TW_SEMANA.jogoDaSemana ? window.TW_SEMANA.jogoDaSemana() : null;
+    // Jogo da semana (o menos jogado na semana anterior, missão com ★5 a mais) vem primeiro e com selo
+    if(sem && ks.indexOf(sem) > 0) ks = [sem].concat(ks.filter(function(k){ return k !== sem; }));
     return faixa(esc(t('jogos')), t('jogosSub').replace('{n}', ks.length)) + '<div class="twc-pag twc-jogos"><div class="twc-lista">' + ks.map(function(k){
       var c = card(k);
       return '<button type="button" class="twc-jogo twc-g-' + (COR[k] || 'roxo') + '" data-ir="' + k + '"><span class="twc-jogo-ico">' + ico(k, 24) + '</span>' +
-        '<span class="twc-jogo-txt"><b translate="no">' + esc(titulo(c)) + '</b><small>' + esc(descricao(c)) + '</small></span>' +
+        '<span class="twc-jogo-txt"><b translate="no">' + esc(titulo(c)) + '</b>' + (k === sem ? '<span class="twc-semana-selo">🌟 ' + esc(window.TW_SEMANA.t('jogo')) + '</span>' : '') + '<small>' + esc(descricao(c)) + '</small></span>' +
         (alerta(c) ? '<em class="twc-novo" aria-hidden="true">!</em>' : '') + seloTreino(k) + (precisaEntrar(k) ? '<em class="twc-novo twc-novo-cad" aria-hidden="true">' + ico('cadeado', 14) + '</em><span class="twc-sr"> (' + esc(t2('legCad')) + ')</span>' : '') + ico('seta', 20) + '</button>';
     }).join('') + '</div>' + (logado() ? '' : '<p class="twc-legenda"><span aria-hidden="true">' + ico('cadeado', 13) + '</span> ' + esc(t2('legCad')) + ' · <b>' + esc(t2('treino')) + '</b>: ' + esc(t2('legTreino')) + '</p>') + '</div>';
   }
@@ -822,11 +871,24 @@
     if(ev === 'studio' && typeof window.studioAbrir === 'function' && !card('studio')){ window.studioAbrir(); return; }
     abrirCard(ev);
   }
+  // Avisos em fila (21/11/2026): ao entrar podem chegar vários de uma vez (kit, trilha, bônus, sequência...);
+  // cada um aparece por inteiro, um depois do outro, sem repetir o mesmo texto. Ícone: nome do desenho ou um emoji.
   function toast(txt, icone){
-    if(!cel) return; var el = $id('twcToast');
+    if(!cel) return;
+    toast.fila = toast.fila || [];
+    if(toast.ativo){
+      if(toast.atual !== txt && !toast.fila.some(function(f){ return f[0] === txt; }) && toast.fila.length < 8) toast.fila.push([txt, icone]);
+      return;
+    }
+    var el = $id('twcToast');
     if(!el){ el = document.createElement('div'); el.id = 'twcToast'; el.className = 'twc-toast'; el.setAttribute('role', 'status'); cel.appendChild(el); }
-    el.innerHTML = (icone ? '<span class="twc-toast-ic" aria-hidden="true">' + ico(icone, 22) + '</span>' : '') + '<span>' + esc(txt) + '</span>'; el.classList.remove('twc-toast-on'); void el.offsetWidth; el.classList.add('twc-toast-on');
-    clearTimeout(toast.t); toast.t = setTimeout(function(){ el.classList.remove('twc-toast-on'); }, 3800);
+    var desenho = icone && /^[a-z0-9_]+$/.test(icone) ? ico(icone, 22) : icone ? '<span class="twc-toast-emo">' + esc(icone) + '</span>' : '';
+    el.innerHTML = (desenho ? '<span class="twc-toast-ic" aria-hidden="true">' + desenho + '</span>' : '') + '<span>' + esc(txt) + '</span>'; el.classList.remove('twc-toast-on'); void el.offsetWidth; el.classList.add('twc-toast-on');
+    toast.ativo = true; toast.atual = txt;
+    clearTimeout(toast.t); toast.t = setTimeout(function(){
+      el.classList.remove('twc-toast-on');
+      setTimeout(function(){ toast.ativo = false; toast.atual = ''; var n = toast.fila.shift(); if(n) toast(n[0], n[1]); }, 320);
+    }, toast.fila.length ? 2800 : 3800);
   }
   window.twcToast = function(txt){ toast(txt, 'estrela'); };   // usado pelo tw-bairro.js (nível novo no bico da rua)
   // Vida no bairro (tw-bairro.js): ponto, nível, bagunça e guia redesenham o Início
@@ -1756,7 +1818,7 @@
     var el=alvo||document.activeElement, seletor='';
     if(el && cel.contains(el)){
       if(el.id)seletor='#'+CSS.escape(el.id);
-      else ['data-a','data-ir','data-v','data-n','data-estreia','data-pin','data-pin-ir','data-piloto-bairro','data-cald','data-calmes','data-cal-ics','data-cal-cap','data-tw-bairro'].some(function(a){
+      else ['data-a','data-ir','data-v','data-n','data-twpa','data-estreia','data-pin','data-pin-ir','data-piloto-bairro','data-cald','data-calmes','data-cal-ics','data-cal-cap','data-tw-bairro'].some(function(a){
         if(!el.hasAttribute(a))return false;
         seletor='['+a+'="'+CSS.escape(el.getAttribute(a))+'"]';return true;
       });
@@ -1825,6 +1887,8 @@
       return;
     }
     if(a === 'mapa' || a === 'missoes' || a === 'busca' || a === 'nov'){ ir('emb:' + a); return; }
+    if(a === 'encontro'){ if(typeof encBtn !== 'undefined' && encBtn.onclick) encBtn.onclick(); return; }   // Encontro do dia
+    if(a === 'battle-rival'){ if(typeof window.battleAbrir === 'function') window.battleAbrir(); return; }
     if(a === 'momentos'){
       if(!logado()){pedirLogin('Momentos⭐');return;}
       TW_CARGA.abrir('Momentos⭐', petSalaCarregar, function(){

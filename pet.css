@@ -260,3 +260,6 @@
   .petacts button,.petlife-poses button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:11px;line-height:1.15;padding:5px 1px}
   .petlife-poses button span{white-space:nowrap}
 }
+.petrank{flex-wrap:wrap}
+.petrank .petsemana{flex-basis:100%;white-space:normal;font-size:10.5px;color:var(--sub)}
+.petrank .petsemana em{font-style:normal;font-weight:800;color:var(--b1)}

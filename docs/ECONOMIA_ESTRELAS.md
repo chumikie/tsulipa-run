@@ -59,3 +59,36 @@ Migração `supabase/migrations/20261120150000_auditoria_seguranca_20261120.sql`
 - **Jogo da semana:** a missão de nível 1 prefere o jogo menos jogado na semana anterior e vale ★5 a mais (★15 em vez de ★10).
 - **Festa no mapa:** a lembrança é o cenário do camarim do tema (item de ★60 na loja), grátis uma vez por festa; não mexe no saldo.
 - Somando tudo, um jogador muito ativo ganha no máximo +★25 por semana a mais.
+
+## PR das melhorias (21/11/2026)
+
+Migração `supabase/migrations/20261121120000_convite_e_concurso_visual.sql` (ainda não aplicada; aplicar junto com o merge).
+
+- **Convite com prêmio:** ★30 para quem chega e ★30 para quem convidou, quando a pessoa nova termina a primeira corrida. Só conta criada há até 7 dias aceita convite; quem convida recebe no máximo 10 prêmios por mês (+★300/mês no pior caso). Insígnia `convite` (Abre-alas).
+- **Concurso de visual da semana:** ★50 por semana para quem teve mais votos (empate: todo mundo empatado), com pelo menos 2 inscrições e 1 voto. Até 3 votos por conta por semana, nunca no próprio visual. Insígnia `look_semana`.
+- Somando, um jogador muito ativo ganha no máximo +★50 por semana a mais; o convite só paga quando chega gente nova.
+
+### Parte 2 (21/11/2026)
+Migração `supabase/migrations/20261121150000_duetos_metas_recorde_semana.sql` (ainda não aplicada).
+- **Álbum de duetos (Moon⭐Duo!):** 3, 6, 10 e 15 parceiros de cena diferentes pagam ★10, ★20, ★30 e ★50, uma vez cada (★110 no total, para sempre).
+- **Metas do álbum de Idols:** 5, 15, 30 e 50 Idols pagam ★10, ★25, ★40 e ★60, uma vez cada (★135 no total, para sempre).
+- **Recorde da semana:** só leitura (`meu_recorde_semana`), sem prêmio novo.
+
+### Parte 3 — economia e começo do jogo (21/11/2026)
+Migração `supabase/migrations/20261121180000_economia_e_estreia.sql` (ainda não aplicada). Diagnóstico de 30 dias: 76% das estrelas vinham do Center⭐Run!, 12 de 20 contas sem nenhum item, conta nova com ★0, só 8 de 20 seguiam depois do 7º dia.
+- **Kit de estreia:** ★100 + 1 item grátis (detalhes, chapéu, expressões, fundos baratos), uma vez por conta — também para quem já joga (até ★2.000 no total para as 20 contas atuais).
+- **Trilha da primeira semana:** contas com até 14 dias; corrida, giro do gacha, foto no Duo, compra e missão valem ★20 cada; completar dá +★40 e a insígnia `trilha` (★140 no total, uma vez).
+- **Primeiro resultado do dia** no Sora⭐Jump!, Happy⭐Cafe!, Handshake⭐Event! e Idol⭐Battle!: ★15 cada (até +★60/dia para quem joga os quatro).
+- **Promoção da semana:** uma roupa fora de temporada com 30% de desconto, em rodízio de 12 roupas (`private.promo_item`). Preços-base em `private.visual_preco_base`.
+- **Gacha:** 3 primeiros giros = card; 3 giros seguidos sem card → o próximo é card; card de Idol que falta enquanto faltarem 3+; pó: 3 repetidos = 1 card (antes 5).
+
+### Parte 4 (21/11/2026)
+Migração `supabase/migrations/20261121200000_sequencia_missoes.sql` (ainda não aplicada).
+- **Sequência das Missões:** dia com 3+ missões conta; 3 dias seguidos = ★15, 7 dias = ★40, uma vez por sequência.
+- O Encontro do dia (★3) e o Rival do dia do Battle (★5) voltam a aparecer no "Hoje" — sem prêmio novo.
+
+### Parte 5 (21/11/2026)
+Migração `supabase/migrations/20261121220000_conquistas_perfil.sql` (ainda não aplicada).
+- **Passatempos do dia** (caça-palavras, 5 diferenças, labirinto): ★5 cada, uma vez por dia (`passatempo_feito`, motivo `passatempo`). No máximo ★15/dia.
+- Conquistas e destaques do Perfil não mexem em estrelas.
+- Colorir o seu Idol (passatempo livre) não dá estrelas.

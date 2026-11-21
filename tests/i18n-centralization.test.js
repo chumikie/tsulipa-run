@@ -26,7 +26,7 @@ const expectedTables = {
  S2_DICT:{en:18,es:18,th:18,ja:18}
 };
 const expectedRows = {
- seasonalAchievements:76, profileEditorLabels:16, profileActivityLabels:32,
+ seasonalAchievements:82, profileEditorLabels:16, profileActivityLabels:32,
  birthdayLabels:22, homeIntroLabels:11, moonDuoLabels:74,
  gachaCardBirthdayLabels:14, moonDuoAccessoryLabels:6,
  moonDuoProfileLabels:44, miscStatusLabels:9, encounterLabels:7,

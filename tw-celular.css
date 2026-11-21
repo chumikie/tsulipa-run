@@ -1011,6 +1011,26 @@ body.tw-cel-cr #menu>.panel{max-height:calc(100dvh - 84px - 104px - env(safe-are
 .twp-ov{z-index:60}
 .twp-panel{max-width:520px;width:calc(100% - 24px)}
 .twp-tit{margin:0 0 10px;font:400 22px 'Mochiy Pop One',sans-serif;color:#5a2bc4;text-align:center}
+/* Comunidade (tw-comunidade.js · 21/11/2026): convite, concurso de visual, app e lembrete */
+.twk-panel{max-width:640px;max-height:calc(100dvh - 32px);overflow:auto}
+.twk-txt{margin:0 0 10px;text-align:center;font-weight:700;line-height:1.45}
+.twk-nota{margin:0 0 10px;text-align:center;font-size:13px;color:#6b5a95}
+.twk-tema{margin:0 0 6px;text-align:center;font:400 18px 'Mochiy Pop One',sans-serif;color:#ff6fb5}
+.twk-tema small{display:block;font:700 12px 'M PLUS Rounded 1c',sans-serif;color:#6b5a95}
+.twk-link input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:12px;border:2px solid #d9c8ff;font:700 14px 'M PLUS Rounded 1c',sans-serif;text-align:center;background:#fbf8ff;color:#3b2470}
+.twk-galeria{list-style:none;margin:6px 0 12px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+.twk-card{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 6px 10px;border-radius:16px;background:linear-gradient(180deg,#f6efff,#fff);border:2px solid #e6dbff}
+.twk-card.votei{border-color:#ff6fb5;box-shadow:0 0 0 3px rgba(255,111,181,.18)}
+.twk-card canvas{width:100px;height:125px}
+.twk-card b{font-size:13px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.twk-votar,.twk-votos{min-height:40px;min-width:64px;padding:6px 12px;border-radius:999px;font:800 15px 'M PLUS Rounded 1c',sans-serif;color:#d2337f;background:#fff0f7;border:2px solid #ffc2df}
+.twk-votar{cursor:pointer}.twk-votar[aria-pressed="true"]{background:#ff6fb5;color:#fff;border-color:#ff6fb5}
+.twk-votos{display:inline-flex;align-items:center;justify-content:center;border-style:dashed}
+.twk-vazio{text-align:center;font-weight:700;color:#6b5a95;margin:10px 0 14px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twk-nota,:root:not([data-theme="light"]) .twk-vazio,:root:not([data-theme="light"]) .twk-tema small{color:#c9bde8}:root:not([data-theme="light"]) .twk-card{background:linear-gradient(180deg,#2a1f4a,#1f1838);border-color:#43356e}:root:not([data-theme="light"]) .twk-link input{background:#1f1838;color:#efe6ff;border-color:#43356e}}
+:root[data-theme="dark"] .twk-nota,:root[data-theme="dark"] .twk-vazio,:root[data-theme="dark"] .twk-tema small{color:#c9bde8}
+:root[data-theme="dark"] .twk-card{background:linear-gradient(180deg,#2a1f4a,#1f1838);border-color:#43356e}
+:root[data-theme="dark"] .twk-link input{background:#1f1838;color:#efe6ff;border-color:#43356e}
 .twp-img{display:block;width:100%;max-height:58vh;object-fit:contain;border-radius:16px;box-shadow:0 8px 22px rgba(60,20,120,.25)}
 .twp-check{display:flex;gap:8px;align-items:flex-start;margin:12px 0 2px;font-weight:800;font-size:14px}
 .twp-nota{display:block;color:#6c6488;font-size:12px;margin:2px 0 8px}
@@ -1043,3 +1063,152 @@ a.btn#twpBaixar{text-decoration:none}
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twp-vit-lado b{color:#f3eeff}:root:not([data-theme="light"]) .twp-vit-lado small,:root:not([data-theme="light"]) .twp-vit-card figcaption{color:#c9bde8}:root:not([data-theme="light"]) .twp-vitrine h3{color:#e6d6ff}}
 [data-theme="dark"] .twp-vit-lado b{color:#f3eeff}[data-theme="dark"] .twp-vit-lado small,[data-theme="dark"] .twp-vit-card figcaption{color:#c9bde8}
+/* Jogo da semana em destaque na tela de Jogos (21/11/2026) */
+.twc-semana-selo{align-self:flex-start;display:inline-block;margin:2px 0;padding:1px 8px;border-radius:999px;background:#fff3c4;color:#8a5a00;font:800 11px 'M PLUS Rounded 1c',sans-serif}
+:root[data-theme="dark"] .twc-semana-selo{background:#4a3a10;color:#ffe08a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-semana-selo{background:#4a3a10;color:#ffe08a}}
+/* PR das melhorias, parte 2 (21/11/2026): álbum de duetos, recorde da semana, perfil compartilhável, metas do álbum */
+.twk-duomais{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0 4px}
+.twk-duomais .btn{min-height:44px}
+.twk-metas{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:6px}
+.twk-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:8px 12px;border-radius:14px;background:#f6efff;border:2px solid #e6dbff;font-weight:700}
+.twk-meta.ok{border-color:#b6ff3b;background:#f4ffe4}
+.twk-meta .btn{min-height:40px;padding:6px 14px}
+.twk-recsemana,.twk-recfim{margin:6px auto 8px;max-width:420px;padding:8px 12px;border-radius:14px;background:#fff6d6;color:#7a5200;font-weight:800;font-size:13.5px;text-align:center}
+.twk-perfshare{display:block;margin:14px auto 4px;min-height:44px}
+.albummetafalta{margin:4px 0 8px;text-align:center;font-weight:700;font-size:13px;color:#6b5a95}
+.albummetapremio{display:block;margin:6px auto;min-height:44px}
+:root[data-theme="dark"] .twk-meta{background:#2a1f4a;border-color:#43356e}
+:root[data-theme="dark"] .twk-meta.ok{background:#22331a;border-color:#6f9a2a}
+:root[data-theme="dark"] .twk-recsemana,:root[data-theme="dark"] .twk-recfim{background:#3d3210;color:#ffe08a}
+:root[data-theme="dark"] .albummetafalta{color:#c9bde8}
+@media (prefers-color-scheme:dark){
+ :root:not([data-theme="light"]) .twk-meta{background:#2a1f4a;border-color:#43356e}
+ :root:not([data-theme="light"]) .twk-meta.ok{background:#22331a;border-color:#6f9a2a}
+ :root:not([data-theme="light"]) .twk-recsemana,:root:not([data-theme="light"]) .twk-recfim{background:#3d3210;color:#ffe08a}
+ :root:not([data-theme="light"]) .albummetafalta{color:#c9bde8}
+}
+/* Estreia e economia (tw-estreia.js · 21/11/2026) */
+.twe-kit{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:4px 0 12px}
+.twe-kit .btn{min-height:48px;white-space:normal;line-height:1.2}
+.perffalta{display:block;margin-top:4px;font-size:11.5px;font-weight:700;color:#6b5a95}
+.perfpromo{display:inline-block;margin:0 0 4px;padding:1px 8px;border-radius:999px;background:#ff6fb5;color:#fff;font-weight:800;font-size:11px}
+.perfroupa s{opacity:.65;font-weight:600}
+:root[data-theme="dark"] .perffalta{color:#c9bde8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .perffalta{color:#c9bde8}}
+/* Hoje: sequência das Missões e selo Novo da loja (21/11/2026) */
+.twc-hj-fogo{display:block;margin-top:2px;font-size:11.5px;font-weight:800;color:#d2560a}
+.twc-novo{position:absolute;top:4px;right:4px;padding:1px 6px;border-radius:999px;background:#ff6fb5;color:#fff;font:800 10px 'M PLUS Rounded 1c',sans-serif;font-style:normal;letter-spacing:.02em}
+:root[data-theme="dark"] .twc-hj-fogo{color:#ffb070}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-hj-fogo{color:#ffb070}}
+.twc-toast-emo{display:inline-block;font-size:20px;line-height:1}
+/* Conquistas à vista (tw-conquistas.js, 21/11/2026) */
+.twc-eu{position:relative}
+.twc-eu-ponto{position:absolute;left:34px;top:2px;width:12px;height:12px;border-radius:50%;background:#ff6fb5;border:2px solid #fff;box-shadow:0 0 0 2px rgba(255,111,181,.25);animation:twqPulso 1.8s ease-in-out infinite}
+@keyframes twqPulso{50%{transform:scale(1.18)}}
+@media (prefers-reduced-motion:reduce){.twc-eu-ponto{animation:none}}
+.twq-cartao{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:10px 14px 10px 10px;border-radius:20px;background:linear-gradient(120deg,#f6f0ff,#fff0f8);border:2px solid #e0d3ff;box-shadow:0 3px 0 #e0d3ff;text-align:left;color:#3a2470;font:inherit;cursor:pointer}
+.twq-cartao:active{transform:translateY(2px);box-shadow:0 1px 0 #e0d3ff}
+.twq-av{width:54px;height:54px;flex:0 0 54px;border-radius:50%}
+.twq-c-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.twq-c-txt b{font-size:15px}
+.twq-c-txt small{font-size:12px;font-weight:700;color:#6b55a8;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.twq-c-comp{color:#9b30d9 !important}
+.twq-novo{font-style:normal;font-size:11px;font-weight:800;padding:1px 8px;border-radius:999px;background:#ff6fb5;color:#fff;margin-left:4px;vertical-align:1px}
+.twq-barra{display:inline-block;flex:none;width:90px;min-width:60px;max-width:140px;height:8px;border-radius:999px;background:#e9e0ff;overflow:hidden;vertical-align:middle}
+.twq-barra i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#7b3ff0,#ff6fb5)}
+.twq-perfil{margin:4px 0 12px}
+.twq-pts{margin:0 0 6px;font-size:15px;color:#7b3ff0}
+.twq-lista{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.twq-lista li{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:14px;background:rgba(123,63,240,.07)}
+.twq-emo{font-size:24px;line-height:1}
+.twq-txt{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.twq-txt .twq-barra{max-width:none;width:100%}
+.twq-txt small,.twq-comp small,.twq-d-prox small{font-size:12px;font-weight:700;opacity:.8}
+.twq-comp{display:flex;flex-direction:column;gap:3px;margin:10px 0 4px}
+.twq-comp .twq-barra{max-width:none;width:100%}
+.twq-dest{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0}
+.twq-dest i{font-style:normal;font-size:20px;line-height:1;padding:4px 6px;border-radius:12px;background:rgba(255,255,255,.7);box-shadow:0 1px 0 rgba(123,63,240,.2)}
+.twq-dest sup{font-size:10px;font-weight:800;color:#9b30d9;margin-left:1px}
+.twq-d{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.twq-d-prox{display:flex;flex-direction:column;gap:3px}
+.twq-d-prox .twq-barra{max-width:none;width:100%}
+.twq-pin{align-self:flex-start;font-size:13px;padding:6px 12px}
+:root[data-theme="dark"] .twq-cartao{background:linear-gradient(120deg,#2a1f45,#3a1f3a);border-color:#4a3a78;box-shadow:0 3px 0 #4a3a78;color:#f1e9ff}
+:root[data-theme="dark"] .twq-c-txt small{color:#cdbcff}
+:root[data-theme="dark"] .twq-barra{background:#3d3160}
+:root[data-theme="dark"] .twq-dest i{background:rgba(0,0,0,.25)}
+:root[data-theme="dark"] .twq-pts{color:#c9a8ff}
+:root[data-theme="dark"] .twc-eu-ponto{border-color:#241a3b}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twq-cartao{background:linear-gradient(120deg,#2a1f45,#3a1f3a);border-color:#4a3a78;box-shadow:0 3px 0 #4a3a78;color:#f1e9ff}
+  :root:not([data-theme="light"]) .twq-c-txt small{color:#cdbcff}
+  :root:not([data-theme="light"]) .twq-barra{background:#3d3160}
+  :root:not([data-theme="light"]) .twq-dest i{background:rgba(0,0,0,.25)}
+  :root:not([data-theme="light"]) .twq-pts{color:#c9a8ff}
+  :root:not([data-theme="light"]) .twc-eu-ponto{border-color:#241a3b}
+}
+/* Passatempos do dia (tw-passatempos.js, 21/11/2026) */
+.twpa-panel{max-width:420px}
+.twpa-lista{list-style:none;margin:6px 0;padding:0;display:grid;gap:8px}
+.twpa-item{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;border-radius:16px;border:2px solid #e0d3ff;background:#fff;color:#3a2470;font:inherit;font-weight:800;text-align:left;cursor:pointer}
+.twpa-item.ok{background:#f1ffe0;border-color:#b6ff3b}
+.twpa-ic{font-size:24px}.twpa-item b{flex:1}.twpa-item em{font-style:normal;color:#7b3ff0}
+.twpa-palavras{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px;padding:0}
+.twpa-palavras li{padding:3px 10px;border-radius:999px;background:#efe7ff;color:#5b2fc0;font-weight:800;font-size:13px;letter-spacing:.04em}
+.twpa-palavras li.ok{background:#b6ff3b;color:#2f4a00;text-decoration:line-through}
+.twpa-grade{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:3px;max-width:340px;margin:0 auto}
+.twpa-letra{aspect-ratio:1;min-width:0;padding:0;border-radius:8px;border:1.5px solid #e0d3ff;background:#fff;color:#3a2470;font:800 16px/1 inherit;cursor:pointer}
+.twpa-letra.sel{background:#ff6fb5;border-color:#ff6fb5;color:#fff}
+.twpa-letra.ok{background:#d8ff9e;border-color:#9bdc2c}
+.twpa-fotos{display:grid;gap:8px}
+.twpa-cv{display:block;width:100%;max-width:340px;height:auto;margin:0 auto;border-radius:14px;box-shadow:0 2px 0 #e0d3ff;touch-action:manipulation}
+.twpa-cv-b{cursor:crosshair}
+.twpa-erro{animation:twpaTreme .3s}
+@keyframes twpaTreme{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.twpa-lab{max-width:300px;touch-action:none}
+.twpa-setas{display:flex;flex-direction:column;align-items:center;gap:6px;margin:10px 0 0}
+.twpa-setas span{display:flex;gap:6px}
+.twpa-setas .btn{min-width:56px;padding:8px 0;font-size:16px}
+.twpa-status{min-height:1.3em;margin:8px 0 0;text-align:center;font-weight:800;color:#7b3ff0}
+@media (prefers-reduced-motion:reduce){.twpa-erro{animation:none}}
+:root[data-theme="dark"] .twpa-item,:root[data-theme="dark"] .twpa-letra{background:#2a1f45;border-color:#4a3a78;color:#f1e9ff}
+:root[data-theme="dark"] .twpa-item.ok{background:#2f3d14;border-color:#7aa31c}
+:root[data-theme="dark"] .twpa-letra.ok{background:#3f5a12;border-color:#7aa31c}
+:root[data-theme="dark"] .twpa-palavras li{background:#3d3160;color:#e0d0ff}
+:root[data-theme="dark"] .twpa-status{color:#c9a8ff}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twpa-item,:root:not([data-theme="light"]) .twpa-letra{background:#2a1f45;border-color:#4a3a78;color:#f1e9ff}
+  :root:not([data-theme="light"]) .twpa-item.ok{background:#2f3d14;border-color:#7aa31c}
+  :root:not([data-theme="light"]) .twpa-letra.ok{background:#3f5a12;border-color:#7aa31c}
+  :root:not([data-theme="light"]) .twpa-palavras li{background:#3d3160;color:#e0d0ff}
+  :root:not([data-theme="light"]) .twpa-status{color:#c9a8ff}
+}
+.twpa-colorir{max-width:300px;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer;touch-action:manipulation}
+.twpa-paleta{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:10px 0 4px}
+.twpa-cor{width:32px;height:32px;border-radius:50%;border:2px solid rgba(58,36,112,.25);cursor:pointer;padding:0}
+.twpa-cor[aria-pressed="true"]{outline:3px solid #7b3ff0;outline-offset:2px}
+/* barras: em linha crescem; em coluna ficam com 8px de altura (o flex-basis viraria altura) */
+.twq-c-txt small .twq-barra{flex:1 1 60px;width:auto}
+.twq-txt .twq-barra,.twq-comp .twq-barra,.twq-d-prox .twq-barra{flex:none;height:8px}
+:root[data-theme="dark"] .twq-lista li{background:rgba(255,255,255,.07);color:#f1e9ff}
+:root[data-theme="dark"] .twq-comp,:root[data-theme="dark"] .twq-d{color:#f1e9ff}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .twq-lista li{background:rgba(255,255,255,.07);color:#f1e9ff}
+  :root:not([data-theme="light"]) .twq-comp,:root:not([data-theme="light"]) .twq-d{color:#f1e9ff}
+}
+.twq-perfil{padding:8px 12px;border-radius:14px;background:rgba(123,63,240,.06)}
+.twq-linha{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px;margin:0}
+.twq-linha .twq-pts{margin:0;font-size:14px}
+.twq-um{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700}
+.twq-um .twq-barra{width:70px}
+.twq-mais{margin-top:6px}.twq-mais summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#7b3ff0}
+.twq-mais .twq-lista{margin-top:6px}
+.twq-comp-l{margin:4px 0 0;font-size:11.5px;font-weight:700;opacity:.75}
+:root[data-theme="dark"] .twq-perfil{background:rgba(255,255,255,.06);color:#f1e9ff}
+:root[data-theme="dark"] .twq-mais summary{color:#c9a8ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twq-perfil{background:rgba(255,255,255,.06);color:#f1e9ff}:root:not([data-theme="light"]) .twq-mais summary{color:#c9a8ff}}
+#perfIns:not(.twq-aberta) .twq-oculta{display:none}
+.twq-todas{display:block;margin:6px auto 0;padding:5px 14px;border-radius:999px;border:1.5px solid #7b3ff0;background:transparent;color:#7b3ff0;font:800 12.5px/1.3 inherit;cursor:pointer}
+:root[data-theme="dark"] .twq-todas{border-color:#c9a8ff;color:#c9a8ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twq-todas{border-color:#c9a8ff;color:#c9a8ff}}

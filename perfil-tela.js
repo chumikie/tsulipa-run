@@ -55,6 +55,7 @@ function perfMontar(){
   h += '<div class="btns" style="margin-top:14px"><button type="button" class="btn alt" id="perfVoltar">' + escHtml(tr('VOLTAR')) + '</button></div>';
   $('perfCorpo').innerHTML = h;
   if(window.TW_PESSOAL) try{ window.TW_PESSOAL.vitrineMontar(d, meu); }catch(e){}   // vitrine do perfil (tw-pessoal.js)
+  if(window.TW_CONQ) try{ window.TW_CONQ.perfilMontar(d, meu); }catch(e){}   // destaques e conquistas à vista (tw-conquistas.js)
   $('perfVoltar').onclick = perfFechar;
   $('perfFotoBtn').onclick = function(){ perfZoom = !perfZoom; perfFotoAtual(); beep(perfZoom ? 784 : 988, .05, 'triangle', .04); };
   if(!meu) $('perfCora').onclick = perfDarCoracao;
@@ -100,6 +101,7 @@ function perfAbaMostrar(){
     h += '<h3>💌 ' + escHtml(tr('Recados')) + '</h3>' + perfRecadosHtml(d, meu);
     if(meu) h += perfBioHtml(d) + perfApagarHtml();
     box.innerHTML = h;
+    if(window.TW_CONQ) try{ window.TW_CONQ.abaPerfil(d, meu); }catch(e){}   // "Quase lá" e perfil completo, acima da estante
     var profileStyleCta = $('perfProfileStyleCta');
     if(profileStyleCta) profileStyleCta.onclick = function(){
       var target = $('perfBioEmoji') || $('perfBioCor');
@@ -192,6 +194,7 @@ function perfRecadosHtml(d, meu){
   h += '<p class="perfmsg" id="perfRecMsg" hidden></p>';
   h += L.length ? '<ul class="perfrecs">' + L.map(function(r){
     return '<li><div><button type="button" class="lbn" data-nick="' + escHtml(r.nick) + '">' + escHtml(r.nick) + '</button> <small>' + escHtml(perfData(r.created_at)) + '</small></div><p>' + escHtml(r.texto) + '</p>' +
+           (meu && r.nick && contaJ && r.nick !== contaJ.nick ? '<button type="button" class="perfrecresp" data-perfresp="' + escHtml(r.nick) + '">↩ ' + escHtml(window.TW_CONQ ? TW_CONQ.t('responder') : 'Responder') + '</button>' : '') +   // abre o perfil de quem escreveu, com o campo de recado pronto
            (r.pode_apagar || d.admin_ver ? '<button type="button" class="perfrecx" data-id="' + (+r.id) + '"' + (!r.pode_apagar ? ' data-adm="1"' : '') + ' aria-label="✕">✕</button>' : '') + '</li>';
   }).join('') + '</ul>' : '<p class="perfcarr">' + escHtml(tr('Nenhum recado ainda.')) + '</p>';
   if(meu) h += '<label class="perfrecon"><input type="checkbox" id="perfRecOn"' + (d.recados_on !== false ? ' checked' : '') + '> ' + escHtml(tr('Aceitar recados')) + '</label>' +

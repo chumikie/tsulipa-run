@@ -1067,3 +1067,24 @@ a.btn#twpBaixar{text-decoration:none}
 .twc-semana-selo{align-self:flex-start;display:inline-block;margin:2px 0;padding:1px 8px;border-radius:999px;background:#fff3c4;color:#8a5a00;font:800 11px 'M PLUS Rounded 1c',sans-serif}
 :root[data-theme="dark"] .twc-semana-selo{background:#4a3a10;color:#ffe08a}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-semana-selo{background:#4a3a10;color:#ffe08a}}
+/* PR das melhorias, parte 2 (21/11/2026): álbum de duetos, recorde da semana, perfil compartilhável, metas do álbum */
+.twk-duomais{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0 4px}
+.twk-duomais .btn{min-height:44px}
+.twk-metas{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:6px}
+.twk-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:8px 12px;border-radius:14px;background:#f6efff;border:2px solid #e6dbff;font-weight:700}
+.twk-meta.ok{border-color:#b6ff3b;background:#f4ffe4}
+.twk-meta .btn{min-height:40px;padding:6px 14px}
+.twk-recsemana,.twk-recfim{margin:6px auto 8px;max-width:420px;padding:8px 12px;border-radius:14px;background:#fff6d6;color:#7a5200;font-weight:800;font-size:13.5px;text-align:center}
+.twk-perfshare{display:block;margin:14px auto 4px;min-height:44px}
+.albummetafalta{margin:4px 0 8px;text-align:center;font-weight:700;font-size:13px;color:#6b5a95}
+.albummetapremio{display:block;margin:6px auto;min-height:44px}
+:root[data-theme="dark"] .twk-meta{background:#2a1f4a;border-color:#43356e}
+:root[data-theme="dark"] .twk-meta.ok{background:#22331a;border-color:#6f9a2a}
+:root[data-theme="dark"] .twk-recsemana,:root[data-theme="dark"] .twk-recfim{background:#3d3210;color:#ffe08a}
+:root[data-theme="dark"] .albummetafalta{color:#c9bde8}
+@media (prefers-color-scheme:dark){
+ :root:not([data-theme="light"]) .twk-meta{background:#2a1f4a;border-color:#43356e}
+ :root:not([data-theme="light"]) .twk-meta.ok{background:#22331a;border-color:#6f9a2a}
+ :root:not([data-theme="light"]) .twk-recsemana,:root:not([data-theme="light"]) .twk-recfim{background:#3d3210;color:#ffe08a}
+ :root:not([data-theme="light"]) .albummetafalta{color:#c9bde8}
+}

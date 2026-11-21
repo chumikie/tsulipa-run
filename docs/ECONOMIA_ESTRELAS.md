@@ -67,3 +67,9 @@ Migração `supabase/migrations/20261121120000_convite_e_concurso_visual.sql` (a
 - **Convite com prêmio:** ★30 para quem chega e ★30 para quem convidou, quando a pessoa nova termina a primeira corrida. Só conta criada há até 7 dias aceita convite; quem convida recebe no máximo 10 prêmios por mês (+★300/mês no pior caso). Insígnia `convite` (Abre-alas).
 - **Concurso de visual da semana:** ★50 por semana para quem teve mais votos (empate: todo mundo empatado), com pelo menos 2 inscrições e 1 voto. Até 3 votos por conta por semana, nunca no próprio visual. Insígnia `look_semana`.
 - Somando, um jogador muito ativo ganha no máximo +★50 por semana a mais; o convite só paga quando chega gente nova.
+
+### Parte 2 (21/11/2026)
+Migração `supabase/migrations/20261121150000_duetos_metas_recorde_semana.sql` (ainda não aplicada).
+- **Álbum de duetos (Moon⭐Duo!):** 3, 6, 10 e 15 parceiros de cena diferentes pagam ★10, ★20, ★30 e ★50, uma vez cada (★110 no total, para sempre).
+- **Metas do álbum de Idols:** 5, 15, 30 e 50 Idols pagam ★10, ★25, ★40 e ★60, uma vez cada (★135 no total, para sempre).
+- **Recorde da semana:** só leitura (`meu_recorde_semana`), sem prêmio novo.

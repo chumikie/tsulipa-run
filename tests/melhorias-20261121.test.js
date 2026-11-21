@@ -91,3 +91,27 @@ test('insígnias novas no perfil e traduzidas', () => {
   const i18n = ler('tw-i18n.js');
   for (const k of ['Abre-alas', 'Look da semana']) assert.ok(i18n.includes(`['${k}', `), k);
 });
+
+test('parte 2: duetos, metas do álbum e recorde da semana no banco', () => {
+  const sql = ler('supabase/migrations/20261121150000_duetos_metas_recorde_semana.sql');
+  assert.match(sql, /when 3 then 10 when 6 then 20 when 10 then 30 when 15 then 50/);
+  assert.match(sql, /when 5 then 10 when 15 then 25 when 30 then 40 when 50 then 60/);
+  assert.match(sql, /l\.para <> p_uid/, 'cena consigo mesmo não conta');
+  assert.match(sql, /json_array_elements\(coalesce\(public\.album_cards\(\)/, 'mesma contagem do álbum');
+  assert.match(sql, /grant execute on function public\.duo_album\(\), public\.duo_album_resgatar\(int\), public\.album_metas\(\), public\.album_meta_resgatar\(int\), public\.meu_recorde_semana\(\) to authenticated;/);
+  assert.match(ler('supabase/tests/auditoria_20261120_pg_integration.sh'), /20261121150000_duetos_metas_recorde_semana\.sql/);
+});
+
+test('parte 2: site — Duo, álbum, corrida, perfil e retrospectiva', () => {
+  const com = ler('tw-comunidade.js');
+  for (const r of ['duo_album', 'duo_album_resgatar', 'meu_recorde_semana']) assert.ok(com.includes(`'${r}'`), r);
+  assert.match(com, /searchParams\.get\('perfil'\)/, 'abre perfil pelo link');
+  assert.match(com, /tw_retro_auto_/, 'retrospectiva automática uma vez por mês e por conta');
+  assert.match(ler('centerrun-corrida.js'), /new CustomEvent\('tw-corrida-fim'/);
+  assert.match(ler('centerrun.js'), /TW_CORRIDA_ARQ='\.\/centerrun-corrida\.js\?v=18'/);
+  const album = ler('album.js');
+  assert.match(album, /contaRpc\('album_metas'\)/);
+  assert.match(album, /contaRpc\('album_meta_resgatar'/);
+  const i18n = ler('tw-i18n.js');
+  assert.equal((i18n.match(/"Faltam \{n\} Idols para a próxima meta":/g) || []).length, 4, 'EN/ES/TH/JA');
+});

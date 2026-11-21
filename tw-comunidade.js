@@ -47,6 +47,19 @@
     showDesc:{pt:'Termine uma música no Karaoke⭐Time! hoje e ganhe ★20.',en:'Finish a song in Karaoke⭐Time! today and get ★20.',es:'Termina una canción en Karaoke⭐Time! hoy y gana ★20.',id:'Selesaikan satu lagu di Karaoke⭐Time! hari ini dan dapat ★20.',th:'ร้องเพลงใน Karaoke⭐Time! ให้จบวันนี้ แล้วรับ ★20',ja:'今日Karaoke⭐Time!で1曲歌いきると★20！'},
     fotoVisit:{pt:'Gostou do seu Idol? Crie a sua conta grátis com Google para guardar o visual, as fotos e as estrelas em qualquer aparelho.',en:'Love your Idol? Create a free account with Google to keep your outfit, photos and stars on any device.',es:'¿Te gustó tu Idol? Crea tu cuenta gratis con Google para guardar tu look, fotos y estrellas en cualquier dispositivo.',id:'Suka Idol-mu? Buat akun gratis dengan Google untuk menyimpan gaya, foto, dan bintang di perangkat mana pun.',th:'ชอบไอดอลของคุณไหม? สร้างบัญชีฟรีด้วย Google เพื่อเก็บลุค รูป และดาวไว้ใช้ได้ทุกเครื่อง',ja:'Idolを気に入った？Googleで無料アカウントを作れば、コーデや写真、スターをどの端末でも残せます。'},
     agoraNao:{pt:'Agora não',en:'Not now',es:'Ahora no',id:'Nanti saja',th:'ไว้ทีหลัง',ja:'あとで'},
+    duoAlbum:{pt:'Álbum de duetos',en:'Duet album',es:'Álbum de dúos',id:'Album duet',th:'อัลบั้มดูเอ็ต',ja:'デュエットアルバム'},
+    duoAlbumTxt:{pt:'Cada pessoa diferente com quem você fez uma cena no Moon⭐Duo! entra aqui. Complete as metas para ganhar estrelas.',en:'Everyone you made a Moon⭐Duo! scene with goes here. Reach the goals to earn stars.',es:'Cada persona con la que hiciste una escena en Moon⭐Duo! entra aquí. Cumple las metas para ganar estrellas.',id:'Setiap orang yang pernah membuat adegan Moon⭐Duo! bersamamu masuk ke sini. Capai targetnya untuk dapat bintang.',th:'ทุกคนที่คุณถ่ายฉากใน Moon⭐Duo! ด้วยจะอยู่ที่นี่ ทำเป้าหมายให้ครบเพื่อรับดาว',ja:'Moon⭐Duo!で一緒にシーンを撮った人がここに集まります。目標を達成するとスターがもらえます。'},
+    parceiros:{pt:'{n} parceiros de cena',en:'{n} scene partners',es:'{n} compañeros de escena',id:'{n} rekan adegan',th:'คู่ถ่ายฉาก {n} คน',ja:'共演 {n}人'},
+    meta:{pt:'{n} parceiros · ★{p}',en:'{n} partners · ★{p}',es:'{n} compañeros · ★{p}',id:'{n} rekan · ★{p}',th:'{n} คน · ★{p}',ja:'{n}人 · ★{p}'},
+    pegar:{pt:'Pegar ★{p}',en:'Claim ★{p}',es:'Recoger ★{p}',id:'Ambil ★{p}',th:'รับ ★{p}',ja:'★{p}を受け取る'},
+    duoVazio:{pt:'Faça a primeira cena no Moon⭐Duo! para começar o álbum.',en:'Make your first Moon⭐Duo! scene to start the album.',es:'Haz tu primera escena en Moon⭐Duo! para empezar el álbum.',id:'Buat adegan Moon⭐Duo! pertamamu untuk memulai album.',th:'ถ่ายฉากแรกใน Moon⭐Duo! เพื่อเริ่มอัลบั้ม',ja:'Moon⭐Duo!で最初のシーンを撮ってアルバムを始めよう。'},
+    studio:{pt:'Sessão no Photo⭐Studio!',en:'Photo⭐Studio! session',es:'Sesión en Photo⭐Studio!',id:'Sesi Photo⭐Studio!',th:'เซสชัน Photo⭐Studio!',ja:'Photo⭐Studio!で撮影'},
+    recSemana:{pt:'Seu recorde da semana: {n} pontos. Bata para subir no ranking!',en:'Your best this week: {n} points. Beat it to climb the ranking!',es:'Tu récord de la semana: {n} puntos. ¡Supéralo para subir en el ranking!',id:'Rekor minggu ini: {n} poin. Kalahkan untuk naik peringkat!',th:'สถิติสัปดาห์นี้ของคุณ: {n} คะแนน ทำให้ได้มากกว่าเพื่อไต่อันดับ!',ja:'今週のベスト：{n}点。超えてランキングを上げよう！'},
+    recSemana0:{pt:'Primeira corrida da semana: qualquer pontuação já vira o seu recorde semanal.',en:'First run of the week: any score becomes your weekly best.',es:'Primera carrera de la semana: cualquier puntuación ya es tu récord semanal.',id:'Lari pertama minggu ini: skor berapa pun jadi rekor mingguanmu.',th:'รอบแรกของสัปดาห์: คะแนนเท่าไหร่ก็เป็นสถิติประจำสัปดาห์',ja:'今週初めてのラン：どんなスコアでも今週のベストになります。'},
+    recNovo:{pt:'Novo recorde da semana! (antes: {n})',en:'New weekly best! (before: {n})',es:'¡Nuevo récord de la semana! (antes: {n})',id:'Rekor minggu ini baru! (sebelumnya: {n})',th:'สถิติใหม่ของสัปดาห์! (เดิม: {n})',ja:'今週のベスト更新！（前回：{n}）'},
+    recFalta:{pt:'Faltaram {n} pontos para o seu recorde da semana.',en:'{n} points short of your weekly best.',es:'Te faltaron {n} puntos para tu récord de la semana.',id:'Kurang {n} poin dari rekor minggu ini.',th:'ขาดอีก {n} คะแนนจากสถิติสัปดาห์นี้',ja:'今週のベストまであと{n}点でした。'},
+    perfilShare:{pt:'Compartilhar meu perfil',en:'Share my profile',es:'Compartir mi perfil',id:'Bagikan profilku',th:'แชร์โปรไฟล์ของฉัน',ja:'プロフィールをシェア'},
+    perfilMsg:{pt:'Olha o meu Idol no TsuLiPa⭐World!',en:'Check out my Idol on TsuLiPa⭐World!',es:'¡Mira mi Idol en TsuLiPa⭐World!',id:'Lihat Idol-ku di TsuLiPa⭐World!',th:'มาดูไอดอลของฉันใน TsuLiPa⭐World!',ja:'TsuLiPa⭐Worldの私のIdolを見て！'},
     fechar:{pt:'Fechar',en:'Close',es:'Cerrar',id:'Tutup',th:'ปิด',ja:'閉じる'},
     erro:{pt:'Não deu certo agora. Tente de novo daqui a pouco.',en:'That didn\'t work. Please try again soon.',es:'No funcionó. Inténtalo de nuevo en un rato.',id:'Belum berhasil. Coba lagi sebentar lagi.',th:'ยังไม่สำเร็จ ลองใหม่อีกครั้งนะ',ja:'うまくいきませんでした。少ししてからもう一度試してください。'}
   };
@@ -265,6 +278,112 @@
     }, 1200);
   });
 
+  // ───── Moon⭐Duo!: álbum de duetos e atalhos para o concurso e o Studio ─────
+  function duoAtalhos(){
+    var palco = document.getElementById('duoPalco'), acoes = palco && palco.querySelector('.duoacoes');
+    if(!acoes || palco.hidden || !logado() || palco.querySelector('.twk-duomais')) return;
+    var d = document.createElement('div'); d.className = 'twk-duomais';
+    d.innerHTML = '<button type="button" class="btn alt" data-twk="duo-album">📒 ' + esc(t('duoAlbum')) + '</button>' +
+      '<button type="button" class="btn alt" data-twk="concurso">🏆 ' + esc(t('concurso')) + '</button>' +
+      (typeof window.studioAbrir === 'function' ? '<button type="button" class="btn alt" data-twk="studio">📸 ' + esc(t('studio')) + '</button>' : '');
+    acoes.parentNode.insertBefore(d, acoes.nextSibling);
+  }
+  function abrirDuoAlbum(){
+    var meu = ++pedido;
+    janela('<h2 class="twp-tit" id="twkTit">📒 ' + esc(t('duoAlbum')) + '</h2><p class="twk-txt">…</p>');
+    rpc('duo_album').then(function(d){
+      if(meu !== pedido) return;
+      if(!d || !d.ok){ aviso(t('erro'), '⚠️'); return; }
+      var lista = d.lista || [];
+      var metas = (d.metas || []).map(function(m){
+        return '<li class="twk-meta' + (m.ok ? ' ok' : '') + '"><span>' + (m.ok ? '✅' : '⬜') + ' ' + esc(t('meta', {n:m.meta, p:m.premio})) + '</span>' +
+          (m.ok && !m.resgatado ? '<button type="button" class="btn" data-twk="duo-meta" data-meta="' + (+m.meta) + '">🎁 ' + esc(t('pegar', {p:m.premio})) + '</button>' : '') + '</li>';
+      }).join('');
+      janela('<h2 class="twp-tit" id="twkTit">📒 ' + esc(t('duoAlbum')) + '</h2>' +
+        '<p class="twk-txt">' + esc(t('duoAlbumTxt')) + '</p><p class="twk-tema">' + esc(t('parceiros', {n:d.parceiros || 0})) + '</p>' +
+        '<ul class="twk-metas">' + metas + '</ul>' +
+        (lista.length ? '<ul class="twk-galeria">' + lista.map(function(e, i){ return '<li class="twk-card"><canvas width="240" height="300" data-i="' + i + '" aria-hidden="true"></canvas><b>' + esc(e.nick) + '</b><span class="twk-nota">🎬 ' + (+e.cenas || 0) + '</span></li>'; }).join('') + '</ul>'
+                      : '<p class="twk-vazio">' + esc(t('duoVazio')) + '</p>') +
+        '<div class="btns"><button type="button" class="btn alt" data-twk-x>' + esc(t('fechar')) + '</button></div>');
+      ov.querySelectorAll('.twk-galeria canvas').forEach(function(cv){
+        var e = lista[+cv.dataset.i]; if(!e) return;
+        try{ var x = cv.getContext('2d'); perfCharContorno(x, 30, 20, 6, function(){ drawChar(perfChar(e.avatar || {}), 0, 0, 0, 0, false); }); }catch(_){}
+      });
+    }).catch(function(){ if(meu === pedido) aviso(t('erro'), '⚠️'); });
+  }
+  function duoMeta(b){
+    b.disabled = true;
+    rpc('duo_album_resgatar', {p_meta:+b.dataset.meta}).then(function(r){
+      if(r && r.ok){ aviso('🎁 +★' + r.premio, '📒'); estrelas(r.stars); abrirDuoAlbum(); } else { aviso(t('erro'), '⚠️'); b.disabled = false; }
+    }).catch(function(){ aviso(t('erro'), '⚠️'); b.disabled = false; });
+  }
+
+  // ───── Center⭐Run!: recorde da semana no menu e no fim da corrida ─────
+  var recSem = null, recPedido = 0;
+  function recCarregar(){
+    if(!logado()) { recSem = null; recMostrar(); return; }
+    var meu = ++recPedido;
+    rpc('meu_recorde_semana').then(function(r){ if(meu === recPedido && r && r.ok){ recSem = r; recMostrar(); } }).catch(function(){});
+  }
+  function recMostrar(){
+    var menu = document.getElementById('menu'), pn = menu && menu.querySelector('.panel'); if(!pn) return;
+    var el = document.getElementById('twkRecSemana');
+    if(!el){ el = document.createElement('p'); el.id = 'twkRecSemana'; el.className = 'twk-recsemana'; var p = pn.querySelector('p'); if(p) p.parentNode.insertBefore(el, p.nextSibling); else pn.appendChild(el); }
+    el.hidden = !recSem;
+    if(recSem) el.textContent = '🏆 ' + (recSem.run > 0 ? t('recSemana', {n:(+recSem.run).toLocaleString()}) : t('recSemana0'));
+  }
+  document.addEventListener('tw-corrida-fim', function(e){
+    var d = e.detail || {}; if(!logado() || d.teste || !recSem) return;
+    var antes = +recSem.run || 0, pts = +d.pontos || 0;
+    setTimeout(function(){
+      var res = document.getElementById('res'); if(!res) return;
+      var p = document.createElement('p'); p.className = 'twk-recfim';
+      if(pts > antes){ p.textContent = '🏆 ' + t('recNovo', {n:antes.toLocaleString()}); recSem.run = pts; recMostrar(); }
+      else if(antes > 0) p.textContent = '🎯 ' + t('recFalta', {n:(antes - pts + 1).toLocaleString()});
+      else return;
+      res.appendChild(p);
+    }, 0);
+  });
+
+  // ───── Perfil: link para compartilhar e abrir pelo endereço (?perfil=Nick) ─────
+  (function perfilDoLink(){
+    try{
+      var u = new URL(location.href), n = (u.searchParams.get('perfil') || '').trim().slice(0, 24);
+      if(!n) return;
+      u.searchParams.delete('perfil'); history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+      var tentar = function(k){ if(typeof perfAbrir === 'function' && typeof contaRpc === 'function') perfAbrir(n); else if(k < 20) setTimeout(tentar, 400, k + 1); };
+      setTimeout(tentar, 1200, 0);
+    }catch(e){}
+  })();
+  function perfilAtalho(){
+    var ovp = document.getElementById('perfOv'), corpo = document.getElementById('perfCorpo');
+    if(!ovp || ovp.hidden || !corpo || !logado() || typeof perfMeu === 'undefined' || !perfMeu || corpo.querySelector('.twk-perfshare')) return;
+    if(!corpo.firstElementChild || corpo.querySelector('.perfcarr')) return;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'btn alt twk-perfshare'; b.dataset.twk = 'perfil-share';
+    b.textContent = '🔗 ' + t('perfilShare'); corpo.appendChild(b);
+  }
+  function perfilCompartilhar(){
+    var nk = logado() ? (contaJ.nick || '') : ''; if(!nk) return;
+    var link = location.origin + '/?perfil=' + encodeURIComponent(nk);
+    if(typeof navigator.share === 'function') navigator.share({title:'TsuLiPa⭐World', text:t('perfilMsg'), url:link}).catch(function(){});
+    else copiar(link).then(function(){ aviso(t('copiado'), '🔗'); }, function(){});
+  }
+
+  // ───── Retrospectiva: abre sozinha uma vez no começo do mês (dias 1 a 7) ─────
+  function retroAuto(){
+    if(!logado() || !window.TW_PESSOAL || !TW_PESSOAL.abrirRetro || !TW_PESSOAL.retroMes) return;
+    var hoje = new Date(Date.now() - 3 * 36e5); if(hoje.getUTCDate() > 7) return;
+    var mes = TW_PESSOAL.retroMes(), chave = 'tw_retro_auto_' + chaveConta();
+    if(lerLS(chave) === mes) return;
+    setTimeout(function(){
+      if(!logado() || (ov && !ov.hidden) || document.querySelector('.ov:not([hidden]) [aria-modal="true"]')) return;
+      gravarLS(chave, mes); TW_PESSOAL.abrirRetro(mes);
+    }, 4000);
+  }
+
+  // depois de qualquer toque, confere se o Duo ou o Perfil abriram (para pôr os atalhos)
+  document.addEventListener('click', function(){ setTimeout(function(){ duoAtalhos(); perfilAtalho(); }, 350); }, true);
+
   // ───── cliques ─────
   document.addEventListener('click', function(e){
     var b = e.target && e.target.closest && e.target.closest('[data-twk]'); if(!b) return;
@@ -277,6 +396,10 @@
     else if(k === 'inscrever') inscrever(b);
     else if(k === 'votar') votar(b);
     else if(k === 'resgatar') resgatar(b);
+    else if(k === 'duo-album') abrirDuoAlbum();
+    else if(k === 'duo-meta') duoMeta(b);
+    else if(k === 'studio'){ if(typeof window.studioAbrir === 'function') window.studioAbrir(); }
+    else if(k === 'perfil-share') perfilCompartilhar();
     else if(k === 'convite-copiar') copiar(ov.dataset.link).then(function(){ aviso(t('copiado'), '🔗'); }, function(){});
     else if(k === 'convite-share'){ var l = ov.dataset.link; navigator.share({title:'TsuLiPa⭐World', text:t('conviteMsg'), url:l}).catch(function(){}); }
     else return;
@@ -288,7 +411,7 @@
 
   window.TW_COMUNIDADE = {
     t:t, podeInstalar:podeInstalar,
-    contaMudou:function(){ if(logado()) setTimeout(conviteConferir, 1500); else pendente = false; },
+    contaMudou:function(){ if(logado()){ setTimeout(conviteConferir, 1500); setTimeout(recCarregar, 1800); retroAuto(); } else { pendente = false; recSem = null; recMostrar(); } },
     abrirConvite:abrirConvite, abrirConcurso:abrirConcurso, lembrete:lembrete
   };
 })();

@@ -29,6 +29,10 @@ for arq in "$repo_dir"/supabase/migrations/20261120{15,16,17,20}0000_*.sql; do d
 db -c "alter table public.players add column if not exists created_at timestamptz not null default now(), add column if not exists insignias_extra text[], add column if not exists nuvem_visual jsonb, add column if not exists avatar jsonb"
 db -c "alter table public.players add column if not exists corridas_total integer"
 db < "$repo_dir/supabase/migrations/20261121120000_convite_e_concurso_visual.sql"
+db -c "alter table public.duo_log add column if not exists para uuid"
+db -c "create table public.t_album(user_id uuid primary key, n int)"
+db -c "create or replace function public.album_cards() returns json language sql stable as \$\$ select coalesce(json_agg(json_build_object('vezes', 1)), '[]'::json) from generate_series(1, coalesce((select n from public.t_album where user_id = auth.uid()), 0)) \$\$"
+db < "$repo_dir/supabase/migrations/20261121150000_duetos_metas_recorde_semana.sql"
 
 # 1) ranking antigo fechado para leitura direta
 [[ "$(db -c "select has_table_privilege('anon','public.leaderboard','select')")" == f ]] || falha 'anon ainda lê leaderboard'
@@ -159,3 +163,24 @@ db -c "update private.concurso_inscricoes set semana = semana - 7; update privat
 [[ "$(como "$b" "select public.concurso_resgatar()->>'erro'")" == feito ]] || falha 'resgatou duas vezes'
 [[ "$(db -c "select 'look_semana' = any(insignias_extra) from public.players where id='$b'")" == t ]] || falha 'insígnia do concurso'
 echo 'melhorias 21/11/2026: convite e concurso verificados'
+
+# ── 21/11/2026: álbum de duetos, metas do álbum e recorde da semana ──
+for i in 1 2 3 4; do db -c "insert into public.players(id, nick, stars, created_at) values ('00000000-0000-4000-8000-00000000d00$i', 'Par$i', 0, now())"; done
+db -c "insert into public.duo_log(de, para, dia) select '$a', ('00000000-0000-4000-8000-00000000d00' || i)::uuid, current_date from generate_series(1,2) i"
+[[ "$(como "$a" "select public.duo_album()->>'parceiros'")" == 2 ]] || falha 'parceiros do Duo'
+[[ "$(como "$a" "select public.duo_album_resgatar(3)->>'erro'")" == falta ]] || falha 'resgatou duetos sem a meta'
+db -c "insert into public.duo_log(de, para, dia) values ('$a', '00000000-0000-4000-8000-00000000d003', current_date), ('$a', '00000000-0000-4000-8000-00000000d003', current_date - 1), ('$a', '$a', current_date)"
+[[ "$(como "$a" "select public.duo_album()->>'parceiros'")" == 3 ]] || falha 'parceiro repetido ou a si mesmo contou'
+[[ "$(como "$a" "select public.duo_album_resgatar(3)->>'premio'")" == 10 ]] || falha 'prêmio dos 3 duetos'
+[[ "$(como "$a" "select public.duo_album_resgatar(3)->>'erro'")" == feito ]] || falha 'duetos pagos duas vezes'
+[[ "$(como "$a" "select public.duo_album_resgatar(4)->>'erro'")" == meta ]] || falha 'meta inventada'
+db -c "insert into public.t_album values ('$a', 16)"
+[[ "$(como "$a" "select public.album_metas()->>'achados'")" == 16 ]] || falha 'Idols no álbum'
+[[ "$(como "$a" "select public.album_meta_resgatar(15)->>'premio'")" == 25 ]] || falha 'prêmio da meta de 15'
+[[ "$(como "$a" "select public.album_meta_resgatar(30)->>'erro'")" == falta ]] || falha 'meta de 30 sem os Idols'
+[[ "$(como "$b" "select public.album_meta_resgatar(5)->>'erro'")" == falta ]] || falha 'álbum de outra conta'
+db -c "insert into public.leaderboard(user_id, score, created_at) values ('$a', 900, now()), ('$a', 5000, now() - interval '30 days')" 2>/dev/null || db -c "insert into public.leaderboard(user_id, score, created_at, char) values ('$a', 900, now(), 0), ('$a', 5000, now() - interval '30 days', 0)"
+db -c "insert into private.sora_history(player_id, score, finished_at) values ('$a', 321, now())"
+[[ "$(como "$a" "select (public.meu_recorde_semana()->>'run') || '/' || (public.meu_recorde_semana()->>'sora')")" == 900/321 ]] || falha 'recorde da semana'
+[[ "$(db -c "set role anon; select has_function_privilege('anon','public.meu_recorde_semana()','execute')")" == f ]] || falha 'visitante lê recorde'
+echo 'melhorias 21/11/2026 (parte 2): duetos, metas e recorde da semana verificados'

@@ -33,6 +33,8 @@ function albumAbrir(){
   albumOv.hidden = false; albumOv.scrollTop = 0; albumPag = 0; albumDados = null; albumPronto = false;
   if(typeof hubIdolsCarregar === 'function' && !(typeof hubIdolsDados !== 'undefined' && hubIdolsDados)) hubIdolsCarregar();
   albumUI();
+  albumMetasSrv = null;
+  contaRpc('album_metas').then(function(r){ albumMetasSrv = r && r.ok ? r : null; albumUI(); }).catch(function(){});   // prêmios das metas (21/11/2026)
   contaRpc('album_cards').then(function(L){ albumDados = Array.isArray(L) ? L : []; albumPronto = true; albumUI(); })
     .catch(function(){ albumDados = []; albumPronto = false; albumUI(); });
 }
@@ -84,6 +86,28 @@ function albumUI(){
 }
 // metas de coleção (só visuais): 5, 15, 30 e 50 Idols. A primeira vez que alcança uma, comemora uma vez neste aparelho.
 var ALBUM_METAS = [[5, '🌱'], [15, '🌸'], [30, '💎'], [50, '👑']];
+// 21/11/2026: cada meta paga uma vez (album_meta_resgatar, conferido no servidor) e o álbum diz quanto falta
+var albumMetasSrv = null;
+function albumMetaResgatar(meta, bt){
+  if(bt) bt.disabled = true;
+  contaRpc('album_meta_resgatar', {p_meta: meta}).then(function(r){
+    if(r && r.ok){
+      if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') setBest(); }
+      if(typeof contaAviso === 'function') contaAviso('🎁 +★' + r.premio);
+      if(albumMetasSrv) (albumMetasSrv.metas || []).forEach(function(m){ if(m.meta === meta) m.resgatado = true; });
+      albumUI();
+    } else if(bt) bt.disabled = false;
+  }).catch(function(){ if(bt) bt.disabled = false; });
+}
+function albumMetasExtras(achados){
+  var h = '', prox = ALBUM_METAS.filter(function(m){ return achados < m[0]; })[0];
+  if(prox) h += '<p class="albummetafalta">' + escHtml(tr('Faltam {n} Idols para a próxima meta').replace('{n}', prox[0] - achados)) + '</p>';
+  (albumMetasSrv && albumMetasSrv.metas || []).forEach(function(m){
+    if(m.ok && !m.resgatado) h += '<button type="button" class="btn albummetapremio" onclick="albumMetaResgatar(' + (+m.meta) + ', this)">🎁 ' +
+      escHtml(tr('Pegar ★{p} da meta de {n} Idols').replace('{p}', +m.premio).replace('{n}', +m.meta)) + '</button>';
+  });
+  return h;
+}
 function albumMetasHtml(achados){
   if(!albumPronto) return '';
   var visto = 0; try{ visto = +localStorage.getItem('tw_album_meta') || 0; }catch(e){}
@@ -92,6 +116,7 @@ function albumMetasHtml(achados){
     var ok = achados >= m[0]; if(ok && m[0] > visto) nova = m[0];
     return '<span class="albummeta' + (ok ? ' ok' : '') + '" title="' + m[0] + ' Idols"><i>' + m[1] + '</i><b>' + m[0] + '</b></span>';
   }).join('') + '</div>';
+  h += albumMetasExtras(achados);
   if(nova){ try{ localStorage.setItem('tw_album_meta', String(nova)); }catch(e){}
     h += '<p class="albummetanova">✨ ' + escHtml(tr('Nova meta do álbum: {n} Idols!').replace('{n}', nova)) + '</p>';
     if(typeof sfx !== 'undefined' && sfx && sfx.rank) try{ sfx.rank(); }catch(e){} }

@@ -185,7 +185,7 @@ test('parte 5: conquistas à vista, destaques, pet com rotina e passatempos do d
   assert.match(sql, /coalesce\(array_length\(p_ins, 1\), 0\) > 5/); assert.match(sql, /check \(tipo in \('caca', 'dif', 'lab'\)\)/);
 });
 
-test('parte 6: bicolor no admin, Responder recado, vitórias do Battle na semana e Colorir', () => {
+test('parte 6: bicolor no admin, Responder recado, vitórias do Battle na semana e canvas dos passatempos', () => {
   assert.match(ler('admin.js'), /lado2:\/\^#\[0-9a-f\]\{6\}\$\/i\.test\(c\.lado2\|\|''\)/, 'admin envia o lado2');
   const sql = ler('supabase/migrations/20261121220000_conquistas_perfil.sql');
   assert.match(sql, /ELSIF lower\(coalesce\(v_atual->>'lado2', ''\)\) ~ '\^#\[0-9a-f\]\{6\}\$' THEN/, 'servidor mantém o lado2');
@@ -193,5 +193,5 @@ test('parte 6: bicolor no admin, Responder recado, vitórias do Battle na semana
   assert.match(ler('perfil-tela.js'), /data-perfresp="/); assert.match(ler('tw-conquistas.js'), /function responder\(nick\)/);
   assert.match(ler('tw-celular.js'), /thj\('vitSemana', \{n:\+sm\.battle\}\)/);
   const pa = ler('tw-passatempos.js');
-  assert.match(pa, /function jogarColorir\(\)/); assert.equal((pa.match(/<canvas data-nitido="0"/g) || []).length, 4, 'canvas dos passatempos cuidam da própria nitidez');
+  assert.doesNotMatch(pa, /jogarColorir/, 'Colorir foi removido'); assert.equal((pa.match(/<canvas data-nitido="0"/g) || []).length, 3, 'canvas dos passatempos cuidam da própria nitidez');
 });

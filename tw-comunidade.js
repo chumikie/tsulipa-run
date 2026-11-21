@@ -385,6 +385,8 @@
 
   // depois de qualquer toque, confere se o Duo ou o Perfil abriram (para pôr os atalhos)
   document.addEventListener('click', function(){ setTimeout(function(){ duoAtalhos(); perfilAtalho(); }, 350); }, true);
+  // "Álbum e atividades" abre já com os atalhos, sem esperar o próximo clique.
+  document.addEventListener('toggle', function(e){ if(e.target && e.target.id === 'duoExtra') duoAtalhos(); }, true);
 
   // ───── cliques ─────
   document.addEventListener('click', function(e){

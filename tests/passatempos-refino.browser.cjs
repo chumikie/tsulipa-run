@@ -41,18 +41,6 @@ async function setup(){
       assert.ok(boxes.n.right<=boxes.a.right+1 && boxes.i.left>=boxes.a.left,'nome e Idol cabem na ficha');assert.equal(boxes.overflow,false);
     }
     await foto('fichas-'+width);
-    await p.evaluate(()=>__abrir('colorir'));
-    const pintura=await p.evaluate(()=>{
-      const cv=document.querySelector('.twpa-colorir'),antes=cv.toDataURL(),av=JSON.stringify(hubAv()),g0=g,s0=state,frame0=frame,rect=cv.getBoundingClientRect();
-      function toque(){const e={bubbles:true,clientX:rect.left+rect.width*.5,clientY:rect.top+rect.height*.45};cv.dispatchEvent(new PointerEvent('pointerdown',e));cv.dispatchEvent(new PointerEvent('pointerup',e));}
-      const white=cv.getContext('2d').getImageData(0,0,1,1).data.join(',');toque();const pintou=cv.toDataURL()!==antes;const bg=cv.getContext('2d').getImageData(0,0,1,1).data.join(',');document.querySelector('[data-twpa-desfazer]').click();const undo=cv.toDataURL()===antes;
-      toque();document.querySelector('[data-twpa-limpar]').click();const clean=cv.toDataURL()===antes;document.querySelector('[data-twpa-desfazer]').click();const undoClear=cv.toDataURL()!==antes;
-      const oldClick=HTMLAnchorElement.prototype.click;let exportada='';HTMLAnchorElement.prototype.click=function(){exportada=this.href;};try{document.querySelector('[data-twpa-salvar]').click();}finally{HTMLAnchorElement.prototype.click=oldClick;}
-      return {pintou,undo,clean,undoClear,bg: bg===white,immutable:av===JSON.stringify(hubAv())&&g===g0&&state===s0&&frame===frame0,png:exportada.startsWith('data:image/png'),calls:__rpc.filter(x=>x[0]==='passatempo_feito').length};
-    });
-    for(const k of ['pintou','undo','clean','undoClear','bg','immutable','png'])assert.equal(pintura[k],true,k+' em '+width);assert.equal(pintura.calls,0,'pintura não envia recompensa');
-    await foto('colorir-'+width);
-    await p.evaluate(()=>document.querySelector('[data-twpa-x]').click());
   }
   // As três partidas completas: sorteio e UI reais, somente RPC simulado.
   console.log(await p.evaluate(async()=>{
@@ -72,14 +60,10 @@ async function setup(){
     await foto('caca-'+theme);
   }
   for(const lang of ['pt','en','es','id','th','ja']){
-    const rotulo=await p.evaluate(lang=>{LANG=lang;__abrir('colorir');const cv=document.querySelector('.twpa-colorir');cv.focus();cv.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));const parte=document.querySelector('.twpa-status').textContent;cv.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));return {title:document.querySelector('#twpaTit').textContent,parte,undo:!document.querySelector('[data-twpa-desfazer]').disabled};},lang);
-    assert.ok(rotulo.title.length>3&&rotulo.parte.length>5);assert.equal(rotulo.undo,true,'teclado em '+lang);
+    const r=await p.evaluate(lang=>{LANG=lang;__abrir('caca');const d=document.querySelector('[data-twpa-dica]');d.click();return {dica:d.textContent,st:document.querySelector('.twpa-status').textContent,cel:!!document.querySelector('.twpa-letra.dica')};},lang);
+    assert.ok(r.dica.length>1&&r.st.length>5&&r.cel,'dica em '+lang);
   }
-  await p.evaluate(()=>{LANG='pt';});
-  // Um avatar com figurino, coroa e cabelo arco-íris também precisa abrir e aceitar cores.
-  await p.evaluate(()=>{const orig=hubAv;window.__hubAvOriginal=orig;hubAv=()=>({c:{...perfChar(orig()),hair:'#7b3ff0',skin:'#a76c40',front:'arcoiris',back:'longo',hat:'coroa',out:'zipper'},expr:2});__abrir('colorir');__assert(document.querySelector('.twpa-colorir'),'avatar personalizado sem desenho');});
-  await foto('colorir-figurino');
-  await p.evaluate(()=>{hubAv=__hubAvOriginal;TW_PASSA.contaMudou();__assert(document.querySelector('.twpa-ov').hidden,'troca de conta manteve atividade aberta');});
+  await p.evaluate(()=>{LANG='pt';__abrir('dif');document.querySelector('[data-twpa-dica]').click();__assert(!document.querySelector('.twpa-colorir'),'colorir removido');__abrir('lab');document.querySelector('[data-twpa-seta="ArrowDown"]').click();document.querySelector('[data-twpa-dica]').click();__assert(/^0 /.test(document.querySelector('.twpa-status').textContent),'recomeçar zera passos');});
   // Perfil: emoji livre salvo, vitrine em escala correta e seções sob demanda.
   console.log(await p.evaluate(async()=>{
     await perfTelaCarregar();
@@ -92,6 +76,10 @@ async function setup(){
     const e=document.querySelector('[data-pemo="🎙️"]');__assert(e&&e.getAttribute('aria-pressed')==='true','emoji livre não selecionado');
     const completo=TW_CONQ.completo({completo:{foto:true,emoji:false,cor:true,frase:true,oshi:true,aniver:true,destaque:true}});__assert(completo.pct===100,'perfil salvo perdeu o emoji livre');
     const input=document.querySelector('#perfBioEmoji');input.value='🪷';input.dispatchEvent(new Event('input',{bubbles:true}));__assert(document.querySelector('[data-pemo="🪷"][aria-pressed="true"]'),'digitação livre não refletida');
+    input.value='⭐\uFE0F';input.dispatchEvent(new Event('input',{bubbles:true}));
+    __assert(document.querySelectorAll('.perfemolist button').length===PERF_EMOJIS.length&&document.querySelector('[data-pemo="⭐"]').getAttribute('aria-pressed')==='true','seletor de apresentação não duplica nem desmarca a sugestão');
+    input.value='👨‍👩‍👧‍👦';input.dispatchEvent(new Event('input',{bubbles:true}));__assert(input.value==='👨‍👩‍👧‍👦','sequência composta de 7 caracteres não é cortada');
+    input.value='😀😀😀😀😀😀😀😀😀';input.dispatchEvent(new Event('input',{bubbles:true}));__assert(Array.from(input.value).length===8,'limite do servidor: 8 caracteres');
     return {emoji:true,vitrine:true,secoes:document.querySelectorAll('.perf-secao').length};
   }));
   await foto('perfil-refinado');
@@ -118,6 +106,6 @@ async function setup(){
   },grip);
   await foto('studio-maos');await p.evaluate(()=>__gripCanvas.remove());
   assert.deepEqual(await p.evaluate(()=>__errors),[],'JavaScript sem erros');
-  console.log('OK: pintura/desfazer/limpar/PNG, fundo e avatar preservados; fichas em 4 larguras; 3 partidas completas; nenhum servidor real.');
+  console.log('OK: dicas e recomeço; fichas em 4 larguras; 3 partidas completas; nenhum servidor real.');
  }finally{await qa.close();server.close();}
 })().then(()=>process.exit(0)).catch(e=>{console.error(e);server.close();process.exit(1);});

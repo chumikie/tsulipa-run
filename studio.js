@@ -206,7 +206,7 @@
     var src = r.avatar, c = {}, av = {c:c};
     function cor(v){ return typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v); }
     function chave(v){ return typeof v === 'string' && /^[a-z0-9_-]{0,32}$/i.test(v); }
-    ['hair','hair2','skin','eye','outcol','legcol'].forEach(function(k){ if(cor(src.c[k])) c[k] = src.c[k]; });
+    ['hair','hair2','lado2','skin','eye','outcol','legcol'].forEach(function(k){ if(cor(src.c[k])) c[k] = src.c[k]; });
     ['mecha','back','front','det','gl','out','baixo','hat','olho','boca','bochecha','sobrancelha'].forEach(function(k){ if(chave(src.c[k])) c[k] = src.c[k]; });
     if(typeof src.c.streak === 'boolean') c.streak = src.c.streak;
     ['a','visual'].forEach(function(k){ if(chave(src[k])) av[k] = src[k]; });
@@ -619,9 +619,10 @@
     x.scale(corpo.scale, corpo.scale);
     x.rotate(angulo);
     x.lineCap = 'round';
-    // Pulso e palma têm a mesma espessura dos braços do avatar; o objeto passa dentro do punho.
-    x.strokeStyle=corpo.skin;x.lineWidth=3.6;x.beginPath();x.moveTo(0,3);x.lineTo(0,.5);x.stroke();
-    x.fillStyle=corpo.skin;x.beginPath();x.ellipse(0,0,2.05,2.25,0,0,Math.PI*2);x.fill();
+    // Mão: palma arredondada na largura do braço; a haste passa entre a palma e os dedos (desenhados depois).
+    x.fillStyle=corpo.skin;x.beginPath();
+    if(x.roundRect)x.roundRect(-2.35,-2.3,4.7,5,1.7);else x.rect(-2.35,-2.3,4.7,5);
+    x.fill();
     if(arranjo.length && typeof window.bloomDesenharFlor === 'function'){
       var pos = arranjo.length===2 ? [[-2.8,-8],[2.5,-9]] : [[-3.4,-8],[0,-11],[3.4,-8.6]];
       arranjo.forEach(function(k,i){
@@ -656,11 +657,10 @@
         x.beginPath(); x.moveTo(-.4,-3.2); x.lineTo(-.4,-7); x.stroke();
       }
     }
-    // Três dedos fechados sobre a haste e polegar em oposição, sem apagar o objeto inteiro.
-    x.strokeStyle=corpo.skin;x.lineWidth=.85;
-    [-.8,0,.8].forEach(function(y){x.beginPath();x.moveTo(-1.55,y);x.quadraticCurveTo(-.2,y+.45,1.1,y+.12);x.stroke();});
-    x.fillStyle=corpo.skin;x.beginPath();x.ellipse(1.15,-.95,1.1,.65,-.65,0,Math.PI*2);x.fill();
-    x.strokeStyle='rgba(80,45,35,.18)';x.lineWidth=.16;x.beginPath();x.moveTo(-1.45,.5);x.lineTo(-.45,.65);x.stroke();
+    // Punho simples sobre a haste: uma faixa arredondada de dedos e o polegar por cima.
+    x.lineCap='round';x.strokeStyle=corpo.skin;x.lineWidth=2.6;
+    x.beginPath();x.moveTo(-1.5,.2);x.lineTo(1.5,.2);x.stroke();
+    x.lineWidth=1.2;x.beginPath();x.moveTo(1.4,1.2);x.quadraticCurveTo(.2,-.2,-.7,-1.7);x.stroke();
     x.restore();
   }
   function cena(x, W, H, e, tm, avOutro){

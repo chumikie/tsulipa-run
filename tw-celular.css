@@ -1184,10 +1184,6 @@ a.btn#twpBaixar{text-decoration:none}
   :root:not([data-theme="light"]) .twpa-palavras li{background:#3d3160;color:#e0d0ff}
   :root:not([data-theme="light"]) .twpa-status{color:#c9a8ff}
 }
-.twpa-colorir{max-width:360px;image-rendering:auto;cursor:crosshair;touch-action:pan-y}
-.twpa-paleta{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:10px 0 4px}
-.twpa-cor{width:38px;height:38px;border-radius:50%;border:2px solid rgba(58,36,112,.25);cursor:pointer;padding:0}
-.twpa-cor[aria-pressed="true"]{outline:3px solid #7b3ff0;outline-offset:2px}
 
 /* Conferência #130: fichinhas independentes do header global da corrida. */
 .twc .twc-trio{width:100%;max-width:1100px;padding-bottom:110px}
@@ -1232,19 +1228,14 @@ a.btn#twpBaixar{text-decoration:none}
 .twpa-panel .twpa-letra.ok{color:#294300;box-shadow:inset 0 -3px 0 #b2da79}
 .twpa-panel .twpa-palavras li.ok{color:#294300;background:#d8ff9e}
 .twpa-panel .twpa-cv{max-width:420px;border:1px solid #d8c6ee;box-shadow:0 4px 0 #d9c8ed}
-.twpa-panel .twpa-colorir{max-width:350px}
 .twpa-panel .twpa-lab{max-width:340px}
 .twpa-panel .twpa-fotos figure{position:relative;margin:0}
 .twpa-panel .twpa-fotos figcaption{position:absolute;top:6px;left:6px;z-index:1;padding:2px 6px;border-radius:6px;background:#fff;color:#613ba0;font-size:11px;font-weight:900;pointer-events:none}
-.twpa-panel .twpa-cor{box-shadow:inset 0 0 0 2px rgba(255,255,255,.55);min-width:38px;min-height:38px}
-.twpa-panel .twpa-cor[aria-pressed="true"]{outline-color:#ff6fb5}
-.twpa-panel .twpa-ferramentas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 0}
-.twpa-panel .twpa-ferramentas .btn:last-child{grid-column:1/-1}
 .twpa-panel .twpa-status{font-size:13px;line-height:1.5;min-height:1.5em}
 .twpa-panel button:focus-visible,.twpa-panel canvas:focus-visible{outline:3px solid #ff6fb5;outline-offset:3px}
 .twpa-acerto{animation:twpaBrilha .4s ease-out}
 @keyframes twpaBrilha{45%{box-shadow:0 0 0 5px rgba(182,255,59,.65),0 0 18px rgba(123,63,240,.2)}}
-@media(max-width:360px){.twpa-ov .twpa-panel{padding:14px}.twpa-panel .twpa-grade{padding:5px;gap:2px}.twpa-panel .twpa-cor{width:34px;height:34px;min-width:34px;min-height:34px}}
+@media(max-width:360px){.twpa-ov .twpa-panel{padding:14px}.twpa-panel .twpa-grade{padding:5px;gap:2px}}
 :root[data-theme="dark"] .twpa-panel .twpa-item{background:linear-gradient(120deg,#332351,#222d4b);color:#f2ebff;border-color:#684891;box-shadow:0 3px 0 #171f39}
 :root[data-theme="dark"] .twpa-panel .twpa-grade{background:#241b3e;border-color:#684891}
 :root[data-theme="dark"] .twpa-panel .twpa-letra.sel{background:#a43177;color:#fff}
@@ -1300,3 +1291,8 @@ html body #hub .twc-emb-missoes #hubMisT{display:none}
 #perfCorpo .twp-vit-ed{display:block;min-height:44px;margin:14px 0 0 auto;padding:8px 14px;font-size:13px;box-shadow:none}
 #perfCorpo .perftabs{position:sticky;top:0;z-index:3;background:var(--card);padding:8px 0;gap:6px}
 @media(max-width:420px){#perfCorpo .twp-vit-grade{grid-template-columns:104px minmax(0,1fr);gap:10px}#perfCorpo .twp-vit-card{width:104px}#perfCorpo .twp-vit-lado p{padding:8px}#perfCorpo .twp-vit-ed{width:100%}}
+
+@media(min-width:700px){#perfCorpo .twp-vit-grade{grid-template-columns:200px minmax(0,1fr)}#perfCorpo .twp-vit-card{width:200px}#perfCorpo .twp-vit-card canvas{width:196px}}
+
+.twpa-panel .twpa-letra.dica{box-shadow:0 0 0 3px #4169e1;animation:twpaBrilha .9s ease-in-out 2}
+.twpa-panel [data-twpa-dica]{margin-top:10px}

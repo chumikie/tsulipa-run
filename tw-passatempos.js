@@ -16,6 +16,10 @@
     lab:{pt:'Labirinto',en:'Maze',es:'Laberinto',id:'Labirin',th:'เขาวงกต',ja:'めいろ'},
     cacaDica:{pt:'Toque na primeira e na última letra de cada palavra.',en:'Tap the first and last letter of each word.',es:'Toca la primera y la última letra de cada palabra.',id:'Ketuk huruf pertama dan terakhir tiap kata.',th:'แตะตัวอักษรตัวแรกและตัวสุดท้ายของแต่ละคำ',ja:'ことばの最初と最後の文字をタップしてね。'},
     difDica:{pt:'Toque nas 5 coisas que mudaram na foto de baixo.',en:'Tap the 5 things that changed in the bottom picture.',es:'Toca las 5 cosas que cambiaron en la foto de abajo.',id:'Ketuk 5 hal yang berubah di gambar bawah.',th:'แตะ 5 จุดที่เปลี่ยนไปในรูปล่าง',ja:'下の絵でちがう5か所をタップしてね。'},
+    dica:{pt:'Dica',en:'Hint',es:'Pista',id:'Petunjuk',th:'คำใบ้',ja:'ヒント'},
+    dicaSem:{pt:'Sem estrelas: a dica só ajuda a brincar.',en:'No stars lost: hints only help you play.',es:'No pierdes estrellas: la pista solo ayuda a jugar.',id:'Tidak ada bintang yang hilang: petunjuk hanya membantu bermain.',th:'ไม่เสียดาว: คำใบ้ช่วยให้เล่นง่ายขึ้นเท่านั้น',ja:'スターは減りません。ヒントは遊びを助けるだけです。'},
+    recomecar:{pt:'Recomeçar',en:'Restart',es:'Reiniciar',id:'Mulai ulang',th:'เริ่มใหม่',ja:'やり直す'},
+    passosN:{pt:'{n} passos',en:'{n} steps',es:'{n} pasos',id:'{n} langkah',th:'{n} ก้าว',ja:'{n}歩'},
     labDica:{pt:'Leve o gatinho até o microfone (setas, deslizar ou teclado).',en:'Take the kitten to the microphone (arrows, swipe or keyboard).',es:'Lleva al gatito hasta el micrófono (flechas, deslizar o teclado).',id:'Bawa anak kucing ke mikrofon (panah, geser, atau keyboard).',th:'พาลูกแมวไปหาไมโครโฟน (ลูกศร ปัด หรือคีย์บอร์ด)',ja:'子ねこをマイクまで連れていこう（矢印・スワイプ・キーボード）。'},
     achou:{pt:'{n}/{t} achadas',en:'{n}/{t} found',es:'{n}/{t} encontradas',id:'{n}/{t} ketemu',th:'เจอแล้ว {n}/{t}',ja:'{n}/{t} みつけた'},
     pronto:{pt:'Conseguiu! 🎉',en:'You did it! 🎉',es:'¡Lo lograste! 🎉',id:'Berhasil! 🎉',th:'ทำได้แล้ว! 🎉',ja:'できた！🎉'},
@@ -28,16 +32,9 @@
     baixo:{pt:'Baixo',en:'Down',es:'Abajo',id:'Bawah',th:'ลง',ja:'した'},
     esq:{pt:'Esquerda',en:'Left',es:'Izquierda',id:'Kiri',th:'ซ้าย',ja:'ひだり'},
     dir:{pt:'Direita',en:'Right',es:'Derecha',id:'Kanan',th:'ขวา',ja:'みぎ'},
-    colorir:{pt:'Colorir o seu Idol',en:'Color your Idol',es:'Colorea tu Idol',id:'Warnai Idol-mu',th:'ระบายสีไอดอลของคุณ',ja:'アイドルのぬりえ'},
-    colorirDica:{pt:'Escolha uma cor e toque numa parte do desenho. Livre, sem estrelas.',en:'Pick a color and tap a part of the drawing. Just for fun, no stars.',es:'Elige un color y toca una parte del dibujo. Libre, sin estrellas.',id:'Pilih warna lalu ketuk bagian gambar. Bebas, tanpa bintang.',th:'เลือกสีแล้วแตะส่วนของภาพ เล่นฟรี ไม่มีดาว',ja:'色をえらんで絵をタップ。自由にどうぞ（スターなし）。'},
-    limpar:{pt:'Limpar',en:'Clear',es:'Borrar',id:'Hapus',th:'ล้าง',ja:'けす'},
     salvar:{pt:'Salvar PNG',en:'Save PNG',es:'Guardar PNG',id:'Simpan PNG',th:'บันทึก PNG',ja:'PNGで保存'},
     semIdol:{pt:'Abra o jogo uma vez para montar o seu Idol.',en:'Open the game once to set up your Idol.',es:'Abre el juego una vez para crear tu Idol.',id:'Buka gim sekali untuk membuat Idol-mu.',th:'เปิดเกมหนึ่งครั้งเพื่อสร้างไอดอลของคุณ',ja:'一度ゲームを開いてアイドルを作ってね。'},
-    desfazer:{"pt":"Desfazer","en":"Undo","es":"Deshacer","id":"Urungkan","th":"เลิกทำ","ja":"元に戻す"},
-    cores:{"pt":"Cores","en":"Colors","es":"Colores","id":"Warna","th":"สี","ja":"色"},
-    corN:{"pt":"Cor {n}","en":"Color {n}","es":"Color {n}","id":"Warna {n}","th":"สี {n}","ja":"色 {n}"},
     parte:{"pt":"Área {n} de {t}. Enter para pintar.","en":"Area {n} of {t}. Enter to paint.","es":"Área {n} de {t}. Enter para pintar.","id":"Area {n} dari {t}. Enter untuk mewarnai.","th":"พื้นที่ {n} จาก {t} กด Enter เพื่อระบายสี","ja":"エリア {n}/{t}。Enterでぬる。"},
-    colorirTeclas:{"pt":"Escolha uma cor. Toque para pintar; no teclado, setas escolhem a área e Enter pinta.","en":"Pick a color. Tap to paint; on keyboard, arrows select an area and Enter paints.","es":"Elige un color. Toca para pintar; las flechas eligen un área y Enter pinta.","id":"Pilih warna. Ketuk untuk mewarnai; panah memilih area dan Enter mewarnai.","th":"เลือกสีแล้วแตะเพื่อระบายสี ใช้ปุ่มลูกศรเลือกพื้นที่และ Enter เพื่อระบายสี","ja":"色を選んでタップ。矢印でエリアを選び、Enterでぬれます。"},
     pintou:{"pt":"Cor aplicada.","en":"Color applied.","es":"Color aplicado.","id":"Warna diterapkan.","th":"ระบายสีแล้ว","ja":"色をぬりました。"},
     objeto:{"pt":"Objeto {n} de {t}. Enter para conferir.","en":"Object {n} of {t}. Enter to check.","es":"Objeto {n} de {t}. Enter para comprobar.","id":"Objek {n} dari {t}. Enter untuk memeriksa.","th":"วัตถุ {n} จาก {t} กด Enter เพื่อตรวจสอบ","ja":"オブジェクト {n}/{t}。Enterでチェック。"},
     difTeclas:{"pt":"Encontre as diferenças. Setas escolhem um objeto; Enter confere.","en":"Find the differences. Arrows select an object; Enter checks.","es":"Encuentra las diferencias. Las flechas eligen un objeto; Enter comprueba.","id":"Cari perbedaan. Panah memilih objek; Enter memeriksa.","th":"ค้นหาจุดต่าง ใช้ลูกศรเลือกวัตถุและ Enter เพื่อตรวจสอบ","ja":"まちがいさがし。矢印で選び、Enterでチェック。"},
@@ -126,7 +123,7 @@
     janela(topo() + '<ul class="twpa-lista">' + TIPOS.map(function(k){
       var ok = f.indexOf(k) >= 0;
       return '<li><button type="button" class="twpa-item' + (ok ? ' ok' : '') + '" data-twpa="' + k + '"><span class="twpa-ic" aria-hidden="true">' + icone(k) + '</span><b>' + esc(t(k)) + '</b><em>' + (ok ? '✓' : '★' + PREMIO) + '</em></button></li>';
-    }).join('') + '<li><button type="button" class="twpa-item" data-twpa="colorir"><span class="twpa-ic" aria-hidden="true">' + icone('colorir') + '</span><b>' + esc(t('colorir')) + '</b><em>♡</em></button></li></ul><p class="twk-nota">' + esc(f.length >= 3 ? t('subOk') : t('sub', {f:f.length, p:PREMIO})) + '</p><div class="btns"><button type="button" class="btn alt" data-twpa-x>' + esc(t('fechar')) + '</button></div>');
+    }).join('') + '</ul><p class="twk-nota">' + esc(f.length >= 3 ? t('subOk') : t('sub', {f:f.length, p:PREMIO})) + '</p><div class="btns"><button type="button" class="btn alt" data-twpa-x>' + esc(t('fechar')) + '</button></div>');
   }
   function aviso1(tipo){ return feitos().indexOf(tipo) >= 0 ? '<p class="twk-nota">' + esc(t('jaFeito')) + '</p>' : ''; }
 
@@ -152,7 +149,7 @@
     x.restore();
   }
   function icone(k){
-    var p={caca:'<rect x="5" y="5" width="22" height="22" rx="5"/><path d="M10 11h3m6 0h3M10 17h12m-12 6h3m6 0h3"/>',dif:'<circle cx="13" cy="13" r="8"/><path d="m19 19 8 8M10 13h6m-3-3v6"/>',lab:'<path d="M5 12V5h22v22H5v-9h8V11h7v10h-7"/>',colorir:'<path d="m7 25 2-8L22 4l6 6-13 13-8 2Zm3-8 5 5M19 7l6 6"/>'};
+    var p={caca:'<rect x="5" y="5" width="22" height="22" rx="5"/><path d="M10 11h3m6 0h3M10 17h12m-12 6h3m6 0h3"/>',dif:'<circle cx="13" cy="13" r="8"/><path d="m19 19 8 8M10 13h6m-3-3v6"/>',lab:'<path d="M5 12V5h22v22H5v-9h8V11h7v10h-7"/>'};
     return '<svg class="twpa-icone" viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">'+(p[k]||p.caca)+'</svg>';
   }
 
@@ -176,15 +173,20 @@
     return {N:N, g:g, palavras:usadas};
   }
   function jogarCaca(){
-    var C = montarCaca(), sel = -1, achados = {};
+    var C = montarCaca(), sel = -1, achados = {}, dicaCel = -1;
     function html(){
       return topo('caca') + '<p class="twk-txt">' + esc(t('cacaDica')) + '</p>' + aviso1('caca') +
         '<ul class="twpa-palavras">' + C.palavras.map(function(p){ return '<li' + (p.ok ? ' class="ok"' : '') + '>' + esc(p.w) + '</li>'; }).join('') + '</ul>' +
         '<div class="twpa-grade" style="--n:' + C.N + '" role="grid">' + C.g.map(function(ch, i){
-          return '<button type="button" class="twpa-letra' + (achados[i] ? ' ok' : '') + (sel === i ? ' sel' : '') + '" data-pc="' + i + '" aria-label="' + esc(ch + ' ' + (Math.floor(i / C.N) + 1) + '-' + (i % C.N + 1)) + '"' + (i === 0 ? ' data-twpa-foco' : '') + '>' + esc(ch) + '</button>';
-        }).join('') + '</div>' + rodape();
+          return '<button type="button" class="twpa-letra' + (achados[i] ? ' ok' : '') + (sel === i ? ' sel' : '') + (dicaCel === i ? ' dica' : '') + '" data-pc="' + i + '" aria-label="' + esc(ch + ' ' + (Math.floor(i / C.N) + 1) + '-' + (i % C.N + 1)) + '"' + (i === 0 ? ' data-twpa-foco' : '') + '>' + esc(ch) + '</button>';
+        }).join('') + '</div><div class="btns"><button type="button" class="btn alt" data-twpa-dica>' + esc(t('dica')) + '</button></div>' + rodape();
+    }
+    function dica(){
+      var q = C.palavras.filter(function(w){ return !w.ok; })[0]; if(!q) return;
+      sel = -1; dicaCel = q.cel[0]; pintar(dicaCel); status(t('dicaSem'));
     }
     function tocar(i){
+      if(dicaCel >= 0) dicaCel = -1;
       if(sel < 0){ sel = i; som(880); return pintar(i); }
       var a = sel; sel = -1;
       var la = Math.floor(a / C.N), ca = a % C.N, lb = Math.floor(i / C.N), cb = i % C.N, dl = Math.sign(lb - la), dc = Math.sign(cb - ca);
@@ -204,7 +206,7 @@
       var b = ov.querySelector('[data-pc="' + foco + '"]'); if(b) try{ b.focus(); }catch(e){}
       if(C.palavras.every(function(q){ return q.ok; })) status(t('pronto'));
     }
-    jogo = {tipo:'caca', tocar:tocar};
+    jogo = {tipo:'caca', tocar:tocar, dica:dica};
     janela(html());
   }
 
@@ -225,9 +227,9 @@
     cv.width = D.W * dpr; cv.height = D.H * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0);
     var gr = x.createLinearGradient(0, 0, 0, D.H); gr.addColorStop(0, '#d9ccff'); gr.addColorStop(.7, '#ffe0f0'); gr.addColorStop(1, '#ffd0e6');
     x.fillStyle = gr; x.fillRect(0, 0, D.W, D.H);
-    x.fillStyle = '#7b3ff0'; x.fillRect(0, D.H - 22, D.W, 22); x.fillStyle = '#9b30d9'; x.fillRect(0, D.H - 22, D.W, 4);   // palco
+    x.fillStyle = '#c9a8f0'; x.fillRect(0, D.H - 10, D.W, 10); x.fillStyle = '#9b30d9'; x.fillRect(0, D.H - 10, D.W, 3);   // rodapé do palco
     // Prateleiras do camarim: cada peça tem um lugar estável e uma área de toque separada.
-    x.fillStyle='rgba(255,255,255,.42)';x.fillRect(8,5,D.W-16,D.H-31);
+    x.fillStyle='rgba(255,255,255,.42)';x.fillRect(8,5,D.W-16,D.H-19);
     [49,98,147].forEach(function(y){x.fillStyle='#c3a0e4';x.fillRect(10,y,D.W-20,4);x.fillStyle='#eee0ff';x.fillRect(10,y,D.W-20,1);});
     x.textAlign = 'center'; x.textBaseline = 'middle';
     D.obj.forEach(function(o, i){
@@ -237,19 +239,20 @@
       if(d && d.tipo === 'grande') s = Math.round(s * 1.6);
       selo(x,e,o.x,o.y,s);
     });
+    if(D.dica && !D.dica.ok){ x.save(); x.setLineDash([5,4]); x.strokeStyle = '#4169e1'; x.lineWidth = 3; x.beginPath(); x.arc(D.dica.x, D.dica.y, D.dica.s * 1.15, 0, Math.PI * 2); x.stroke(); x.restore(); }
     D.dif.forEach(function(q){ if(!q.ok) return; x.strokeStyle = '#ff2d8a'; x.lineWidth = 3; x.beginPath(); x.arc(q.x, q.y, q.s * .95, 0, Math.PI * 2); x.stroke(); });
   }
   function jogarDif(){
     var D = montarDif();
     janela(topo('dif') + '<p class="twk-txt">' + esc(t('difDica')) + '</p>' + aviso1('dif') +
-      '<div class="twpa-fotos"><figure><figcaption>A</figcaption><canvas data-nitido="0" class="twpa-cv" data-difa="1" aria-hidden="true"></canvas></figure><figure><figcaption>B</figcaption><canvas data-nitido="0" tabindex="0" class="twpa-cv twpa-cv-b" data-difb="1" role="button" aria-label="' + esc(t('difTeclas')) + '"></canvas></figure></div>' + rodape());
+      '<div class="twpa-fotos"><figure><figcaption>A</figcaption><canvas data-nitido="0" class="twpa-cv" data-difa="1" aria-hidden="true"></canvas></figure><figure><figcaption>B</figcaption><canvas data-nitido="0" tabindex="0" class="twpa-cv twpa-cv-b" data-difb="1" role="button" aria-label="' + esc(t('difTeclas')) + '"></canvas></figure></div><div class="btns"><button type="button" class="btn alt" data-twpa-dica>' + esc(t('dica')) + '</button></div>' + rodape());
     var A = ov.querySelector('[data-difa]'), B = ov.querySelector('[data-difb]');
     function pintar(){ desenharDif(A, D, false); desenharDif(B, D, true); }
     pintar();
     function conferir(px,py,cv){
       var q = D.dif.filter(function(d){ return !d.ok && Math.hypot(d.x - px, d.y - py) < Math.min(24, d.s+2); })[0];
       if(!q){ som(330); cv.classList.remove('twpa-erro'); void cv.offsetWidth; cv.classList.add('twpa-erro'); return; }
-      q.ok = true; som(1175, .08); pintar(); efeito(cv,'twpa-acerto');
+      q.ok = true; D.dica = null; som(1175, .08); pintar(); efeito(cv,'twpa-acerto');
       var n = D.dif.filter(function(d){ return d.ok; }).length;
       if(n === D.dif.length) concluir('dif'); else status(t('achou', {n:n, t:D.dif.length}));
     }
@@ -261,7 +264,11 @@
       if(/^Arrow/.test(e.key)){e.preventDefault();cursor=(cursor+(e.key==='ArrowLeft'||e.key==='ArrowUp'?-1:1)+D.obj.length)%D.obj.length;pintar();var o=D.obj[cursor],x=B.getContext('2d');x.strokeStyle='#4169e1';x.lineWidth=2;x.strokeRect(o.x-27,o.y-22,54,44);status(t('objeto',{n:cursor+1,t:D.obj.length}));}
       else if(e.key==='Enter'||e.key===' '){e.preventDefault();var o=D.obj[cursor];conferir(o.x,o.y,B);}
     });
-    jogo = {tipo:'dif'};
+    jogo = {tipo:'dif', dica:function(){
+      var q = D.dif.filter(function(d){ return !d.ok; })[0]; if(!q) return;
+      D.dica = q; pintar(); status(t('dicaSem'));
+      setTimeout(function(){ if(D.dica === q){ D.dica = null; if(jogo && jogo.tipo === 'dif' && A.isConnected) pintar(); } }, 2200);
+    }};
   }
 
   // ---------- labirinto ----------
@@ -294,20 +301,22 @@
     x.stroke();
     x.textAlign = 'center'; x.textBaseline = 'middle';
     var pos = function(i){ return [2 + (i % M.N) * T + T / 2, 2 + Math.floor(i / M.N) * T + T / 2 + 1]; };
-    var f = pos(M.fim); selo(x,'mic',f[0],f[1],22); var e = pos(M.eu); selo(x,'gato',e[0],e[1],24);
+    var f = pos(M.fim), halo = x.createRadialGradient(f[0], f[1], 2, f[0], f[1], 17); halo.addColorStop(0, 'rgba(255,111,181,.55)'); halo.addColorStop(1, 'rgba(255,111,181,0)');
+    x.fillStyle = halo; x.beginPath(); x.arc(f[0], f[1], 17, 0, Math.PI * 2); x.fill();
+    selo(x,'mic',f[0],f[1],22); var e = pos(M.eu); selo(x,'gato',e[0],e[1],26);
   }
   function jogarLab(){
     var M = montarLab(), fim = false;
     janela(topo('lab') + '<p class="twk-txt">' + esc(t('labDica')) + '</p>' + aviso1('lab') +
       '<canvas data-nitido="0" class="twpa-cv twpa-lab" role="img" aria-label="' + esc(t('labDica')) + '"></canvas>' +
       '<div class="twpa-setas"><button type="button" class="btn alt" data-twpa-seta="ArrowUp" aria-label="' + esc(t('cima')) + '" data-twpa-foco>▲</button><span><button type="button" class="btn alt" data-twpa-seta="ArrowLeft" aria-label="' + esc(t('esq')) + '">◀</button>' +
-      '<button type="button" class="btn alt" data-twpa-seta="ArrowDown" aria-label="' + esc(t('baixo')) + '">▼</button><button type="button" class="btn alt" data-twpa-seta="ArrowRight" aria-label="' + esc(t('dir')) + '">▶</button></span></div>' + rodape());
+      '<button type="button" class="btn alt" data-twpa-seta="ArrowDown" aria-label="' + esc(t('baixo')) + '">▼</button><button type="button" class="btn alt" data-twpa-seta="ArrowRight" aria-label="' + esc(t('dir')) + '">▶</button></span></div><div class="btns"><button type="button" class="btn alt" data-twpa-dica>' + esc(t('recomecar')) + '</button></div>' + rodape());
     var cv = ov.querySelector('.twpa-lab'); desenharLab(cv, M);
     function mover(k){
       if(fim) return;
       var d = {ArrowUp:[-1, 0, 0], ArrowRight:[0, 1, 1], ArrowDown:[1, 0, 2], ArrowLeft:[0, -1, 3]}[k]; if(!d) return;
       if(M.P[M.eu][d[2]]){ som(262, .03); efeito(cv,'twpa-erro'); return; }
-      M.eu += d[0] * M.N + d[1]; M.passos++; var anterior=M.trilha.indexOf(M.eu);if(anterior>=0)M.trilha=M.trilha.slice(0,anterior+1);else M.trilha.push(M.eu); som(660, .025); desenharLab(cv, M);
+      M.eu += d[0] * M.N + d[1]; M.passos++; var anterior=M.trilha.indexOf(M.eu);if(anterior>=0)M.trilha=M.trilha.slice(0,anterior+1);else M.trilha.push(M.eu); som(660, .025); desenharLab(cv, M); if(M.eu !== M.fim) status(t('passosN', {n:M.passos}));
       if(M.eu === M.fim){ fim = true; efeito(cv,'twpa-acerto'); concluir('lab'); }
     }
     var ini = null;
@@ -315,89 +324,9 @@
     cv.addEventListener('pointercancel', function(){ini=null;});
     cv.addEventListener('pointerup', function(e){ if(!ini) return; var dx = e.clientX - ini[0], dy = e.clientY - ini[1]; ini = null;
       if(Math.max(Math.abs(dx), Math.abs(dy)) < 18) return; mover(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'ArrowRight' : 'ArrowLeft') : (dy > 0 ? 'ArrowDown' : 'ArrowUp')); });
-    jogo = {tipo:'lab', tecla:mover};
-  }
-
-  // ---------- colorir o seu Idol (livre, sem estrelas) ----------
-  // As mesmas peças do avatar viram áreas brancas com linhas vetoriais. Um mapa de áreas separado recebe
-  // os toques; a cor não depende de um contorno em pixels estar fechado. O original permanece intacto.
-  var PALETA = ['#7b3ff0', '#9b30d9', '#4169e1', '#ff6fb5', '#b6ff3b', '#ffd166', '#ff8c42', '#f5d0b5', '#c68642', '#8d5524', '#1c1c30', '#ffffff'];
-  // As áreas vêm das formas fechadas do próprio drawChar, sem detectar bordas em pixels.
-  function criarPintura(av){
-    if(typeof drawChar !== 'function' || typeof perfChar !== 'function') return null;
-    var S=720, H=800, cv=document.createElement('canvas'), mapa=document.createElement('canvas');
-    cv.width=mapa.width=S;cv.height=mapa.height=H;
-    var x=cv.getContext('2d'), m=mapa.getContext('2d',{willReadFrequently:true}), cores={}, historico=[], ids=[], n=0, bounds=null;
-    var INK='#38265e', c=perfChar(av), sc=12.3;
-    function limite(a,b){if(!bounds)bounds=[a,b,a,b];else{bounds[0]=Math.min(bounds[0],a);bounds[1]=Math.min(bounds[1],b);bounds[2]=Math.max(bounds[2],a);bounds[3]=Math.max(bounds[3],b);}}
-    function escuro(cor){return typeof cor==='string' && /^#[0-9a-f]{6}$/i.test(cor) && Math.max(parseInt(cor.slice(1,3),16),parseInt(cor.slice(3,5),16),parseInt(cor.slice(5,7),16))<100;}
-    function area(fn,args,box){
-      if(x.globalAlpha<.5)return;
-      var id=++n, pequeno=box && box[2]-box[0]<5 && box[3]-box[1]<5, detalhe=pequeno&&escuro(x.fillStyle);
-      if(!detalhe)ids.push(id);
-      x.save();m.save();
-      x.globalAlpha=m.globalAlpha=1;x.shadowBlur=m.shadowBlur=0;
-      x.fillStyle=detalhe?INK:(cores[id]||'#ffffff');m.fillStyle='rgb('+(id&255)+','+((id>>8)&255)+','+((id>>16)&255)+')';
-      x[fn].apply(x,args);m[fn].apply(m,args);
-      if(!detalhe){x.strokeStyle=INK;x.lineWidth=.32;x.lineJoin='round';x.lineCap='round';if(fn==='fillRect')x.strokeRect.apply(x,args);else x.stroke();}
-      x.restore();m.restore();
-    }
-    var proxy=new Proxy(x,{
-      set:function(obj,k,v){obj[k]=v;if(k in m && typeof m[k]!=='function')try{m[k]=v;}catch(e){}return true;},
-      get:function(obj,k){
-        if(k==='fill')return function(){area('fill',arguments,bounds);};
-        if(k==='fillRect')return function(a,b,w,h){area('fillRect',[a,b,w,h],[a,b,a+w,b+h]);};
-        if(k==='stroke')return function(){if(obj.globalAlpha<.5)return;obj.save();obj.globalAlpha=1;obj.shadowBlur=0;obj.strokeStyle=INK;obj.lineWidth=Math.min(obj.lineWidth,.65);obj.stroke.apply(obj,arguments);obj.restore();};
-        var v=obj[k];if(typeof v!=='function')return v;
-        return function(){
-          var a=arguments;
-          if(k==='beginPath')bounds=null;
-          else if(k==='arc'){limite(a[0]-a[2],a[1]-a[2]);limite(a[0]+a[2],a[1]+a[2]);}
-          else if(k==='ellipse'){limite(a[0]-a[2],a[1]-a[3]);limite(a[0]+a[2],a[1]+a[3]);}
-          else if(k==='rect'||k==='roundRect'){limite(a[0],a[1]);limite(a[0]+a[2],a[1]+a[3]);}
-          else if(/^(moveTo|lineTo|quadraticCurveTo|bezierCurveTo)$/.test(k))for(var i=0;i<a.length;i+=2)limite(a[i],a[i+1]);
-          // Gradientes só são consultados pelo renderer: a área final usa cor lisa.
-          if(typeof m[k]==='function' && !/^create|get|measure|isPoint|to/.test(k))m[k].apply(m,a);
-          return v.apply(obj,a);
-        };
-      }
-    });
-    function render(){
-      x.setTransform(1,0,0,1,0,0);m.setTransform(1,0,0,1,0,0);x.clearRect(0,0,S,H);m.clearRect(0,0,S,H);
-      x.fillStyle='#fff';x.fillRect(0,0,S,H);n=0;ids=[];
-      var antes={g:g,state:state,pw:pw,dpw:dpw,rankI:rankI,sash:sash,accSel:accSel,frame:frame,charPose:charPose,antena:perfAntena,portrait:perfCharPortrait};
-      try{
-        g=proxy;state='play';pw=null;dpw=null;rankI=0;sash=false;accSel=typeof av.a==='string'?av.a:'';frame=0;charPose='';perfCharPortrait=true;
-        proxy.save();proxy.translate(S/2-15*sc,150);proxy.scale(sc,sc);drawChar(c,0,0,0,[0,1,2,3,4,5,6].indexOf(+av.expr)>=0?+av.expr:2,false);proxy.restore();
-      }finally{g=antes.g;state=antes.state;pw=antes.pw;dpw=antes.dpw;rankI=antes.rankI;sash=antes.sash;accSel=antes.accSel;frame=antes.frame;charPose=antes.charPose;perfAntena=antes.antena;perfCharPortrait=antes.portrait;}
-    }
-    function guardar(){historico.push(Object.assign({},cores));if(historico.length>30)historico.shift();}
-    function pintar(id,cor){if(ids.indexOf(id)<0||cores[id]===cor)return false;guardar();cores[id]=cor;render();return true;}
-    try{render();}catch(e){return null;}
-    return {canvas:cv,areas:function(){return ids.slice();},pintar:pintar,
-      tocar:function(px,py,cor){if(px<0||py<0||px>=S||py>=H)return false;var d=m.getImageData(px,py,1,1).data;return d[3]===255&&pintar(d[0]+d[1]*256+d[2]*65536,cor);},
-      limpar:function(){guardar();cores={};render();},desfazer:function(){if(!historico.length)return false;cores=historico.pop();render();return true;},podeDesfazer:function(){return historico.length>0;}};
-  }
-  function jogarColorir(){
-    var av=typeof hubAv==='function'?JSON.parse(JSON.stringify(hubAv()||{})):null, P=av&&criarPintura(av);
-    if(!P){janela(topo('colorir')+'<p class="twk-txt">'+esc(t('semIdol'))+'</p>'+rodape());return;}
-    var cor=PALETA[3], selecionada=0;
-    janela(topo('colorir').replace('🧩','🖍️')+'<p class="twk-txt">'+esc(t('colorirDica'))+'</p>'+
-      '<canvas data-nitido="0" class="twpa-cv twpa-colorir" width="720" height="800" tabindex="0" role="button" aria-label="'+esc(t('colorirTeclas'))+'"></canvas>'+
-      '<div class="twpa-paleta" role="group" aria-label="'+esc(t('cores'))+'">'+PALETA.map(function(c,i){return '<button type="button" class="twpa-cor" data-twpa-cor="'+c+'" style="background:'+c+'" aria-label="'+esc(t('corN',{n:i+1}))+'" aria-pressed="'+(c===cor)+'"'+(i===3?' data-twpa-foco':'')+'></button>';}).join('')+'</div>'+
-      '<div class="btns twpa-ferramentas"><button type="button" class="btn alt" data-twpa-desfazer disabled>'+esc(t('desfazer'))+'</button><button type="button" class="btn alt" data-twpa-limpar>'+esc(t('limpar'))+'</button><button type="button" class="btn" data-twpa-salvar>'+esc(t('salvar'))+'</button></div>'+rodape());
-    var cv=ov.querySelector('.twpa-colorir'), x=cv.getContext('2d');
-    function mostrar(){x.clearRect(0,0,720,800);x.drawImage(P.canvas,0,0);ov.querySelector('[data-twpa-desfazer]').disabled=!P.podeDesfazer();}
-    function pintou(ok){if(ok){mostrar();som(1047,.04);efeito(cv,'twpa-acerto');status(t('pintou'));}}
-    mostrar();
-    var inicio=null;
-    cv.addEventListener('pointerdown',function(e){inicio=[e.clientX,e.clientY];});
-    cv.addEventListener('pointercancel',function(){inicio=null;});
-    cv.addEventListener('pointerup',function(e){if(!inicio||Math.hypot(e.clientX-inicio[0],e.clientY-inicio[1])>10){inicio=null;return;}inicio=null;var r=cv.getBoundingClientRect();pintou(P.tocar(Math.floor((e.clientX-r.left)/r.width*720),Math.floor((e.clientY-r.top)/r.height*800),cor));});
-    cv.addEventListener('keydown',function(e){var ids=P.areas();if(!ids.length)return;if(/^Arrow/.test(e.key)){e.preventDefault();e.stopPropagation();selecionada=(selecionada+(e.key==='ArrowLeft'||e.key==='ArrowUp'?-1:1)+ids.length)%ids.length;status(t('parte',{n:selecionada+1,t:ids.length}));}else if(e.key==='Enter'||e.key===' '){e.preventDefault();pintou(P.pintar(ids[selecionada],cor));}});
-    jogo={tipo:'colorir',cor:function(c,bt){cor=c;ov.querySelectorAll('[data-twpa-cor]').forEach(function(z){z.setAttribute('aria-pressed',String(z===bt));});},
-      limpar:function(){P.limpar();mostrar();},desfazer:function(){P.desfazer();mostrar();},
-      salvar:function(){var a=document.createElement('a');a.href=window.twMarcaPng?twMarcaPng(P.canvas):P.canvas.toDataURL('image/png');a.download='tsulipa-colorir.png';document.body.appendChild(a);a.click();a.remove();}};
+    jogo = {tipo:'lab', tecla:mover, dica:function(){
+      if(fim) return; M.eu = 0; M.passos = 0; M.trilha = [0]; desenharLab(cv, M); status(t('passosN', {n:0}));
+    }};
   }
 
   // ---------- cliques ----------
@@ -405,13 +334,10 @@
     var el = e.target && e.target.closest ? e.target : null; if(!el) return;
     var pc = el.closest('[data-pc]'); if(pc && jogo && jogo.tocar){ jogo.tocar(+pc.getAttribute('data-pc')); return; }
     var sa = el.closest('[data-twpa-seta]'); if(sa && jogo && jogo.tecla){ jogo.tecla(sa.getAttribute('data-twpa-seta')); return; }
-    if(el.closest('[data-twpa-desfazer]') && jogo && jogo.desfazer){ jogo.desfazer(); return; }
-    var cr = el.closest('[data-twpa-cor]'); if(cr && jogo && jogo.cor){ jogo.cor(cr.getAttribute('data-twpa-cor'), cr); return; }
-    if(el.closest('[data-twpa-limpar]') && jogo && jogo.limpar){ jogo.limpar(); return; }
-    if(el.closest('[data-twpa-salvar]') && jogo && jogo.salvar){ jogo.salvar(); return; }
+    if(el.closest('[data-twpa-dica]') && jogo && jogo.dica){ jogo.dica(); return; }
     var b = el.closest('[data-twpa]'); if(!b) return;
     var k = b.getAttribute('data-twpa');
-    if(k === 'abrir') abrir(); else if(k === 'caca') jogarCaca(); else if(k === 'dif') jogarDif(); else if(k === 'lab') jogarLab(); else if(k === 'colorir') jogarColorir();
+    if(k === 'abrir') abrir(); else if(k === 'caca') jogarCaca(); else if(k === 'dif') jogarDif(); else if(k === 'lab') jogarLab();;
   });
 
   function contaMudou(){ fechar(); feitosSrv = null; feitosDia = ''; carregar(); redesenhar(); }

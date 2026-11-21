@@ -34,3 +34,38 @@ Conta, RPC e rede externa foram isolados nos testes. Não houve teste com conta 
 - Studio: palma e pulso na escala dos braços; dedos e polegar envolvem a haste. Inspeção com microfone, lightstick e flor, nas poses V, aceno e coração. Não foram conferidas todas as combinações possíveis de objetos/poses.
 - Missões: título interno oculto somente quando o painel é exibido na tela nova de missões.
 - Browser suite ampliada: seleção do emoji 🎙️ e digitação 🪷, perfil completo com emoji livre, card em resolução correta, saída da vitrine na troca de aba, perfil em 320/390 px, título único das missões, captura do Bloom e grade de mãos do Studio. RPCs simulados, nenhuma conta real.
+
+
+## Terceira conferência (auditoria a partir de a415843)
+
+Navegador: Chromium headless (Playwright) com RPC simulado e rede externa bloqueada. Sem conta real e sem iPhone físico; simulação de celular não equivale a aparelho.
+
+### Reproduzido e corrigido
+
+- **Colorir removido** a pedido da dona. Antes da remoção, a auditoria encontrou um defeito grave: o filtro `/^create|get|measure|isPoint|to/` casava "to" dentro de `restore`, então o mapa de áreas nunca restaurava o contexto e saía de sincronia com o desenho (rosto, franja e tronco não pintavam; varredura de 16 mil toques pintou só saia e cabelo de trás). Com o Colorir fora, saem também a paleta, Desfazer, Limpar e os textos; os três passatempos e as recompensas continuam iguais.
+- **Passatempos evoluídos** (sem mudar regras de estrelas): botão Dica no caça-palavras (destaca a primeira letra de uma palavra que falta) e nas diferenças (círculo tracejado por 2,2 s), com aviso nos seis idiomas de que a dica não custa estrelas; labirinto com Recomeçar, contador de passos e brilho no microfone; faixa roxa grossa das diferenças trocada por um rodapé fino.
+- **Studio, mãos:** a mão agora é um punho simples (palma arredondada e faixa de dedos sobre a haste), sem linhas de dedos e sem antebraço extra. Captura: `conferencia-130/studio-maos.png`.
+- **Studio, regressão da própria PR:** a limpeza do avatar de outra pessoa tinha perdido `lado2` (cor do cabelo bicolor). Restaurado.
+- **Moon⭐Duo:** o selo "🔒 ★preço" cobria o ícone das cenas bloqueadas; agora fica abaixo do nome. "Álbum e atividades" abria vazio até o próximo clique (atalhos montados 350 ms depois de um clique, e só com o palco visível); agora monta ao abrir. Captura: `conferencia-130/duo-cenas-390.png`.
+- **Emoji livre:** o `maxlength="8"` contava unidades UTF‑16 e cortava sequências compostas que o servidor aceita (o servidor conta até 8 caracteres). Agora o campo limita por caracteres, sem cortar no meio da composição por IME. 🎙 e 🎙️ (seletor de apresentação) marcam o mesmo botão em vez de criar um botão duplicado. O valor salvo continua vindo da resposta do servidor (`re.emoji`); o indicador de perfil completo usa o perfil salvo, não o texto digitado.
+- **Vitrine:** card favorito maior a partir de 700 px (196 px de largura, antes 136 px).
+- **Testes que já falhavam no HEAD da PR:** `index-modules` (funções novas de perfil-tela.js sem marcador `//→` em perfil.js) e `semana-20261120` (chamada da vitrine fora do padrão). Corrigidos.
+- Versões de cache: studio.js, tw-celular.css, tw-passatempos.js, duo.css, tw-comunidade.js, perfil.js e perfil-tela.js.
+
+### Apenas inspecionado (sem defeito confirmado)
+
+- Bloom: caminho e pedras atrás da cerca; Idol, plantas, canteiros, balões e regador na ordem certa, às 12h, 18h e 22h, claro/escuro, 390 e 1440 px. O regador encosta no balão do canteiro 4 em telas largas (sem bloquear o toque).
+- Perfil: claro/escuro (tema escuro por `prefers-color-scheme`, como no site), 320/390/768/1440 px, seções expansíveis e abas. Sem transbordamento.
+- Fichinhas: a faixa do título encosta na borda esquerda por desenho (mesmo componente das outras telas).
+- Assinatura: rodapé fora da foto, PNG transparente do Duo sem selo, fotos guardadas na série/Momentos sem selo. A página de três fotos do Álbum continua sem assinatura (como antes da PR).
+- Missões: título único na tela nova (coberto pelo teste de navegador).
+
+### Não validado
+
+Conta real (salvar emoji no servidor, vitrine de outra conta), iPhone/Android físico, zoom 125% real do sistema, leitores de tela e o conjunto completo de testes de navegador do CI (`telas.browser.cjs` e Karaoke não foram executados aqui).
+
+### Testes desta rodada
+
+- `node tests/run-all.js`: 123/123.
+- `node tests/passatempos-refino.browser.cjs`: passou (fichas em 4 larguras; três partidas completas com uma recompensa por tipo; Dica nos seis idiomas; Recomeçar zera passos; emoji com seletor, sequência composta de 7 caracteres preservada e limite de 8; vitrine; título único das missões; Bloom).
+- Roteiros próprios de auditoria (fora do repositório): Duo em 320/390/1440 claro/escuro, mãos do Studio em 4 poses × 5 objetos × 3 enquadramentos, Bloom em três horários.

@@ -1,8 +1,15 @@
+//←perfEmojiOpcoes
 function perfEmojiOpcoes(valor){
-  var atual=String(valor||'').trim(),lista=PERF_EMOJIS.slice();if(atual&&lista.indexOf(atual)<0)lista.unshift(atual);
-  return lista.map(function(e){return '<button type="button" data-pemo="'+escHtml(e)+'" aria-pressed="'+(e===atual)+'">'+escHtml(e)+'</button>';}).join('');
+  // O seletor de apresentação (U+FE0E/U+FE0F) não muda a escolha: 🎙 e 🎙️ são o mesmo botão.
+  function base(e){return String(e).replace(/[\uFE0E\uFE0F]/g,'');}
+  var atual=String(valor||'').trim(),lista=PERF_EMOJIS.slice(),sel=-1;
+  lista.forEach(function(e,i){if(atual&&base(e)===base(atual))sel=i;});
+  if(atual&&sel<0){lista.unshift(atual);sel=0;}
+  return lista.map(function(e,i){return '<button type="button" data-pemo="'+escHtml(e)+'" aria-pressed="'+(i===sel)+'">'+escHtml(e)+'</button>';}).join('');
 }
+//←perfEmojiSincronizar
 function perfEmojiSincronizar(){var ip=$('perfBioEmoji'),box=document.querySelector('#perfCorpo .perfemolist');if(ip&&box)box.innerHTML=perfEmojiOpcoes(ip.value);}
+//←perfPerfilOrganizar
 function perfPerfilOrganizar(box){
   // Mantém troféus e recados à vista; coleções e histórico abrem sob demanda.
   var titulos=Array.from(box.querySelectorAll(':scope > h3'));
@@ -113,7 +120,7 @@ function perfAbaMostrar(){
     if(meu) h += perfBioHtml(d) + perfApagarHtml();
     box.innerHTML = h;
     perfPerfilOrganizar(box);
-    if(window.TW_PESSOAL)try{TW_PESSOAL.vitrineMontar(d,meu);}catch(e){}
+    if(window.TW_PESSOAL)try{TW_PESSOAL.vitrineMontar(d, meu);}catch(e){}
     if(window.TW_CONQ) try{ window.TW_CONQ.abaPerfil(d, meu); }catch(e){}   // "Quase lá" e perfil completo, acima da estante
     var profileStyleCta = $('perfProfileStyleCta');
     if(profileStyleCta) profileStyleCta.onclick = function(){
@@ -246,7 +253,7 @@ function perfBioHtml(d){
 function perfBioMontar(d, sel2){
   var tm = d.time || '', grupo=perfGrupoCodigo(d), cor = /^#[0-9a-f]{6}$/i.test(d.cor || '') ? d.cor : '#ff6fb5';
   return '<div class="perfbio"><h3>✏️ ' + escHtml(tr('Editar perfil')) + '</h3>' +
-    '<label>' + escHtml(tr('Seu emoji')) + ' <input class="nick perfcampo perfemoin" id="perfBioEmoji" maxlength="8" autocomplete="off" value="' + escHtml(d.emoji || '') + '" placeholder="🎤"></label>' +
+    '<label>' + escHtml(tr('Seu emoji')) + ' <input class="nick perfcampo perfemoin" id="perfBioEmoji" autocomplete="off" value="' + escHtml(d.emoji || '') + '" placeholder="🎤"></label>' +
     '<div class="perfemolist" role="group" aria-label="' + escHtml(tr('Seu emoji')) + '">' + perfEmojiOpcoes(d.emoji) + '</div>' +
     '<label>' + escHtml(tr('Sua cor')) + ' <input type="color" id="perfBioCor" value="' + cor + '"></label>' +
     '<label>🌏 ' + escHtml(tr('Grupo')) + ' <select id="perfBioGrupo">' + PERF_GRUPOS.map(function(g){return '<option value="'+escHtml(g.codigo)+'"'+(grupo===g.codigo?' selected':'')+'>'+perfGrupoBandeira(g)+' '+escHtml(g.nome)+'</option>';}).join('')+'</select></label>' +

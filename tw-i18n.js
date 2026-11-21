@@ -3136,6 +3136,7 @@ window.TW_I18N.tables.S2_DICT = {
 // Lista multilíngue: seasonalAchievements (frase original em português)
 window.TW_I18N.rows.seasonalAchievements = [
   ['A Lirika guardou o prêmio pra amanhã 🐨', 'Lirika saved the prize for tomorrow 🐨', 'Lirika guardó el premio para mañana 🐨', 'Lirika เก็บรางวัลไว้ให้พรุ่งนี้ 🐨', 'Lirikaが賞品を明日にとっておいたよ 🐨'],
+  ['Abre-alas', 'Trailblazer', 'Abrecaminos', 'ผู้เปิดทาง', '先導役'],
   ['Achei uma folha laranjinha! 🍂', 'I found an orange leaf! 🍂', '¡Encontré una hojita naranja! 🍂', 'เจอใบไม้สีส้มด้วย! 🍂', 'オレンジの葉っぱ見つけた！🍂'],
   ['Amizade', 'Friendship', 'Amistad', 'มิตรภาพ', 'なかよし'],
   ['As flores voltaram! 🌼', 'The flowers are back! 🌼', '¡Volvieron las flores! 🌼', 'ดอกไม้กลับมาแล้ว! 🌼', 'お花がもどってきた！🌼'],
@@ -3184,6 +3185,7 @@ window.TW_I18N.rows.seasonalAchievements = [
   ['Hoje não... mas o Center te espera! ⭐', 'Not today... but Center awaits! ⭐', 'Hoy no... ¡pero el Center te espera! ⭐', 'วันนี้ไม่ได้... แต่ Center รออยู่นะ! ⭐', '今日はダメ…でもCenterが待ってる！⭐'],
   ['Hora do cobertor quentinho ❄️', 'Cozy blanket time ❄️', 'Hora de la mantita calentita ❄️', 'ถึงเวลาห่มผ้าห่มอุ่นๆ ❄️', 'ぬくぬく毛布タイム ❄️'],
   ['Jogou desde o lançamento do TsuLiPa World', 'Played since TsuLiPa World launched', 'Juega desde el lanzamiento de TsuLiPa World', 'เล่นตั้งแต่ TsuLiPa World เปิดตัว', 'TsuLiPa Worldのリリースから遊んでいる'],
+  ['Look da semana', 'Look of the week', 'Look de la semana', 'ลุคประจำสัปดาห์', '今週のコーデ'],
   ['Meu desejo: ver você no Center! 🌟', 'My wish: to see you at Center! 🌟', 'Mi deseo: ¡verte en el Center! 🌟', 'คำอธิษฐาน: อยากเห็นเธอที่ Center! 🌟', 'お願い：Centerに立つきみを見たい！🌟'],
   ['Nada hoje. A Tsu disse que dá sorte tentar amanhã 🎤', 'Nothing today. Tsu says tomorrow is lucky 🎤', 'Nada hoy. Tsu dice que mañana trae suerte 🎤', 'วันนี้ไม่มี Tsu บอกว่าพรุ่งนี้โชคดี 🎤', '今日はなし。Tsuが明日はラッキーだって 🎤'],
   ['O Pati disse: amanhã é dia de coroa! 👑', 'Pati says: tomorrow is crown day! 👑', 'Pati dice: ¡mañana es día de corona! 👑', 'Pati บอกว่าพรุ่งนี้วันมงกุฎ! 👑', 'Pati「明日はクラウンの日！」👑'],
@@ -3204,8 +3206,10 @@ window.TW_I18N.rows.seasonalAchievements = [
   ['Tem borboleta no camarim 🦋', 'There\'s a butterfly in the dressing room 🦋', 'Hay una mariposa en el camerino 🦋', 'มีผีเสื้อในห้องแต่งตัว 🦋', '楽屋にちょうちょがいる 🦋'],
   ['Tem coraçãozinho voando por aqui 💕', 'Little hearts are flying around 💕', 'Hay corazoncitos volando por aquí 💕', 'มีหัวใจน้อยๆ ลอยอยู่แถวนี้ 💕', 'ハートがふわふわ飛んでる 💕'],
   ['Tempo bom pra um chocolate quente ☕', 'Perfect weather for hot chocolate ☕', 'Buen clima para un chocolate caliente ☕', 'อากาศแบบนี้เหมาะกับโกโก้ร้อน ☕', 'ホットココア日和 ☕'],
+  ['Trouxe uma pessoa nova para o TsuLiPa World', 'Brought someone new to TsuLiPa World', 'Trajo a una persona nueva a TsuLiPa World', 'ชวนคนใหม่มาที่ TsuLiPa World', 'TsuLiPa Worldに新しい人を招待した'],
   ['Uma pétala caiu na minha cabeça 🌸', 'A petal fell on my head 🌸', 'Un pétalo cayó en mi cabeza 🌸', 'กลีบซากุระตกใส่หัว 🌸', '頭に花びらがのった 🌸'],
   ['Vamos fazer um bonequinho de neve ☃️', 'Let\'s build a little snowman ☃️', 'Hagamos un muñequito de nieve ☃️', 'มาปั้นตุ๊กตาหิมะกัน ☃️', '雪だるま作ろう ☃️'],
+  ['Venceu o Concurso de visual da semana', 'Won the weekly outfit contest', 'Ganó el concurso de look de la semana', 'ชนะการประกวดลุคประจำสัปดาห์', '週間コーデコンテストで優勝'],
   ['Verão floral', 'Floral summer', 'Verano floral', 'ซัมเมอร์ลายดอก', 'フローラルサマー'],
   ['Você é meu Oshi favorito, {n}! 💝', 'You\'re my favorite Oshi, {n}! 💝', '¡Eres mi Oshi favorito, {n}! 💝', 'เธอคือโอชิคนโปรดของฉันนะ {n}! 💝', '{n}がいちばんの推しだよ！💝'],
   ['Você tirou o card de', 'You got the card of', 'Te salió la carta de', 'คุณได้การ์ดของ', 'カードをゲット：'],

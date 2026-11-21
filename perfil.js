@@ -30,6 +30,8 @@ var PERF_INS = [   // insígnias: [chave (calculada no servidor), emoji, nome, c
   ['amada',    '💖', 'Coração de ouro',  'Recebeu 10 corações'],
   ['quarteto', '🎤', 'Quarteto TsuLiPa', 'Com o Idol, pegou os 3 microfones na mesma corrida e salvou a foto do quarteto'],
   ['carteiro', '💌', 'Carteiro',         'Deixou 10 recados'],
+  ['convite',  '🎉', 'Abre-alas',        'Trouxe uma pessoa nova para o TsuLiPa World'],
+  ['look_semana', '📸', 'Look da semana', 'Venceu o Concurso de visual da semana'],
   ['amizade',  '🤝', 'Amizade',          'Deu 10 corações'],
   ['duo',      '🌙', 'Moon⭐Duo!',        'Fez 5 cenas no Moon⭐Duo!'],
   ['guarda',   '👗', 'Guarda-roupa completo', 'Comprou todas as roupas fixas da lojinha'],

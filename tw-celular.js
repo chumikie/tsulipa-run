@@ -486,16 +486,28 @@
     var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
       (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
     var todos = extra ? itens.concat([extra]) : itens, fechar = '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('recolher')) + '</button>';
+    var topo = continuar + festival;
     if(feitos === tot) lista = hojeAberto ? todos.join('') : extra;   // tudo feito: a lista recolhe (abre no "Ver lista"); o próximo evento fica à vista
-    else {   // Início curto: as 2 pendências mais importantes (a ordem acima já é a de importância); o resto no "Ver tudo"
-      var pend = itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }).slice(0, 2), sobra = todos.length - pend.length;
-      if(sobra <= 1) lista = todos.join('');   // só 1 escondido: mostra direto, sem botão
-      else lista = hojeAberto ? todos.join('') + fechar : pend.join('') + '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('verTudo', {n:sobra})) + '</button>';
+    else {
+      // Início curto (PR das melhorias, 21/11/2026): no máximo 3 pendências à vista, contando o Festival e o
+      // "Continuar", e de tipos diferentes (jogo, gente, mapa, leitura). A ordem dos tipos gira a cada dia, para a
+      // tela não pedir sempre as mesmas coisas; o resto fica no "Ver tudo".
+      var cand = [festival, continuar].filter(Boolean).concat(itens.filter(function(h){ return h.indexOf('twc-hj-it') >= 0 && h.indexOf('twc-hj-ok') < 0; }));
+      var tipo = function(h){ return /data-anivcor|data-hjaniv|data-v="trio"/.test(h) ? 'gente' : /data-bairro|data-piloto-bairro/.test(h) ? 'mapa' : /ler-capitulo/.test(h) ? 'leitura' : 'jogo'; };
+      var giro = ['jogo', 'gente', 'mapa', 'leitura'], dia = Math.floor((Date.now() - 3 * 36e5) / 864e5) % giro.length;
+      giro = giro.slice(dia).concat(giro.slice(0, dia));
+      var escolha = [];
+      giro.forEach(function(tp){ if(escolha.length < 3){ var h = cand.filter(function(x){ return tipo(x) === tp && escolha.indexOf(x) < 0; })[0]; if(h) escolha.push(h); } });
+      cand.forEach(function(h){ if(escolha.length < 3 && escolha.indexOf(h) < 0) escolha.push(h); });
+      escolha.sort(function(a, b){ return cand.indexOf(a) - cand.indexOf(b); });   // na tela, a ordem de importância de sempre
+      var sobra = [festival, continuar].filter(Boolean).length + todos.length - escolha.length;
+      if(sobra <= 1 || hojeAberto) lista = todos.join('') + (hojeAberto && sobra > 1 ? fechar : '');
+      else { topo = ''; lista = escolha.join('') + '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('verTudo', {n:sobra})) + '</button>'; }
     }
     return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
       '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
       (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
-      continuar + festival + lista + '</section>';
+      topo + lista + '</section>';
   }
 
   var ESTREIA_TR = {
@@ -637,6 +649,13 @@
     var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['album', t('album'), 'data-a="album"'],
               ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', tf('fichas'), 'data-v="trio"'], ['pata', tt2('tour'), 'data-v="tour"']];
     if(window.TW_BAIRRO) at.push(['pin', window.TW_BAIRRO.t('tit'), 'data-bairro="abrir"']);   // Vida no bairro (tw-bairro.js)
+    if(window.TW_COMUNIDADE){   // comunidade (tw-comunidade.js): concurso, convite, lembrete do show e app
+      var cm = window.TW_COMUNIDADE;
+      at.push(['trofeu', cm.t('concurso'), 'data-twk="concurso"']);
+      if(logado()) at.push(['trio', cm.t('convite'), 'data-twk="convite"']);
+      at.push(['cal', cm.t('lembrete'), 'data-twk="lembrete"']);
+      if(cm.podeInstalar()) at.push(['estrela', cm.t('instalar'), 'data-twk="instalar"']);
+    }
     if(window.TW_PESSOAL && logado()){
       // No celular o cartão "Esta semana" não aparece no Início: a retrospectiva do mês fica aqui no Menu.
       if(window.matchMedia && matchMedia('(max-width:899px)').matches) at.push(['cal', window.TW_PESSOAL.t('retro'), 'data-twp="retro" data-mes="' + window.TW_PESSOAL.retroMes() + '"']);
@@ -704,11 +723,13 @@
     })();
   }
   function telaJogos(){
-    var ks = jogosNaTela();
+    var ks = jogosNaTela(), sem = window.TW_SEMANA && window.TW_SEMANA.jogoDaSemana ? window.TW_SEMANA.jogoDaSemana() : null;
+    // Jogo da semana (o menos jogado na semana anterior, missão com ★5 a mais) vem primeiro e com selo
+    if(sem && ks.indexOf(sem) > 0) ks = [sem].concat(ks.filter(function(k){ return k !== sem; }));
     return faixa(esc(t('jogos')), t('jogosSub').replace('{n}', ks.length)) + '<div class="twc-pag twc-jogos"><div class="twc-lista">' + ks.map(function(k){
       var c = card(k);
       return '<button type="button" class="twc-jogo twc-g-' + (COR[k] || 'roxo') + '" data-ir="' + k + '"><span class="twc-jogo-ico">' + ico(k, 24) + '</span>' +
-        '<span class="twc-jogo-txt"><b translate="no">' + esc(titulo(c)) + '</b><small>' + esc(descricao(c)) + '</small></span>' +
+        '<span class="twc-jogo-txt"><b translate="no">' + esc(titulo(c)) + '</b>' + (k === sem ? '<span class="twc-semana-selo">🌟 ' + esc(window.TW_SEMANA.t('jogo')) + '</span>' : '') + '<small>' + esc(descricao(c)) + '</small></span>' +
         (alerta(c) ? '<em class="twc-novo" aria-hidden="true">!</em>' : '') + seloTreino(k) + (precisaEntrar(k) ? '<em class="twc-novo twc-novo-cad" aria-hidden="true">' + ico('cadeado', 14) + '</em><span class="twc-sr"> (' + esc(t2('legCad')) + ')</span>' : '') + ico('seta', 20) + '</button>';
     }).join('') + '</div>' + (logado() ? '' : '<p class="twc-legenda"><span aria-hidden="true">' + ico('cadeado', 13) + '</span> ' + esc(t2('legCad')) + ' · <b>' + esc(t2('treino')) + '</b>: ' + esc(t2('legTreino')) + '</p>') + '</div>';
   }

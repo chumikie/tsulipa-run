@@ -44,3 +44,9 @@ Referência técnica atualizada em 20/11/2026. O estado do projeto e as pendênc
 | `tw-semana.js` | Cartão "Esta semana" no Início (coluna da direita no computador): Show de sábado do Karaoke⭐Time!, Festa no mapa (bandeirinhas e lembrança grátis), Jogo da semana e convite para quem joga sem conta, também no fim do Center⭐Run!. RPCs em `supabase/migrations/20261120160000_semana_show_festa_jogos.sql`. |
 | `tw-marca.js` | `twMarcaPng(canvas)`: selo "tsulipa-world.vercel.app" no canto das imagens que a pessoa baixa (cards, fotos, resultados). |
 | `tw-acessibilidade.js` | Dá nome (aria-label) aos botões só de ícone (✕, ✏️, 🔊…) no idioma do jogo. |
+
+## Novos em 21/11/2026 (PR das melhorias)
+- `tw-marca.js` — também o **compartilhar**: no celular, todo link de imagem com `download` abre o compartilhar do aparelho (evento `tw-foto-salva` depois). `data-tw-baixar="1"` desliga num link.
+- `tw-comunidade.js` — convite com prêmio (`?convite=CODIGO`), concurso de visual da semana, instalar como app, lembrete do Show de sábado (.ics) e convite de conta para o visitante depois da foto. Atalhos no Menu (`data-twk`).
+- `sw.js` — service worker: guarda no aparelho os arquivos com `?v=` e a mídia; páginas e Supabase sempre pela rede. Emergência: `ATIVO = false`.
+- `tw-celular.js` — "Hoje" com até 3 itens de tipos diferentes (gira a cada dia); jogo da semana primeiro na tela de Jogos.

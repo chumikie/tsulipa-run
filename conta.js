@@ -23,6 +23,7 @@ function contaSessaoAtual(){
 function contaUI(){
   if(window.TW_PESSOAL)window.TW_PESSOAL.contaMudou();
   if(window.TW_SEMANA)window.TW_SEMANA.contaMudou();
+  if(window.TW_COMUNIDADE)window.TW_COMUNIDADE.contaMudou();   // convite com prêmio (tw-comunidade.js)
   if(typeof twMapaVitrineAtualizar === 'function') twMapaVitrineAtualizar();
   if(typeof TW_ALBUM_FOTOS !== 'undefined') TW_ALBUM_FOTOS.conferir();
   if(typeof idolChipNome === 'function') idolChipNome();

@@ -25,6 +25,10 @@ db < "$repo_dir/supabase/tests/auditoria_20261120_pg_setup.sql"
 [[ "$(db -c "select to_regprocedure('public.mini_run_start(text)') is null")" == t ]] || falha 'backend antigo esperado'
 [[ "$(como "$a" "select public.ganhar_minijogo(1)->>'fixture'")" == true ]] || falha 'contrato antigo antes da troca'
 for arq in "$repo_dir"/supabase/migrations/20261120{15,16,17,20}0000_*.sql; do db < "$arq"; done
+# colunas que a produção já tem e as migrações de 21/11 usam
+db -c "alter table public.players add column if not exists created_at timestamptz not null default now(), add column if not exists insignias_extra text[], add column if not exists nuvem_visual jsonb, add column if not exists avatar jsonb"
+db -c "alter table public.players add column if not exists corridas_total integer"
+db < "$repo_dir/supabase/migrations/20261121120000_convite_e_concurso_visual.sql"
 
 # 1) ranking antigo fechado para leitura direta
 [[ "$(db -c "select has_table_privilege('anon','public.leaderboard','select')")" == f ]] || falha 'anon ainda lê leaderboard'
@@ -112,3 +116,46 @@ run="$(como "$a" "select public.mini_run_start('ritmo')->>'run'")"
 db -c "update private.mini_runs set started_at = now() - interval '46 seconds' where id = '$run'"
 [[ "$(como "$a" "select public.mini_run_finish('$run'::uuid, 40)->>'dadas'")" == 0 ]] || falha 'confirmação com teto atingido indisponível após corte'
 echo 'auditoria 20/11/2026: três migrações e transição verificadas'
+
+# ── 21/11/2026: convite com prêmio ──
+c='00000000-0000-4000-8000-0000000000c3'
+db -c "insert into public.players(id, nick, stars, created_at) values ('$c', 'Nova', 0, now())"
+cod="$(como "$a" "select public.convite_meu()->>'codigo'")"
+[[ "$cod" =~ ^[A-Z2-9]{6}$ ]] || falha "código de convite: $cod"
+[[ "$(como "$a" "select public.convite_meu()->>'codigo'")" == "$cod" ]] || falha 'código muda a cada chamada'
+[[ "$(como "$a" "select public.convite_aceitar('$cod')->>'erro'")" == proprio ]] || falha 'aceitou o próprio convite'
+[[ "$(db -c "set role anon; select has_function_privilege('anon','public.convite_meu()','execute')")" == f ]] || falha 'visitante pede código'
+db -c "update public.players set created_at = now() - interval '30 days' where id = '$b'"
+[[ "$(como "$b" "select public.convite_aceitar('$cod')->>'erro'")" == conta_antiga ]] || falha 'conta antiga aceitou convite'
+[[ "$(como "$c" "select public.convite_aceitar(lower('$cod'))->>'ok'")" == true ]] || falha 'conta nova não aceitou'
+[[ "$(como "$c" "select public.convite_aceitar('$cod')->>'erro'")" == ja_aceito ]] || falha 'aceitou duas vezes'
+[[ "$(como "$c" "select public.convite_conferir()->>'falta'")" == corrida ]] || falha 'pagou sem corrida'
+db -c "update public.players set corridas_total = 1 where id = '$c'"
+sa="$(db -c "select stars from public.players where id='$a'")"
+[[ "$(como "$c" "select public.convite_conferir()->>'premio'")" == 30 ]] || falha 'convidada sem prêmio'
+[[ "$(db -c "select stars from public.players where id='$a'")" == "$((sa + 30))" ]] || falha 'madrinha sem prêmio'
+[[ "$(db -c "select 'convite' = any(insignias_extra) from public.players where id='$a'")" == t ]] || falha 'insígnia do convite'
+[[ "$(como "$c" "select public.convite_conferir()->>'agora'")" == "" ]] || falha 'pagou duas vezes'
+[[ "$(db -c "select count(*) from public.star_log where reason='convite'")" == 2 ]] || falha 'extrato do convite'
+
+# ── 21/11/2026: concurso de visual da semana ──
+db -c "update public.players set nuvem_visual = '{\"cu2\":{\"hair\":\"#ff6fb5\",\"back\":\"onduladom2\",\"lado2\":\"#ffffff\",\"x\":\"<script>\",\"det\":\"$(printf 'a%.0s' {1..40})\"}}' where id in ('$a','$b','$c')"
+[[ "$(como "$a" "select public.concurso_inscrever()->>'ok'")" == true ]] || falha 'inscrição'
+[[ "$(db -c "select visual ? 'x' or visual ? 'det' from private.concurso_inscricoes where user_id='$a'")" == f ]] || falha 'visual sem limpeza'
+[[ "$(db -c "select visual->>'lado2' from private.concurso_inscricoes where user_id='$a'")" == '#ffffff' ]] || falha 'lado2 do bicolor no concurso'
+como "$b" "select public.concurso_inscrever()" >/dev/null
+[[ "$(como "$a" "select public.concurso_votar('$(db -c "select nick from public.players where id='$a'")')->>'erro'")" == proprio ]] || falha 'votou em si'
+nb="$(db -c "select nick from public.players where id='$b'")"
+[[ "$(como "$c" "select public.concurso_votar('$nb')->>'votei'")" == true ]] || falha 'voto'
+[[ "$(como "$c" "select public.concurso_votar('$nb')->>'votei'")" == false ]] || falha 'desfazer voto'
+como "$c" "select public.concurso_votar('$nb')" >/dev/null
+[[ "$(db -c "set role anon; select json_array_length(public.concurso_estado()->'inscritos')")" == 2 ]] || falha 'galeria do visitante'
+[[ "$(db -c "set role anon; select has_function_privilege('anon','public.concurso_votar(text)','execute')")" == f ]] || falha 'visitante vota'
+# a semana passa: as inscrições e votos vão para a semana anterior
+db -c "update private.concurso_inscricoes set semana = semana - 7; update private.concurso_votos set semana = semana - 7"
+[[ "$(como "$b" "select public.concurso_estado()->'anterior'->>'posso_resgatar'")" == true ]] || falha 'vencedor não pode resgatar'
+[[ "$(como "$a" "select public.concurso_resgatar()->>'erro'")" == nao_venceu ]] || falha 'perdedor resgatou'
+[[ "$(como "$b" "select public.concurso_resgatar()->>'premio'")" == 50 ]] || falha 'prêmio do concurso'
+[[ "$(como "$b" "select public.concurso_resgatar()->>'erro'")" == feito ]] || falha 'resgatou duas vezes'
+[[ "$(db -c "select 'look_semana' = any(insignias_extra) from public.players where id='$b'")" == t ]] || falha 'insígnia do concurso'
+echo 'melhorias 21/11/2026: convite e concurso verificados'

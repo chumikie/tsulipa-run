@@ -1011,6 +1011,26 @@ body.tw-cel-cr #menu>.panel{max-height:calc(100dvh - 84px - 104px - env(safe-are
 .twp-ov{z-index:60}
 .twp-panel{max-width:520px;width:calc(100% - 24px)}
 .twp-tit{margin:0 0 10px;font:400 22px 'Mochiy Pop One',sans-serif;color:#5a2bc4;text-align:center}
+/* Comunidade (tw-comunidade.js · 21/11/2026): convite, concurso de visual, app e lembrete */
+.twk-panel{max-width:640px;max-height:calc(100dvh - 32px);overflow:auto}
+.twk-txt{margin:0 0 10px;text-align:center;font-weight:700;line-height:1.45}
+.twk-nota{margin:0 0 10px;text-align:center;font-size:13px;color:#6b5a95}
+.twk-tema{margin:0 0 6px;text-align:center;font:400 18px 'Mochiy Pop One',sans-serif;color:#ff6fb5}
+.twk-tema small{display:block;font:700 12px 'M PLUS Rounded 1c',sans-serif;color:#6b5a95}
+.twk-link input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:12px;border:2px solid #d9c8ff;font:700 14px 'M PLUS Rounded 1c',sans-serif;text-align:center;background:#fbf8ff;color:#3b2470}
+.twk-galeria{list-style:none;margin:6px 0 12px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+.twk-card{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 6px 10px;border-radius:16px;background:linear-gradient(180deg,#f6efff,#fff);border:2px solid #e6dbff}
+.twk-card.votei{border-color:#ff6fb5;box-shadow:0 0 0 3px rgba(255,111,181,.18)}
+.twk-card canvas{width:100px;height:125px}
+.twk-card b{font-size:13px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.twk-votar,.twk-votos{min-height:40px;min-width:64px;padding:6px 12px;border-radius:999px;font:800 15px 'M PLUS Rounded 1c',sans-serif;color:#d2337f;background:#fff0f7;border:2px solid #ffc2df}
+.twk-votar{cursor:pointer}.twk-votar[aria-pressed="true"]{background:#ff6fb5;color:#fff;border-color:#ff6fb5}
+.twk-votos{display:inline-flex;align-items:center;justify-content:center;border-style:dashed}
+.twk-vazio{text-align:center;font-weight:700;color:#6b5a95;margin:10px 0 14px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twk-nota,:root:not([data-theme="light"]) .twk-vazio,:root:not([data-theme="light"]) .twk-tema small{color:#c9bde8}:root:not([data-theme="light"]) .twk-card{background:linear-gradient(180deg,#2a1f4a,#1f1838);border-color:#43356e}:root:not([data-theme="light"]) .twk-link input{background:#1f1838;color:#efe6ff;border-color:#43356e}}
+:root[data-theme="dark"] .twk-nota,:root[data-theme="dark"] .twk-vazio,:root[data-theme="dark"] .twk-tema small{color:#c9bde8}
+:root[data-theme="dark"] .twk-card{background:linear-gradient(180deg,#2a1f4a,#1f1838);border-color:#43356e}
+:root[data-theme="dark"] .twk-link input{background:#1f1838;color:#efe6ff;border-color:#43356e}
 .twp-img{display:block;width:100%;max-height:58vh;object-fit:contain;border-radius:16px;box-shadow:0 8px 22px rgba(60,20,120,.25)}
 .twp-check{display:flex;gap:8px;align-items:flex-start;margin:12px 0 2px;font-weight:800;font-size:14px}
 .twp-nota{display:block;color:#6c6488;font-size:12px;margin:2px 0 8px}
@@ -1043,3 +1063,7 @@ a.btn#twpBaixar{text-decoration:none}
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twp-vit-lado b{color:#f3eeff}:root:not([data-theme="light"]) .twp-vit-lado small,:root:not([data-theme="light"]) .twp-vit-card figcaption{color:#c9bde8}:root:not([data-theme="light"]) .twp-vitrine h3{color:#e6d6ff}}
 [data-theme="dark"] .twp-vit-lado b{color:#f3eeff}[data-theme="dark"] .twp-vit-lado small,[data-theme="dark"] .twp-vit-card figcaption{color:#c9bde8}
+/* Jogo da semana em destaque na tela de Jogos (21/11/2026) */
+.twc-semana-selo{align-self:flex-start;display:inline-block;margin:2px 0;padding:1px 8px;border-radius:999px;background:#fff3c4;color:#8a5a00;font:800 11px 'M PLUS Rounded 1c',sans-serif}
+:root[data-theme="dark"] .twc-semana-selo{background:#4a3a10;color:#ffe08a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-semana-selo{background:#4a3a10;color:#ffe08a}}

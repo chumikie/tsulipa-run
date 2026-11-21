@@ -59,3 +59,11 @@ Migração `supabase/migrations/20261120150000_auditoria_seguranca_20261120.sql`
 - **Jogo da semana:** a missão de nível 1 prefere o jogo menos jogado na semana anterior e vale ★5 a mais (★15 em vez de ★10).
 - **Festa no mapa:** a lembrança é o cenário do camarim do tema (item de ★60 na loja), grátis uma vez por festa; não mexe no saldo.
 - Somando tudo, um jogador muito ativo ganha no máximo +★25 por semana a mais.
+
+## PR das melhorias (21/11/2026)
+
+Migração `supabase/migrations/20261121120000_convite_e_concurso_visual.sql` (ainda não aplicada; aplicar junto com o merge).
+
+- **Convite com prêmio:** ★30 para quem chega e ★30 para quem convidou, quando a pessoa nova termina a primeira corrida. Só conta criada há até 7 dias aceita convite; quem convida recebe no máximo 10 prêmios por mês (+★300/mês no pior caso). Insígnia `convite` (Abre-alas).
+- **Concurso de visual da semana:** ★50 por semana para quem teve mais votos (empate: todo mundo empatado), com pelo menos 2 inscrições e 1 voto. Até 3 votos por conta por semana, nunca no próprio visual. Insígnia `look_semana`.
+- Somando, um jogador muito ativo ganha no máximo +★50 por semana a mais; o convite só paga quando chega gente nova.

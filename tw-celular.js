@@ -517,7 +517,7 @@
       var tipo = function(h){ return /data-anivcor|data-hjaniv|data-v="trio"|data-a="encontro"/.test(h) ? 'gente' : /data-bairro|data-piloto-bairro/.test(h) ? 'mapa' : /ler-capitulo/.test(h) ? 'leitura' : 'jogo'; };
       var giro = ['jogo', 'gente', 'mapa', 'leitura'], dia = Math.floor((Date.now() - 3 * 36e5) / 864e5) % giro.length;
       giro = giro.slice(dia).concat(giro.slice(0, dia));
-      var escolha = [];
+      var escolha = continuar ? [continuar] : [];   // o "Continuar" retoma algo já começado: fica sempre à vista
       giro.forEach(function(tp){ if(escolha.length < 3){ var h = cand.filter(function(x){ return tipo(x) === tp && escolha.indexOf(x) < 0; })[0]; if(h) escolha.push(h); } });
       cand.forEach(function(h){ if(escolha.length < 3 && escolha.indexOf(h) < 0) escolha.push(h); });
       escolha.sort(function(a, b){ return cand.indexOf(a) - cand.indexOf(b); });   // na tela, a ordem de importância de sempre

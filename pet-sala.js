@@ -2999,7 +2999,7 @@ function petXP(p, n, tipo){
   if(s1 > s0){
     var st = PET_STAGES[s1];
     var top = Object.keys(p.cuidado || {}).sort(function(a, b){ return p.cuidado[b] - p.cuidado[a]; })[0];
-    if(top && typeof petT === 'function'){ p.jeito = top; p.cuidado = {}; setTimeout(function(){ if(typeof petSay === 'function') petSay(petT('jeitoNovo', {nome:p.nome || '', j:petT('j_' + top)})); }, 3200); }
+    if(top && typeof petTxt === 'function'){ p.jeito = top; p.cuidado = {}; setTimeout(function(){ if(typeof petSay === 'function') petSay(petTxt('jeitoNovo', {nome:p.nome || '', j:petTxt('j_' + top)})); }, 3200); }
     petData.roupas = petData.roupas || { '': 1 };
     if(st[3]) petData.roupas[st[3]] = 1;
     petPromo = { t:0, s:s1 };

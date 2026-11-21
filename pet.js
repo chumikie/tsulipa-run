@@ -27,7 +27,7 @@ var PET_TXT = {
   j_conversa:{pt:'💬 Tagarela',en:'💬 Chatterbox',es:'💬 Parlanchín',id:'💬 Si Cerewet',th:'💬 ช่างพูด',ja:'💬 おしゃべり'},
   jeitoNovo:{pt:'{nome} virou {j}!',en:'{nome} became {j}!',es:'¡{nome} se volvió {j}!',id:'{nome} jadi {j}!',th:'{nome} กลายเป็น {j}!',ja:'{nome}は{j}になった！'}
 };
-function petT(k, v){ var l = typeof LANG === 'string' && PET_TXT.saudade[l] ? LANG : 'pt', s = PET_TXT[k] ? (PET_TXT[k][l] || PET_TXT[k].pt) : k; return s.replace(/\{(\w+)\}/g, function(_, n){ return v && v[n] != null ? v[n] : ''; }); }
+function petTxt(k, v){ var l = typeof LANG === 'string' && PET_TXT.saudade[l] ? LANG : 'pt', s = PET_TXT[k] ? (PET_TXT[k][l] || PET_TXT[k].pt) : k; return s.replace(/\{(\w+)\}/g, function(_, n){ return v && v[n] != null ? v[n] : ''; }); }
 function petDiaBR(ms){ return new Date((ms || Date.now()) - 3 * 36e5).toISOString().slice(0, 10); }   // Brasília (UTC−3, sem horário de verão)
 function petHorasNoite(t0, t1){   // quantas horas entre t0 e t1 caem de 23h às 7h em Brasília
   var h = 0, t = t0;
@@ -38,7 +38,7 @@ function petSemanaHtml(p){   // jeitinho e dias de carinho da semana (segunda a 
   if(typeof petDiaBR !== 'function') return '';
   var hoje = new Date(Date.now() - 3 * 36e5), dow = (hoje.getUTCDay() + 6) % 7, seg = petDiaBR(Date.now() - dow * 864e5);
   var n = (p.diasCuidado || []).filter(function(d){ return d >= seg; }).length;
-  return '<small class="petsemana">' + (p.jeito ? '<em>' + escHtml(petT('j_' + p.jeito)) + '</em> · ' : '') + '🗓️ ' + escHtml(petT('semana', {n:n})) + '</small>';
+  return '<small class="petsemana">' + (p.jeito ? '<em>' + escHtml(petTxt('j_' + p.jeito)) + '</em> · ' : '') + '🗓️ ' + escHtml(petTxt('semana', {n:n})) + '</small>';
 }
 var PET_FLOOR = 196, PET_X = 250, PET_SC = 2.4;                  // chão e posição do pet no camarim
 // ML1.3-A: estado exclusivamente visual; nunca entra em petData ou no save.
@@ -127,7 +127,7 @@ function petTick(){
     if(p.dorme && k === 'energia') p[k] = petClamp(p[k] + PET_SLEEP_RATE * h);   // dormindo: recupera energia
     else p[k] = petClamp(p[k] - PET_RATE[k] * (p.dorme ? h * .5 : hq));          // dormindo: o resto cai pela metade
   });
-  if(p.t && now - p.t >= 20 * 36e5 && typeof petSay === 'function') petSay(petT('saudade'));   // voltou depois de um tempão
+  if(p.t && now - p.t >= 20 * 36e5 && typeof petSay === 'function') petSay(petTxt('saudade'));   // voltou depois de um tempão
   if(p.dorme && p.energia >= 100){ p.dorme = false; petSay(tr('Bom dia!') + ' ☀️'); }   // acorda sozinho quando descansou
   p.t = now;
 }
@@ -1207,7 +1207,7 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
 // O quarto, o celular, a agenda, o camarim, o minijogo e a adoção baixam ao abrir o pet. Cada "//→nome" acima marca o
 // lugar de uma função que mora em pet-sala.js (lá ela vem depois de "//←nome"); tests/pet-fonte.js remonta a ordem.
 // Se mudar pet-sala.js, suba a versão em PET_SALA_ARQ.
-var PET_SALA_ARQ='./pet-sala.js?v=22',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
+var PET_SALA_ARQ='./pet-sala.js?v=23',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
 function petSalaAoCarregar(f){if(PET_SALA_PRONTA)f();else petSalaFila.push(f);}
 function petSalaCarregar(){
   if(PET_SALA_PRONTA)return Promise.resolve();

@@ -53,6 +53,7 @@ db < "$repo_dir/supabase/migrations/20261121180000_economia_e_estreia.sql"
 db < "$repo_dir/supabase/migrations/20261121200000_sequencia_missoes.sql"
 # o que a produção já tem e a parte 5 (conquistas no Perfil) usa
 db -c "alter table public.players add column if not exists dias_jogados int, add column if not exists avatar jsonb, add column if not exists emoji text, add column if not exists cor text, add column if not exists frase text, add column if not exists oshi int, add column if not exists aniver date"
+db -c "alter table private.battle_partidas add column if not exists vitoria boolean"
 db < "$repo_dir/supabase/migrations/20261121220000_conquistas_perfil.sql"
 
 # 1) ranking antigo fechado para leitura direta
@@ -276,4 +277,22 @@ nk="$(db -c "select nick from public.players where id='$c'")"
 [[ "$(db -c "select sum(delta) from public.star_log where user_id='$c' and reason='passatempo'")" == 5 ]] || falha 'passatempo ★5'
 [[ "$(como "$c" "select public.passatempos_hoje()->>'feitos'")" == '["caca"]' ]] || falha 'passatempos de hoje'
 echo 'melhorias 21/11/2026 (parte 5): conquistas, destaques e passatempos verificados'
+# ── admin "Montar Idol" mantém o lado2 (bicolor) ──
+db <<SQL
+create table if not exists public.admins(user_id uuid primary key);
+create table if not exists public.admin_log(admin uuid, acao text, alvo text, valor text, motivo text);
+alter table public.players add column if not exists nuvem_ms bigint;
+create or replace function public.eh_admin() returns boolean language sql stable as \$f\$ select auth.uid() = '$a'::uuid \$f\$;
+update public.players set nuvem_visual = '{"cu2":{"back":"onduladom2","lado2":"#AA00FF"}}' where id = '$c';
+SQL
+base='"hair":"#ff7eb6","hair2":"#ffffff","eye":"#5a3b2e","skin":"#f5d0b5","outcol":"#ffffff","back":"onduladom2"'
+r="$(como "$a" "select public.admin_montar_idol('$nk', '{$base}'::jsonb)")"
+[[ "$(como "$a" "select public.admin_montar_idol('$nk', '{$base}'::jsonb)->'c'->>'lado2'")" == '#aa00ff' ]] || falha "lado2 mantido sem vir do formulário: $r"
+[[ "$(como "$a" "select public.admin_montar_idol('$nk', '{$base,\"lado2\":\"#00ff88\"}'::jsonb)->'c'->>'lado2'")" == '#00ff88' ]] || falha 'lado2 do formulário'
+[[ "$(db -c "select nuvem_visual->'admin_visual_override'->>'lado2' from public.players where id='$c'")" == '#00ff88' ]] || falha 'override com lado2'
+[[ "$(como "$a" "select public.admin_montar_idol('$nk', '{$base,\"lado2\":\"azul\"}'::jsonb)->>'campo'")" == lado2 ]] || falha 'lado2 inválido recusado'
+echo 'admin Montar Idol: bicolor (lado2) mantido'
+db -c "insert into private.battle_partidas(player_id, dia, vitoria) values ('$c', public.hoje_br(), true), ('$c', public.hoje_br(), false), ('$c', public.hoje_br() - 30, true)"
+[[ "$(como "$c" "select public.meu_recorde_semana()->>'battle'")" == 1 ]] || falha 'vitórias do Battle na semana'
+echo 'melhor da semana: vitórias do Battle verificadas'
 

@@ -397,6 +397,7 @@
     encOk:{pt:'Hoje: {n}',en:'Today: {n}',es:'Hoy: {n}',id:'Hari ini: {n}',th:'วันนี้: {n}',ja:'今日：{n}'},
     encBt:{pt:'Descobrir',en:'Find out',es:'Descubrir',id:'Lihat',th:'ดูเลย',ja:'見る'},
     rival:{pt:'Rival do dia no Idol⭐Battle!',en:'Rival of the day in Idol⭐Battle!',es:'Rival del día en Idol⭐Battle!',id:'Rival hari ini di Idol⭐Battle!',th:'คู่แข่งประจำวันใน Idol⭐Battle!',ja:'Idol⭐Battle!の今日のライバル'},
+    vitSemana:{pt:'🏆 {n} vitória(s) nesta semana',en:'🏆 {n} win(s) this week',es:'🏆 {n} victoria(s) esta semana',id:'🏆 {n} kemenangan minggu ini',th:'🏆 ชนะ {n} ครั้งในสัปดาห์นี้',ja:'🏆 今週{n}勝'},
     rivalSub:{pt:'Vença a unit rival: ★5, e o primeiro Battle do dia vale mais ★15.',en:'Beat the rival unit: ★5, plus ★15 for your first Battle of the day.',es:'Vence a la unit rival: ★5, y la primera Battle del día vale ★15 más.',id:'Kalahkan unit rival: ★5, plus ★15 untuk Battle pertama hari ini.',th:'ชนะยูนิตคู่แข่ง: ★5 และแบตเทิลแรกของวันได้อีก ★15',ja:'ライバルユニットに勝って★5、今日最初のBattleで+★15'},
     rivalOk:{pt:'Rival vencido hoje!',en:'Rival beaten today!',es:'¡Rival vencido hoy!',id:'Rival dikalahkan hari ini!',th:'ชนะคู่แข่งวันนี้แล้ว!',ja:'今日のライバルに勝利！'},
     jogar:{pt:'Jogar',en:'Play',es:'Jugar',id:'Main',th:'เล่น',ja:'遊ぶ'},
@@ -480,7 +481,8 @@
     // Rival do dia do Idol⭐Battle! (battle_status, carregado pelo tw-estreia.js)
     var rv = window.TW_ESTREIA && TW_ESTREIA.rival ? TW_ESTREIA.rival() : null;
     if(rv && typeof window.battleAbrir === 'function')
-      linha(rv.premiado, 'uva', 'trofeu', esc(thj('rival')), esc(rv.premiado ? thj('rivalOk') : thj('rivalSub')), rv.premiado ? '' : '<button type="button" class="twc-hj-bt" data-a="battle-rival">' + esc(thj('jogar')) + '</button>');
+      linha(rv.premiado, 'uva', 'trofeu', esc(thj('rival')), esc(rv.premiado ? thj('rivalOk') : thj('rivalSub')), rv.premiado ? '' : '<button type="button" class="twc-hj-bt" data-a="battle-rival">' + esc(thj('jogar')) + '</button>',
+        (function(){ var sm = window.TW_COMUNIDADE && TW_COMUNIDADE.semana ? TW_COMUNIDADE.semana() : null; return sm && +sm.battle > 0 ? '<span class="twc-hj-fogo">' + esc(thj('vitSemana', {n:+sm.battle})) + '</span>' : ''; })());   // vitórias da semana (meu_recorde_semana)
     // 3. capítulo do domingo (aparece na semana em que saiu)
     var cp = capHoje(), hj = C ? C.hoje() : '';
     if(cp && hj && (Date.parse(hj) - Date.parse(cp.data)) / 864e5 < 7){ var lido = capLidos().includes(cp.n);

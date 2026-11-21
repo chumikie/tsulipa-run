@@ -194,6 +194,7 @@ function perfRecadosHtml(d, meu){
   h += '<p class="perfmsg" id="perfRecMsg" hidden></p>';
   h += L.length ? '<ul class="perfrecs">' + L.map(function(r){
     return '<li><div><button type="button" class="lbn" data-nick="' + escHtml(r.nick) + '">' + escHtml(r.nick) + '</button> <small>' + escHtml(perfData(r.created_at)) + '</small></div><p>' + escHtml(r.texto) + '</p>' +
+           (meu && r.nick && contaJ && r.nick !== contaJ.nick ? '<button type="button" class="perfrecresp" data-perfresp="' + escHtml(r.nick) + '">↩ ' + escHtml(window.TW_CONQ ? TW_CONQ.t('responder') : 'Responder') + '</button>' : '') +   // abre o perfil de quem escreveu, com o campo de recado pronto
            (r.pode_apagar || d.admin_ver ? '<button type="button" class="perfrecx" data-id="' + (+r.id) + '"' + (!r.pode_apagar ? ' data-adm="1"' : '') + ' aria-label="✕">✕</button>' : '') + '</li>';
   }).join('') + '</ul>' : '<p class="perfcarr">' + escHtml(tr('Nenhum recado ainda.')) + '</p>';
   if(meu) h += '<label class="perfrecon"><input type="checkbox" id="perfRecOn"' + (d.recados_on !== false ? ' checked' : '') + '> ' + escHtml(tr('Aceitar recados')) + '</label>' +

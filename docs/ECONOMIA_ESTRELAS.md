@@ -91,3 +91,4 @@ Migração `supabase/migrations/20261121200000_sequencia_missoes.sql` (ainda nã
 Migração `supabase/migrations/20261121220000_conquistas_perfil.sql` (ainda não aplicada).
 - **Passatempos do dia** (caça-palavras, 5 diferenças, labirinto): ★5 cada, uma vez por dia (`passatempo_feito`, motivo `passatempo`). No máximo ★15/dia.
 - Conquistas e destaques do Perfil não mexem em estrelas.
+- Colorir o seu Idol (passatempo livre) não dá estrelas.

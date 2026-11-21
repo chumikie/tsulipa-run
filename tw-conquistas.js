@@ -35,6 +35,7 @@
     destacar:{pt:'📌 Destacar no perfil',en:'📌 Highlight on profile',es:'📌 Destacar en el perfil',id:'📌 Sorot di profil',th:'📌 ไฮไลต์ในโปรไฟล์',ja:'📌 プロフィールにピックアップ'},
     tirar:{pt:'Tirar do destaque',en:'Remove highlight',es:'Quitar de destacadas',id:'Hapus sorotan',th:'เอาออกจากไฮไลต์',ja:'ピックアップから外す'},
     cheio:{pt:'Já são 5 em destaque: tire uma antes.',en:'You already have 5 highlights: remove one first.',es:'Ya hay 5 destacadas: quita una antes.',id:'Sudah 5 sorotan: hapus satu dulu.',th:'มีไฮไลต์ครบ 5 แล้ว: เอาออกก่อนหนึ่งอัน',ja:'もう5個あります。先にひとつ外してね。'},
+    responder:{pt:'Responder',en:'Reply',es:'Responder',id:'Balas',th:'ตอบกลับ',ja:'返信'},
     erro:{pt:'Não deu para salvar. Tente de novo.',en:"Couldn't save. Try again.",es:'No se pudo guardar. Inténtalo de nuevo.',id:'Gagal menyimpan. Coba lagi.',th:'บันทึกไม่ได้ ลองอีกครั้ง',ja:'保存できませんでした。もう一度試してね。'},
     u_pontos:{pt:'pontos',en:'points',es:'puntos',id:'poin',th:'แต้ม',ja:'点'},
     u_metros:{pt:'m no Sora',en:'m in Sora',es:'m en Sora',id:'m di Sora',th:'ม. ใน Sora',ja:'m（Sora）'},
@@ -186,7 +187,18 @@
 
   // Ao tocar numa insígnia da estante, a descrição de sempre ganha a barra do próximo nível e, no próprio perfil,
   // o botão de destacar. Roda depois do clique do index.html (que escreve a descrição).
+  // "Responder" num recado recebido: abre o perfil de quem escreveu e deixa o campo de recado pronto
+  function responder(nick){
+    if(typeof perfAbrir !== 'function') return;
+    perfAbrir(nick);
+    var n = 0, ir = setInterval(function(){
+      var inp = document.getElementById('perfRecTxt'), ok = typeof perfAtual !== 'undefined' && perfAtual && perfAtual.nick === nick;
+      if((ok && inp) || ++n > 40){ clearInterval(ir); if(ok && inp){ try{ inp.scrollIntoView({block:'center'}); inp.focus({preventScroll:true}); }catch(e){ inp.focus(); } } }
+    }, 100);
+  }
   document.addEventListener('click', function(e){
+    var rsp = e.target.closest && e.target.closest('[data-perfresp]');
+    if(rsp){ responder(rsp.getAttribute('data-perfresp')); return; }
     var pin = e.target.closest && e.target.closest('[data-twq-pin]');
     if(pin){ alternar(pin.getAttribute('data-twq-pin'), pin); return; }
     var b = e.target.closest && e.target.closest('#perfCorpo .perfin'); if(!b) return;

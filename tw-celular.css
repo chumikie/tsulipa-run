@@ -1184,3 +1184,7 @@ a.btn#twpBaixar{text-decoration:none}
   :root:not([data-theme="light"]) .twpa-palavras li{background:#3d3160;color:#e0d0ff}
   :root:not([data-theme="light"]) .twpa-status{color:#c9a8ff}
 }
+.twpa-colorir{max-width:300px;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer;touch-action:manipulation}
+.twpa-paleta{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:10px 0 4px}
+.twpa-cor{width:32px;height:32px;border-radius:50%;border:2px solid rgba(58,36,112,.25);cursor:pointer;padding:0}
+.twpa-cor[aria-pressed="true"]{outline:3px solid #7b3ff0;outline-offset:2px}

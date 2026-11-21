@@ -30,7 +30,7 @@ function admVisualRoupa(f, alvoVisual){   // reserva: só a roupa (funciona ante
 }
 function admIdolFormHtml(r){
   var c=r.c||{},best=+r.best_idol||0,owned=Array.isArray(r.visuais)?r.visuais:[],hex=function(v,d){return /^#[0-9a-f]{6}$/i.test(v||'')?v:d;};
-  admIdol={nick:r.nick,c:{hair:hex(c.hair,'#ff7eb6'),hair2:hex(c.hair2,'#ffffff'),eye:hex(c.eye,'#5a3b2e'),skin:hex(c.skin,SK[1]),outcol:hex(c.outcol,'#ffffff'),back:c.back||'',front:c.front||'bagunca',mecha:c.mecha||(c.streak?'uma':''),det:c.det||'',gl:c.gl||'',hat:c.hat||'',out:c.out||'',baixo:c.baixo==='saia'||c.baixo==='bermuda'?c.baixo:'',legcol:hex(c.legcol,'#1c1c30')}};
+  admIdol={nick:r.nick,c:{hair:hex(c.hair,'#ff7eb6'),hair2:hex(c.hair2,'#ffffff'),eye:hex(c.eye,'#5a3b2e'),skin:hex(c.skin,SK[1]),outcol:hex(c.outcol,'#ffffff'),back:c.back||'',front:c.front||'bagunca',mecha:c.mecha||(c.streak?'uma':''),det:c.det||'',gl:c.gl||'',hat:c.hat||'',out:c.out||'',baixo:c.baixo==='saia'||c.baixo==='bermuda'?c.baixo:'',legcol:hex(c.legcol,'#1c1c30'),lado2:/^#[0-9a-f]{6}$/i.test(c.lado2||'')?c.lado2.toLowerCase():''}};   // lado2: a outra metade do cabelo bicolor (vazio = preto)
   function lista(id,ok){return [].filter.call($(id).options,function(o){return o.value===admIdol.c[CF[id]||'mecha']||ok(o);}).map(function(o){return [o.value,o.textContent.replace(/^🔒\s*/,'')];});}
   function sel(id,campo,ok){return '<label>'+escHtml(tr(($(id).closest('label').firstChild.nodeValue||'').trim()))+' <select data-ai="'+campo+'">'+admOpts(lista(id,ok||function(){return true;}))+'</select></label>';}
   function cor(campo){return ' <input type="color" data-ai="'+campo+'" value="'+escHtml(admIdol.c[campo])+'">';}
@@ -38,7 +38,7 @@ function admIdolFormHtml(r){
   return '<p>'+escHtml(tr('Monte o Idol que aparece no perfil e nos jogos. Roupas e acessórios: só os já liberados ou comprados.'))+(r.auto?' <b>'+escHtml(tr('Este membro ainda não montou o próprio Idol.'))+'</b>':'')+'</p>'+
     '<div style="position:relative;width:120px;margin:4px auto"><canvas id="admIdolCv" width="120" height="150" style="display:block;width:120px;height:150px"></canvas><button type="button" id="admIdolPng" title="'+escHtml(tr('Baixar PNG'))+'" aria-label="'+escHtml(tr('Baixar PNG'))+'" style="position:absolute;bottom:4px;right:-30px;width:34px;height:34px;border:0;border-radius:50%;background:var(--b1);color:#fff;font-size:16px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25)">📷</button></div><div class="cust">'+
     '<label>'+escHtml(tr('Cabelo'))+cor('hair')+'</label>'+sel('cback','back')+'<i class="cbr"></i>'+
-    sel('cstk','mecha')+cor('hair2')+'<i class="cbr"></i>'+
+    sel('cstk','mecha')+cor('hair2')+'<i class="cbr"></i>'+'<label title="Só no corte bicolor (onduladom2)">Bicolor'+cor('lado2')+'</label><i class="cbr"></i>'+
     sel('cfront','front')+sel('cdet','det',function(o){return !/^(coelho|tulipa|torrada)$/.test(o.value)||owned.indexOf('det_'+o.value)>=0;})+'<i class="cbr"></i>'+
     '<span class="perfskins">'+SK.map(function(sk){return '<button type="button" class="sw" data-ai="skin" data-v="'+sk+'" style="background:'+sk+'" aria-pressed="'+(sk===admIdol.c.skin)+'"></button>';}).join('')+'</span>'+
     '<label>'+escHtml(tr('Olhos'))+cor('eye')+'</label><i class="cbr"></i>'+

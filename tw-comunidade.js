@@ -323,7 +323,7 @@
   function recCarregar(){
     if(!logado()) { recSem = null; recMostrar(); return; }
     var meu = ++recPedido;
-    rpc('meu_recorde_semana').then(function(r){ if(meu === recPedido && r && r.ok){ recSem = r; recMostrar(); } }).catch(function(){});
+    rpc('meu_recorde_semana').then(function(r){ if(meu === recPedido && r && r.ok){ recSem = r; recMostrar(); try{ window.dispatchEvent(new Event('tw-semana')); }catch(e){} } }).catch(function(){});   // o Hoje mostra as vitórias do Battle
   }
   function recMostrar(){
     var menu = document.getElementById('menu'), pn = menu && menu.querySelector('.panel'); if(!pn) return;
@@ -409,7 +409,7 @@
   function iniciar(){ observarCorrida(); setTimeout(visitanteConvidado, 2500); }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
 
-  window.TW_COMUNIDADE = {
+  window.TW_COMUNIDADE = {semana:function(){ return recSem; }, 
     t:t, podeInstalar:podeInstalar,
     contaMudou:function(){ if(logado()){ setTimeout(conviteConferir, 1500); setTimeout(recCarregar, 1800); retroAuto(); } else { pendente = false; recSem = null; recMostrar(); } },
     abrirConvite:abrirConvite, abrirConcurso:abrirConcurso, lembrete:lembrete

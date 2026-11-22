@@ -43,6 +43,10 @@
     enviado:{pt:'Recado enviado! Obrigado 💌',en:'Message sent! Thank you 💌',es:'¡Mensaje enviado! Gracias 💌',id:'Pesan terkirim! Terima kasih 💌',th:'ส่งแล้ว! ขอบคุณ 💌',ja:'送信しました！ありがとう 💌'},
     limite:{pt:'Já foram 3 recados hoje. Amanhã tem mais!',en:'3 messages today already. More tomorrow!',es:'Ya van 3 mensajes hoy. ¡Mañana hay más!',id:'Sudah 3 pesan hari ini. Besok lagi ya!',th:'วันนี้ส่งครบ 3 ข้อความแล้ว พรุ่งนี้ส่งใหม่นะ',ja:'今日は3通送りました。また明日！'},
     login:{pt:'Entre com Google para usar.',en:'Sign in with Google to use this.',es:'Entra con Google para usarlo.',id:'Masuk dengan Google untuk memakai.',th:'เข้าสู่ระบบด้วย Google ก่อนนะ',ja:'Googleでログインしてね。'},
+    carregando:{pt:'Montando o seu mês…',en:'Putting your month together…',es:'Armando tu mes…',id:'Menyusun bulanmu…',th:'กำลังสรุปเดือนของคุณ…',ja:'今月をまとめています…'},
+    falhou:{pt:'Não deu para montar agora. Confira a internet e tente de novo.',en:'Couldn’t put it together right now. Check your connection and try again.',es:'No se pudo armar ahora. Revisa tu conexión e inténtalo de nuevo.',id:'Belum bisa disusun. Periksa koneksi lalu coba lagi.',th:'ยังสรุปไม่ได้ตอนนี้ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่',ja:'今はまとめられませんでした。通信を確認してもう一度試してね。'},
+    tentar:{pt:'Tentar de novo',en:'Try again',es:'Intentar de nuevo',id:'Coba lagi',th:'ลองอีกครั้ง',ja:'もう一度'},
+    curto:{pt:'Escreva pelo menos 2 letras.',en:'Write at least 2 characters.',es:'Escribe al menos 2 letras.',id:'Tulis minimal 2 huruf.',th:'พิมพ์อย่างน้อย 2 ตัวอักษร',ja:'2文字以上書いてね。'},
     erro:{pt:'Não deu agora. Tente de novo daqui a pouco.',en:"Couldn't do it now. Try again soon.",es:'No se pudo ahora. Inténtalo en un rato.',id:'Belum bisa sekarang. Coba lagi nanti.',th:'ตอนนี้ยังทำไม่ได้ ลองใหม่นะ',ja:'今はできませんでした。少ししてからもう一度。'}
   };
   function L(){ return typeof LANG === 'string' && TX.retro[LANG] ? LANG : 'pt'; }
@@ -138,14 +142,23 @@
     var todas = Promise.all(['400 64px "Mochiy Pop One"', '800 40px "M PLUS Rounded 1c"', '700 30px "M PLUS Rounded 1c"'].map(function(f){ return document.fonts.load(f, amostra).catch(function(){}); }));
     return Promise.race([todas, new Promise(function(r){ setTimeout(r, 1500); })]);
   }
+  // estados dentro da janela (22/11): antes nada aparecia até o servidor responder, e o erro ficava só no aviso
+  function retroFalhou(pedido, mes){
+    if(!vigente(pedido))return;
+    var o=janela('<h2 class="twp-tit" id="twpTit">' + esc(t('retro')) + '</h2><p class="twp-erro" role="alert">' + esc(t('falhou')) + '</p>' +
+      '<div class="btns"><button type="button" class="btn" id="twpDeNovo">' + esc(t('tentar')) + '</button><button type="button" class="btn alt" data-twp="fechar">' + esc(t('fechar')) + '</button></div>');
+    o.querySelector('#twpDeNovo').onclick=function(){ abrirRetro(mes); };
+  }
   function abrirRetro(mes){
     if(!logado()){ aviso(t('login')); return; }
     var pedido=novoPedido();
+    janela('<h2 class="twp-tit" id="twpTit">' + esc(t('retro')) + '</h2><p class="twp-carregando" role="status">' + esc(t('carregando')) + '</p>' +
+      '<div class="btns"><button type="button" class="btn alt" data-twp="fechar">' + esc(t('fechar')) + '</button></div>');
     rpc('retro_mes', {p_mes:mes || null}).then(function(d){
       return fontesRetro().then(function(){ return d; });
     }).then(function(d){
       if(!vigente(pedido))return;
-      if(!d || !d.ok){ aviso(t('erro')); return; }
+      if(!d || !d.ok){ retroFalhou(pedido, mes); return; }
       var cv = desenharRetro(d), url = window.twMarcaPng ? window.twMarcaPng(cv) : cv.toDataURL('image/png');
       var email=window.TW_EMAIL_MENSAL_DISPONIVEL===true;
       var o = janela('<h2 class="twp-tit twp-sr" id="twpTit">' + esc(t('retro')) + '</h2><img class="twp-img" alt="' + esc(t('retroItem', {m:nomeMes(d.mes)})) + '" src="' + url + '">' +
@@ -170,7 +183,7 @@
           if(vigente(pedido,ck)){ck.checked=!ligado;ck.disabled=false;erro(pedido,ck);}
         });
       };
-    }).catch(function(){erro(pedido);});
+    }).catch(function(){retroFalhou(pedido, mes);});
   }
   // item no cartão "Esta semana": nos 7 primeiros dias do mês destaca o mês que acabou
   function retroMes(){
@@ -259,17 +272,23 @@
     if(!logado()){ aviso(t('login')); return; }
     var pedido=novoPedido();
     var o = janela('<h2 class="twp-tit" id="twpTit">💌 ' + esc(t('recado')) + '</h2><p class="twp-nota">' + esc(t('recadoTxt')) + '</p>' +
-      '<textarea id="twpRecado" maxlength="500" rows="5" aria-label="' + esc(t('recado')) + '" aria-describedby="twpCont"></textarea><small class="twp-cont" id="twpCont">0/500</small>' +
+      '<textarea id="twpRecado" maxlength="500" rows="5" aria-label="' + esc(t('recado')) + '" aria-describedby="twpCont twpRecMsg"></textarea><small class="twp-cont" id="twpCont">0/500</small>' +
+      '<p class="twp-recmsg" id="twpRecMsg" role="status" aria-live="polite"></p>' +
       '<div class="btns"><button type="button" class="btn" id="twpEnviar">' + esc(t('enviar')) + '</button><button type="button" class="btn alt" data-twp="fechar">' + esc(t('fechar')) + '</button></div>');
-    var ta = o.querySelector('#twpRecado'), ct = o.querySelector('#twpCont');
-    ta.oninput = function(){ ct.textContent = ta.value.length + '/500'; };
-    o.querySelector('#twpEnviar').onclick = function(){
-      var b = this, txt = ta.value.trim(); if(txt.length < 2 || b.disabled || !vigente(pedido,b)) return; b.disabled = true;
+    var ta = o.querySelector('#twpRecado'), ct = o.querySelector('#twpCont'), bt = o.querySelector('#twpEnviar'), msg = o.querySelector('#twpRecMsg');
+    // Enviar só acende com 2 letras ou mais (antes ficava ativo e o toque não fazia nada); o contador avisa perto do limite
+    function estado(){ var n = ta.value.length, ok = ta.value.trim().length >= 2; ct.textContent = n + '/500'; bt.setAttribute('aria-disabled', ok ? 'false' : 'true'); bt.classList.toggle('twp-bt-off', !ok); if(ok && msg.dataset.k === 'curto'){ msg.textContent = ''; msg.dataset.k = ''; } }
+    function dizer(k){ msg.textContent = t(k); msg.dataset.k = k; }
+    ta.oninput = estado; estado();
+    bt.onclick = function(){
+      var b = this, txt = ta.value.trim(); if(b.disabled || !vigente(pedido,b)) return;
+      if(txt.length < 2){ dizer('curto'); try{ ta.focus(); }catch(e){} return; }
+      b.disabled = true; msg.textContent = ''; msg.dataset.k = '';
       rpc('recado_tsulipa_enviar', {p_texto:txt}).then(function(r){
         if(!vigente(pedido,b))return;
         if(r && r.ok){ fechar(); aviso(t('enviado')); }
-        else { b.disabled = false; aviso(t(r && r.erro === 'limite' ? 'limite' : 'erro')); }
-      }).catch(function(){ if(vigente(pedido,b)){b.disabled=false;erro(pedido,b);} });
+        else { b.disabled = false; dizer(r && r.erro === 'limite' ? 'limite' : 'erro'); }
+      }).catch(function(){ if(vigente(pedido,b)){ b.disabled=false; dizer('erro'); } });
     };
   }
 

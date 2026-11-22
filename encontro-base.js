@@ -24,7 +24,7 @@ function encCarregar(depois){
   if(encPronto){ if(depois) depois(); return; }
   if(depois) encFila.push(depois);
   if(encPedido) return; encPedido = true;
-  var s = document.createElement('script'); s.src = './encontro.js?v=3'; s.async = true;
+  var s = document.createElement('script'); s.src = './encontro.js?v=4'; s.async = true;
   s.onload = function(){ encPronto = true; var f = encFila.splice(0); f.forEach(function(fn){ try{ fn(); }catch(e){ if(window.console) console.error(e); } }); };
   s.onerror = function(){ encPedido = false; encFila.length = 0; };
   document.body.appendChild(s);

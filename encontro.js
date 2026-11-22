@@ -47,7 +47,10 @@ function encMostrar(d){
   $('encFoto').textContent = '📸 ' + tr('Foto');
   $('encDuo').textContent = '🌙 Moon⭐Duo!'; $('encDuo').hidden = !contaJ;
   $('encPerfil').textContent = tr('Ver perfil');
+  var abrindo = encOv.hidden;
   encOv.hidden = false; if(!encAnim) encAnim = requestAnimationFrame(encLoop);
+  var ex2 = $('encX'); if(ex2) ex2.setAttribute('aria-label', tr('Fechar'));
+  if(abrindo && ex2) try{ ex2.focus({preventScroll:true}); }catch(e){}   // foco dentro da janela (22/11): antes ficava no Menu por trás
   if(!muted){ try{ var ea = new Audio('./audio/encontro.mp3?v=1'); ea.volume = .5; if(window.TW_AUDIO)window.TW_AUDIO.midia(ea,.5); var ep = ea.play(); if(ep && ep.catch) ep.catch(function(){ [784, 988, 1175, 1568].forEach(function(f, i){ beep(f, .12, 'triangle', .035, i * .09); }); }); }catch(e){} }   // 会いたかった!!
 }
 function encLoop(ms){

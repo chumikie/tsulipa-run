@@ -61,6 +61,10 @@
     perfilShare:{pt:'Compartilhar meu perfil',en:'Share my profile',es:'Compartir mi perfil',id:'Bagikan profilku',th:'แชร์โปรไฟล์ของฉัน',ja:'プロフィールをシェア'},
     perfilMsg:{pt:'Olha o meu Idol no TsuLiPa⭐World!',en:'Check out my Idol on TsuLiPa⭐World!',es:'¡Mira mi Idol en TsuLiPa⭐World!',id:'Lihat Idol-ku di TsuLiPa⭐World!',th:'มาดูไอดอลของฉันใน TsuLiPa⭐World!',ja:'TsuLiPa⭐Worldの私のIdolを見て！'},
     fechar:{pt:'Fechar',en:'Close',es:'Cerrar',id:'Tutup',th:'ปิด',ja:'閉じる'},
+    // 22/11: carregando e erro dentro da própria janela (antes ficava em "…" e o erro só no aviso flutuante)
+    carregando:{pt:'Carregando…',en:'Loading…',es:'Cargando…',id:'Memuat…',th:'กำลังโหลด…',ja:'読み込み中…'},
+    falhou:{pt:'Não deu para carregar agora. Confira a internet e tente de novo.',en:'Couldn’t load right now. Check your connection and try again.',es:'No se pudo cargar ahora. Revisa tu conexión e inténtalo de nuevo.',id:'Belum bisa dimuat. Periksa koneksi lalu coba lagi.',th:'โหลดไม่ได้ตอนนี้ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่',ja:'今は読み込めませんでした。通信を確認してもう一度試してね。'},
+    tentar:{pt:'Tentar de novo',en:'Try again',es:'Intentar de nuevo',id:'Coba lagi',th:'ลองอีกครั้ง',ja:'もう一度'},
     erro:{pt:'Não deu certo agora. Tente de novo daqui a pouco.',en:'That didn\'t work. Please try again soon.',es:'No funcionó. Inténtalo de nuevo en un rato.',id:'Belum berhasil. Coba lagi sebentar lagi.',th:'ยังไม่สำเร็จ ลองใหม่อีกครั้งนะ',ja:'うまくいきませんでした。少ししてからもう一度試してください。'}
   };
   var TEMAS = [
@@ -101,7 +105,7 @@
     if(e.shiftKey && (a === p || !ov.contains(a))){ e.preventDefault(); e.stopImmediatePropagation(); u.focus(); }
     else if(!e.shiftKey && (a === u || !ov.contains(a))){ e.preventDefault(); e.stopImmediatePropagation(); p.focus(); }
   }, true);
-  function janela(html){
+  function janela(html, foco){
     if(!ov){
       ov = document.createElement('div'); ov.className = 'ov twp-ov twk-ov'; ov.hidden = true; document.body.appendChild(ov);
       ov.addEventListener('click', function(e){ if(e.target === ov || (e.target.closest && e.target.closest('[data-twk-x]'))) fechar(); });
@@ -109,19 +113,28 @@
     if(ov.hidden){ var at = document.activeElement; voltarFoco = at && at !== document.body ? at : null; }
     ov.innerHTML = '<div class="panel twp-panel twk-panel" role="dialog" aria-modal="true" aria-labelledby="twkTit">' + html + '</div>';
     ov.hidden = false;
-    var foco = ov.querySelector('.btn'); if(foco) try{ foco.focus(); }catch(e){}
+    // foco inicial: o seletor pedido (o título, quando o primeiro botão grava algo no servidor) ou o primeiro botão
+    var f = (foco && ov.querySelector(foco)) || ov.querySelector('.btn'); if(f) try{ f.focus({preventScroll:true}); }catch(e){}
     return ov;
+  }
+  function carregando(tit){
+    janela('<h2 class="twp-tit" id="twkTit">' + tit + '</h2><p class="twk-carregando" role="status">' + esc(t('carregando')) + '</p>' +
+      '<div class="btns"><button type="button" class="btn alt" data-twk-x>' + esc(t('fechar')) + '</button></div>');
+  }
+  function falhou(tit, de){
+    janela('<h2 class="twp-tit" id="twkTit">' + tit + '</h2><p class="twk-erro" role="alert">' + esc(t('falhou')) + '</p>' +
+      '<div class="btns"><button type="button" class="btn" data-twk="' + de + '">' + esc(t('tentar')) + '</button><button type="button" class="btn alt" data-twk-x>' + esc(t('fechar')) + '</button></div>');
   }
 
   // ───── Convite ─────
   function linkDe(cod){ return location.origin + '/?convite=' + encodeURIComponent(cod); }
   function abrirConvite(){
     if(!logado()){ janela('<h2 class="twp-tit" id="twkTit">💌 ' + esc(t('convite')) + '</h2><p class="twk-txt">' + esc(t('conviteTxt', {p:30})) + '</p><div class="btns"><button type="button" class="btn" data-twk="entrar">' + esc(t('entrar')) + '</button><button type="button" class="btn alt" data-twk-x>' + esc(t('fechar')) + '</button></div>'); return; }
-    var meu = ++pedido;
-    janela('<h2 class="twp-tit" id="twkTit">💌 ' + esc(t('convite')) + '</h2><p class="twk-txt">…</p>');
+    var meu = ++pedido, tit = '💌 ' + esc(t('convite'));
+    carregando(tit);
     rpc('convite_meu').then(function(r){
       if(meu !== pedido) return;
-      if(!r || !r.ok || !r.codigo){ janela('<h2 class="twp-tit" id="twkTit">💌 ' + esc(t('convite')) + '</h2><p class="twk-txt">' + esc(t('erro')) + '</p><div class="btns"><button type="button" class="btn alt" data-twk-x>' + esc(t('fechar')) + '</button></div>'); return; }
+      if(!r || !r.ok || !r.codigo){ falhou(tit, 'convite'); return; }
       var link = linkDe(r.codigo), podeShare = typeof navigator.share === 'function';
       janela('<h2 class="twp-tit" id="twkTit">💌 ' + esc(t('convite')) + '</h2>' +
         '<p class="twk-txt">' + esc(t('conviteTxt', {p:r.premio || 30})) + '</p>' +
@@ -131,7 +144,7 @@
         '<button type="button" class="btn' + (podeShare ? ' alt' : '') + '" data-twk="convite-copiar">🔗 ' + esc(t('copiar')) + '</button>' +
         '<button type="button" class="btn alt" data-twk-x>' + esc(t('fechar')) + '</button></div>');
       ov.dataset.link = link;
-    }).catch(function(){ if(meu === pedido) aviso(t('erro'), '⚠️'); });
+    }).catch(function(){ if(meu === pedido) falhou(tit, 'convite'); });
   }
   function copiar(txt){
     if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(txt);
@@ -186,11 +199,14 @@
       perfCharContorno(x, 30, 20, 6, function(){ drawChar(perfChar({c:visual || {}}), 0, 0, 0, 0, false); });
     }catch(e){}
   }
-  function abrirConcurso(){
-    var meu = ++pedido;
-    if(!ov || ov.hidden) janela('<h2 class="twp-tit" id="twkTit">🏆 ' + esc(t('concurso')) + '</h2><p class="twk-txt">…</p>');
+  function abrirConcurso(manter){
+    var meu = ++pedido, tit = '🏆 ' + esc(t('concurso'));
+    // depois de votar, a janela é refeita no mesmo ponto da rolagem e o foco volta ao coração tocado
+    var pn0 = manter && ov && !ov.hidden ? ov.querySelector('.twk-panel') : null, rolagem = pn0 ? pn0.scrollTop : 0;
+    if(!pn0) carregando(tit);
     rpc('concurso_estado').then(function(d){
-      if(meu !== pedido || !d || !d.ok) { if(meu === pedido && (!d || !d.ok)) aviso(t('erro'), '⚠️'); return; }
+      if(meu !== pedido) return;
+      if(!d || !d.ok){ falhou(tit, 'concurso'); return; }
       C = d;
       var cards = (d.inscritos || []).map(function(e, i){
         var nome = e.eu ? t('voce') : e.nick;
@@ -201,7 +217,7 @@
           '</li>';
       }).join('');
       var ant = d.anterior || {}, venc = (ant.vencedores || []).join(', ');
-      janela('<h2 class="twp-tit" id="twkTit">🏆 ' + esc(t('concurso')) + '</h2>' +
+      janela('<h2 class="twp-tit" id="twkTit" tabindex="-1">' + tit + '</h2>' +
         '<p class="twk-tema">' + esc(tema(d.tema)) + ' <small>' + esc(t('ate', {d:data(d.ate)})) + '</small></p>' +
         '<p class="twk-txt">' + esc(t('concursoTxt', {t:tema(d.tema), v:d.votos_max || 3, p:d.premio || 50})) + '</p>' +
         (venc ? '<p class="twk-nota">👑 ' + esc(t('vencedor', {t:tema(ant.tema), n:venc})) + '</p>' : '') +
@@ -210,9 +226,14 @@
         (cards ? '<ul class="twk-galeria">' + cards + '</ul>' : '<p class="twk-vazio">' + esc(t('vazio')) + '</p>') +
         '<div class="btns">' + (logado() ? '<button type="button" class="btn" data-twk="inscrever">👗 ' + esc(t(d.eu_inscrito ? 'atualizar' : 'inscrever')) + '</button>'
                                          : '<button type="button" class="btn" data-twk="entrar">' + esc(t('entrar')) + '</button>') +
-        '<button type="button" class="btn alt" data-twk-x>' + esc(t('fechar')) + '</button></div>');
+        '<button type="button" class="btn alt" data-twk-x>' + esc(t('fechar')) + '</button></div>', manter ? null : '#twkTit');   // o 1º botão grava: o foco começa no título
       ov.querySelectorAll('.twk-galeria canvas').forEach(function(cv){ var e = d.inscritos[+cv.dataset.i]; if(e) desenhar(cv, e.visual); });
-    }).catch(function(){ if(meu === pedido) aviso(t('erro'), '⚠️'); });
+      if(manter){
+        var pn = ov.querySelector('.twk-panel'); if(pn) pn.scrollTop = rolagem;
+        var alvo = [].filter.call(ov.querySelectorAll('[data-twk="votar"]'), function(b){ return b.dataset.nick === manter; })[0] || ov.querySelector('#twkTit');
+        if(alvo) try{ alvo.focus({preventScroll:true}); }catch(e){}
+      }
+    }).catch(function(){ if(meu === pedido) falhou(tit, 'concurso'); });
   }
   function inscrever(b){
     b.disabled = true;
@@ -228,7 +249,7 @@
   function votar(b){
     b.disabled = true;
     rpc('concurso_votar', {p_nick:b.dataset.nick}).then(function(r){
-      if(r && r.ok) abrirConcurso();
+      if(r && r.ok) abrirConcurso(b.dataset.nick);
       else aviso(t(r && r.erro === 'limite' ? 'limite' : 'erro', {v:(C && C.votos_max) || 3}), '⚠️');
     }).catch(function(){ aviso(t('erro'), '⚠️'); }).then(function(){ b.disabled = false; });
   }
@@ -291,11 +312,11 @@
     else acoes.parentNode.insertBefore(d, acoes.nextSibling);
   }
   function abrirDuoAlbum(){
-    var meu = ++pedido;
-    janela('<h2 class="twp-tit" id="twkTit">📒 ' + esc(t('duoAlbum')) + '</h2><p class="twk-txt">…</p>');
+    var meu = ++pedido, tit = '📒 ' + esc(t('duoAlbum'));
+    carregando(tit);   // mesmo defeito do Concurso: ficava em "…" quando o servidor falhava
     rpc('duo_album').then(function(d){
       if(meu !== pedido) return;
-      if(!d || !d.ok){ aviso(t('erro'), '⚠️'); return; }
+      if(!d || !d.ok){ falhou(tit, 'duo-album'); return; }
       var lista = d.lista || [];
       var metas = (d.metas || []).map(function(m){
         return '<li class="twk-meta' + (m.ok ? ' ok' : '') + '"><span>' + (m.ok ? '✅' : '⬜') + ' ' + esc(t('meta', {n:m.meta, p:m.premio})) + '</span>' +
@@ -311,7 +332,7 @@
         var e = lista[+cv.dataset.i]; if(!e) return;
         try{ var x = cv.getContext('2d'); perfCharContorno(x, 30, 20, 6, function(){ drawChar(perfChar(e.avatar || {}), 0, 0, 0, 0, false); }); }catch(_){}
       });
-    }).catch(function(){ if(meu === pedido) aviso(t('erro'), '⚠️'); });
+    }).catch(function(){ if(meu === pedido) falhou(tit, 'duo-album'); });
   }
   function duoMeta(b){
     b.disabled = true;

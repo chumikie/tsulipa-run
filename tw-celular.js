@@ -137,7 +137,16 @@
     escudo:'<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
     nuvem:'<path d="M7 18h10a4 4 0 00.6-8 6 6 0 00-11.4 1.6A3.3 3.3 0 007 18z"/>',
     arcoiris:'<path d="M3 18a9 9 0 0118 0"/><path d="M6.5 18a5.5 5.5 0 0111 0"/><path d="M10 18a2 2 0 014 0"/>',
-    trio:'<circle cx="12" cy="7" r="3.2"/><circle cx="6" cy="15" r="3.2"/><circle cx="18" cy="15" r="3.2"/><path d="M9.6 9.4L7.8 12.3M14.4 9.4l1.8 2.9M9.2 15h5.6"/>'
+    trio:'<circle cx="12" cy="7" r="3.2"/><circle cx="6" cy="15" r="3.2"/><circle cx="18" cy="15" r="3.2"/><path d="M9.6 9.4L7.8 12.3M14.4 9.4l1.8 2.9M9.2 15h5.6"/>',
+    // atalhos do Menu (22/11): um desenho para cada, sem repetir
+    quebra:'<path d="M5 8h3.2a2 2 0 113.6 0H15v3.2a2 2 0 110 3.6V18h-3.2a2 2 0 10-3.6 0H5z"/>',
+    porta:'<path d="M6 21V4.5A1.5 1.5 0 017.5 3h9A1.5 1.5 0 0118 4.5V21"/><path d="M4 21h16"/><path d="M12 7.2l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z"/><circle cx="15" cy="14.5" r=".7"/>',
+    convite:'<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3.8 7.5L12 13l8.2-5.5"/><path d="M12 3v2.2M9.6 3.8l1 1.4M14.4 3.8l-1 1.4"/>',
+    sino:'<path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/><path d="M12 3v2"/>',
+    grafico:'<rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M8 16v-3M12 16V8M16 16v-5"/>',
+    carta:'<path d="M4 6h16v12H4z"/><path d="M4 6l8 6.5L20 6"/><path d="M12 17.2l-1.6-1.5a1 1 0 011.6-1.2 1 1 0 011.6 1.2z"/>',
+    brilho:'<path d="M12 3c.6 4.4 2.2 6.4 7 7-4.8.6-6.4 2.6-7 7-.6-4.4-2.2-6.4-7-7 4.8-.6 6.4-2.6 7-7z"/><path d="M19 15.5c.2 1.6.8 2.3 2.5 2.5-1.7.2-2.3.9-2.5 2.5-.2-1.6-.8-2.3-2.5-2.5 1.7-.2 2.3-.9 2.5-2.5z"/>',
+    app:'<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M12 7v6.5M9.5 11l2.5 2.5 2.5-2.5"/><path d="M10.5 18.5h3"/>'
   };
   function ico(k, tam){ return '<svg class="twc-ico" width="' + (tam || 28) + '" height="' + (tam || 28) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (P[k] || P.estrela) + '</svg>'; }
   var COR = {run:'roxo', karaoke:'rosa', sora:'azul', duo:'noite', cafe:'cafe', handshake:'rosa2', bloom:'verde', studio:'ceu', battle:'uva', pet:'uva', gacha:'rosa',
@@ -173,7 +182,8 @@
     if(precisaEntrar(k)){ pedirLogin(titulo(c)); return; }
     c.click();   // o mesmo caminho do hub: sons, cadeados, prêmios e telas continuam iguais
   }
-  var JOGOS = ['run', 'karaoke', 'sora', 'battle', 'duo', 'cafe', 'handshake', 'studio', 'bloom', 'pet'];
+  // Star⭐Gacha! entrou na lista em 22/11: o banner dele saiu do Menu na poda e esta passou a ser a entrada principal
+  var JOGOS = ['run', 'karaoke', 'sora', 'gacha', 'battle', 'duo', 'cafe', 'handshake', 'studio', 'bloom', 'pet'];
   function jogosNaTela(){ return JOGOS.filter(function(k){ return !!card(k); }); }
 
   /* ---------- estado ---------- */
@@ -653,43 +663,81 @@
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
     return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + estreiaHtml() + (window.TW_CONQ && logado() ? TW_CONQ.cartaoHtml() : '') + '</div>' +
-      '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + (window.TW_SEMANA ? window.TW_SEMANA.html() : '') + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
+      '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
   }
 
   /* ---------- Menu: você, o dia, os destaques e os atalhos ---------- */
-  function banner(k, tit, linha, botao, attrs, fita, extra){
-    return '<button type="button" class="twc-banner" ' + attrs + '><span class="twc-banner-ico twc-g-' + (COR[k] || 'roxo') + '">' + ico(k, 26) + '</span>' + (fita ? '<em class="twc-fita">' + esc(fita) + '</em>' : '') +
-      '<span class="twc-banner-txt"><b translate="no">' + esc(tit) + '</b><small>' + esc(linha) + '</small>' + (extra || '') + '</span><span class="twc-amarelo">' + esc(botao) + '</span></button>';
+  // Nome curto na grade de atalhos (o inteiro vai para o leitor de tela). Só onde o nome do módulo passa de
+  // duas linhas em 320–390 px ou quebra no meio de uma palavra (TsuLiPa⭐World, アイドルをさがす).
+  var ATC = {
+    'data-twk="lembrete"':{pt:'Show de sábado',en:'Saturday Show',es:'Show del sábado',id:'Show Sabtu',th:'โชว์วันเสาร์',ja:'土曜ショー'},
+    'data-twp="recado"':{pt:'Recado ao trio',en:'Note to the trio',es:'Mensaje al trío',id:'Pesan ke trio',th:'ข้อความถึงทริโอ',ja:'トリオへ手紙'},
+    'data-a="busca"':{ja:'アイドル検索'},
+    'data-v="trio"':{ja:'プロフ'},   // "プロフィール" quebrava em "プロ / フィール" em 320 px
+    'data-twk="concurso"':{ja:'コーデ大会'},   // "コーデコンテスト" quebrava em "コーデコ / ンテスト"
+    // hífen opcional (U+00AD): só aparece quando a palavra não cabe na largura do atalho (320 px)
+    'data-twpa="abrir"':{pt:'Passa\u00adtempos',es:'Pasa\u00adtiempos',th:'เกมประจำวัน'},
+    'data-bairro="abrir"':{en:'Neighbor\u00adhood life',id:'Kampung kita'},
+    'data-a="nov"':{es:'Nove\u00addades'}
+  };
+  var TM = {
+    mais:{pt:'Mais',en:'More',es:'Más',id:'Lainnya',th:'เพิ่มเติม',ja:'もっと'},
+    fechar:{pt:'Fechar',en:'Close',es:'Cerrar',id:'Tutup',th:'ปิด',ja:'閉じる'},
+    maisTit:{pt:'Mais no TsuLiPa⭐World',en:'More in TsuLiPa⭐World',es:'Más en TsuLiPa⭐World',id:'Lainnya di TsuLiPa⭐World',th:'เพิ่มเติมใน TsuLiPa⭐World',ja:'TsuLiPa⭐Worldのその他'}
+  };
+  function tm(k){ var d = TM[k]; return d[L()] || d.pt; }
+  var menuMais = [];
+  // Pasta "Mais" do Menu: os mesmos botões (mesmos data-*), numa folha por cima; tocar num deles fecha a folha.
+  function folhaMais(){
+    folha.innerHTML = '<div class="twc-folha-caixa twc-folha-mais" role="dialog" aria-modal="true" aria-labelledby="twcMaisT"><h2 id="twcMaisT">' + esc(tm('maisTit')) + '</h2>' +
+      '<div class="twc-mais-grade">' + menuMais.map(function(a){
+        var c = a[0] === 'nov' ? novTemNovo() : null, curto = atCurto(a[2], a[1]);
+        return '<button type="button" class="twc-atalho" ' + a[2] + (curto !== a[1] ? ' aria-label="' + esc(a[1]) + '" title="' + esc(a[1]) + '"' : '') + '><span class="twc-at-ico" aria-hidden="true">' + ico(a[0], 26) + '</span><span class="twc-at-nome">' + esc(curto) + '</span>' + badge(c) + '</button>';
+      }).join('') + '</div><button type="button" class="twc-btn twc-btn-claro" data-f="fechar">' + esc(tm('fechar')) + '</button></div>';
+    folha.hidden = false;
+    var pri = folha.querySelector('.twc-mais-grade button'); if(pri) try{ pri.focus(); }catch(e){}
   }
+  // Fecha a pasta depois que o toque chega aos módulos (alguns escutam no documento, na captura, e param o evento).
+  document.addEventListener('click', function(e){
+    var b = e.target && e.target.closest && e.target.closest('.twc-folha-mais .twc-atalho');
+    if(b) setTimeout(function(){ if(folha && folha.querySelector('.twc-folha-mais')) fecharFolha(); }, 0);
+  }, true);
+  function atCurto(attrs, nome){ var k = String(attrs).split(' ')[0], d = ATC[k]; return (d && d[L()]) || nome; }
   function telaMenu(){
-    var run = card('run'), kar = card('karaoke'), gac = card('gacha');
-    var musica = ''; try{ musica = typeof hubMusicaSemana === 'function' ? hubMusicaSemana()[1] : ''; }catch(e){}
     var pi = []; try{ pi = typeof hubPetInfo === 'function' ? hubPetInfo() : []; }catch(e){ pi = []; }
     var petC = card('pet'), petEmo = (petC && petC.querySelector('i')) ? petC.querySelector('i').textContent : '';
     var rec = +(typeof best !== 'undefined' ? best : 0) || 0;
-    var bs = [];
-    if(run) bs.push(banner('run', titulo(run), tt('Recorde') + ': ' + recorde(), tt('Jogar'), 'data-ir="run"'));
-    if(kar) bs.push(banner('karaoke', titulo(kar), musica ? tt('Música da semana') + ': ' + musica : descricao(kar), tt('Abrir'), 'data-ir="karaoke"', alerta(kar) ? '!' : ''));
-    if(gac) bs.push(banner('gacha', titulo(gac), tt('1 giro por dia'), tt('Abrir'), 'data-ir="gacha"', alerta(gac) ? '!' : ''));
+    // Poda de 22/11 (dona): os banners do Center⭐Run!, Karaoke⭐Time! e Star⭐Gacha! saíram do Menu: já estão na porta Jogos.
     // Sem repetir o que já tem porta no Início (Missões, Calendário, Mapa, News, Camarim) nem a engrenagem do topo (Ajustes).
     // Sem repetir dentro do Menu: a TV já é o card do Ranking; o "Hoje", o Calendário e o desejo/VIP ficam no Início.
-    var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['coracao', thj('enc'), 'data-a="encontro"'], ['estrela', window.TW_PASSA ? TW_PASSA.t('tit') : '', 'data-twpa="abrir"'], ['album', t('album'), 'data-a="album"'],
-              ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', tf('fichas'), 'data-v="trio"'], ['pata', tt2('tour'), 'data-v="tour"']];
+    // [ícone, nome, atributos]. Cada atalho tem um desenho próprio (antes: trio, coração, estrela e calendário repetidos).
+    // Na grade vai o nome curto (ATC); o nome inteiro fica no aria-label e no title.
+    var at = [['loja', 'Zipper Shop', 'data-ir="loja"'], ['coracao', thj('enc'), 'data-a="encontro"'], ['quebra', window.TW_PASSA ? TW_PASSA.t('tit') : '', 'data-twpa="abrir"'],
+              ['album', t('album'), 'data-a="album"'], ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', tf('fichas'), 'data-v="trio"'],
+              ['porta', tt2('tour'), 'data-v="tour"']];
     at = at.filter(function(a){ return a[1]; });   // atalho de módulo que ainda não carregou fica de fora
     if(window.TW_BAIRRO) at.push(['pin', window.TW_BAIRRO.t('tit'), 'data-bairro="abrir"']);   // Vida no bairro (tw-bairro.js)
     if(window.TW_COMUNIDADE){   // comunidade (tw-comunidade.js): concurso, convite, lembrete do show e app
       var cm = window.TW_COMUNIDADE;
       at.push(['trofeu', cm.t('concurso'), 'data-twk="concurso"']);
-      if(window.TW_ESTREIA && TW_ESTREIA.trilhaAtiva()) at.push(['estrela', TW_ESTREIA.t('trilha'), 'data-twe="trilha"']);   // primeira semana (tw-estreia.js)
-      if(logado()) at.push(['trio', cm.t('convite'), 'data-twk="convite"']);
-      at.push(['cal', cm.t('lembrete'), 'data-twk="lembrete"']);
-      if(cm.podeInstalar()) at.push(['estrela', cm.t('instalar'), 'data-twk="instalar"']);
+      if(window.TW_ESTREIA && TW_ESTREIA.trilhaAtiva()) at.push(['brilho', TW_ESTREIA.t('trilha'), 'data-twe="trilha"']);   // primeira semana (tw-estreia.js)
+      if(logado()) at.push(['convite', cm.t('convite'), 'data-twk="convite"']);
+      at.push(['sino', cm.t('lembrete'), 'data-twk="lembrete"']);
+      if(cm.podeInstalar()) at.push(['app', cm.t('instalar'), 'data-twk="instalar"']);
     }
     if(window.TW_PESSOAL && logado()){
-      // No celular o cartão "Esta semana" não aparece no Início: a retrospectiva do mês fica aqui no Menu.
-      if(window.matchMedia && matchMedia('(max-width:899px)').matches) at.push(['cal', window.TW_PESSOAL.t('retro'), 'data-twp="retro" data-mes="' + window.TW_PESSOAL.retroMes() + '"']);
-      at.push(['coracao', window.TW_PESSOAL.t('recado'), 'data-twp="recado"']);
+      // "Meu mês" saiu em 22/11: a retrospectiva já está no "Esta semana" do Calendário, em todas as larguras.
+      at.push(['carta', window.TW_PESSOAL.t('recado'), 'data-twp="recado"']);
     }   // Caixa de recados para o TsuLiPa (tw-pessoal.js)
+    // Poda de 22/11 (dona): 7 atalhos à vista + a pasta "Mais" com o resto (como as pastas de apps do celular).
+    // Ficam à vista os passeios do dia a dia; comunidade, avisos e recados vão para a pasta.
+    var VISTA = ['data-ir="loja"', 'data-a="encontro"', 'data-twpa="abrir"', 'data-a="album"', 'data-a="busca"', 'data-v="trio"', 'data-bairro="abrir"'];
+    var principais = at.filter(function(a){ return VISTA.indexOf(a[2]) >= 0; }), extras = at.filter(function(a){ return VISTA.indexOf(a[2]) < 0; });
+    menuMais = extras;
+    if(extras.length) principais.push(['todos', tm('mais'), 'data-a="menuMais"']);
+    at = principais;
+    // Grade sem "sobra" torta: 4 colunas (2 linhas de 4 com a pasta) e última linha centralizada se faltar algum módulo.
+    var colPc = Math.min(8, at.length);
     return faixa(esc(t('menu')), t('menuSub')) + '<div class="twc-pag twc-menu">' +
       '<div class="twc-menu-topo"><div class="twc-duas">' +
         '<button type="button" class="twc-card twc-idol" data-ir="pet"><canvas class="twc-idol-av" data-av="1" width="160" height="160" aria-hidden="true"></canvas>' +
@@ -697,11 +745,12 @@
         '<button type="button" class="twc-card twc-rank" data-a="tv"><span class="twc-rank-t">' + ico('trofeu', 20) + '<b>' + esc(t('rank')) + '</b></span>' +
           (rec ? '<span class="twc-rank-n">' + esc(recorde()) + '</span><small>' + esc(tt('Recorde')) + ' · ' + esc(t('tv')) + '</small>' : '<small class="twc-rank-vazio">' + esc(t('rankVazio')) + '</small><small>' + esc(t('tv')) + '</small>') + '</button>' +
       '</div></div>' + humorHtml(true) +
-      '<div class="twc-banners">' + bs.join('') + '</div>' + idols() +
-      '<section class="twc-atalhos" aria-label="' + esc(t('menu')) + '">' + at.map(function(a){
-        var c = a[0] === 'nov' ? novTemNovo() : a[2].indexOf('data-ir') === 0 ? card(a[0]) : null;
+      idols() +
+      '<section class="twc-atalhos" aria-label="' + esc(t('menu')) + '" style="--twc-at-col:' + colPc + '">' + at.map(function(a){
+        var c = a[0] === 'nov' ? novTemNovo() : a[0] === 'todos' ? menuMais.some(function(x){ return x[0] === 'nov'; }) && novTemNovo() : a[2].indexOf('data-ir') === 0 ? card(a[0]) : null;
         var novo = a[0] === 'loja' && window.TW_ESTREIA && TW_ESTREIA.lojaNovo && TW_ESTREIA.lojaNovo() ? '<em class="twc-novo">' + esc(TW_ESTREIA.t('novo')) + '</em>' : '';   // selo "Novo" na Zipper⭐Shop!
-        return '<button type="button" class="twc-atalho" ' + a[2] + '>' + ico(a[0], 26) + '<span>' + esc(a[1]) + '</span>' + (novo || badge(c)) + cadeado(a[0]) + '</button>';
+        var curto = atCurto(a[2], a[1]), nomeInteiro = curto !== a[1] ? ' aria-label="' + esc(a[1]) + '" title="' + esc(a[1]) + '"' : '';
+        return '<button type="button" class="twc-atalho" ' + a[2] + nomeInteiro + '><span class="twc-at-ico" aria-hidden="true">' + ico(a[0], 26) + '</span><span class="twc-at-nome' + (L() === 'ja' ? ' twc-at-cjk' : '') + '">' + esc(curto) + '</span>' + (novo || badge(c)) + cadeado(a[0]) + '</button>';
       }).join('') + '</section></div>';
   }
 
@@ -795,7 +844,7 @@
     [].slice.call(cel.querySelectorAll('canvas[data-idol]')).forEach(function(cv){
       var av = membroAv(+cv.getAttribute('data-idol')); if(!av || typeof perfDesenharIdol !== 'function') return;
       var x = cv.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height); x.scale(2, 2);
-      try{ perfDesenharIdol(x, 104, 112, av, false, false, 0); }catch(e){}
+      try{ perfDesenharIdol(x, 104, 112, av, false, false, 0, cv.closest('.twc-f2-palco') ? 'inteiro' : null); }catch(e){}
     });
   }
   // parallax: o dedo/mouse (e a inclinação do aparelho, quando o navegador deixa) mexe as camadas de leve
@@ -1084,7 +1133,9 @@
       x.restore();
       if(g.nick){ x.font = '800 19px "M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; var tw = Math.min(140, x.measureText(g.nick).width + 22);   // legível no celular
         caixa(g.x - tw / 2, chao + 10, tw, 28, 14, 'rgba(123,63,240,.92)'); x.fillStyle = '#fff'; x.fillText(g.nick, g.x, chao + 31, tw - 8); }
-      if(g.eu && window.TW_HUMOR){   // o diamantinho do humor em cima de você (igual ao mapa)
+      // o diamantinho do humor em cima de você (igual ao mapa). No Camarim VIP ele saiu (22/11, pedido da dona): ficava solto
+      // embaixo da argola dourada, longe da cabeça, e lembrava demais o The Sims. O humor continua no ícone e no Mapa.
+      if(g.eu && window.TW_HUMOR && id !== 'vip'){
         var dc = window.TW_HUMOR.cor(), gi = vipReduzMov ? 1 : Math.cos(s * 2.4), dw = 9 * Math.max(.25, Math.abs(gi)), dy = chao - CH + 62 - pulo - (vipReduzMov ? 0 : Math.sin(s * 2) * 3);
         x.fillStyle = dc; x.strokeStyle = 'rgba(30,10,60,.55)'; x.lineWidth = 2; x.beginPath(); x.moveTo(g.x, dy - 16); x.lineTo(g.x + dw, dy); x.lineTo(g.x, dy + 7); x.lineTo(g.x - dw, dy); x.closePath(); x.fill(); x.stroke();
         x.fillStyle='rgba(255,255,255,.3)';x.beginPath();x.moveTo(g.x,dy-16);x.lineTo(g.x-dw,dy);x.lineTo(g.x,dy+7);x.closePath();x.fill();
@@ -1246,7 +1297,9 @@
         '<small class="twc-caldn">' + esc(sn >= 1 ? tc('diaN', sn) : tc('antes')) + '</small>' +
         (itens.length ? '<ul class="twc-calitens">' + itens.join('') + '</ul>' : '') +
         prazo + (acoes ? '<div class="twc-cal-acoes">' + acoes + '</div>' : '') +
-        (sd >= C.inicio ? falaHtml(C.fala(sd)) : '') + '</section></div>';
+        (sd >= C.inicio ? falaHtml(C.fala(sd)) : '') + '</section>' +
+      // Poda de 22/11 (dona): "Esta semana" (show de sábado, festa, jogo da semana, retrospectiva) saiu do Início e mora aqui
+      (window.TW_SEMANA ? '<div class="twc-cal-semana">' + window.TW_SEMANA.html() + '</div>' : '') + '</div>';
   }
 
   /* ---------- Tour de camarins: o camarim (Backstage⭐Pet!) de outros Idols, com 1 coração por dia em cada um ---------- */
@@ -1883,6 +1936,7 @@
   function fecharFolha(){ folha.hidden = true; folha.innerHTML = ''; }
 
   function acao(a, el){
+    if(a === 'menuMais'){ folhaMais(); return; }
     if(a === 'comecar'){
       if(typeof hubComecar === 'function')hubComecar();
       requestAnimationFrame(function(){if(cel&&!$id('hub').hidden&&folha.hidden&&!janelas().length)focarTitulo();});
@@ -2210,3 +2264,4 @@
   if(document.readyState !== 'loading') montar(); else document.addEventListener('DOMContentLoaded', montar);
   window.TW_CELULAR = {toast:toast, tutContaChegou:tutContaChegou, txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, rotaPronta:function(){return tutVisto()&&!classico&&(!folha||folha.hidden);}, pontoAtual:pontoAtual, restaurarPonto:restaurarPonto, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
 })();
+

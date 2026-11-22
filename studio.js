@@ -320,6 +320,7 @@
     ocupado = false; ov.hidden = false; aba = 'estudio'; publicou = false;
     if(pilotoStudio && FUNDOS.indexOf(pilotoStudio.fundo) >= 0) esc_.fundo = pilotoStudio.fundo;
     fase = 'monta'; foto = null; msg = ''; servidor = false; pauta = pilotoStudio ? null : pautaLocal();
+    if(atalho && atalho.temaCriativo==='luzes')Object.assign(esc_,{fundo:'cortina',luz:'por',pose:'normal',quadro:'inteiro',objeto:'nenhum'});
     var querReferencia=atalho && atalho.referencia && logado() && !pilotoStudio;
     referenciaCarregando=!!querReferencia;
     ui(); laco();
@@ -618,6 +619,10 @@
     x.scale(corpo.scale, corpo.scale);
     x.rotate(angulo);
     x.lineCap = 'round';
+    // Mão: palma arredondada na largura do braço; a haste passa entre a palma e os dedos (desenhados depois).
+    x.fillStyle=corpo.skin;x.beginPath();
+    if(x.roundRect)x.roundRect(-2.35,-2.3,4.7,5,1.7);else x.rect(-2.35,-2.3,4.7,5);
+    x.fill();
     if(arranjo.length && typeof window.bloomDesenharFlor === 'function'){
       var pos = arranjo.length===2 ? [[-2.8,-8],[2.5,-9]] : [[-3.4,-8],[0,-11],[3.4,-8.6]];
       arranjo.forEach(function(k,i){
@@ -652,7 +657,10 @@
         x.beginPath(); x.moveTo(-.4,-3.2); x.lineTo(-.4,-7); x.stroke();
       }
     }
-    x.fillStyle = corpo.skin; x.beginPath(); x.ellipse(-.25,0,1.34,.86,-.18,0,7); x.fill();
+    // Punho simples sobre a haste: uma faixa arredondada de dedos e o polegar por cima.
+    x.lineCap='round';x.strokeStyle=corpo.skin;x.lineWidth=2.6;
+    x.beginPath();x.moveTo(-1.5,.2);x.lineTo(1.5,.2);x.stroke();
+    x.lineWidth=1.2;x.beginPath();x.moveTo(1.4,1.2);x.quadraticCurveTo(.2,-.2,-.7,-1.7);x.stroke();
     x.restore();
   }
   function cena(x, W, H, e, tm, avOutro){
@@ -731,3 +739,4 @@
   window.TW_STUDIO_TEMA = { atual:function(){ return temaSemana()[0]; }, noTema:noTema };
   window.STUDIO_TR = T;
 })();
+

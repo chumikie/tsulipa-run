@@ -127,6 +127,12 @@ body.tw-cel.tw-cel-classico .twc-tela{display:none}
 .twc-atalhos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:4px 0 6px}
 .twc-atalho{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:78px;padding:6px 2px;border-radius:18px;background:#fff;border:2px solid var(--twc-borda);box-shadow:0 3px 0 var(--twc-sombra);color:var(--twc-roxo-e)!important;transition:transform .12s}
 .twc-atalho span{font-size:11px;font-weight:800;color:var(--twc-ink);text-align:center;line-height:1.15;overflow-wrap:anywhere}
+/* Grade do Menu (22/11): ícone próprio por atalho, nome em até 2 linhas sem cortar palavra e última linha centralizada */
+.twc-menu .twc-atalhos{--twc-at-gap:10px;--twc-at-n:4;display:flex;flex-wrap:wrap;justify-content:center;gap:var(--twc-at-gap)}
+.twc-menu .twc-atalhos>.twc-atalho{flex:0 0 calc((100% - (var(--twc-at-n) - 1) * var(--twc-at-gap)) / var(--twc-at-n));min-width:0;min-height:84px;padding:6px 2px}
+.twc-menu .twc-at-ico{display:flex}
+.twc-menu .twc-at-nome{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%;padding:0 2px;overflow-wrap:break-word;word-break:normal;hyphens:manual;line-break:strict;text-wrap:balance}
+@media (max-width:340px){.twc-menu .twc-atalhos{--twc-at-gap:8px}.twc-menu .twc-at-nome{font-size:10.5px}}
 
 /* lista de jogos (modo Live do Link! Like!) */
 .twc-lista{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
@@ -198,6 +204,7 @@ body.tw-cel.tw-cel-classico .twc-tela{display:none}
   .twc-app-ico{width:76px;height:76px;border-radius:24px}
   .twc-banners,.twc-lista{grid-template-columns:repeat(2,minmax(0,1fr))}
   .twc-atalhos{grid-template-columns:repeat(8,minmax(0,1fr))}
+  .twc-menu .twc-atalhos{--twc-at-n:var(--twc-at-col,8)}
 }
 @media (min-width:900px){
   .twc-inicio{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px 22px;align-items:start}
@@ -244,6 +251,8 @@ body.tw-cel.tw-cel-classico .twc-tela{display:none}
 .twc-palco-moldura::after{display:none}
 /* bolinhas dos membros e filtros do Álbum */
 .twc-album-corpo{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:start}
+/* A "Série de fotos" (album-fotos.js) ocupa a linha inteira; antes caía na coluna de 76 px dos filtros e empurrava a grade de cards */
+.twc-album-corpo>.album-fotos{grid-column:1 / -1;margin:0}
 .twc-filtros{position:sticky;top:96px;display:flex;flex-direction:column;gap:10px;padding:10px 4px;border-radius:22px;background:#fff;border:2px solid #f1ebff;box-shadow:0 4px 12px rgba(80,40,160,.10)}
 .twc-filtro{display:flex;flex-direction:column;align-items:center;gap:3px;padding:2px 0;border:0;background:none;color:var(--twc-ink)!important;font-size:11px;font-weight:800}
 .twc-filtro span:last-child{max-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -606,6 +615,9 @@ body.tw-cel .cmmini.cmprovar[aria-pressed="true"]{border-style:solid!important;b
 .twc-tour-item canvas{width:64px;height:64px;border-radius:50%;background:#f3e9ff;box-shadow:0 0 0 3px #fff,0 0 0 5px var(--c)}
 .twc-tour-item b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 13px "M PLUS Rounded 1c",sans-serif;color:#3c2a6a}
 .twc-tour-item small{font:800 12px "M PLUS Rounded 1c",sans-serif;color:#ff4f9a}
+/* tema escuro: o nome (#3c2a6a) sumia no cartão escuro (contraste ~1,3:1) */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twc-tour-item b{color:#f3e8ff}:root:not([data-theme="light"]) .twc-tour-item small{color:#ff8cc0}}
+:root[data-theme="dark"] .twc-tour-item b{color:#f3e8ff}:root[data-theme="dark"] .twc-tour-item small{color:#ff8cc0}
 .twc-tour-cena{padding:10px;border-top:6px solid var(--c)}
 .twc-tour-cena canvas{display:block;width:100%;height:auto;border-radius:18px;background:#f3e9ff}
 .twc-tour-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
@@ -967,6 +979,7 @@ body.tw-cel .twc-novidades-conteudo li{padding:10px 12px;border-radius:14px;back
    para os balõezinhos de "Falar" continuarem à vista sem rolar. */
 @media (min-width:1500px){
   .twc-pag.twc-cal{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:start;gap:14px 18px}
+  .twc-pag.twc-cal>.twc-cal-semana{grid-column:2}
   .twc-pag.twc-emb-mapa{max-width:min(var(--twc-col),calc((100vh - 360px)*1.6))}
 }
 
@@ -1006,7 +1019,14 @@ body.tw-cel-cr #menu>.panel{max-height:calc(100dvh - 84px - 104px - env(safe-are
 @media (prefers-reduced-motion:reduce){.tws-band i{animation:none}}
 .tws-festa p{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0 0;padding:8px 12px;border-radius:16px;background:#fff;font-weight:800;color:var(--twc-f1,#5a2bc4);box-shadow:0 3px 10px rgba(80,40,160,.10)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tws-festa p{background:#2a1d4a;color:#e6d6ff}:root:not([data-theme="light"]) .tws-chip{background:#3a2a66;color:#e6d6ff}}
-@media (max-width:899px){.twc-ini-hoje .tws{display:none!important}}   /* "Esta semana" só no computador; no celular o Início fica enxuto (retrospectiva no Menu) */   /* no celular o convite fica no fim da corrida e no topo; o Início não cresce */
+/* Poda de 22/11: "Esta semana" no Calendário (todas as larguras) e a pasta "Mais" do Menu */
+.twc-cal-semana .tws{margin-top:0}
+.twc-folha-mais{gap:12px}
+.twc-folha-mais h2{margin:0;text-align:center}
+.twc-mais-grade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;width:100%}
+.twc-mais-grade .twc-atalho{min-height:84px;padding:6px 2px}
+.twc-mais-grade .twc-at-nome{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%;padding:0 2px;overflow-wrap:break-word;word-break:normal;line-break:strict;text-wrap:balance}
+@media (max-width:340px){.twc-mais-grade{gap:8px}.twc-mais-grade .twc-at-nome{font-size:10.5px}}   /* "Esta semana" só no computador; no celular o Início fica enxuto (retrospectiva no Menu) */   /* no celular o convite fica no fim da corrida e no topo; o Início não cresce */
 /* tw-pessoal.js: retrospectiva, vitrine do perfil e recados (20/11/2026) */
 .twp-ov{z-index:60}
 .twp-panel{max-width:520px;width:calc(100% - 24px)}
@@ -1031,6 +1051,13 @@ body.tw-cel-cr #menu>.panel{max-height:calc(100dvh - 84px - 104px - env(safe-are
 :root[data-theme="dark"] .twk-nota,:root[data-theme="dark"] .twk-vazio,:root[data-theme="dark"] .twk-tema small{color:#c9bde8}
 :root[data-theme="dark"] .twk-card{background:linear-gradient(180deg,#2a1f4a,#1f1838);border-color:#43356e}
 :root[data-theme="dark"] .twk-link input{background:#1f1838;color:#efe6ff;border-color:#43356e}
+/* Comunidade e Pessoal, 22/11: carregando e erro dentro da janela, com "Tentar de novo" */
+.twk-carregando,.twp-carregando{display:flex;align-items:center;justify-content:center;min-height:96px;margin:0 0 8px;font-weight:800;color:#6b5a95}
+.twk-erro,.twp-erro{margin:6px 0 12px;padding:12px 14px;border-radius:14px;background:#fff0f4;border:2px solid #ffc2d6;color:#8a1f4e;font-weight:800;text-align:center;line-height:1.4}
+.twp-recmsg{min-height:1.2em;margin:4px 0 0;font-size:13px;font-weight:800;color:#c2185b;text-align:center}
+.btn.twp-bt-off{opacity:.5;cursor:not-allowed}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :is(.twk-carregando,.twp-carregando){color:#c9bde8}:root:not([data-theme="light"]) :is(.twk-erro,.twp-erro){background:#3a1626;border-color:#8a2f57;color:#ffd0e2}:root:not([data-theme="light"]) .twp-recmsg{color:#ff9cc8}}
+:root[data-theme="dark"] :is(.twk-carregando,.twp-carregando){color:#c9bde8}:root[data-theme="dark"] :is(.twk-erro,.twp-erro){background:#3a1626;border-color:#8a2f57;color:#ffd0e2}:root[data-theme="dark"] .twp-recmsg{color:#ff9cc8}
 .twp-img{display:block;width:100%;max-height:58vh;object-fit:contain;border-radius:16px;box-shadow:0 8px 22px rgba(60,20,120,.25)}
 .twp-check{display:flex;gap:8px;align-items:flex-start;margin:12px 0 2px;font-weight:800;font-size:14px}
 .twp-nota{display:block;color:#6c6488;font-size:12px;margin:2px 0 8px}
@@ -1184,10 +1211,70 @@ a.btn#twpBaixar{text-decoration:none}
   :root:not([data-theme="light"]) .twpa-palavras li{background:#3d3160;color:#e0d0ff}
   :root:not([data-theme="light"]) .twpa-status{color:#c9a8ff}
 }
-.twpa-colorir{max-width:300px;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer;touch-action:manipulation}
-.twpa-paleta{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:10px 0 4px}
-.twpa-cor{width:32px;height:32px;border-radius:50%;border:2px solid rgba(58,36,112,.25);cursor:pointer;padding:0}
-.twpa-cor[aria-pressed="true"]{outline:3px solid #7b3ff0;outline-offset:2px}
+
+/* Conferência #130: fichinhas independentes do header global da corrida. */
+.twc .twc-trio{width:100%;max-width:1100px;padding-bottom:110px}
+.twc .twc-f2-palco{width:auto;max-width:none;margin:0;box-sizing:border-box;justify-content:flex-start;flex-wrap:nowrap;gap:20px;padding:22px 24px 0;align-items:center;min-height:240px}
+.twc .twc-f2-palco .twc-ficha-idol{width:180px;height:auto;aspect-ratio:208/224;margin:0;align-self:end}
+.twc .twc-f2-pet{left:150px;bottom:10px;margin:0}
+.twc .twc-f2-nome{padding:0 0 20px;overflow-wrap:anywhere}
+.twc .twc-f2-grade{grid-template-columns:repeat(2,minmax(0,1fr))}
+.twc .twc-f2-bloco,.twc .twc-f2-fala blockquote{min-width:0}
+@media(min-width:800px){
+ .twc .twc-f2-palco{min-height:300px;padding:28px 40px 0;gap:50px;justify-content:center}
+ .twc .twc-f2-palco .twc-ficha-idol{width:250px}
+ .twc .twc-f2-nome h2{font-size:46px}
+ .twc .twc-f2-nome b{font-size:18px}
+ .twc .twc-f2-nome span{font-size:15px}
+ .twc .twc-f2-pet{left:calc(50% - 20px);width:70px;height:70px}
+ .twc .twc-f2-grade{gap:12px;margin:20px}
+ .twc .twc-f2-bloco{padding:14px 16px}
+}
+@media(max-width:520px){
+ .twc .twc-f2-palco{padding:14px 12px 0;gap:12px;min-height:190px}
+ .twc .twc-f2-palco .twc-ficha-idol{width:42%;min-width:100px}
+ .twc .twc-f2-pet{left:calc(21% + 24px);width:44px;height:44px}
+ .twc .twc-f2-nome h2{font-size:clamp(25px,7vw,34px)}
+ .twc .twc-f2-nome small{font-size:9px}
+ .twc .twc-f2-nome em{font-size:10px}
+ .twc .twc-f2-grade{grid-template-columns:1fr}
+}
+/* Passatempos: papel, palco e feedback com a paleta do TsuLiPa. */
+.twpa-ov{padding:18px 10px;box-sizing:border-box;overflow:auto;overscroll-behavior:contain}
+.twpa-ov .twpa-panel{width:min(100%,520px);max-width:520px;max-height:calc(100dvh - 36px);overflow:auto;box-sizing:border-box;padding:22px;border:2px solid var(--twc-borda,#d8c5f4)}
+.twpa-panel .twp-tit{display:flex;align-items:center;justify-content:center;gap:8px;font-size:clamp(18px,4vw,24px)}
+.twpa-icone{width:30px;height:30px;flex:none;vertical-align:middle}
+.twpa-panel .twk-txt{font-size:13px;line-height:1.5;margin:6px 0 14px}
+.twpa-panel .btn{min-height:44px;box-sizing:border-box;padding:9px 16px;font-size:14px}
+.twpa-panel .twpa-lista{gap:10px}
+.twpa-panel .twpa-item{min-height:66px;border-radius:18px;background:linear-gradient(120deg,#fbf8ff,#f0e7ff);box-shadow:0 3px 0 #d6c5ec}
+.twpa-panel .twpa-ic{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;color:#7542c2;background:#e7d9ff}
+.twpa-panel .twpa-grade{max-width:420px;padding:8px;gap:4px;border-radius:18px;background:#eee4fc;border:1px solid #d3bfee}
+.twpa-panel .twpa-letra{font-family:"M PLUS Rounded 1c",sans-serif;font-size:clamp(13px,3.6vw,18px);font-weight:900;transition:background .15s,box-shadow .15s;min-height:0}
+.twpa-panel .twpa-letra.sel{box-shadow:0 0 0 2px #fff,inset 0 0 0 2px #c7388a}
+.twpa-panel .twpa-letra.ok{color:#294300;box-shadow:inset 0 -3px 0 #b2da79}
+.twpa-panel .twpa-palavras li.ok{color:#294300;background:#d8ff9e}
+.twpa-panel .twpa-cv{max-width:420px;border:1px solid #d8c6ee;box-shadow:0 4px 0 #d9c8ed}
+.twpa-panel .twpa-lab{max-width:340px}
+.twpa-panel .twpa-fotos figure{position:relative;margin:0}
+.twpa-panel .twpa-fotos figcaption{position:absolute;top:6px;left:6px;z-index:1;padding:2px 6px;border-radius:6px;background:#fff;color:#613ba0;font-size:11px;font-weight:900;pointer-events:none}
+.twpa-panel .twpa-status{font-size:13px;line-height:1.5;min-height:1.5em}
+.twpa-panel button:focus-visible,.twpa-panel canvas:focus-visible{outline:3px solid #ff6fb5;outline-offset:3px}
+.twpa-acerto{animation:twpaBrilha .4s ease-out}
+@keyframes twpaBrilha{45%{box-shadow:0 0 0 5px rgba(182,255,59,.65),0 0 18px rgba(123,63,240,.2)}}
+@media(max-width:360px){.twpa-ov .twpa-panel{padding:14px}.twpa-panel .twpa-grade{padding:5px;gap:2px}}
+:root[data-theme="dark"] .twpa-panel .twpa-item{background:linear-gradient(120deg,#332351,#222d4b);color:#f2ebff;border-color:#684891;box-shadow:0 3px 0 #171f39}
+:root[data-theme="dark"] .twpa-panel .twpa-grade{background:#241b3e;border-color:#684891}
+:root[data-theme="dark"] .twpa-panel .twpa-letra.sel{background:#a43177;color:#fff}
+:root[data-theme="dark"] .twpa-panel .twpa-letra.ok{background:#d8ff9e;color:#294300}
+@media(prefers-color-scheme:dark){
+ :root:not([data-theme="light"]) .twpa-panel .twpa-item{background:linear-gradient(120deg,#332351,#222d4b);color:#f2ebff;border-color:#684891;box-shadow:0 3px 0 #171f39}
+ :root:not([data-theme="light"]) .twpa-panel .twpa-grade{background:#241b3e;border-color:#684891}
+ :root:not([data-theme="light"]) .twpa-panel .twpa-letra.sel{background:#a43177;color:#fff}
+ :root:not([data-theme="light"]) .twpa-panel .twpa-letra.ok{background:#d8ff9e;color:#294300}
+}
+@media(prefers-reduced-motion:reduce){.twpa-acerto,.twpa-erro{animation:none}.twpa-panel .twpa-letra{transition:none}}
+
 /* barras: em linha crescem; em coluna ficam com 8px de altura (o flex-basis viraria altura) */
 .twq-c-txt small .twq-barra{flex:1 1 60px;width:auto}
 .twq-txt .twq-barra,.twq-comp .twq-barra,.twq-d-prox .twq-barra{flex:none;height:8px}
@@ -1212,3 +1299,27 @@ a.btn#twpBaixar{text-decoration:none}
 .twq-todas{display:block;margin:6px auto 0;padding:5px 14px;border-radius:999px;border:1.5px solid #7b3ff0;background:transparent;color:#7b3ff0;font:800 12.5px/1.3 inherit;cursor:pointer}
 :root[data-theme="dark"] .twq-todas{border-color:#c9a8ff;color:#c9a8ff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twq-todas{border-color:#c9a8ff;color:#c9a8ff}}
+
+
+/* #130: cada tela tem um só título de missões; o clássico preserva o seu. */
+html body #hub .twc-emb-missoes #hubMisT{display:none}
+.perfemolist button[aria-pressed="true"]{outline:3px solid #ff6fb5;outline-offset:2px;background:var(--chip);transform:translateY(-2px)}
+#perfCorpo .perf-secao{margin:12px 0;padding:0;border:1px solid var(--twc-borda,#d9c7ed);border-radius:16px;overflow:hidden}
+#perfCorpo .perf-secao>summary{cursor:pointer;padding:14px;font-weight:800;min-height:44px;box-sizing:border-box;color:var(--ink);background:var(--chip)}
+#perfCorpo .perf-secao[open]>:not(summary){margin:12px}
+#perfCorpo .perf-secao>summary:focus-visible{outline:3px solid #ff6fb5;outline-offset:-3px}
+#perfCorpo .twp-vitrine{margin:16px 0;padding:16px;border:1px solid var(--twc-borda,#d9c7ed);background:var(--chip);border-radius:20px}
+#perfCorpo .twp-vitrine h3{margin:0 0 12px}
+#perfCorpo .twp-vit-grade{display:grid;grid-template-columns:140px minmax(0,1fr);gap:20px;align-items:center}
+#perfCorpo .twp-vit-card{width:140px;min-width:0;justify-self:center}
+#perfCorpo .twp-vit-card canvas{display:block;width:136px;height:auto;aspect-ratio:360/504;max-width:100%;margin:auto}
+#perfCorpo .twp-vit-lado{display:grid;gap:14px;min-width:0}
+#perfCorpo .twp-vit-lado p{padding:12px;background:rgba(123,63,240,.08);border-radius:14px;overflow-wrap:anywhere}
+#perfCorpo .twp-vit-ed{display:block;min-height:44px;margin:14px 0 0 auto;padding:8px 14px;font-size:13px;box-shadow:none}
+#perfCorpo .perftabs{position:sticky;top:0;z-index:3;background:var(--card);padding:8px 0;gap:6px}
+@media(max-width:420px){#perfCorpo .twp-vit-grade{grid-template-columns:104px minmax(0,1fr);gap:10px}#perfCorpo .twp-vit-card{width:104px}#perfCorpo .twp-vit-lado p{padding:8px}#perfCorpo .twp-vit-ed{width:100%}}
+
+@media(min-width:700px){#perfCorpo .twp-vit-grade{grid-template-columns:200px minmax(0,1fr)}#perfCorpo .twp-vit-card{width:200px}#perfCorpo .twp-vit-card canvas{width:196px}}
+
+.twpa-panel .twpa-letra.dica{box-shadow:0 0 0 3px #4169e1;animation:twpaBrilha .9s ease-in-out 2}
+.twpa-panel [data-twpa-dica]{margin-top:10px}

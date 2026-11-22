@@ -34,7 +34,16 @@
       '.twb-pergunta p{margin:0 0 10px;font-weight:700}.twb-pergunta div{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}' +
       '.petphone-chat-contato{position:relative}.petphone-chat-contato>.petphone-badge{top:50%;right:30px;left:auto;transform:translateY(-50%)}' +
       '.twc-hj-bico{display:block;font-size:.74rem;opacity:.78;margin-top:2px}' +
-      '[data-tw-bairro].twb-guia-off{opacity:.5}[data-tw-bairro] .twb-breve{font-size:.68em;margin-left:4px;opacity:.85}';
+      '[data-tw-bairro].twb-guia-off{opacity:.5}[data-tw-bairro] .twb-breve{font-size:.68em;margin-left:4px;opacity:.85}' +
+      // tema escuro do site (prefers-color-scheme ou data-theme): antes ficava texto claro sobre o cartão branco a 72%
+      '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .twb-box{background:rgba(42,29,74,.82);border-color:rgba(194,122,255,.28);color:#f3e8ff}' +
+      ':root:not([data-theme="light"]) .twb-rua{background:rgba(255,255,255,.06);color:#f3e8ff}:root:not([data-theme="light"]) .twb-bag .twb-ok{color:#7be3a6}' +
+      ':root:not([data-theme="light"]) .twb-bt.twb-bt-falta{background:rgba(155,48,217,.18);color:#e6d6ff;border-color:rgba(194,122,255,.5)}:root:not([data-theme="light"]) .twb-bt-claro{background:#2a1d4a;color:#e6d6ff;border-color:rgba(194,122,255,.4)}' +
+      ':root:not([data-theme="light"]) .twb-gestos span{background:rgba(194,122,255,.18)}:root:not([data-theme="light"]) .twb-pr span{background:rgba(255,255,255,.1)}:root:not([data-theme="light"]) .twb-niv i,:root:not([data-theme="light"]) .twb-barra{background:rgba(255,255,255,.14)}}' +
+      ':root[data-theme="dark"] .twb-box{background:rgba(42,29,74,.82);border-color:rgba(194,122,255,.28);color:#f3e8ff}:root[data-theme="dark"] .twb-rua{background:rgba(255,255,255,.06);color:#f3e8ff}' +
+      ':root[data-theme="dark"] .twb-bag .twb-ok{color:#7be3a6}:root[data-theme="dark"] .twb-bt.twb-bt-falta{background:rgba(155,48,217,.18);color:#e6d6ff;border-color:rgba(194,122,255,.5)}' +
+      ':root[data-theme="dark"] .twb-bt-claro{background:#2a1d4a;color:#e6d6ff;border-color:rgba(194,122,255,.4)}:root[data-theme="dark"] .twb-gestos span{background:rgba(194,122,255,.18)}' +
+      ':root[data-theme="dark"] .twb-pr span{background:rgba(255,255,255,.1)}:root[data-theme="dark"] .twb-niv i,:root[data-theme="dark"] .twb-barra{background:rgba(255,255,255,.14)}';
     document.head.appendChild(s);
   }
   function montar(){

@@ -316,12 +316,13 @@
     x.fillStyle = gg; x.fillRect(0, hz, W, H - hz);
     x.strokeStyle = noite ? 'rgba(40,90,80,.5)' : 'rgba(92,180,120,.55)'; x.lineWidth = 2.4; x.lineCap = 'round';
     for(i = 0; i < 26; i++){ var tx = (i * 97 + 23) % W, ty = hz + 26 + (i * 53) % (H - hz - 36); x.beginPath(); x.moveTo(tx - 5, ty); x.lineTo(tx - 7, ty - 8); x.moveTo(tx, ty); x.lineTo(tx, ty - 10); x.moveTo(tx + 5, ty); x.lineTo(tx + 7, ty - 8); x.stroke(); }
+    enfeites(x, W, H, hz, tm, noite);
+    // A cerca fica à frente do caminho; nenhuma pedra cobre suas tábuas.
     // cerquinha
     var cf = noite ? '#d3c8ee' : '#fffaf2', cs = noite ? 'rgba(40,30,90,.25)' : 'rgba(170,130,150,.22)';
     x.fillStyle = cs; x.fillRect(0, hz - 9, W, 5); x.fillRect(0, hz + 7, W, 5);
     x.fillStyle = cf; x.fillRect(0, hz - 12, W, 5); x.fillRect(0, hz + 4, W, 5);
     for(i = 0; i < 22; i++){ var fx = 6 + i * 34; x.fillStyle = cs; rr(x, fx + 2, hz - 28, 14, 46, 7); x.fill(); x.fillStyle = cf; rr(x, fx, hz - 30, 14, 46, 7); x.fill(); }
-    enfeites(x, W, H, hz, tm, noite);
     jardineiro(x, H, tm);
     for(i = 0; i < 4; i++){
       var cx = 100 + i * 173, by = H * .82, c = canteiro(i);

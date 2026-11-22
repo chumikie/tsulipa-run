@@ -66,6 +66,7 @@ async function rodar(browser,base,nome,opcoes){
     await abrirInicio();await p.waitForTimeout(400);
     const abriu=await p.evaluate(([t,v])=>{const sel='[data-'+t+'="'+v+'"]';let e=document.querySelector(sel);
       if(!e){const m=document.querySelector('[data-n="menu"]');if(m)m.click();e=document.querySelector(sel);}
+      if(!e){const f=document.querySelector('[data-a="menuMais"]');if(f)f.click();e=document.querySelector(sel);}   // pasta "Mais" do Menu (poda de 22/11)
       if(!e){const j=document.querySelector('[data-v="jogos"]');if(j)j.click();e=document.querySelector(sel);}
       if(e){e.click();return true;}return false;},[t,v]);
     if(!abriu){falhas.push(nome+' · '+v+': botão não encontrado');continue;}

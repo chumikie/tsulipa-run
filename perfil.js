@@ -95,6 +95,9 @@ var PERF_GRUPOS = [
   { codigo:'SPR48', nome:'SPR48', pais:'ID', times:[] }
 ];
 var PERF_GRUPOS_CARREGADOS = false;
+//→perfEmojiOpcoes
+//→perfEmojiSincronizar
+//→perfPerfilOrganizar
 //→perfGrupoCodigo
 //→perfGrupo
 function perfGrupoBandeira(g){ return g.pais==='TH'?'🇹🇭':g.pais==='ID'?'🇮🇩':g.pais==='BR'?'🇧🇷':'🌏'; }
@@ -1082,7 +1085,7 @@ function perfPresente(){
 // As abas do Perfil (perfil, diário, recados, insígnias, estúdio de foto) baixam ao abrir um Perfil, junto com os dados.
 // Cada "//→nome" acima marca o lugar de uma função que mora em perfil-tela.js; tests/fonte-dividida.js remonta a ordem.
 // Se mudar perfil-tela.js, suba a versão em PERF_TELA_ARQ.
-var PERF_TELA_ARQ='./perfil-tela.js?v=6',PERF_TELA_PRONTA=false,perfTelaP=null;
+var PERF_TELA_ARQ='./perfil-tela.js?v=8',PERF_TELA_PRONTA=false,perfTelaP=null;
 function perfTelaCarregar(){
   if(PERF_TELA_PRONTA)return Promise.resolve();
   if(!perfTelaP)perfTelaP=new Promise(function(ok,er){var e=document.createElement('script');e.src=PERF_TELA_ARQ;e.async=false;
@@ -1121,3 +1124,4 @@ function twNitido(cv){
   }
   return cv;
 }
+

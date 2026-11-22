@@ -274,7 +274,7 @@
   var tela = null, telaFila = [], telaPedida = false;
   function carregarTela(){
     if(tela || telaPedida) return; telaPedida = true;
-    var s = document.createElement('script'); s.src = './tw-bairro-tela.js?v=3'; s.async = true;
+    var s = document.createElement('script'); s.src = './tw-bairro-tela.js?v=4'; s.async = true;
     s.onerror = function(){ telaPedida = false; };
     (document.head || document.documentElement).appendChild(s);
   }

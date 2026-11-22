@@ -150,7 +150,20 @@ function duoLoop(ms){
   if((mobile30&&TWMotionLifecycle.render30Due($('duoCv'),ms))||(!mobile30&&Math.floor((duoT+1e-6)/2)>Math.floor((duoPrevT+1e-6)/2))){ var cv = $('duoCv'); try{ duoRender(cv.getContext('2d'), cv.width, cv.height, true, true); }catch(e){} }
   duoAnim = requestAnimationFrame(duoLoop);
 }
+function duoRotulo(k){
+  var L = {
+    pt:['Salvar foto','Álbum e atividades','Mais cenas'],
+    en:['Save photo','Album and activities','More scenes'],
+    es:['Guardar foto','Álbum y actividades','Más escenas'],
+    ja:['写真を保存','アルバムとアクティビティ','ほかのシーン'],
+    th:['บันทึกภาพ','อัลบั้มและกิจกรรม','ฉากเพิ่มเติม'],
+    id:['Simpan foto','Album dan aktivitas','Adegan lainnya']
+  };
+  return (L[typeof LANG === 'string' ? LANG : 'pt'] || L.pt)[k];
+}
 function duoTexto(){
+  $('duoSalvarTitulo').textContent = duoRotulo(0);
+  $('duoExtraTitulo').textContent = duoRotulo(1);
   $('duoSub').textContent = tr('Monte cenas fofas com outro Idol do TsuLiPa⭐World!');
   $('duoTrocar').textContent = '🔁 ' + tr('Trocar dupla');
   $('duoPng').textContent = '📸 ' + tr('Salvar PNG'); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo');
@@ -280,7 +293,12 @@ function duoTabUI(){
   var tabs = [['cena', '🎬', 'Cena'], ['fundo', '🏞️', 'Cenário'], ['expr', '😊', 'Expressões'], ['pres', '🎁', 'Presente']];
   $('duoTabs').innerHTML = tabs.map(function(t){ return '<button type="button" role="tab" data-dtab="' + t[0] + '" aria-pressed="' + (duoTab === t[0]) + '"><span aria-hidden="true">' + t[1] + '</span> ' + escHtml(tr(t[2])) + '</button>'; }).join('');
   var c = $('duoTabC'), h = '';
-  if(duoTab === 'cena') h = duoCards(DUO_CENAS, duoCena, 'data-dcena');
+  if(duoTab === 'cena'){
+    var livres = DUO_CENAS.filter(function(o){ return !duoTrava('data-dcena', o); });
+    var principais = livres.slice(0, 6), outras = DUO_CENAS.filter(function(o){ return principais.indexOf(o) < 0; });
+    h = duoCards(principais, duoCena, 'data-dcena');
+    if(outras.length) h += '<details class="duo-mais-cenas"' + (outras.some(function(o){return o[0] === duoCena;}) ? ' open' : '') + '><summary>' + escHtml(duoRotulo(2)) + ' (' + outras.length + ')</summary>' + duoCards(outras, duoCena, 'data-dcena') + '</details>';
+  }
   else if(duoTab === 'fundo'){
     var perf = PERF_FUNDOS.filter(function(o){ return o[0] && o[0] !== 'temporada'; }), temas = [];
     Object.keys(TEMA_INFO).forEach(function(k){ if(k !== 'halloween') temas.push([k, TEMA_INFO[k][0], TEMA_INFO[k][1]]); });
@@ -351,3 +369,4 @@ function duoComprar(k, b){
     if(ok){ var it = lojaItem(k); if(it && it[4] === 'duo' && k !== 'duo_cafe'){ DUO_CENAS.forEach(function(c){ if(c[7] === k) duoCena = c[0]; }); duoRegistrar(); } else if(k === 'duo_cafe') duoFundo = 'cafe'; else if(/^fundo_/.test(k)) duoFundo = k.slice(6); else if(/^tema_/.test(k)) duoFundo = k.slice(5); $('duoPresBox').hidden = true; duoPalcoUI(); }
   });
 }
+

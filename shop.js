@@ -37,7 +37,7 @@ function shopAtendente(){   // uma por dia; nunca a própria pessoa (Tsu, Lirika
 }
 function shopHtml(){
   return '<div class="panel shopp tw-modal tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="shopTit">' +
-    '<button type="button" class="perfx tw-window-control tw-window-close" id="shopX">✕</button>' +
+    '<button type="button" class="perfx tw-window-control tw-window-close" id="shopX" aria-label="' + escHtml(tr('Fechar')) + '">✕</button>' +
     '<h2 class="tw-modal-title" id="shopTit" translate="no">🛍️ Zipper<span class="tw-modal-star">⭐</span>Shop!</h2><small class="tw-modal-jp" lang="ja">ジッパー・ショップ</small>' +
     '<p class="tw-modal-lede" id="shopLede"></p>' +
     '<details class="shop-saudacao"><summary>'+escHtml(tr('Ver a loja'))+'</summary><canvas id="shopCv" width="640" height="380" aria-hidden="true"></canvas></details>' +
@@ -240,6 +240,7 @@ function shopAbrir(){
   perfProva = '';shopAba='loja';
   $('shopCorpo').innerHTML = shopCorpoHtml();
   shopOv.hidden = false; shopOv.scrollTop = 0; shopT = 0;
+  var shopFoco = shopOv.querySelector('.tw-window-close') || $('shopTit'); if(shopFoco) try{ shopFoco.focus({preventScroll:true}); }catch(e){}   // foco dentro da janela (22/11)
   shopFala = { txt:SHOP_OI[Math.floor(Math.random() * SHOP_OI.length)], t0:40 };
   shopUI();
   var dono=petPhoneContaChave(), corpo=$('shopProvCv');

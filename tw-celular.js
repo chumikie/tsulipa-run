@@ -671,7 +671,6 @@
   // duas linhas em 320–390 px ou quebra no meio de uma palavra (TsuLiPa⭐World, アイドルをさがす).
   var ATC = {
     'data-twk="lembrete"':{pt:'Show de sábado',en:'Saturday Show',es:'Show del sábado',id:'Show Sabtu',th:'โชว์วันเสาร์',ja:'土曜ショー'},
-    'data-twp="retro"':{pt:'Meu mês',en:'My month',es:'Mi mes',id:'Bulanku',th:'เดือนของฉัน',ja:'今月のまとめ'},
     'data-twp="recado"':{pt:'Recado ao trio',en:'Note to the trio',es:'Mensaje al trío',id:'Pesan ke trio',th:'ข้อความถึงทริโอ',ja:'トリオへ手紙'},
     'data-a="busca"':{ja:'アイドル検索'},
     'data-v="trio"':{ja:'プロフ'},   // "プロフィール" quebrava em "プロ / フィール" em 320 px
@@ -727,8 +726,7 @@
       if(cm.podeInstalar()) at.push(['app', cm.t('instalar'), 'data-twk="instalar"']);
     }
     if(window.TW_PESSOAL && logado()){
-      // No celular o cartão "Esta semana" não aparece no Início: a retrospectiva do mês fica aqui no Menu.
-      if(window.matchMedia && matchMedia('(max-width:899px)').matches) at.push(['grafico', window.TW_PESSOAL.t('retro'), 'data-twp="retro" data-mes="' + window.TW_PESSOAL.retroMes() + '"']);
+      // "Meu mês" saiu em 22/11: a retrospectiva já está no "Esta semana" do Calendário, em todas as larguras.
       at.push(['carta', window.TW_PESSOAL.t('recado'), 'data-twp="recado"']);
     }   // Caixa de recados para o TsuLiPa (tw-pessoal.js)
     // Poda de 22/11 (dona): 7 atalhos à vista + a pasta "Mais" com o resto (como as pastas de apps do celular).

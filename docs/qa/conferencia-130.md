@@ -178,7 +178,7 @@ O Menu e o Início tinham voltado a acumular coisas repetidas. Com a escolha da 
 
 - **Menu sem os 3 banners** (Center⭐Run!, Karaoke⭐Time!, Star⭐Gacha!). Eles já estão na porta Jogos do Início.
 - **Menu com 8 atalhos:** Zipper Shop, Encontro do dia, Passatempos, Álbum, Procurar Idol, Fichinhas, Vida no bairro e a pasta **"Mais"**.
-  - A pasta abre uma folha com Novidades, Tour de camarins, Concurso, Convidar amigos, Show de sábado, Meu mês (só no celular) e Recado ao trio. Trilha e Instalar entram quando aparecem.
+  - A pasta abre uma folha com Novidades, Tour de camarins, Concurso, Convidar amigos, Show de sábado e Recado ao trio. Trilha e Instalar entram quando aparecem.
   - Tocar num item fecha a pasta e abre a tela, e Esc também fecha a pasta.
   - O ponto de "novo" das Novidades aparece na pasta.
 - **"Esta semana" saiu do Início** e foi para o Calendário, abaixo do dia escolhido (na coluna da direita no PC largo). Com isso, o show de sábado, a festa, o jogo da semana e a retrospectiva também passam a aparecer no celular.
@@ -203,3 +203,9 @@ O Menu e o Início tinham voltado a acumular coisas repetidas. Com a escolha da 
 - Japonês: as Fichinhas aparecem na grade como "プロフ", porque "プロフィール" quebrava em 320 px.
 - `docs/RETOMADA.md` e o diário de novembro foram atualizados.
 - Versões de cache: encontro-base.js 3 (encontro.js 4), shop.js 14 e tw-celular.js (mesma versão 72 da rodada, ainda não publicada).
+
+### Limpeza final (22/11)
+
+- "Meu mês" saiu da pasta "Mais". Ele só existia no Menu do celular porque lá o "Esta semana" não aparecia no Início. Agora o "Esta semana" fica no Calendário em todas as larguras, com a retrospectiva e o botão "Ver", e o atalho virou repetição. A retrospectiva continua igual, com carregando e erro na janela.
+- Saiu a regra de CSS que escondia o "Esta semana" no Início do celular, sem efeito desde que o bloco foi para o Calendário.
+- Conferido localmente: o "Esta semana" no Calendário, com dados no formato do servidor, em 390 e 1440 px (pt) e em 320 px (th), sem texto vazando nem erro no console.

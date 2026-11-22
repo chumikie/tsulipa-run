@@ -1,6 +1,6 @@
 # Retomada — TsuLiPa⭐World (estado de hoje)
 
-**Atualizado em 22/11/2026.** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
+**Atualizado em 22/11/2026 (tarde).** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
 
 ## Como atualizar (no mesmo envio de cada PR)
 1. **Onde está:** `main`, PRs abertas e o que foi publicado.
@@ -21,6 +21,7 @@
 ## Onde está
 - **`main`:** `dc9fb3f` (21/11, merge da #129, melhorias). Antes dela: #119 (Início compacto), #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
 - **Outras PRs abertas:** #117 (desfecho e timing), #120 (Rua Fofa e lembranças), #121 (jogabilidade) e #122 (reencontros, pista e fotos) e #123 (cópia do Álbum, foco no Café e teste de card no Battle). A #124 integra #120–#123 e inclui a estreia sem nome, a proteção do Álbum cheio, os novos atalhos de treino e retorno e as melhorias de resultado, leitura e galeria. [Auditoria da integração](qa/auditoria-integracao-2026-11-20.md) · [Sustentabilidade e acabamento](qa/auditoria-sustentabilidade-2026-11-20.md) · [Auditoria visual](qa/auditoria-visual-2026-11-20.md) · [Auditoria das atualizações de 19 e 20/11](qa/auditoria-atualizacoes-19-20-11-2026.md).
+- **Depois da #130 (22/11):** o campo "Seu emoji" não mostra mais o 🎤 de exemplo (parecia escolhido; na conta da dona o emoji estava vazio no servidor), o cartão do Início atualiza ao salvar o perfil e o "Você" de lado (Center⭐Run) ganhou todos os cortes, franjas, detalhes e roupas do editor. Os 9 looks do Center⭐Run! viraram roupas liberadas pelo recorde (`cr_…`), de frente e de lado; a corrida fica de lado também com rank e abdução. [Folhas](qa/lado-20261122/)
 - **#130** (conferência visual, rascunho, branch `fix/conferencia-moon-fotos-20261121`): Moon⭐Duo, assinatura nas fotos, passatempos, perfil/vitrine, mãos do Studio e, em 22/11, a conferência dos atalhos do Menu e a poda decidida pela dona (abaixo). Três commits da rodada de 22/11 (`320f313`, `449e5ba`, `3e73c70`, mais o desta atualização) foram entregues como patch porque a sessão não tinha escrita no repositório. [Conferência](qa/conferencia-130.md)
 - **#125** (Expressão e convivência) tem como base a branch da #124. Os caminhos do Menu, o editor e a Praça têm testes próprios. A suíte principal do GitHub dispara em PRs com destino à main. [Escopo da #125](https://github.com/chumikie/tsulipa-run/pull/125)
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
@@ -107,6 +108,7 @@ A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, 
 - Atualizar as instruções do Projeto no claude.ai: ainda falam da PR #58.
 
 **Banco (ChatGPT, com autorização)**
+- Aplicar `supabase/migrations/20261122120000_roupas_center_run.sql` (o admin reconhece as roupas `cr_…`; o jogador já consegue vestir sem ela).
 - Prêmio dos lightsticks do Battle (`supabase/sql/proposta/20261115_battle_lightsticks_premio.sql`).
 - Roupa como prêmio do nível 3 do bairro.
 

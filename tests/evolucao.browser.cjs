@@ -55,7 +55,8 @@ async function isolarContaPessoal(browser){
       window.qaResposta=(nome,valor,indice=0)=>qaRPC.filter(p=>p.nome===nome)[indice].resolve(valor);
       window.qaPerfil=()=>{
         perfOv.hidden=false;
-        $('perfCorpo').innerHTML='<div class="perfhero">Perfil em teste</div>';
+        // desde a 2ª conferência da #130 a vitrine mora na aba Perfil (abaixo dos números)
+        $('perfCorpo').innerHTML='<div class="perfhero">Perfil em teste</div><div id="perfAbaCorpo"><div class="perfnums"></div></div>';perfAba='perfil';
         TW_PESSOAL.vitrineMontar({},true);
       };
       qaTrocar('A');qaPerfil();TW_PESSOAL.abrirRetro('2026-10-01');TW_SEMANA.carregar(true);
@@ -360,6 +361,7 @@ async function album(browser){
       contaRpc = nome => Promise.resolve(nome === 'duo_convidado' ? {nick:'Convidada QA'} : []);
       duoAbrir('Convidada QA');
     });
+    await page.evaluate(()=>{const d=document.getElementById('duoSalvar');if(d)d.open=true;});   // "Salvar" do Duo é um menu desde c46c3bd
     await page.locator('#duoSerie').click();
     await page.getByRole('button',{name:'Guardada na série.'}).waitFor();
     await page.keyboard.press('Escape');
@@ -484,7 +486,8 @@ async function gachaBattle(browser){
         return Promise.resolve([]);
       };
     });
-    await page.locator('#twcNav [data-n="menu"]').click();
+    // o Star⭐Gacha! saiu do Menu na poda de 22/11 (banner repetido): entra pela lista de Jogos
+    await page.evaluate(()=>{const b=document.createElement('button');b.dataset.v='jogos';document.getElementById('twCel').appendChild(b);b.click();b.remove();});
     const origem=page.locator('#twcTela [data-ir="gacha"]');
     await origem.focus();
     await page.keyboard.press('Enter');
@@ -844,6 +847,7 @@ async function dirigirDuo(browser){
     assert.deepEqual(agora.slice(0,3),antes.slice(0,3));
     assert.notEqual(agora[3],antes[3]);
     assert.notEqual(agora[4],antes[4]);
+    await page.evaluate(()=>{const d=document.getElementById('duoSalvar');if(d)d.open=true;});   // "Salvar" do Duo é um menu desde c46c3bd
     await page.locator('#duoSerie').click();
     await page.getByRole('button',{name:'Guardada na série.'}).waitFor();
     assert.deepEqual(erros,[]);

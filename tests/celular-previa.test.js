@@ -75,7 +75,7 @@ test('acessível e leve: botões de verdade, alvo de toque, sem animação para 
 });
 
 test('rodada 2: Início enxuto, bolinhas do trio pelo próprio jogo e Álbum com filtro por Oshi', () => {
-  const ini = js.slice(js.indexOf('function telaInicio(){'), js.indexOf('function banner('));
+  const ini = js.slice(js.indexOf('function telaInicio(){'), js.indexOf('/* ---------- Menu:'));
   assert.ok(!/twc-hoje|twc-rank|twc-idol/.test(ini), 'Pra hoje completo, ranking e pet saíram do Início (estão no Menu)');
   assert.match(ini, /palco\(\)/, 'o palco do trio continua no Início');
   assert.match(js, /perfFotoRedonda\(cv, av, true\)/, 'bolinhas desenhadas com o mesmo desenho do perfil');

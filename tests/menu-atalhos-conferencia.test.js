@@ -24,7 +24,7 @@ test('Menu: cada atalho tem um ícone próprio e o ícone existe na tabela', () 
 });
 
 test('Menu: nomes curtos nos 6 idiomas onde o nome quebrava, e o nome inteiro no leitor de tela', () => {
-  for (const k of ['data-twk="lembrete"', 'data-twp="retro"', 'data-twp="recado"']) {
+  for (const k of ['data-twk="lembrete"', 'data-twp="recado"']) {
     const linha = cel.split('\n').find(l => l.includes("'" + k + "':{"));
     assert.ok(linha, 'nome curto para ' + k);
     for (const l of ['pt', 'en', 'es', 'id', 'th', 'ja']) assert.match(linha, new RegExp('\\b' + l + ":'"), k + ' em ' + l);
@@ -45,6 +45,8 @@ test('Poda (22/11): Menu sem banners de jogos, 7 atalhos à vista + pasta Mais c
   assert.match(menu, /\['todos', tm\('mais'\), 'data-a="menuMais"'\]/);
   assert.match(cel, /if\(a === 'menuMais'\)\{ folhaMais\(\); return; \}/);
   assert.match(cel, /var JOGOS = \[[^\]]*'gacha'/, 'sem o banner, o Star⭐Gacha! precisa estar na lista de Jogos');
+  assert.ok(!menu.includes('data-twp="retro"'), '"Meu mês" saiu do Menu: a retrospectiva está no Esta semana do Calendário');
+  assert.ok(!css.includes('.twc-ini-hoje .tws{display:none'), 'regra morta do Esta semana no Início removida');
   assert.match(cel, /mais:\{pt:'Mais',en:'More',es:'Más',id:'Lainnya',th:'[^']+',ja:'[^']+'\}/);
   assert.match(css, /\.twc-menu \.twc-atalhos\{[^}]*display:flex;flex-wrap:wrap;justify-content:center/);
 });

@@ -24,8 +24,8 @@
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=4"></script>
 <script src="./tw-avatar-hair.js?v=15"></script>
-<script src="./tw-lado.js?v=4"></script>
-<script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script>
+<script src="./tw-lado.js?v=7"></script>
+<script src="./tw-avatar-roupa.js?v=11"></script><script src="./tw-avatar-rosto.js?v=6"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -281,6 +281,15 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
           <option value="zipper" data-r="2800">ZIPPER (tCenter)</option>
           <option value="sweet" data-r="3900">Valentine (wCenter)</option>
           <option value="citypop" data-r="5000">Mayonaka (Center)</option>
+          <option value="cr_fever" data-r="450" data-crn="Fever " data-crr="Team">🔥 Fever (Team)</option>
+          <option value="cr_ima" data-r="1000" data-crn="Ímã " data-crr="Senbatsu">🧲 Ímã (Senbatsu)</option>
+          <option value="cr_mega" data-r="1800" data-crn="Mega " data-crr="Quad Center">💗 Mega (Quad Center)</option>
+          <option value="cr_alien" data-r="2800" data-crn="Abdução " data-crr="tCenter">🛸 Abdução (tCenter)</option>
+          <option value="cr_center" data-r="5000" data-crn="Center">🎀 Center</option>
+          <option value="cr_solo" data-r="10000" data-crn="Solo Center">💫 Solo Center</option>
+          <option value="cr_capitao" data-r="15000" data-crn="Capitão">🎖️ Capitão</option>
+          <option value="cr_ace" data-r="30000" data-crn="Eternal Ace">🏆 Eternal Ace</option>
+          <option value="cr_kami" data-r="50000" data-crn="Kami-Oshi">😇 Kami-Oshi</option>
         </select>
         <input type="color" id="coutcol" value="#ffffff" title="Cor da Roupa">
         </label>
@@ -411,10 +420,10 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=3"><'+'/script>');})();</script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=8"><'+'/script>');</script>
 <script defer src="./karaoke-room-views.js?v=1"></script>
-<script src="./centerrun.js?v=42"></script>
+<script src="./centerrun.js?v=43"></script>
 <script defer src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=151"></script>
-<script src="./perfil.js?v=39"></script>
+<script src="./perfil.js?v=40"></script>
 <script src="./gacha.js?v=7"></script>
 <script src="./album-fotos.js?v=8"></script>
 <script src="./album.js?v=9"></script>
@@ -570,7 +579,7 @@ var jornalCarregar=(function(){
 <script src="./charmaker.js?v=19"></script>
 <script src="./banner.js?v=8"></script>
 <script src="./conta.js?v=15"></script>
-<script src="./admin-base.js?v=5"></script>
+<script src="./admin-base.js?v=6"></script>
 <script defer src="./vida-cidade.js?v=7"></script>
 <script>/* Visual novo (padrão nos telefones desde 16/11/2026; em todos os aparelhos desde 17/11/2026, pedido do dono):
    ?celular=1 liga e ?celular=0 desliga; a escolha fica em brs48cr_celular ('1' ligado, '0' clássico).
@@ -1900,6 +1909,7 @@ perfOv.addEventListener('click', function(e){
     return contaRpc('salvar_grupo_estilo',{p_grupo:gr,p_time:ti,p_emoji:em,p_cor:co}).then(function(re){
       if(!re||!re.ok)throw {estilo:re&&re.erro};
       if(!perfOv.hidden&&pedidoPerfil===perfPedido){perfAtual.grupo=re.grupo;perfAtual.emoji=re.emoji;perfAtual.cor=re.cor;perfAtual.time=re.time;PERF_OSHI_JOG=null;perfGuardarCor(re.cor);}
+      if(window.TW_CONQ&&TW_CONQ.perfilSalvo)TW_CONQ.perfilSalvo(re.emoji);   // o cartão do Início deixa de dizer "Falta: emoji"
       return contaRpc('salvar_bio',{p_oshi:os,p_frase:fr});
     });
   }).then(function(r){
@@ -3673,7 +3683,7 @@ applyLang();
 </script>
 <script>twLinkInicializar();</script>
 <script>window.TW_EMAIL_MENSAL_DISPONIVEL=false;</script>
-<script defer src="./tw-windows.js?v=3"></script><script defer src="./tw-acessibilidade.js?v=1"></script><script defer src="./tw-semana.js?v=5"></script><script defer src="./tw-pessoal.js?v=8"></script><script defer src="./tw-comunidade.js?v=6"></script><script defer src="./tw-estreia.js?v=2"></script><script defer src="./tw-conquistas.js?v=4"></script><script defer src="./tw-passatempos.js?v=4"></script>
+<script defer src="./tw-windows.js?v=3"></script><script defer src="./tw-acessibilidade.js?v=1"></script><script defer src="./tw-semana.js?v=5"></script><script defer src="./tw-pessoal.js?v=8"></script><script defer src="./tw-comunidade.js?v=6"></script><script defer src="./tw-estreia.js?v=2"></script><script defer src="./tw-conquistas.js?v=5"></script><script defer src="./tw-passatempos.js?v=4"></script>
 <script src="./karaoke-tickets.js?v=2"></script>
 <script>/* Quem abre o site já em outro idioma: alguns textos (rank, itens do Center Run…) eram montados antes de todas as
    traduções entrarem. Depois de tudo carregado, refaz a tela no idioma salvo — o mesmo caminho do botão de idioma. */

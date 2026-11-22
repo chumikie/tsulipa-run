@@ -171,6 +171,13 @@ function refreshAcc(){
     [].forEach.call(selE.options,function(o){
       var r=+(o.getAttribute('data-r')||0);
       var u=lim>=r; o.disabled=!u;
+      var crn=o.getAttribute('data-crn');
+      if(crn){   // 22/11: looks do Center⭐Run! — emoji + nome traduzido + rank que libera
+        var cre=o.__crEmoji||(o.__crEmoji=(o.textContent.replace(/^🔒\s*/,'').split(' ')[0]||''));
+        var crr=o.getAttribute('data-crr');
+        o.textContent=(u?'':'🔒 ')+cre+' '+String(tr(crn)).trim()+(crr?' ('+tr(crr)+')':'');
+        return;
+      }
       var rawKey=o.__rawLabel||o.textContent.replace(/^🔒\s*/,'');
       o.__rawLabel=rawKey;
       o.textContent=(u?'':'🔒 ')+tr(rawKey);
@@ -385,11 +392,16 @@ function drawChar(c,x,y,run,expr,isPartner){
   var PX=state==='play'?pw:state==='over'?dpw:null,OUT=(PX&&(PX.k==='fever'||PX.k==='ima'))?(PX.k==='fever'?['#ff6fa5','#ffc2dc']:['#b392f0','#dccdfa']):['#fff','#dfe6f5'],OF=state==='menu'?0:rankI>=11?5:rankI>=10?4:rankI>=9?3:rankI>=8?2:rankI>=7?1:0,up=run>0,sw=Math.sin(frame*.5)*2,b=c.back||'',f=c.front||'bagunca',d=c.det||'',hacc=c.hat||'',H=c.hair,A=accSel;
   if (PX && PX.k === 'alien') OF = 0;   // abdução tem prioridade sobre o visual de rank
     if (isPartner) { OF = 0; A = ''; }    // parceiros usam o próprio look, não o do jogador
+  // 22/11: look do Center⭐Run! vestido como roupa (cr_*): uniforme de rank, macacão espacial, Fever, Ímã ou Mega.
+  // Na corrida, o rank alcançado e a abdução continuam valendo por cima, como em qualquer roupa.
+  var CRX = typeof TWAvatarRoupa !== 'undefined' && TWAvatarRoupa.cr ? TWAvatarRoupa.cr(c.out) : null, ALV = !!(PX && PX.k === 'alien');
+  if (CRX && !OF && !ALV) { if (CRX.of) OF = CRX.of; else if (CRX.alien) ALV = true; }
   // 17/11: correndo, o trio aparece DE PERFIL (tw-lado.js). Só o visual fixo do Tsu, da Lirika e do Pati, sem roupa de rank
   // O "Você" também, com as cores de cabelo/pele/olhos/roupa, o corte (longo, rabo, marias, cacheado), o chapéu e o acessório.
-  if (state === 'play' && window.TW_LADO && TW_LADO.corre && OF === 0 && !(PX && PX.k === 'alien') &&
+  // 22/11: de lado também com o uniforme de rank (OF 1–5), na abdução e com os looks do Center⭐Run! vestidos
+  if (state === 'play' && window.TW_LADO && TW_LADO.corre &&
       (c === CH[0] || c === CH[1] || c === CH[2] || c === CH[3]) && (!TW_LADO.sabe || TW_LADO.sabe(c, A))) {   // o Você também: cortes longos, chapéu e acessório de lado; o que não tem versão de lado fica de frente
-    try { TW_LADO.corre(g, c, x, y, expr, frame, run === 0 ? .8 : run, OUT, A); return; } catch (e) {}   // no ar (run 0): passada aberta
+    try { TW_LADO.corre(g, c, x, y, expr, frame, run === 0 ? .8 : run, OUT, A, {of:OF, alien:ALV, px:PX && (PX.k === 'fever' || PX.k === 'ima') ? PX.k : '', faixa:!!(sash && !isPartner && !ALV)}); return; } catch (e) {}   // no ar (run 0): passada aberta
   }
   var sl=(b==='longo'||b==='chanel'||b==='onduladof'||((b===''||b==='pixie'||b==='onduladom'||b==='onduladom2')?false:(f==='reta'||f==='arcoiris')))?(b==='onduladof'?9:14):(b==='onduladom'||b==='onduladom2'?7:(b==='pixie'?5:((b===''&&(f==='reta'||f==='arcoiris'))?10:6)));
   function E(cx,cy,rx,ry,r){g.beginPath();g.ellipse(cx,cy,rx,ry,r||0,0,7);g.fill()}
@@ -409,10 +421,10 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(OF===3){g.fillStyle='#b01e3a';T([x+5,y+22,x-8+sw,y+42,x+9,y+40])}
   if(OF===5){g.fillStyle='rgba(255,252,235,.95)';E(x-4,y+27,5,13,-.5+sw*.04);E(x+34,y+27,5,13,.5-sw*.04);g.fillStyle='rgba(255,226,140,.8)';E(x-2,y+30,3,9,-.5+sw*.04);E(x+32,y+30,3,9,.5-sw*.04)}
   g.fillStyle=(typeof c.legcol==='string'&&/^#[0-9a-f]{6}$/i.test(c.legcol))?c.legcol:'#1c1c30';g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto)TWAvatarRosto.pes(g,c,x,y);
-  var TWR=typeof TWAvatarRoupa!=='undefined'?TWAvatarRoupa:null,twRoupa=(OF>0||(PX&&PX.k==='alien'))?'-':(c.out||'');   // folha E: saia ou bermuda, ombro e luz contínua
+  var TWR=typeof TWAvatarRoupa!=='undefined'?TWAvatarRoupa:null,twRoupa=(OF>0||ALV)?'-':(c.out||'');   // folha E: saia ou bermuda, ombro e luz contínua
   if(!(TWR&&TWR.baixo(g,c,x,y,twRoupa))){g.fillStyle=OUT[1];g.fillRect(x+7,y+32,16,6);}
   
-  var AL = (PX && PX.k === 'alien');
+  var AL = ALV;
   var roupa = AL ? 'espacial' : (OF > 0 ? '' : (c.out || ''));
 
   if(roupa==='seifuku'){
@@ -505,6 +517,8 @@ function drawChar(c,x,y,run,expr,isPartner){
     g.fillRect(x+7,y+30,16,2);                                               // cinto
     g.fillRect(x+12,y+24,6,4);                                               // painel
     g.fillStyle='#fff'; g.fillRect(x+14,y+25,2,2);
+  }else if(CRX&&CRX.fx&&TWR&&TWR.crLook(g,c,x,y,CRX.fx,E,T)){
+    // 22/11: Fever, Ímã e Mega do Center⭐Run! (tw-avatar-roupa.js)
   }else if(perfRoupaLoja(roupa, c, x, y, corDaRoupa, E, T)){
     // V2.1.3: roupa da lojinha (desenhada no módulo do perfil)
   }else{

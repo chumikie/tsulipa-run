@@ -216,7 +216,7 @@ db -c "insert into public.players(id, nick, stars, created_at, visuais) values (
 [[ "$(como "$n" "select public.kit_estreia_resgatar('det_coelho')->>'erro'")" == feito ]] || falha 'kit duas vezes'
 [[ "$(como "$n" "select public.trilha_estado()->>'ativa'")" == true ]] || falha 'trilha inativa para conta nova'
 [[ "$(como "$n" "select public.trilha_resgatar('gacha')->>'erro'")" == falta ]] || falha 'trilha pagou passo não feito'
-db -c "insert into public.gacha(user_id, dia, tipo, valor) values ('$n', current_date - 1, 'estrelas', '5')"
+db -c "insert into public.gacha(user_id, dia, tipo, valor) values ('$n', public.hoje_br() - 1, 'estrelas', '5')"
 [[ "$(como "$n" "select public.trilha_resgatar('gacha')->>'premio'")" == 20 ]] || falha 'passo do gacha'
 db -c "insert into public.star_log(user_id, delta, reason) values ('$n', 50, 'corrida'), ('$n', 9, 'missao'), ('$n', -50, 'visual:fundo_oshi'); insert into public.duo_log(de, para, dia) values ('$n', '$a', current_date)"
 for ps in corrida duo compra; do como "$n" "select public.trilha_resgatar('$ps')" >/dev/null; done
@@ -226,7 +226,8 @@ r="$(como "$n" "select public.trilha_resgatar('missao')")"
 [[ "$(db -c "select sum(delta) from public.star_log where user_id='$n' and reason='trilha_estreia'")" == 140 ]] || falha 'total da trilha (5×20 + 40)'
 [[ "$(como "$b" "select public.trilha_resgatar('corrida')->>'erro'")" == prazo ]] || falha 'trilha para conta antiga'
 # primeiro resultado do dia nos outros jogos
-db -c "insert into private.sora_history(player_id, score, finished_at) values ('$n', 120, now()); insert into private.cafe_resultados(user_id, dia) values ('$n', (now() at time zone 'America/Sao_Paulo')::date)"
+# o setup fixa hoje_br() em 21/11/2026: as partidas entram nesse dia (com now() o teste quebrava a partir de 22/11)
+db -c "insert into private.sora_history(player_id, score, finished_at) values ('$n', 120, (public.hoje_br() + time '12:00') at time zone 'America/Sao_Paulo'); insert into private.cafe_resultados(user_id, dia) values ('$n', public.hoje_br())"
 [[ "$(como "$n" "select json_array_length(public.bonus_jogos_dia()->'pagos')")" == 2 ]] || falha 'bônus do dia (Sora e Café)'
 [[ "$(como "$n" "select json_array_length(public.bonus_jogos_dia()->'pagos')")" == 0 ]] || falha 'bônus do dia pago duas vezes'
 # promoção da semana: 30% só na roupa da semana; comprar_visual usa o mesmo preço

@@ -235,14 +235,15 @@ pk="$(db -c "select private.promo_item(public.hoje_br())")"
 [[ "$(db -c "select preco from public.visual_preco('fundo_oshi')")" == 60 ]] || falha 'preço normal mudou'
 [[ "$(db -c "set role anon; select (public.promo_semana()->>'desconto')")" == 30 ]] || falha 'visitante não vê a promoção'
 # gacha: começo garantido, card novo primeiro, garantia e pó 3
+# datas pelo dia de Brasília (hoje_br), como o jogo: com current_date (UTC) o teste falhava das 21h à meia-noite (22/11)
 db -c "update public.players set avatar = '{\"c\":{}}' where id <> '$n'"
 g="00000000-0000-4000-8000-0000000000e2"
 db -c "insert into public.players(id, nick, stars, created_at, avatar) values ('$g', 'Giradora', 0, now(), '{\"c\":{}}')"
 for d in 3 2 1; do db -c "set request.jwt.claim.sub='$g'; select public.gacha_girar()" >/dev/null; db -c "update public.gacha set dia = dia - $d where user_id='$g' and dia = public.hoje_br()"; done
 [[ "$(db -c "select count(*) filter (where tipo='card') || '/' || count(distinct lower(valor)) filter (where tipo='card') from public.gacha where user_id='$g'")" == 3/3 ]] || falha 'começo garantido com 3 Idols diferentes'
-db -c "insert into public.gacha(user_id, dia, tipo, valor) values ('$g', current_date - 30, 'estrelas', '5')"
-db -c "update public.gacha g set dia = current_date - 40 - x.n::int from (select ctid c, row_number() over () n from public.gacha where user_id='$g' and tipo='card') x where g.ctid = x.c"
-db -c "insert into public.gacha(user_id, dia, tipo, valor) values ('$g', current_date - 3, 'estrelas', '5'), ('$g', current_date - 2, 'nada', '1'), ('$g', current_date - 1, 'estrelas', '7')"
+db -c "insert into public.gacha(user_id, dia, tipo, valor) values ('$g', public.hoje_br() - 30, 'estrelas', '5')"
+db -c "update public.gacha g set dia = public.hoje_br() - 40 - x.n::int from (select ctid c, row_number() over () n from public.gacha where user_id='$g' and tipo='card') x where g.ctid = x.c"
+db -c "insert into public.gacha(user_id, dia, tipo, valor) values ('$g', public.hoje_br() - 3, 'estrelas', '5'), ('$g', public.hoje_br() - 2, 'nada', '1'), ('$g', public.hoje_br() - 1, 'estrelas', '7')"
 [[ "$(como "$g" "select public.gacha_girar()->>'tipo'")" == card ]] || falha 'garantia depois de 3 giros sem card'
 db -c "insert into private.gacha_po_saldo(user_id, saldo) values ('$g', 3)"
 faltando="$(como "$g" "select public.gacha_po_status()->'faltando'->0->>'nick'")"

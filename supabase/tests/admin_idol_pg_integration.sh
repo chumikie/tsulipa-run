@@ -45,4 +45,14 @@ expect "$(rpc "$tsu" "public.admin_idol_info('Novata')")" '"out":"tailandia"' 'r
 expect "$(rpc "$tsu" "public.admin_idol_info('Novata')")" '"auto":true' 'reabertura preserva sinalizador automático'
 expect "$(q -c "select avatar #>> '{a}' from public.players where nick='Novata';")" 'mic' 'item de mão preservado após reabertura'
 expect "$(q -c "select has_function_privilege('anon','public.admin_montar_idol(text,jsonb,text)','execute');")" 'f' 'anon sem acesso'
+# 22/11/2026: looks do Center⭐Run! como roupa (migração 20261122120000), liberados pelo recorde do Idol
+q -q < "$repo_dir/supabase/migrations/20261122120000_roupas_center_run.sql"
+best="$(q -c "select coalesce(max(score),0) from public.leaderboard where user_id='$nova' and \"char\"='Idol';")"
+expect "$(rpc "$tsu" "public.admin_montar_idol('Novata','${look/rock/cr_fever}'::jsonb,'fever')")" '"ok":true' "Fever (450) aceito com recorde $best"
+expect "$(q -c "select avatar #>> '{c,out}' from public.players where nick='Novata';")" 'cr_fever' 'Fever gravado no avatar fictício'
+expect "$(rpc "$tsu" "public.admin_montar_idol('Novata','${look/rock/cr_kami}'::jsonb,'kami')")" '"campo":"out"' 'Kami-Oshi (50000) bloqueado pelo recorde'
+expect "$(rpc "$tsu" "public.admin_montar_idol('Novata','${look/rock/cr_nada}'::jsonb,'x')")" '"erro":"roupa"' 'cr_ desconhecido recusado'
+expect "$(rpc "$tsu" "public.admin_vestir('Novata','cr_ima','#ffffff','ima')")" '"ok":true' 'admin_vestir aceita o Ímã (1000)'
+expect "$(rpc "$tsu" "public.admin_vestir('Novata','cr_ace','#ffffff','ace')")" '"erro":"bloqueada"' 'admin_vestir bloqueia o Eternal Ace (30000)'
+expect "$(q -c "select nuvem_visual #>> '{cu2,out}' from public.players where nick='Novata';")" 'cr_ima' 'recusa preserva a roupa anterior'
 echo "✓ admin_montar_idol: regras e gravação conferidas"

@@ -350,7 +350,7 @@
   function tp(k){ var d = TP[k]; return d ? (d[L()] || d.pt) : k; }
   function porta(k, ico2, tit, sub, attrs, cor, c){
     return '<button type="button" class="twc-porta twc-porta-' + k + '" ' + attrs + '><span class="twc-porta-ico twc-g-' + cor + '">' + ico(ico2, 34) + badge(c) + '</span>' +
-      '<span class="twc-porta-txt"><b>' + esc(tit) + '</b><small>' + esc(sub) + '</small></span>' + brilhos([[84, 16, 9, 'l']]) + '</button>';
+      '<span class="twc-porta-txt"><b>' + esc(tit) + '</b><small>' + esc(sub) + '</small></span></button>';   // 22/11: sem o brilhinho no canto (no PC parecia sujeira na tela)
   }
   function portas(){
     var mis = (logado() && typeof hubMisDados !== 'undefined' && Array.isArray(hubMisDados)) ? hubMisDados : null;

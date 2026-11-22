@@ -2,7 +2,7 @@
 <script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=4"></script>
-<script src="./tw-avatar-hair.js?v=15"></script><script src="./tw-avatar-roupa.js?v=10"></script><script src="./tw-avatar-rosto.js?v=6"></script><script src="./karaoke-music-preview.js?v=2"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=2"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=15"></script><script src="./tw-avatar-roupa.js?v=11"></script><script src="./tw-avatar-rosto.js?v=6"></script><script src="./karaoke-music-preview.js?v=2"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=2"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -306,6 +306,8 @@ function drawChar(c,x,y,run,expr,isPartner){
   var PX=state==='play'?pw:state==='over'?dpw:null,OUT=(PX&&(PX.k==='fever'||PX.k==='ima'))?(PX.k==='fever'?['#ff6fa5','#ffc2dc']:['#b392f0','#dccdfa']):['#fff','#dfe6f5'],OF=state==='menu'?0:rankI>=11?5:rankI>=10?4:rankI>=9?3:rankI>=8?2:rankI>=7?1:0,up=run>0,sw=Math.sin(frame*.5)*2,b=c.back||'',f=c.front||'bagunca',d=c.det||'',hacc=c.hat||'',H=c.hair,A=accSel;
   if (PX && PX.k === 'alien') OF = 0;   // abdução tem prioridade sobre o visual de rank
     if (isPartner) { OF = 0; A = ''; }    // parceiros usam o próprio look, não o do jogador
+  var CRX = typeof TWAvatarRoupa !== 'undefined' && TWAvatarRoupa.cr ? TWAvatarRoupa.cr(c.out) : null, ALV = !!(PX && PX.k === 'alien');   // 22/11: looks do Center⭐Run! como roupa
+  if (CRX && !OF && !ALV) { if (CRX.of) OF = CRX.of; else if (CRX.alien) ALV = true; }
   var sl=(b==='longo'||b==='chanel'||b==='onduladof'||((b===''||b==='pixie'||b==='onduladom'||b==='onduladom2')?false:(f==='reta'||f==='arcoiris')))?(b==='onduladof'?9:14):(b==='onduladom'||b==='onduladom2'?7:(b==='pixie'?5:((b===''&&(f==='reta'||f==='arcoiris'))?10:6)));
   function E(cx,cy,rx,ry,r){g.beginPath();g.ellipse(cx,cy,rx,ry,r||0,0,7);g.fill()}
   function T(a){g.beginPath();g.moveTo(a[0],a[1]);for(var i=2;i<a.length;i+=2)g.lineTo(a[i],a[i+1]);g.closePath();g.fill()}
@@ -324,10 +326,10 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(OF===3){g.fillStyle='#b01e3a';T([x+5,y+22,x-8+sw,y+42,x+9,y+40])}
   if(OF===5){g.fillStyle='rgba(255,252,235,.95)';E(x-4,y+27,5,13,-.5+sw*.04);E(x+34,y+27,5,13,.5-sw*.04);g.fillStyle='rgba(255,226,140,.8)';E(x-2,y+30,3,9,-.5+sw*.04);E(x+32,y+30,3,9,.5-sw*.04)}
   g.fillStyle='#1c1c30';g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto)TWAvatarRosto.pes(g,c,x,y);
-  var TWR=typeof TWAvatarRoupa!=='undefined'?TWAvatarRoupa:null,twRoupa=(OF>0||(PX&&PX.k==='alien'))?'-':(c.out||'');   // folha E: saia ou bermuda, ombro e luz contínua
+  var TWR=typeof TWAvatarRoupa!=='undefined'?TWAvatarRoupa:null,twRoupa=(OF>0||ALV)?'-':(c.out||'');   // folha E: saia ou bermuda, ombro e luz contínua
   if(!(TWR&&TWR.baixo(g,c,x,y,twRoupa))){g.fillStyle=OUT[1];g.fillRect(x+7,y+32,16,6);}
   
-  var AL = (PX && PX.k === 'alien');
+  var AL = ALV;
   var roupa = AL ? 'espacial' : (OF > 0 ? '' : (c.out || ''));
 
   if(roupa==='seifuku'){
@@ -412,6 +414,7 @@ function drawChar(c,x,y,run,expr,isPartner){
     g.fillRect(x+7,y+30,16,2);                                               // cinto
     g.fillRect(x+12,y+24,6,4);                                               // painel
     g.fillStyle='#fff'; g.fillRect(x+14,y+25,2,2);
+  }else if(CRX&&CRX.fx&&TWR&&TWR.crLook(g,c,x,y,CRX.fx,E,T)){   // 22/11: Fever, Ímã e Mega do Center⭐Run!
   }else if(perfRoupaLoja(roupa, c, x, y, corDaRoupa, E, T)){
   }else{
 

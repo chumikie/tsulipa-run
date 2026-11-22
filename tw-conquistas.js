@@ -63,6 +63,9 @@
   function limites(k){ return typeof PERF_TIERS !== 'undefined' && PERF_TIERS[k] ? PERF_TIERS[k] : null; }
 
   var prog = null, dono = '', carregando = false, destPublico = {};
+  // 22/11: o último emoji conhecido do próprio perfil (meu_perfil ou o que acabou de ser salvo). O resumo de conquistas
+  // é carregado uma vez por sessão e o cartão do Início continuava com "Falta: emoji" depois de salvar.
+  var meuEmoji = null, meuEmojiDono = '';
   function dados(){ return prog && dono === conta() ? prog : null; }
   function carregar(forcar){
     if(!logado() || carregando) return Promise.resolve(dados());
@@ -117,6 +120,7 @@
     var campos=Object.assign({},p.completo);
     // O perfil salvo é a referência para emoji livre; a lista de sugestões não valida identidade.
     if(typeof perfMeu!=='undefined'&&perfMeu&&typeof perfAtual!=='undefined'&&perfAtual&&typeof contaJ!=='undefined'&&contaJ&&perfAtual.nick===contaJ.nick&&typeof perfAtual.emoji==='string')campos.emoji=!!perfAtual.emoji.trim();
+    else if(meuEmoji !== null && meuEmojiDono === conta()) campos.emoji = meuEmoji;   // mesmo com o perfil fechado (cartão do Início)
     var falta = ITENS.filter(function(k){ return !campos[k]; });
     return {pct:Math.round((ITENS.length - falta.length) / ITENS.length * 100), falta:falta.map(function(k){ return t('c_' + k); })};
   }
@@ -167,7 +171,14 @@
     if(html) id.querySelector('.perfrk') ? id.querySelector('.perfrk').insertAdjacentHTML('afterend', html) : id.insertAdjacentHTML('beforeend', html);
   }
   function destaquesMeus(){ var p = dados(), tem = p ? p.insignias || [] : []; return ((p && p.destaque) || []).map(function(k){ return tem.filter(function(x){ return String(x).split(':')[0] === k; })[0] || k; }); }
+  // O perfil acabou de salvar (index.html): guarda o emoji, recarrega o resumo e o Início redesenha.
+  function perfilSalvo(emoji){
+    if(typeof emoji === 'string'){ meuEmoji = !!emoji.trim(); meuEmojiDono = conta(); }
+    if(prog && prog.completo && meuEmoji !== null) prog.completo.emoji = meuEmoji;
+    avisar(); return carregar(true);
+  }
   function perfilMontar(d, meu){
+    if(meu && d && typeof d.emoji === 'string'){ meuEmoji = !!d.emoji.trim(); meuEmojiDono = conta(); }
     if(meu){
       carregar(true).then(function(){ if(typeof perfMeu !== 'undefined' && perfMeu && typeof perfAtual!=='undefined' && perfAtual===d && logado() && d.nick===contaJ.nick){ var p=dados();if(p&&p.completo&&typeof d.emoji==='string')p.completo.emoji=!!d.emoji.trim();poeDestaque(destaqueHtml(destaquesMeus(), true)); marcarVisto(); abaPerfil(d, true); avisar(); } });
       return;
@@ -263,7 +274,7 @@
   if(window.addEventListener) window.addEventListener('tw-corrida-fim', function(){ setTimeout(function(){ if(logado()) carregar(true); }, 4000); });
 
   window.TW_CONQ = {t:t, dados:dados, pontos:pontos, proximos:proximos, completo:completo, novidade:novidade, carregar:carregar,
-    cartaoHtml:cartaoHtml, perfilMontar:perfilMontar, abaPerfil:abaPerfil, contaMudou:contaMudou};
+    cartaoHtml:cartaoHtml, perfilMontar:perfilMontar, perfilSalvo:perfilSalvo, abaPerfil:abaPerfil, contaMudou:contaMudou};
   if(logado()) carregar();
 })();
 

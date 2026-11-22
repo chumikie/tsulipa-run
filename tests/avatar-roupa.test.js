@@ -28,7 +28,7 @@ g=fake();R.ombro(g,{},0,0,'-');assert.equal(g.log.length,0,'look de rank não ga
 
 for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
   const s=ler(f);
-  assert(s.includes("twRoupa=(OF>0||(PX&&PX.k==='alien'))?'-':(c.out||'')")&&s.includes('TWR.baixo(g,c,x,y,twRoupa)'),f+': parte de baixo nova no lugar do retângulo comum');
+  assert(s.includes("twRoupa=(OF>0||ALV)?'-':(c.out||'')")&&s.includes("ALV = !!(PX && PX.k === 'alien')")&&s.includes('TWR.baixo(g,c,x,y,twRoupa)'),f+': parte de baixo nova no lugar do retângulo comum');
   assert.equal((s.match(/if\(TWR\)TWR\.tronco\(g,x,y,twRoupa(,c)?\)/g)||[]).length,4,f+': luz do tronco antes dos detalhes nas quatro roupas');
   assert(s.includes('if(!(TWR&&TWR.luzPropria(twRoupa))) roupaSombra(x, y);'),f+': a sombra antiga não soma por cima nas roupas com luz própria');
   assert(['zipper-saia','zipper-tronco','zipper-mangas','sweet-saia','sweet-tronco'].every(k=>s.includes("TWAvatarRoupa.parte(g,x,y,'"+k+"')")),f+': Zipper e Sweet com luz só no tecido (folha F)');
@@ -37,7 +37,7 @@ for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
   assert(s.includes('g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11)')&&!s.includes('g.fillRect(x+2, y+22, 6, 5)'),f+': City Pop só desenha abas do paletó, sem segunda manga');
   assert(/\{n:'Tsu',[^}]*baixo:'bermuda'\}/.test(s)&&/\{n:'Lirika',[^}]*baixo:'saia'\}/.test(s)&&/\{n:'Pati',[^}]*baixo:'bermuda'\}/.test(s),f+': Tsu bermuda, Lirika saia, Pati bermuda');
 }
-for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=10"></script>'),f+' carrega tw-avatar-roupa.js');
+for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=11"></script>'),f+' carrega tw-avatar-roupa.js');
 const perfil=ler('perfil.js'),index=ler('index.html');
 assert(perfil.includes('data-m="baixo"')&&perfil.includes("if(v === 'saia' || v === 'bermuda') c.baixo = v;"),'Montar Idol tem Saia/Bermuda e o perfil só aceita esses valores');
 assert(index.includes("'outcol', 'legcol', 'baixo', 'hat'")&&index.includes("item.baixo === 'saia' || item.baixo === 'bermuda'"),'campo salvo no avatar e no save dos personagens');

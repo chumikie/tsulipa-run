@@ -78,7 +78,10 @@ function admVisualFormHtml(r){
     ['y2k','Cheeky (Quad Center)',1800],
     ['zipper','ZIPPER (tCenter)',2800],
     ['sweet','Valentine (wCenter)',3900],
-    ['citypop','Mayonaka (Center)',5000]
+    ['citypop','Mayonaka (Center)',5000],
+    // 22/11: looks do Center⭐Run! como roupa (o banco confere o mesmo recorde)
+    ['cr_fever','🔥 Fever (Team)',450],['cr_ima','🧲 Ímã (Senbatsu)',1000],['cr_mega','💗 Mega (Quad Center)',1800],['cr_alien','🛸 Abdução (tCenter)',2800],
+    ['cr_center','🎀 Center',5000],['cr_solo','💫 Solo Center',10000],['cr_capitao','🎖️ Capitão',15000],['cr_ace','🏆 Eternal Ace',30000],['cr_kami','😇 Kami-Oshi',50000]
   ];
   var choices=base.filter(function(o){return o[2]<=best || o[0]===r.out;}).map(function(o){return [o[0],o[1]];});
   PERF_LOJA.forEach(function(o){

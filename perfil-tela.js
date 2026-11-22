@@ -250,11 +250,12 @@ function perfBioHtml(d){
   return perfBioMontar(d, sel2);
 }
 //←perfBioMontar
+// 22/11: o campo do emoji não tem mais o 🎤 de exemplo: vazio parecia escolhido e o servidor gravava vazio
 function perfBioMontar(d, sel2){
   var tm = d.time || '', grupo=perfGrupoCodigo(d), cor = /^#[0-9a-f]{6}$/i.test(d.cor || '') ? d.cor : '#ff6fb5';
   return '<div class="perfbio"><h3>✏️ ' + escHtml(tr('Editar perfil')) + '</h3>' +
-    '<label>' + escHtml(tr('Seu emoji')) + ' <input class="nick perfcampo perfemoin" id="perfBioEmoji" autocomplete="off" value="' + escHtml(d.emoji || '') + '" placeholder="🎤"></label>' +
-    '<div class="perfemolist" role="group" aria-label="' + escHtml(tr('Seu emoji')) + '">' + perfEmojiOpcoes(d.emoji) + '</div>' +
+    '<label>' + escHtml(tr('Seu emoji')) + ' <input class="nick perfcampo perfemoin" id="perfBioEmoji" autocomplete="off" value="' + escHtml(d.emoji || '') + '" aria-describedby="perfEmoLista"></label>' +
+    '<div class="perfemolist" id="perfEmoLista" role="group" aria-label="' + escHtml(tr('Seu emoji')) + '">' + perfEmojiOpcoes(d.emoji) + '</div>' +
     '<label>' + escHtml(tr('Sua cor')) + ' <input type="color" id="perfBioCor" value="' + cor + '"></label>' +
     '<label>🌏 ' + escHtml(tr('Grupo')) + ' <select id="perfBioGrupo">' + PERF_GRUPOS.map(function(g){return '<option value="'+escHtml(g.codigo)+'"'+(grupo===g.codigo?' selected':'')+'>'+perfGrupoBandeira(g)+' '+escHtml(g.nome)+'</option>';}).join('')+'</select></label>' +
     '<label>' + escHtml(tr('Seu time')) + ' <select id="perfBioTime"><option value="">' + escHtml(tr('Sem time')) + '</option>' +

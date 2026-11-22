@@ -188,8 +188,44 @@
     g.fillStyle = 'rgba(255,255,255,.22)'; g.fillRect(x + 14.3, y + 22.4, 1.2, .8);
   }
 
+  // 22/11/2026: os looks do Center⭐Run! viram roupas de vestir (c.out = 'cr_…'), liberadas pelo recorde.
+  // Os 5 uniformes de rank reaproveitam o desenho de rank do drawChar (OF 1–5, com capa, asas e auréola);
+  // o Abduzido é o macacão espacial da abdução; Fever, Ímã e Mega têm o look próprio abaixo (crLook).
+  var CR = {
+    cr_center:{ of:1 }, cr_solo:{ of:2 }, cr_capitao:{ of:3 }, cr_ace:{ of:4 }, cr_kami:{ of:5 },
+    cr_alien:{ alien:true }, cr_fever:{ fx:'fever' }, cr_ima:{ fx:'ima' }, cr_mega:{ fx:'mega' }
+  };
+  function cr(out){ return typeof out === 'string' && Object.prototype.hasOwnProperty.call(CR, out) ? CR[out] : null; }
+  // [camisa, saia, enfeite]: as mesmas cores que o Fever (rosa) e o Ímã (lilás) dão ao uniforme na corrida
+  var CR_COR = { fever:['#ff6fa5', '#ffc2dc', '#ffe14d'], ima:['#b392f0', '#dccdfa', '#ffffff'], mega:['#ff4fa3', '#ffc2dc', '#ffffff'] };
+  function estrela(g, cx, cy, r){ g.beginPath(); for(var k = 0; k < 10; k++){ var rr = k % 2 ? r * .42 : r, a = k * Math.PI / 5 - Math.PI / 2; g[k ? 'lineTo' : 'moveTo'](cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } g.closePath(); g.fill(); }
+  function coracao(g, cx, cy, r){ g.beginPath(); g.moveTo(cx, cy + r); g.bezierCurveTo(cx - r * 1.6, cy - r * .2, cx - r * .7, cy - r * 1.4, cx, cy - r * .45); g.bezierCurveTo(cx + r * .7, cy - r * 1.4, cx + r * 1.6, cy - r * .2, cx, cy + r); g.fill(); }
+  // De frente, na grade 30×44 do drawChar. Devolve true quando desenhou (o drawChar pula a roupa básica).
+  function crLook(g, c, x, y, fx, E, T2){
+    var k = CR_COR[fx]; if(!k) return false;
+    T2 = T2 || function(a){ T(g, a); };
+    g.fillStyle = k[1]; T2([x + 6, y + 32, x + 24, y + 32, x + 27, y + 40, x + 3, y + 40]);   // saia rodada
+    g.fillStyle = 'rgba(255,255,255,.55)'; [9, 13, 17, 21].forEach(function(px){ g.fillRect(x + px, y + 34, .7, 5.4); });
+    g.fillStyle = fx === 'ima' ? '#7b3ff0' : '#ffffff'; T2([x + 3.4, y + 38.8, x + 26.6, y + 38.8, x + 27, y + 40, x + 3, y + 40]);
+    g.fillStyle = k[0]; g.fillRect(x + 4, y + 22, 22, 12);   // blusa
+    luz(g, x, y, function(){ g.rect(x + 4, y + 22, 22, 12); }, false);
+    if(fx === 'fever'){   // estrela amarela no peito e chaminhas na barra
+      g.fillStyle = k[2]; estrela(g, x + 15, y + 27.4, 3.6);
+      g.fillStyle = '#ffd23f'; [6, 11, 16, 21].forEach(function(px){ T2([x + px, y + 34, x + px + 1.5, y + 31.4, x + px + 3, y + 34]); });
+    } else if(fx === 'ima'){   // ímã em U no peito, com as pontas brancas, e estrelinhas sendo puxadas
+      g.fillStyle = '#ff3d5e'; g.fillRect(x + 11.6, y + 24.4, 2.2, 5); g.fillRect(x + 16.2, y + 24.4, 2.2, 5); g.fillRect(x + 11.6, y + 28.2, 6.8, 2.2);
+      g.fillStyle = '#ffffff'; g.fillRect(x + 11.6, y + 24.4, 2.2, 1.4); g.fillRect(x + 16.2, y + 24.4, 2.2, 1.4);
+      g.fillStyle = '#ffe14d'; estrela(g, x + 8, y + 24.6, 1.5); estrela(g, x + 22, y + 24.6, 1.5);
+    } else {   // Mega: coração branco grande e cinto dourado
+      g.fillStyle = k[2]; coracao(g, x + 15, y + 26.8, 3.4);
+      g.fillStyle = '#ffd23f'; g.fillRect(x + 4, y + 32, 22, 1.6);
+    }
+    return true;
+  }
+
   var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
-              bracos:bracos, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, gravata:gravata };
+              bracos:bracos, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, gravata:gravata,
+              cr:cr, crLook:crLook, CR_COR:CR_COR };
   root.TWAvatarRoupa = api;
   if(typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : this);

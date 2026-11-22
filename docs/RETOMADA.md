@@ -1,6 +1,6 @@
 # Retomada — TsuLiPa⭐World (estado de hoje)
 
-**Atualizado em 20/11/2026.** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
+**Atualizado em 22/11/2026.** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
 
 ## Como atualizar (no mesmo envio de cada PR)
 1. **Onde está:** `main`, PRs abertas e o que foi publicado.
@@ -19,8 +19,9 @@
 - Testes rápidos aqui (`node tests/run-all.js`); os de navegador ficam para o CI, salvo o que a mudança tocou.
 
 ## Onde está
-- **`main`:** `9824e3e` (19/11), publicada na Vercel. Últimos merges: #119 (Início compacto), #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
+- **`main`:** `dc9fb3f` (21/11, merge da #129, melhorias). Antes dela: #119 (Início compacto), #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
 - **Outras PRs abertas:** #117 (desfecho e timing), #120 (Rua Fofa e lembranças), #121 (jogabilidade) e #122 (reencontros, pista e fotos) e #123 (cópia do Álbum, foco no Café e teste de card no Battle). A #124 integra #120–#123 e inclui a estreia sem nome, a proteção do Álbum cheio, os novos atalhos de treino e retorno e as melhorias de resultado, leitura e galeria. [Auditoria da integração](qa/auditoria-integracao-2026-11-20.md) · [Sustentabilidade e acabamento](qa/auditoria-sustentabilidade-2026-11-20.md) · [Auditoria visual](qa/auditoria-visual-2026-11-20.md) · [Auditoria das atualizações de 19 e 20/11](qa/auditoria-atualizacoes-19-20-11-2026.md).
+- **#130** (conferência visual, rascunho, branch `fix/conferencia-moon-fotos-20261121`): Moon⭐Duo, assinatura nas fotos, passatempos, perfil/vitrine, mãos do Studio e, em 22/11, a conferência dos atalhos do Menu e a poda decidida pela dona (abaixo). Três commits da rodada de 22/11 (`320f313`, `449e5ba`, `3e73c70`, mais o desta atualização) foram entregues como patch porque a sessão não tinha escrita no repositório. [Conferência](qa/conferencia-130.md)
 - **#125** (Expressão e convivência) tem como base a branch da #124. Os caminhos do Menu, o editor e a Praça têm testes próprios. A suíte principal do GitHub dispara em PRs com destino à main. [Escopo da #125](https://github.com/chumikie/tsulipa-run/pull/125)
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
@@ -30,8 +31,8 @@
 **Como se entra:** o **visual novo** (o celular do Idol, "*Nick*Phone"; sem conta, "TsuPhone") abre sozinho no celular, tablet e computador desde 17/11. O clássico continua em Ajustes ou `?celular=0`.
 - Abertura com o trio Tsu·Li·Pa.
 - **Início.** Palco do trio, "Hoje" (desejo do dia, missões, aniversários, Encontro do dia, bagunça da semana) e portas (Jogos, Missões, Mapa, Idol⭐News!, Camarim, Calendário). A #118 permite fixar até dois atalhos neste navegador. Nesta revisão, o palco vem primeiro, a estreia cabe em uma linha compacta, e os atalhos fixados ficam junto das portas. A edição fica em Ajustes.
-- **Na #124, Esta semana** reúne o show de sábado, a festa do mapa, o jogo da semana e a retrospectiva. O Perfil ganha vitrine de favoritos e o Menu oferece recados ao trio. A opção de e-mail fica oculta até validar o envio e o cancelamento. As propostas de banco da rodada devem ser conferidas na publicação. [Economia e publicação](ECONOMIA_ESTRELAS.md)
-- **Menu:** atalhos para o resto. No PC a coluna cresce até 1360 px. Na #118, a busca reúne Idols e atividades, e Ajustes ganha volume e som geral. Café, Studio e Festival aceitam links diretos com prévias próprias.
+- **Esta semana** reúne o show de sábado, a festa do mapa, o jogo da semana e a retrospectiva. Na #130 (poda de 22/11) saiu do Início e mora no Calendário, em todas as larguras. O Perfil ganha vitrine de favoritos e o Menu oferece recados ao trio. A opção de e-mail fica oculta até validar o envio e o cancelamento. As propostas de banco da rodada devem ser conferidas na publicação. [Economia e publicação](ECONOMIA_ESTRELAS.md)
+- **Menu:** na #130 (poda de 22/11) ficam o seu Idol e o Ranking, o Humor, os Idols online e 8 atalhos: Zipper Shop, Encontro do dia, Passatempos, Álbum, Procurar Idol, Fichinhas, Vida no bairro e a pasta "Mais" (Novidades, Tour, Concurso, Convidar, Show de sábado, Meu mês, Recado). Os banners de jogos saíram; o Star⭐Gacha! entrou na lista de Jogos. Cada atalho tem ícone próprio e nome em até 2 linhas. No PC a coluna cresce até 1360 px. Na #118, a busca reúne Idols e atividades, e Ajustes ganha volume e som geral. Café, Studio e Festival aceitam links diretos com prévias próprias.
 - **Calendário.** A #118 abre o capítulo disponível na data selecionada. O prazo do Festival aparece no fuso do aparelho e pode ser baixado em .ics.
 - **Pilotos na #118.** Duas histórias da Rua Fofa em datas de Brasília, um atendimento de Café opcional e ensaio de 20 segundos no Karaoke. A Rosa reconhece a contribuição da semana anterior no Mapa e no painel da Rua Fofa. Os pilotos abrem por links de teste. [Roteiro e coleta local](qa/pilotos-estreia-bairro-karaoke.md).
 - **Série de fotos na #118.** O Álbum reúne fotos guardadas explicitamente no Studio, Duo e Camarim VIP. A série fica neste navegador por conta, com 24 lugares e escolha explícita ao substituir uma foto. A série exporta uma página com três fotos ou uma comparação de duas em PNG. Uma cópia JSON permite restaurar fotos, composições e cenas do Duo em outro aparelho. As novas fotos registram a edição do piloto quando contribuem para a vitrine.
@@ -110,6 +111,7 @@ A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, 
 - Roupa como prêmio do nível 3 do bairro.
 
 **Código**
+- #130: aplicar os patches da rodada de 22/11, ver o CI verde e conferir com a conta real a pasta "Mais", o Gacha em Jogos e o Esta semana no Calendário. Ideias em aberto: Humor mais compacto no Menu e o cartão "Seu perfil" do Início (repete o avatar do topo).
 - A #117 continua separada e conflita com a main. Revisar desfecho, calibração e versões do Jornal em separado dos arquivos de áudio, cuja revisão ficou para depois.
 - Testar a #124 com conta real e conferência no aparelho de login, vitrine, retrospectiva e recompensas semanais. [Pilotos e matriz física do Karaoke](qa/pilotos-estreia-bairro-karaoke.md).
 - Medir em Android e PC reais: o teste aqui roda sem placa de vídeo.

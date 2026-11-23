@@ -32,3 +32,39 @@ console.log('OK: jogos novos no Hub — seis idiomas, três cards, aviso do jard
 // Battle e Studio têm treino sem conta: no clássico também abrem sem cadeado (igual ao visual do celular).
 {const idx=fs.readFileSync(path.join(raiz,'index.html'),'utf8');
  assert.equal((idx.match(/card\.dataset\.twnovo === 'battle' \|\| card\.dataset\.twnovo === 'studio'/g)||[]).length,2,'cadeado e clique liberam Battle e Studio para visitante');}
+
+// O destaque encaminha o toque ao cartão atual, inclusive depois de o Hub ser remontado.
+{
+  const elements = new Map(), opened = [];
+  let highlighted, daily;
+  const cards = {
+    querySelector(selector) {
+      if (selector === '.hubcard.tw-alert-pink') return highlighted;
+      if (!highlighted) return null;
+      const {ir, twnovo} = highlighted.dataset;
+      return (ir && selector === '[data-ir="'+ir+'"]') ||
+        (twnovo && selector === '[data-twnovo="'+twnovo+'"]') ? highlighted : null;
+    }
+  };
+  const document = {
+    readyState:'loading', addEventListener(){},
+    querySelector:s => s === '#hubHoje .hubenc' ? daily : null,
+    getElementById:id => elements.get(id),
+    createElement:() => ({dataset:{},addEventListener(type, fn){ this[type] = fn; }})
+  };
+  elements.set('hubCards',cards);
+  elements.set('hubHoje',{parentNode:{insertBefore(el){ elements.set(el.id,el); }}});
+  const world = {document, hubCardsUI(){}, setInterval(){}, LANG:'pt'};
+  world.window = world;
+  vm.runInNewContext(fs.readFileSync(path.join(raiz,'hub-layout.js'),'utf8'),world);
+  function target(dataset,name){
+    return {dataset,textContent:name,querySelector:()=>null,querySelectorAll:()=>[],click:()=>opened.push(name)};
+  }
+  daily = target({},'encontro');
+  for(const entry of [target({ir:'cafe'},'café'),target({twnovo:'bloom'},'jardim'),null]){
+    highlighted = entry;
+    world.hubCardsUI();
+    elements.get('twDestaque').click();
+  }
+  assert.deepEqual(opened,['café','jardim','encontro']);
+}

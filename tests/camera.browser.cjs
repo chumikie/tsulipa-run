@@ -28,6 +28,8 @@ await p.keyboard.press('Escape');await p.keyboard.press('Escape');await p.waitFo
 await p.evaluate(()=>{TW_HUMOR.vipHoje=()=>true;const bt=document.createElement('button');bt.dataset.a='vip';bt.id='vipT';document.querySelector('#twcTela').appendChild(bt);});
 await p.locator('#vipT').click({force:true});await p.locator('[data-a="vipFoto"]').click();
 await p.locator('#twCamera:not([hidden])').waitFor();await p.waitForTimeout(500);await info('vip',640);
+assert.equal(await p.locator('.twcam-p').evaluate(el=>el.scrollTop),0,'VIP abre no topo da prévia');
+assert.equal(await p.locator('.twcam-x').evaluate(el=>el===document.activeElement),true);
 await p.locator('[data-cf="pose"][data-cv="coracao"]').click();await p.locator('[data-cf="expr"][data-cv="3"]').click();await p.locator('[data-cf="quadro"][data-cv="perto"]').click();await p.locator('[data-cf="moldura"][data-cv="palco"]').click();await p.waitForTimeout(300);
 await info('vip-pose',640);
 assert.match(await p.locator('.twcam-salvar').getAttribute('href'),/^data:image\/png/);assert.equal(await p.locator('.twcam-salvar').getAttribute('download'),'tsulipa-camarim-vip.png');

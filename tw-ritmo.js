@@ -21,7 +21,8 @@
     var semGuia=pulou();
     return '<section class="twc-pag tw-ritmo" aria-labelledby="twRitmoTitulo"><h1 id="twRitmoTitulo">'+esc(t(0))+'</h1><p>'+esc(t(1))+'</p>'+
       '<div class="tw-ritmo-tempo" role="group" aria-label="'+esc(t(0))+'">'+[2,3].map(function(i){return '<button type="button" class="twc-btn" data-ritmo="tempo-'+i+'" aria-pressed="'+(longa===(i===3))+'">'+esc(t(i))+'</button>';}).join('')+'</div>'+
-      '<div class="tw-ritmo-grade">'+ROTAS.map(function(rota,i){return '<section class="twc-card"><h2>'+esc(t(4+i))+'</h2><p>'+esc(t(8+i))+'</p>'+(!semGuia?'<p class="tw-ritmo-dica">'+esc(t(longa?(i===0?32:i===2?33:34):29))+'</p>':'')+'<div class="tw-ritmo-acoes">'+rota.slice(0,longa?3:2).map(function(a){return btn(a[0],a[1]);}).join('')+'</div></section>';}).join('')+'</div>'+
+      (!semGuia && !longa ? '<p class="tw-ritmo-dica">'+esc(t(29))+'</p>' : '')+
+      '<div class="tw-ritmo-grade">'+ROTAS.map(function(rota,i){return '<section class="twc-card"><h2>'+esc(t(4+i))+'</h2><p>'+esc(t(8+i))+'</p>'+(!semGuia && longa?'<p class="tw-ritmo-dica">'+esc(t(i===0?32:i===2?33:34))+'</p>':'')+'<div class="tw-ritmo-acoes">'+rota.slice(0,longa?3:2).map(function(a){return btn(a[0],a[1]);}).join('')+'</div></section>';}).join('')+'</div>'+
       '<section class="twc-card"><h2>'+esc(t(22))+'</h2><p>'+esc(t(23))+'</p><p>'+esc(t(38))+'</p><div class="tw-ritmo-acoes">'+btn(24,'tema')+btn(25,'karaoke')+btn(20,'tour')+'</div></section>'+
       '<details class="twc-card"><summary>'+esc(t(21))+'</summary><p>'+esc(t(27))+'</p>'+btn(21,'fotos')+'</details>'+
       '<p>'+esc(t(28))+'</p><p>'+esc(t(35))+'</p>'+btn(semGuia?37:36,semGuia?'retomar':'pular')+'</section>';

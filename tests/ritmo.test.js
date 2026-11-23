@@ -5,7 +5,7 @@ const ctx={LANG:'pt',contaJ:{id:'A'},contaAuthUserId:'A',localStorage:{getItem:k
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../tw-ritmo.js'),'utf8'),ctx);
 const R=ctx.TW_RITMO;
 for(const l of ['pt','en','es','id','th','ja']){ctx.LANG=l;for(let i=0;i<39;i++)assert.equal(typeof R.t(i),'string',l+' '+i);assert(!R.html().includes('undefined'));}
-ctx.LANG='pt';assert(R.html().includes('data-ritmo="run"'));assert.equal((R.html().match(/data-ritmo="karaoke"/g)||[]).length,1);
+ctx.LANG='pt';assert.equal(R.html().split(R.t(29)).length-1,1,'uma orientação comum por página');assert(R.html().includes('data-ritmo="run"'));assert.equal((R.html().match(/data-ritmo="karaoke"/g)||[]).length,1);
 R.agir('tempo-3');assert(R.html().includes('data-ritmo="karaoke"'));assert.equal(storage.size,0,'time choice does not mark progress');
 R.agir('pular');assert(R.html().includes('data-ritmo="retomar"'));
 ctx.contaJ={id:'B'};ctx.contaAuthUserId='B';assert(!R.html().includes('data-ritmo="retomar"'),'guidance is scoped to owner');

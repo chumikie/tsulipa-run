@@ -154,12 +154,12 @@ function duoLoop(ms){
 }
 function duoRotulo(k){
   var L = {
-    pt:['Salvar foto','Álbum e atividades','Mais cenas'],
-    en:['Save photo','Album and activities','More scenes'],
-    es:['Guardar foto','Álbum y actividades','Más escenas'],
-    ja:['写真を保存','アルバムとアクティビティ','ほかのシーン'],
-    th:['บันทึกภาพ','อัลบั้มและกิจกรรม','ฉากเพิ่มเติม'],
-    id:['Simpan foto','Album dan aktivitas','Adegan lainnya']
+    pt:['Salvar foto','Álbum e atividades','Mais cenas','Abrir câmera'],
+    en:['Save photo','Album and activities','More scenes','Open camera'],
+    es:['Guardar foto','Álbum y actividades','Más escenas','Abrir cámara'],
+    ja:['写真を保存','アルバムとアクティビティ','ほかのシーン','カメラを開く'],
+    th:['บันทึกภาพ','อัลบั้มและกิจกรรม','ฉากเพิ่มเติม','เปิดกล้อง'],
+    id:['Simpan foto','Album dan aktivitas','Adegan lainnya','Buka kamera']
   };
   return (L[typeof LANG === 'string' ? LANG : 'pt'] || L.pt)[k];
 }
@@ -168,7 +168,7 @@ function duoTexto(){
   $('duoExtraTitulo').textContent = duoRotulo(1);
   $('duoSub').textContent = tr('Monte cenas fofas com outro Idol do TsuLiPa⭐World!');
   $('duoTrocar').textContent = '🔁 ' + tr('Trocar dupla');
-  $('duoPng').textContent = '📸 ' + tr('Salvar PNG'); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo');
+  $('duoPng').textContent = '📸 ' + (window.TW_CAMERA ? duoRotulo(3) : tr('Salvar PNG')); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo');
   $('duoPhone').textContent = '💗 ' + petPhoneMomentoTexto(0);
   var rua=$('duoRuaFofa'),voltar=$('duoVoltarRua');
   rua.hidden=!duoPiloto||!duoGu;

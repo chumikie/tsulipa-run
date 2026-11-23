@@ -10,7 +10,7 @@
   function t(k){var L=(typeof LANG==='string'&&T[LANG])?LANG:'pt';return T[L][k];}
   function esc(s){return typeof escHtml==='function'?escHtml(String(s)):String(s).replace(/[&<>"']/g,function(c){return '&#'+c.charCodeAt(0)+';';});}
   function hub(){return document.getElementById('hub');}
-  function card(k){var c=document.getElementById('hubCards');return c&&c.querySelector('[data-ir="'+k+'"]');}
+  function card(k){var c=document.getElementById('hubCards');return c&&(c.querySelector('[data-ir="'+k+'"]')||c.querySelector('[data-twnovo="'+k+'"]'));}
   function rankNome(){try{var n=(typeof RANKS!=='undefined'&&typeof rankOf==='function')?RANKS[rankOf(+best||0)][1]:'';return n&&typeof tr==='function'?tr(n):n;}catch(e){return '';}}
 
   /* 1) barra fixa com você */
@@ -41,7 +41,7 @@
     if(!alvo){hojeBtn=document.querySelector('#hubHoje .hubenc');}
     var fonte=alvo||hojeBtn; var el=document.getElementById('twDestaque');
     if(!fonte){if(el)el.remove();return;}
-    var ir=alvo?alvo.dataset.ir:'enc';
+    var ir=alvo?(alvo.dataset.ir||alvo.dataset.twnovo):'enc';
     var emo=(fonte.querySelector('i')||{}).textContent||'⭐';
     var tit=(fonte.querySelector('b')||fonte).textContent.trim();
     var smalls=[].slice.call(fonte.querySelectorAll('small')).filter(function(s){return !s.classList.contains('tw-hubgame-jp')&&!s.hasAttribute('lang');});

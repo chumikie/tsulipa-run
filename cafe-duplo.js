@@ -125,7 +125,9 @@
     }
     if(cf.alternado){
       if(cf.criados >= 12 || ladoLivre() < 0 || cfT < cf.proximaChegada) return;
-      entrar(novoFa(),null,0); cf.criados++;
+      entrar(novoFa(),null,0);
+      if(cf.criados === 0) selecionar(cf.fila[0]);
+      cf.criados++;
       cf.proximaChegada = cfT + 180;
       var foco = document.activeElement;
       var acao = foco && foco.closest('#cfCorpo [data-cf],#cfCorpo [data-cfd-servir],#cfCorpo [data-cfd-cliente]');

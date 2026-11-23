@@ -733,9 +733,12 @@ async function cafeAlternado(browser){
     if(await cafe.locator('[data-cfd-aceitar]').isVisible()) await cafe.locator('[data-cfd-aceitar]').click();
     const clientes=cafe.locator('[data-cfd-cliente]:enabled');
     assert.equal(await clientes.count(),1);
+    assert.equal(await clientes.first().getAttribute('aria-pressed'),'true');
+    assert.equal(await cafe.locator('.cfpedidotxt b').innerText(),await clientes.first().innerText());
     const inicial=await page.evaluate(()=>({tempo:cf.fila[0].t0,modo:cf.modoServidor,caderno:cfLer(CF_RECEITAS_KEY,{})}));
     assert.equal(inicial.modo,'treino');
     await clientes.nth(1).waitFor();
+    assert.equal(await clientes.first().getAttribute('aria-pressed'),'true');
     assert(await page.evaluate(t=>cf.fila[1].t0-t>=180,inicial.tempo));
     for(const lado of [0,1]){
       await cafe.locator('[data-cfd-cliente="'+lado+'"]').click();

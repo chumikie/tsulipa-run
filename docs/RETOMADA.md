@@ -1,6 +1,6 @@
 # Retomada — TsuLiPa⭐World (estado de hoje)
 
-**Atualizado em 22/11/2026 (tarde).** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
+**Atualizado em 23/11/2026.** Este é o único documento de estado. Ele diz como o projeto está **agora**; o relato de cada rodada fica no diário ([`historico/diario/2026-11.md`](historico/diario/2026-11.md)).
 
 ## Como atualizar (no mesmo envio de cada PR)
 1. **Onde está:** `main`, PRs abertas e o que foi publicado.
@@ -19,11 +19,9 @@
 - Testes rápidos aqui (`node tests/run-all.js`); os de navegador ficam para o CI, salvo o que a mudança tocou.
 
 ## Onde está
-- **`main`:** `dc9fb3f` (21/11, merge da #129, melhorias). Antes dela: #119 (Início compacto), #118 (estreia no TsuPhone, atividades e pilotos da Rua Fofa), #112 (Encontro do dia sob demanda e esta RETOMADA), #113–#114 (Camarim por conta, foto do Camarim guardada, flores do Bloom no Studio), #115 (Café legível no celular), #116 (piso da sala do Karaoke), #110 (leveza, Karaoke dividido, Duo/admin/bairro sob demanda), #111 (prévia de link).
-- **Outras PRs abertas:** #117 (desfecho e timing), #120 (Rua Fofa e lembranças), #121 (jogabilidade) e #122 (reencontros, pista e fotos) e #123 (cópia do Álbum, foco no Café e teste de card no Battle). A #124 integra #120–#123 e inclui a estreia sem nome, a proteção do Álbum cheio, os novos atalhos de treino e retorno e as melhorias de resultado, leitura e galeria. [Auditoria da integração](qa/auditoria-integracao-2026-11-20.md) · [Sustentabilidade e acabamento](qa/auditoria-sustentabilidade-2026-11-20.md) · [Auditoria visual](qa/auditoria-visual-2026-11-20.md) · [Auditoria das atualizações de 19 e 20/11](qa/auditoria-atualizacoes-19-20-11-2026.md).
-- **Depois da #130 (22/11):** o campo "Seu emoji" não mostra mais o 🎤 de exemplo (parecia escolhido; na conta da dona o emoji estava vazio no servidor), o cartão do Início atualiza ao salvar o perfil e o "Você" de lado (Center⭐Run) ganhou todos os cortes, franjas, detalhes e roupas do editor. Os 9 looks do Center⭐Run! viraram roupas liberadas pelo recorde (`cr_…`), de frente e de lado; a corrida fica de lado também com rank e abdução. [Folhas](qa/lado-20261122/)
-- **#130** (conferência visual, rascunho, branch `fix/conferencia-moon-fotos-20261121`): Moon⭐Duo, assinatura nas fotos, passatempos, perfil/vitrine, mãos do Studio e, em 22/11, a conferência dos atalhos do Menu e a poda decidida pela dona (abaixo). Três commits da rodada de 22/11 (`320f313`, `449e5ba`, `3e73c70`, mais o desta atualização) foram entregues como patch porque a sessão não tinha escrita no repositório. [Conferência](qa/conferencia-130.md)
-- **#125** (Expressão e convivência) tem como base a branch da #124. Os caminhos do Menu, o editor e a Praça têm testes próprios. A suíte principal do GitHub dispara em PRs com destino à main. [Escopo da #125](https://github.com/chumikie/tsulipa-run/pull/125)
+- **`main`:** `ec2ad57` (22/11, merge da #131: Idol de lado completo e looks do Center⭐Run! como roupa). Antes: #130 (conferência visual, poda do Menu, 22/11), #129 (melhorias, 21/11), #127–#128, #126, #124 e #123 (20/11). As #118–#123 entraram pela #124.
+- **Esta rodada (23/11):** prévia de link nova (`og.jpg?v=16`), Humor compacto no Menu, cartão "Seu perfil" do Início sem repetir o avatar e esta RETOMADA em dia. [Conferência](qa/menu-og-20261123/)
+- **PRs abertas (rascunho):** #117 (Bagunça no Idol⭐News! + Karaoke; conflita com a main) e #125 (Expressão e convivência; ver Pendências).
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje
@@ -61,12 +59,12 @@ A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, 
 | Sistema | Estado | Próximo passo |
 |---|---|---|
 | Mapa (2 níveis) | Ruas vivas: visitas surpresa do trio, bichinhos, Idols online com frases prontas, salas por dentro | — |
-| Vida no bairro (Urbz) | Bagunça da semana (domingo 0h), primeiros dias guiados, falas do trio no Chat; **bicos escondidos** desde a #109 | Capítulo de domingo no Idol⭐News! fechando a bagunça; decidir quando liberar os bicos |
+| Vida no bairro (Urbz) | Bagunça da semana (domingo 0h), primeiros dias guiados, falas do trio no Chat. **Bicos prontos e desligados** (`BICOS = false` em `tw-bairro.js`): a contagem anda por baixo e, sem eles, o gesto da rua se aprende jogando 2 vezes nela | Capítulo de domingo no Idol⭐News! fechando a bagunça; ligar os bicos é trocar uma linha, quando a dona quiser |
 | Humor, Desejo do dia, Camarim VIP | Locais, por conta (#113) | — |
 | Meu Camarim | Decoração, tour de camarins, coração por dia, porta-retrato | — |
 | Encontro do dia | Um Idol (dupla na terça, trio na sexta) dançando com recado; a cena baixa só ao abrir (#112) | — |
 | Idol⭐News! | Pódios e capítulos no domingo, por horário de Brasília. Temporada 1 trancada | Revisão das traduções e OK da Temporada 1 |
-| Calendário, Fichinhas, Álbum | Calendário e fichas para consulta. Ler abre o capítulo exato. Álbum com filtros por origem e edição, fotos fixadas, exportação PNG e cópia JSON | Dia do aniversário da Lirika (ficha diz só "maio") |
+| Calendário, Fichinhas, Álbum | Calendário e fichas para consulta. Ler abre o capítulo exato. Álbum com filtros por origem e edição, fotos fixadas, exportação PNG e cópia JSON. A Lirika fica só com "maio" (decisão da dona, 23/11: sem dia) | — |
 | Você / charmaker | Editor estilo Charat, favoritos, rosto à escolha | — |
 | Admin | Moderação, telemetria, Montar Idol; ferramentas baixam só para admin (#110) | — |
 
@@ -97,23 +95,22 @@ A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, 
 
 ## Pendências
 - Publicação do Camarim em duas etapas, com aceite das funções novas, referência de rollback e corte final do crédito legado. [Roteiro de publicação](qa/pilotos-estreia-bairro-karaoke.md#ordem-da-publicação-do-camarim)
-**Do dono**
-- Conferir no celular, depois da #110: Início, show no Karaoke com foto no meio, abrir o Moon⭐Duo!, "Vida no bairro" e aba de moderação na conta admin.
-- Ok do Pati para o visual novo.
-- Dia do aniversário da Lirika.
-- Quando liberar os bicos.
-- Revisão e OK da Temporada 1.
-- Imagem de "Social preview" do GitHub (Settings).
-- Apagar branches antigas (o proxy daqui não deixa).
+**Da dona**
+- Conferir no celular: Início, Menu (Humor compacto), Karaoke com foto no meio, Moon⭐Duo!, "Vida no bairro" e a moderação na conta admin.
+- Se quiser, ligar os bicos (estão prontos, só escondidos).
+- Revisão e OK da Temporada 1 do Idol⭐News!.
+- Imagem de "Social preview" do GitHub: é a figura que aparece quando alguém compartilha o link do **repositório** (github.com/chumikie/tsulipa-run). Não muda o site. Dá para subir a `og.jpg` em Settings → General → Social preview.
+- Apagar branches antigas.
 - Atualizar as instruções do Projeto no claude.ai: ainda falam da PR #58.
 
 **Banco (ChatGPT, com autorização)**
-- Aplicar `supabase/migrations/20261122120000_roupas_center_run.sql` (o admin reconhece as roupas `cr_…`; o jogador já consegue vestir sem ela).
+- ~~Roupas do Center⭐Run! no admin~~ (`20261122120000_roupas_center_run.sql`): aplicada em 22/11, conferida em 23/11.
 - Prêmio dos lightsticks do Battle (`supabase/sql/proposta/20261115_battle_lightsticks_premio.sql`).
 - Roupa como prêmio do nível 3 do bairro.
 
 **Código**
-- #130: aplicar os patches da rodada de 22/11, ver o CI verde e conferir com a conta real a pasta "Mais", o Gacha em Jogos e o Esta semana no Calendário. Ideias em aberto: Humor mais compacto no Menu e o cartão "Seu perfil" do Início (repete o avatar do topo).
+- Conferir com a conta real a pasta "Mais", o Gacha em Jogos e o Esta semana no Calendário (#130).
+- `tests/atalhos-calendario.browser.cjs` falha também na main (espera os atalhos fixados `cafe` e `cal`, que a #130 tirou do Início). Fora do CI; atualizar ou aposentar o teste.
 - A #117 continua separada e conflita com a main. Revisar desfecho, calibração e versões do Jornal em separado dos arquivos de áudio, cuja revisão ficou para depois.
 - Testar a #124 com conta real e conferência no aparelho de login, vitrine, retrospectiva e recompensas semanais. [Pilotos e matriz física do Karaoke](qa/pilotos-estreia-bairro-karaoke.md).
 - Medir em Android e PC reais: o teste aqui roda sem placa de vídeo.

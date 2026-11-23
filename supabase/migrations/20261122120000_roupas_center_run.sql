@@ -6,7 +6,7 @@
 -- passa a aceitar 'tailandia' e 'indonesia', que o admin_montar_idol já aceitava.
 -- Recorde: Fever 450, Ímã 1000, Mega 1800, Abdução 2800, Center 5000, Solo Center 10000, Capitão 15000,
 -- Eternal Ace 30000, Kami-Oshi 50000. Igual às versões atuais em todo o resto.
--- Ainda não aplicada.
+-- Aplicada em produção em 22/11/2026 (registro 20261122231832); conferida em 23/11: SECURITY DEFINER, anon sem execute, authenticated com execute.
 
 CREATE OR REPLACE FUNCTION public.admin_vestir(
   p_nick text,

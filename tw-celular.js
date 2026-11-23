@@ -905,9 +905,11 @@
     var e = H.estado(), d = H.desejo(), vip = H.vipHoje();
     var barras = H.barras.map(function(b){ var v = e[b];
       return '<div class="twc-hb twc-hb-' + b + '"><span>' + esc(H.t(b)) + '</span><i role="progressbar" aria-label="' + esc(H.t(b)) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + v + '"><b style="width:' + v + '%"></b></i></div>'; }).join('');
-    return '<section class="twc-humor" aria-labelledby="twcHumorT"><div class="twc-humor-top"><span class="twc-diam" style="--c:' + e.cor + '" aria-hidden="true"></span><h2 id="twcHumorT">' + esc(H.t('humor')) + '</h2>' +
+    // Menu (semDesejo): versão compacta (23/11, pedido da dona) — as 4 barras numa linha e a explicação dentro do "Como funciona".
+    var intro = '<p class="twc-humor-dica">' + esc(H.t('intro')) + '</p>';
+    return '<section class="twc-humor' + (semDesejo ? ' twc-humor-mini' : '') + '" aria-labelledby="twcHumorT"><div class="twc-humor-top"><span class="twc-diam" style="--c:' + e.cor + '" aria-hidden="true"></span><h2 id="twcHumorT">' + esc(H.t('humor')) + '</h2>' +
       (e.serie > 0 ? '<em class="twc-serie"><span aria-hidden="true">' + ico('chama', 14) + '</span>' + esc(H.t('serie', e.serie)) + '</em>' : '') + '</div>' +
-      '<p class="twc-humor-dica">' + esc(H.t('intro')) + '</p><div class="twc-hbs">' + barras + '</div><details class="twc-humor-dica"><summary>' + esc(H.t('como')) + '</summary>' + H.barras.map(function(b){return '<p><b>' + esc(H.t(b)) + '</b> · ' + esc(H.t(b+'Ajuda')) + '</p>';}).join('') + '<p>' + esc(H.t('efeitos')) + '</p><p>' + esc(H.t('corGuia')) + '</p><p>' + esc(H.t('regra')) + '</p></details>' +
+      (semDesejo ? '' : intro) + '<div class="twc-hbs">' + barras + '</div><details class="twc-humor-dica"><summary>' + esc(H.t('como')) + '</summary>' + (semDesejo ? '<p>' + esc(H.t('intro')) + '</p>' : '') + H.barras.map(function(b){return '<p><b>' + esc(H.t(b)) + '</b> · ' + esc(H.t(b+'Ajuda')) + '</p>';}).join('') + '<p>' + esc(H.t('efeitos')) + '</p><p>' + esc(H.t('corGuia')) + '</p><p>' + esc(H.t('regra')) + '</p></details>' +
       (H.cansado() ? '<p class="twc-humor-dica">' + esc(H.t('cansado')) + '</p>' : '') + (semDesejo ? '</section>' :
       '<div class="twc-desejo' + (d.feito ? ' twc-desejo-ok' : '') + '"><span class="twc-desejo-ico twc-g-' + (COR[desejoIco(d.ev)] || 'rosa') + '" aria-hidden="true">' + ico(d.feito ? 'check' : desejoIco(d.ev), 22) + '</span><span class="twc-desejo-txt"><small>' + esc(H.t('desejo')) + '</small><b>' + esc(d.feito ? H.t('feito') : d.texto) + '</b></span>' +
         (d.feito ? '' : '<button type="button" class="twc-btn twc-desejo-ir" data-desejo="' + esc(d.ev) + '">' + esc(H.rotuloRota(d.ev)) + '</button>') + '</div>' +

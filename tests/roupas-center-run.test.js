@@ -23,7 +23,7 @@ assert.equal(R.cr(''), null);
 assert.deepEqual([1, 2, 3, 4, 5].map(n => Object.keys(RECORDE).find(k => R.cr(k).of === n)), ['cr_center', 'cr_solo', 'cr_capitao', 'cr_ace', 'cr_kami'], 'uniformes na ordem dos ranks');
 assert(R.cr('cr_alien').alien, 'Abdução = macacão espacial');
 assert.doesNotMatch(sql, /stars|star_log|preco/i, 'a migração não mexe em estrelas nem em preço');
-assert.match(sql, /Ainda não aplicada/, 'migração marcada como não aplicada');
+assert.match(sql, /Aplicada em produção/, 'migração marcada como aplicada');
 
 // de frente: Fever, Ímã e Mega têm look próprio; nas cores que o Fever e o Ímã dão ao uniforme na corrida
 function fake(){ const log = []; const grad = () => ({ addColorStop(){} }); return { log, fillStyle:'',

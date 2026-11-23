@@ -148,7 +148,7 @@
     var p = dados(); if(!p){ if(logado()) carregar(); return ''; }   // a conta pode entrar depois deste arquivo: carrega na primeira vez que o Início desenha
     var tem = p.insignias || [], px = proximos(p, tem, 1)[0], cp = completo(p), nov = novidade();
     var qtd = {}; tem.forEach(function(x){ qtd[String(x).split(':')[0]] = 1; });
-    return '<button type="button" class="twq-cartao" data-ir="perfil"><canvas class="twc-av twq-av" data-av="1" width="96" height="96" aria-hidden="true"></canvas>' +
+    return '<button type="button" class="twq-cartao" data-ir="perfil"><span class="twq-c-ico" aria-hidden="true">✦</span>' +   // sem o avatar: ele já está no topo do Início (23/11)
       '<span class="twq-c-txt"><b>' + esc(t('seu')) + (nov ? ' <em class="twq-novo">' + esc(t('novo', {txt:nov.txt})) + '</em>' : '') + '</b>' +
       '<small>✦ ' + esc(t('pontos', {n:pontos(tem)})) + ' · ' + esc(t('emblemas', {n:Object.keys(qtd).length})) + '</small>' +
       (px ? '<small class="twq-c-prox">' + esc(px.emo + ' ' + px.nome) + ' ' + barra(px.atual, px.alvo) + ' ' + esc(px.atual + '/' + px.alvo) + '</small>' : '') +

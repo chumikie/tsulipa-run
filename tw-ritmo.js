@@ -17,6 +17,18 @@
   function pulou(){try{return localStorage.getItem(chave())==='1';}catch(e){return false;}}
   function btn(i,acao){return '<button type="button" class="twc-btn twc-btn-claro" data-ritmo="'+acao+'">'+esc(t(i))+'</button>';}
   var ROTAS=[[[12,'run'],[13,'sora'],[14,'karaoke']],[[15,'mapa'],[16,'bairro'],[20,'tour']],[[17,'loja'],[18,'studio'],[21,'fotos']],[[30,'pet'],[21,'fotos'],[20,'tour']]];
+  // A segunda parada acompanha a atividade que já aparece no destaque do dia.
+  var PROXIMA = {handshake:'cafe',cafe:'handshake',bloom:'studio',studio:'duo',duo:'studio',
+    pet:'bloom',loja:'studio',run:'sora',sora:'run',battle:'gacha',gacha:'battle',karaoke:'duo'};
+  function passeioHoje(k, nomeCard){
+    var proxima=PROXIMA[k];
+    if(!proxima)return '';
+    var atual=nomeCard(k), seguinte=nomeCard(proxima);
+    if(!atual || !seguinte)return '';
+    return '<details class="tw-ritmo-hoje"><summary>'+esc(t(0))+'</summary>'+
+      '<div><span>'+esc(t(2))+'</span><button type="button" data-passeio="'+esc(k)+'">'+esc(atual)+'</button></div>'+
+      '<div><span>'+esc(t(3))+'</span><span>'+esc(atual)+' →</span><button type="button" data-passeio="'+esc(proxima)+'">'+esc(seguinte)+'</button></div></details>';
+  }
   function html(){
     var semGuia=pulou();
     return '<section class="twc-pag tw-ritmo" aria-labelledby="twRitmoTitulo"><h1 id="twRitmoTitulo">'+esc(t(0))+'</h1><p>'+esc(t(1))+'</p>'+
@@ -44,5 +56,5 @@
     var loc={pt:'pt-BR',en:'en-US',es:'es',id:'id-ID',th:'th-TH',ja:'ja-JP'}[typeof LANG==='string'?LANG:'pt']||'pt-BR';
     return origem||data?'<p class="tw-ritmo-origem">'+(origem?esc(origem):'')+(data?' · <time datetime="'+esc(data.toISOString())+'">'+esc(data.toLocaleDateString(loc))+'</time>':'')+'</p>':'';
   }
-  root.TW_RITMO={memoriaHtml:memoriaHtml,html:html,agir:agir,t:t,origemTexto:function(i){return (ORIGEM[typeof LANG==='string'?LANG:'pt']||ORIGEM.pt)[i];},idiomas:Object.keys(TX)};
+  root.TW_RITMO={passeioHoje:passeioHoje,memoriaHtml:memoriaHtml,html:html,agir:agir,t:t,origemTexto:function(i){return (ORIGEM[typeof LANG==='string'?LANG:'pt']||ORIGEM.pt)[i];},idiomas:Object.keys(TX)};
 })(window);

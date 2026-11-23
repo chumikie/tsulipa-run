@@ -37,9 +37,11 @@ console.log('OK: jogos novos no Hub — seis idiomas, três cards, aviso do jard
 {
   const elements = new Map(), opened = [];
   let highlighted, daily;
+  const studio = target({twnovo:"studio"},"Studio");
   const cards = {
     querySelector(selector) {
       if (selector === '.hubcard.tw-alert-pink') return highlighted;
+      if (selector === '[data-twnovo="studio"]') return studio;
       if (!highlighted) return null;
       const {ir, twnovo} = highlighted.dataset;
       return (ir && selector === '[data-ir="'+ir+'"]') ||
@@ -50,21 +52,28 @@ console.log('OK: jogos novos no Hub — seis idiomas, três cards, aviso do jard
     readyState:'loading', addEventListener(){},
     querySelector:s => s === '#hubHoje .hubenc' ? daily : null,
     getElementById:id => elements.get(id),
-    createElement:() => ({dataset:{},addEventListener(type, fn){ this[type] = fn; }})
+    createElement:() => ({dataset:{},after(el){elements.set(el.id,el);},remove(){elements.delete(this.id);},addEventListener(type, fn){ this[type] = fn; }})
   };
   elements.set('hubCards',cards);
   elements.set('hubHoje',{parentNode:{insertBefore(el){ elements.set(el.id,el); }}});
   const world = {document, hubCardsUI(){}, setInterval(){}, LANG:'pt'};
   world.window = world;
+  vm.runInNewContext(fs.readFileSync(path.join(raiz,'tw-ritmo.js'),'utf8'),world);
   vm.runInNewContext(fs.readFileSync(path.join(raiz,'hub-layout.js'),'utf8'),world);
   function target(dataset,name){
-    return {dataset,textContent:name,querySelector:()=>null,querySelectorAll:()=>[],click:()=>opened.push(name)};
+    return {dataset,textContent:name,querySelector:s=>s==='b'?{textContent:name}:null,querySelectorAll:()=>[],click:()=>opened.push(name)};
   }
   daily = target({},'encontro');
   for(const entry of [target({ir:'cafe'},'café'),target({twnovo:'bloom'},'jardim'),null]){
     highlighted = entry;
     world.hubCardsUI();
     elements.get('twDestaque').click();
+    const guide = elements.get('twPasseioHoje');
+    if (entry && entry.dataset.twnovo === 'bloom') {
+      assert.match(guide.innerHTML,/data-passeio="bloom"/);
+      assert.match(guide.innerHTML,/data-passeio="studio"/);
+      guide.click({target:{closest:()=>({dataset:{passeio:'studio'}})}});
+    } else assert.equal(guide,undefined);
   }
-  assert.deepEqual(opened,['café','jardim','encontro']);
+  assert.deepEqual(opened,['café','jardim','Studio','encontro']);
 }

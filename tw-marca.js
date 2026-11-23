@@ -72,7 +72,8 @@
     if(!IMG.test(nome) || !/^(data:image|blob:)/i.test(href)) return false;
     var arq; try{ arq = arquivoDe(href, nome); }catch(e){ arq = null; }
     if(!arq || !navigator.canShare({files:[arq]})) return false;
-    navigator.share({files:[arq], title:'TsuLiPa⭐World', text:'🌷 ' + (window.TW_SITE || 'tsulipa-world.vercel.app')}).then(function(){ avisar(nome); }, function(err){
+    navigator.share({files:[arq], title:'TsuLiPa⭐World'})   // 23/11: sem texto. O endereço virava um cartão de link enorme por cima da foto no WhatsApp/Instagram; a foto já leva o selo do site embaixo
+      .then(function(){ avisar(nome); }, function(err){
       if(err && err.name === 'AbortError') return;                       // a pessoa fechou o compartilhar
       a.dataset.twBaixar = '1'; try{ baixarOriginal.call(a); } finally { delete a.dataset.twBaixar; } avisar(nome);
     });

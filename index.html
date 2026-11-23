@@ -178,7 +178,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=8"><'+'/script>');</script>
-<link rel="stylesheet" href="./tw-ritmo.css?v=2"><script defer src="./tw-ritmo.js?v=3"></script>
+<link rel="stylesheet" href="./tw-ritmo.css?v=2"><script defer src="./tw-ritmo.js?v=4"></script>
 </head>
 <body>
 <header>
@@ -590,14 +590,14 @@ var jornalCarregar=(function(){
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=61"><script src="./tw-humor.js?v=10"><'+'/script><script defer src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=9"><'+'/script><script defer src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=77"><'+'/script><script defer src="./tw-presenca.js?v=3"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=61"><script src="./tw-humor.js?v=10"><'+'/script><script defer src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=9"><'+'/script><script defer src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=78"><'+'/script><script defer src="./tw-presenca.js?v=3"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
   var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=61';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=10';hm.async=false;document.body.appendChild(hm);
   var vbi=document.createElement('script');vbi.src='./tw-bichos.js?v=2';vbi.async=false;document.body.appendChild(vbi);
   var vb=document.createElement('script');vb.src='./tw-bairro.js?v=9';vb.async=false;document.body.appendChild(vb);
   var ca=document.createElement('script');ca.src='./tw-calendario.js?v=8';ca.async=false;document.body.appendChild(ca);
-  var s=document.createElement('script');s.src='./tw-celular.js?v=77';s.async=false;document.body.appendChild(s);
+  var s=document.createElement('script');s.src='./tw-celular.js?v=78';s.async=false;document.body.appendChild(s);
   var p=document.createElement('script');p.src='./tw-presenca.js?v=3';document.body.appendChild(p);}
 var TX={pt:'📱 Visual de celular',en:'📱 Phone look',es:'📱 Estilo de celular',id:'📱 Tampilan ponsel',th:'📱 หน้าตาแบบมือถือ',ja:'📱 スマホ表示'};
 var f=window.hubCfgUI;if(typeof f==='function')window.hubCfgUI=function(){var r=f.apply(this,arguments);try{var c=document.getElementById('hubCfg');if(!c)return r;

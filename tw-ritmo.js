@@ -27,7 +27,7 @@
     if(!atual || !seguinte)return '';
     return '<details class="tw-ritmo-hoje"><summary>'+esc(t(0))+'</summary>'+
       '<div><span>'+esc(t(2))+'</span><button type="button" data-passeio="'+esc(k)+'">'+esc(atual)+'</button></div>'+
-      '<div><span>'+esc(t(3))+'</span><span>'+esc(atual)+' →</span><button type="button" data-passeio="'+esc(proxima)+'">'+esc(seguinte)+'</button></div></details>';
+      '<div><span>'+esc(t(3))+'</span><button type="button" data-passeio="'+esc(k)+'">'+esc(atual)+'</button><span aria-hidden="true">→</span><button type="button" data-passeio="'+esc(proxima)+'">'+esc(seguinte)+'</button></div></details>';
   }
   function html(){
     var semGuia=pulou();

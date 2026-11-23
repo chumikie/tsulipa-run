@@ -9,7 +9,8 @@ for(const l of R.idiomas){
   ctx.LANG=l;
   const guia=R.passeioHoje('handshake',k=>({handshake:'Handshake',cafe:'Café'})[k]);
   for(const i of [0,2,3]) assert(guia.includes(R.t(i)));
-  assert(guia.includes('data-passeio="cafe"'));
+  const longa=guia.slice(guia.lastIndexOf('<div>'));
+  assert(longa.indexOf('data-passeio="handshake"')>=0 && longa.indexOf('data-passeio="cafe"')>longa.indexOf('data-passeio="handshake"'));
 }
 assert.equal(R.passeioHoje('bloom',k=>k==='bloom'?'Bloom':''),'');
 ctx.LANG='pt';assert.equal(R.html().split(R.t(29)).length-1,1,'uma orientação comum por página');assert(R.html().includes('data-ritmo="run"'));assert.equal((R.html().match(/data-ritmo="karaoke"/g)||[]).length,1);

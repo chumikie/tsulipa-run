@@ -2024,7 +2024,18 @@
   function clique(e){
     var b = e.target.closest && e.target.closest('button'); if(!b || !cel.contains(b) || b.disabled) return;
     if(b.dataset.passeio){ abrirCard(b.dataset.passeio); return; }
-    if(b.dataset.ritmo && window.TW_RITMO){ var focoRitmo=b.dataset.ritmo; if(TW_RITMO.agir(focoRitmo)){desenhar();var focoNovo=cel.querySelector('[data-ritmo="'+focoRitmo+'"]');if(focoNovo)focoNovo.focus();}return;}
+    if(b.dataset.ritmo && window.TW_RITMO){
+      var escolha = b.dataset.ritmo;
+      if(TW_RITMO.agir(escolha)){
+        desenhar();
+        var seletor = escolha === 'pular' || escolha === 'retomar'
+          ? '[data-ritmo="pular"],[data-ritmo="retomar"]'
+          : '[data-ritmo="' + escolha + '"]';
+        var proximo = tela.querySelector(seletor);
+        if(proximo) proximo.focus();
+      }
+      return;
+    }
     if(b.dataset.f){ var f = b.dataset.f;
       if(f === 'tutOk'){ tutI++; som(); if(tutI > 2) tutFim(); else tutMostrar(); return; }
       if(f === 'tutPular'){ tutFim(); return; }
@@ -2290,7 +2301,17 @@
   window.TW_CELULAR = {visitar:function(k){
       if(k==='mapa'){acao('mapa');return;}
       if(k==='tour'){ir('tour');return;}
-      if(k==='fotos'){ir('album');return;}
+      if(k==='fotos'){
+        acao('album');
+        if(!logado()) return;
+        var fotos = tela.querySelector('details.album-fotos');
+        if(fotos){
+          fotos.open = true;
+          fotos.querySelector('summary').focus();
+          fotos.scrollIntoView({block:'nearest'});
+        }
+        return;
+      }
       if(['run','sora','karaoke','loja','studio','pet'].indexOf(k)>=0)abrirCard(k);
     },toast:toast, tutContaChegou:tutContaChegou, txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, rotaPronta:function(){return tutVisto()&&!classico&&(!folha||folha.hidden);}, pontoAtual:pontoAtual, restaurarPonto:restaurarPonto, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
 })();

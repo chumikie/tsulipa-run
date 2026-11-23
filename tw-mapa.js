@@ -34,7 +34,7 @@
     var textos={pt:['Posar na praça','Observar a fonte','Rever a vida no bairro'],en:['Pose in the square','Watch the fountain','Revisit neighborhood life'],es:['Posar en la plaza','Observar la fuente','Volver a la vida del barrio'],id:['Berpose di alun-alun','Lihat air mancur','Lihat kehidupan lingkungan'],th:['โพสท่าที่จัตุรัส','ชมน้ำพุ','ดูชีวิตในย่าน'],ja:['広場でポーズ','噴水を眺める','街の暮らしを見る']}[lang()];
     barra.innerHTML='';textos.forEach(function(txt,i){var b=document.createElement('button');b.type='button';b.textContent=txt;b.onclick=function(){
       if(i===2){if(window.TW_BAIRRO)TW_BAIRRO.abrir();return;}
-      if(i===1){tocarRua(800,570);return;}
+      if(i===1){observarFonte(performance.now()/1000);return;}
       var meu=ultimos.find(function(q){return q.dono;});if(!meu)return;
       pausaEscolhida={dono:donoPausa(),ate:performance.now()/1000+8,x:meu.x};meuPasseio=null;desenhar();
     };barra.appendChild(b);});
@@ -105,9 +105,10 @@
   function montar(){
     var menu=document.getElementById('hubMenu');if(!menu)return;if(document.getElementById('twMapa')){posicionar();return;}
     var sec=document.createElement('section');sec.id='twMapa';sec.className='tw-mapa';
-    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-visao" hidden><button type="button" class="tw-mapa-zoom" aria-pressed="false">🔎 Aproximar</button></div><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><p class="tw-mapa-recado-rosa" hidden></p><nav class="tw-mapa-bairros" aria-label="Explorar bairros" hidden></nav><section class="tw-mapa-vitrine" hidden></section><span class="tw-mapa-dica" aria-hidden="true"></span>';
+    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-visao" hidden><button type="button" class="tw-mapa-zoom" aria-pressed="false">🔎 Aproximar</button></div><div class="tw-mapa-rolo" hidden><button class="tw-mapa-recarregar" type="button" hidden></button><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><p class="tw-mapa-recado-rosa" hidden></p><nav class="tw-mapa-bairros" aria-label="Explorar bairros" hidden></nav><section class="tw-mapa-vitrine" hidden></section><span class="tw-mapa-dica" aria-hidden="true"></span>';
     menu.appendChild(sec);posicionar();
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
+    sec.querySelector('.tw-mapa-recarregar').addEventListener('click',function(){mostrarCena(cena);});
     mostrarCena('mundo');
     cv.addEventListener('mousemove',function(e){var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
     var rolo=sec.querySelector('.tw-mapa-rolo');['pointerdown','touchstart','wheel'].forEach(function(ev){rolo.addEventListener(ev,function(){sec.classList.add('mexeu');},{passive:true,once:true});});
@@ -322,11 +323,21 @@
       if(rolo){rolo.scrollLeft=0;rolo.scrollTop=0;}
     }
     atualizarVitrine();
+    var tentar=sec&&sec.querySelector('.tw-mapa-recarregar');
+    if(tentar)tentar.hidden=true;
     var arquivo=destino==='mundo'?'mapa-mundo.svg':CENAS_RUA[destino];
     if(!imagens[destino]){
       var img=new Image();imagens[destino]=img;
       img.onload=function(){if(cena===destino){arte=img;desenhar();centralizar();}};
-      img.onerror=function(){if(window.TW_MAPA_DEBUG)console.warn('Arte do mapa indisponível:',arquivo);};
+      img.onerror=function(){
+        if(imagens[destino]!==img)return;
+        delete imagens[destino];
+        if(cena===destino&&tentar){
+          var rotulos={pt:'Recarregar imagem do mapa',en:'Reload map image',es:'Volver a cargar la imagen del mapa',id:'Muat ulang gambar peta',th:'โหลดภาพแผนที่อีกครั้ง',ja:'地図の画像を再読み込み'};
+          tentar.textContent=rotulos[lang()]||rotulos.pt;
+          tentar.hidden=false;
+        }
+        if(window.TW_MAPA_DEBUG)console.warn('Arte do mapa indisponível:',arquivo);};
       img.src='./'+arquivo+'?v=5';
     }
     arte=imagens[destino];if(arte.complete&&arte.naturalWidth){desenhar();centralizar();}
@@ -1076,6 +1087,11 @@
       ctx.restore();return true;});
   }
   var FALA_TOQUE={pt:'✨ Desejo feito!',en:'✨ Wish made!',es:'✨ ¡Deseo pedido!',id:'✨ Harapan dibuat!',th:'✨ ขอพรแล้ว!',ja:'✨ ねがいごと!'};
+  function observarFonte(tm){
+    somMapa('regar');
+    toques.push({tipo:'agua',x:800,y:560,t0:tm,dur:reduzMov?1.2:1.4,txt:FALA_TOQUE[lang()]||FALA_TOQUE.pt});
+    desenhar();
+  }
   function tocarRua(x,y){
     var tm=performance.now()/1000;
     if(semanaPos&&Math.abs(x-semanaPos.x)<30*ESCALA_RUA&&y<=semanaPos.y+10&&y>=semanaPos.y-semanaPos.h-30){   // o bicho da Bagunça da semana: abre a Vida no bairro
@@ -1093,8 +1109,7 @@
     var ch=CHAO[cena],cp=chaoPos[cena];
     if(ch&&cp&&Math.abs(x-cp.x)<60&&y>cp.y-70&&y<cp.y+30){pulos[ch]=tm;somMapa('toque');if(!reduzMov)toques.push({x:cp.x,y:cp.y-60,t0:tm,dur:.9,sim:['♡','❤','✦']});desenhar();return;}
     // 3) fonte da Praça: espirra água e faz um desejo
-    if(cena==='praca'&&Math.hypot((x-800)/260,(y-570)/120)<1){somMapa('regar');
-      toques.push({tipo:'agua',x:800,y:560,t0:tm,dur:reduzMov?1.2:1.4,txt:FALA_TOQUE[lang()]||FALA_TOQUE.pt});desenhar();return;}
+    if(cena==='praca'&&Math.hypot((x-800)/260,(y-570)/120)<1){observarFonte(tm);return;}
     // 4) chão: o seu Idol caminha até lá, para um pouco e volta ao passeio
     if(y>=650&&ultimos.some(function(o){return o.dono;})){
       var meu=ultimos.find(function(o){return o.dono;}),alvo=Math.max(60,Math.min(1540,x));

@@ -698,3 +698,5 @@ body.tw-cel #studioVisor[data-fase="monta"],body.tw-cel #studioVisor[data-fase="
 
 .bloomarranjo [data-bloom="arranjo-flor"]{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px}
 .bloomarranjo .bloomic{width:28px;height:28px;flex:none}
+
+.tw-mapa-recarregar:not([hidden]){display:block;position:sticky;left:0;top:0;z-index:1;min-height:44px;padding:8px 14px;border:2px solid currentColor;border-radius:12px;background:var(--card,#fff);color:var(--ink,#432675);font:inherit;cursor:pointer}

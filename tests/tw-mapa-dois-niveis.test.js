@@ -52,7 +52,7 @@ const sec=node('section'),menu=node('menu'),cards=node('hubCards'),roll=node('ro
 roll.scrollWidth=1600;roll.clientWidth=500;roll.scrollHeight=1000;roll.clientHeight=400;
 const button=node('abrir'),back=node('voltar'),title=node('titulo'),subtitle=node('subtitulo'),hint=node('dica');
 sec.querySelector=(selector)=>({
- 'canvas':canvas,'.tw-mapa-rolo':roll,'.tw-mapa-voltar':back,
+ 'canvas':canvas,'.tw-mapa-recarregar':node('recarregar'),'.tw-mapa-rolo':roll,'.tw-mapa-voltar':back,
  '.tw-mapa-botao':button,'.tw-mapa-dica':hint
 })[selector]||null;
 sec.getAttribute=()=>null;

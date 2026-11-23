@@ -14,3 +14,22 @@ assert.match(bloco, /ida:reduzMov\?\.01:/, 'movimento reduzido: o Idol não atra
 assert.match(bloco, /if\(p\.dono&&meuPasseio\)|passeioDoToque/, 'o seu Idol atende ao toque');
 assert.match(src, /if\(p\.dono&&meuPasseio\)q=passeioDoToque\(q,tm\);/);
 console.log('mapa-toques ok');
+
+const vm=require('node:vm');
+const tentar={hidden:true};
+const env={sec:{querySelector:()=>tentar},destino:'praca',cena:'praca',
+  imagens:{},CENAS_RUA:{praca:'praca.svg',arena:'arena.svg'},window:{},lang:()=>'pt',
+  Image:class {},desenhar(){},centralizar(){}};
+const carregar=src.slice(src.indexOf('    var tentar=sec&&'),src.indexOf('    textos();atualizarVitrine();recadoRosa();',src.indexOf('    var tentar=sec&&')));
+vm.runInNewContext('(function(destino){'+carregar+'})(destino)',env);
+const primeira=env.arte;
+primeira.onerror();
+assert.equal(tentar.hidden,false);
+vm.runInNewContext('(function(destino){'+carregar+'})(destino)',env);
+assert.notEqual(env.arte,primeira);
+assert.equal(tentar.hidden,true);
+env.cena=env.destino='arena';
+const anterior=env.arte;
+vm.runInNewContext('(function(destino){'+carregar+'})(destino)',env);
+anterior.onerror();
+assert.equal(tentar.hidden,true,'falha de outra rua não interrompe a rua atual');

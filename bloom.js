@@ -67,8 +67,8 @@
   // Liga o jardim só quando o servidor responde (função aplicada no banco).
   function sondar(){
     if(typeof contaJ === 'undefined' || !contaJ) return;
-    var conta=donoJardim(), pedido=abertura;
-    rpc('jardim_estado').then(function(r){ if(conta===donoJardim() && r && r.ok){ if(pedido===abertura){st=r;stDono=conta;} window.TW_BLOOM_ON = true; if(typeof hubCardsUI === 'function' && document.getElementById('hubCards')) try{ hubCardsUI(); }catch(e){} } }).catch(function(){});
+    var conta=donoJardim(), pedido=abertura, visita=trocaConta;
+    rpc('jardim_estado').then(function(r){ if(visita===trocaConta && conta===donoJardim() && r && r.ok){ if(pedido===abertura){st=r;stDono=conta;} window.TW_BLOOM_ON = true; if(typeof hubCardsUI === 'function' && document.getElementById('hubCards')) try{ hubCardsUI(); }catch(e){} } }).catch(function(){});
   }
   function montarOv(){
     if(ov) return ov;
@@ -283,10 +283,10 @@
     if(tem.length>=2 && typeof window.studioAbrir==='function'){
       arranjo=arranjo.filter(temFlor);
       var texto=arranjoT();
-      h += '<fieldset class="bloomarranjo"><legend>'+esc(texto[0])+'</legend><div class="btns">'+tem.map(function(k){
+      h += '<fieldset class="bloomarranjo"><legend>'+esc(texto[0])+' <b>'+arranjo.length+'/3</b></legend><div class="btns">'+tem.map(function(k){
         var selecionada=arranjo.indexOf(k)>=0;
         return '<button type="button" class="btn alt" data-bloom="arranjo-flor" data-s="'+k+'" aria-pressed="'+selecionada+'"'+
-          (ocupado || !selecionada && arranjo.length>=3 ? ' disabled' : '')+'>'+SEM[k][0]+' '+esc(t(k))+'</button>';
+          (ocupado || !selecionada && arranjo.length>=3 ? ' disabled' : '')+'>'+icone(k,1)+'<span>'+esc(t(k))+'</span></button>';
       }).join('')+'</div><button type="button" class="btn" data-bloom="arranjo-studio"'+(ocupado||arranjo.length<2?' disabled':'')+
         '>'+esc(texto[1])+'</button></fieldset>';
     }
@@ -559,12 +559,16 @@
   function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; desenhar(); var reduz = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; if(!reduz || festa.length || chuva.length || Object.keys(cresce).length) anim = requestAnimationFrame(f); })(); }
   window.bloomAbrir = abrir;
   // Resumo para o card do Hub (hub-novos.js): quantos canteiros pedem rega ou colheita, do último estado carregado.
-  window.bloomResumo = function(){ return st ? {regar:pendentes(false).length, colher:pendentes(true).length} : null; };
+  window.bloomResumo = function(){ return st && stDono===donoJardim() ? {regar:pendentes(false).length, colher:pendentes(true).length} : null; };
   window.bloomSondar = sondar;
   window.bloomDesenharFlor = function(ctx, flor, x, y, raio){ cabeca(ctx, flor, x, y, raio, 0, false); };
   window.BLOOM_TR = T;
   // Liga depois do login: quando o hub se redesenha, pergunta ao servidor uma única vez.
-  var sondado = false;
+  var contaSondada = '', trocaConta = 0;
   ['hubCardsUI','contaUI'].forEach(function(n){ var o = window[n]; if(typeof o !== 'function') return;
-    window[n] = function(){ var r = o.apply(this, arguments); if(!sondado && typeof contaJ !== 'undefined' && contaJ){ sondado = true; sondar(); } return r; }; });
+    window[n] = function(){ var conta = donoJardim(), mudou = conta !== contaSondada;
+      if(mudou){ trocaConta++; contaSondada = conta; window.TW_BLOOM_ON = false; }
+      var r = o.apply(this, arguments);
+      if(mudou && conta) sondar();
+      return r; }; });
 })();

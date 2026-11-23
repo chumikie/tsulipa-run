@@ -65,6 +65,12 @@ async function conferirLote(respostas, esperado){
   ctx.contaJ={nick:'Ana'};resposta=new Error('Could not find the function public.jardim_estado');
   ctx.hubCardsUI();await new Promise(r=>setTimeout(r,5));
   assert.equal(ctx.TW_BLOOM_ON,false,'sem a função no banco o jardim fica desligado (Em breve)');
+  ctx.contaJ={nick:'Bia'};resposta={ok:true,canteiros:[]};
+  ctx.hubCardsUI();ctx.contaUI();await Promise.resolve();
+  assert.equal(chamadas.length,2,'uma consulta por conta mesmo com dois redesenhos');
+  assert.equal(ctx.bloomResumo().regar,0);
+  ctx.contaJ=null;
+  assert.equal(ctx.bloomResumo(),null,'ao sair, o Hub deixa de exibir o jardim da conta');
   const rpcs=[...src.matchAll(/rpc\('([a-z_]+)'/g)].map(m=>m[1]),acoes=[...src.matchAll(/acao\('([a-z_]+)'/g)].map(m=>m[1]);
   assert.deepEqual([...new Set([...rpcs,...acoes])].sort(),['jardim_colher','jardim_estado','jardim_plantar','jardim_regar']);
   assert.ok(!/brs48cr_(?!st)/.test(src),'não cria chaves brs48cr_ novas');

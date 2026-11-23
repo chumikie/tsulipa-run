@@ -825,7 +825,7 @@ function perfLojaUI(){
     var provar=typeof shopOv!=='undefined' && !shopOv.hidden ?
       '<button type="button" class="btn alt" data-provar="'+it[0]+'" aria-pressed="'+prov+'">'+
       escHtml(shopProvaTexto(0)+' · '+tr(it[2]))+'</button>' : '';
-    return '<div class="perfroupa' + (prov ? ' on' : '') + (it[4] ? ' temp' : '') + '" data-provar="' + it[0] + '"><canvas width="160" height="160" data-roupa="' + it[0] + '"></canvas><b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b>' + tag + provar + acao + '</div>';
+    return '<div class="perfroupa' + (prov ? ' on' : '') + (it[4] ? ' temp' : '') + '" data-provar="' + it[0] + '"><canvas width="160" height="160" data-roupa="' + it[0] + '"></canvas><b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b>' + tag + (window.TW_RITMO ? '<details class="tw-ritmo-origem"><summary>'+escHtml(TW_RITMO.origemTexto(0))+'</summary><p>'+escHtml(TW_RITMO.origemTexto(it[4]?2:1))+'</p><p>'+escHtml(TW_RITMO.t(28))+'</p></details>' : '') + provar + acao + '</div>';
   }).join('');
   [].forEach.call(box.querySelectorAll('canvas[data-roupa]'), function(cv){
     perfMiniaturaLoja(cv,function(){

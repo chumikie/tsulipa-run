@@ -820,7 +820,7 @@ function petPhoneMomentosHtml(){
   var texto = PET_QUADRO_ESTADO_TR[LANG] || PET_QUADRO_ESTADO_TR.pt;
   var erro = '<p id="petQuadroAviso" class="petphone-photo-erro" role="status"></p>';
   var exposta = quadro && quadro.url ? '<section class="petphone-momento-revisao"><figure class="petphone-momento-polaroid">' +
-    '<img id="petPhoneQuadroImagem" alt="' + escHtml(texto[0]) + '"><figcaption>' + escHtml(texto[0]) + '</figcaption></figure>' +
+    '<img id="petPhoneQuadroImagem" alt="' + escHtml(texto[0]) + '"><figcaption>' + escHtml(texto[0]) + '</figcaption></figure>' + (window.TW_RITMO ? TW_RITMO.memoriaHtml(quadro) : '') +
     '<button type="button" data-phone="momento-quadro">' + escHtml(botoes[1]) + '</button>' + erro + '</section>' : '';
   if(escolhida) return '<section class="petphone-momento-revisao"><figure class="petphone-momento-polaroid petphone-momento-' + escolhida.tipo + '">' +
     '<img id="petPhoneMomentoImagem" alt="' + escHtml(escolhida.rotulo) + '"><figcaption>✦ ' + escHtml(escolhida.rotulo) + ' ✦</figcaption></figure>' +
@@ -896,7 +896,7 @@ async function petPhoneMomentoQuadro(botao){
       var x = cv.getContext('2d');
       x.fillStyle = '#fff'; x.fillRect(0,0,cv.width,cv.height);
       x.drawImage(imagem,0,0,cv.width,cv.height);
-      if(petVidaQuadroSalvar(chave,{id:id,url:cv.toDataURL('image/jpeg',.8)})){
+      if(petVidaQuadroSalvar(chave,{id:id,url:cv.toDataURL('image/jpeg',.8),tipo:momento.tipo,quando:momento.quando})){
         petVidaRetornoInicio = petT;
         petPhoneFechar();
         return true;
@@ -3477,3 +3477,4 @@ function petPhUI(){
   }
   petPhBox.innerHTML = (petPhMode === 'share' ? '' : grp('Moldura', 'frame', PET_PH_FRAMES, petPhFrame)) + grp('Pose', 'pose', PET_PH_POSES, petPhPose) + grp('Expressão', 'expr', PET_PH_EXPRS, petPhExpr);
 }
+

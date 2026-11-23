@@ -716,6 +716,7 @@
               ['album', t('album'), 'data-a="album"'], ['busca', t('busca'), 'data-a="busca"'], ['nov', t('nov'), 'data-a="nov"'], ['trio', tf('fichas'), 'data-v="trio"'],
               ['porta', tt2('tour'), 'data-v="tour"']];
     at = at.filter(function(a){ return a[1]; });   // atalho de módulo que ainda não carregou fica de fora
+    if(window.TW_RITMO) at.push(['mapa', TW_RITMO.t(0), 'data-v="ritmo"']);   // Seu ritmo (#125, tw-ritmo.js): na pasta "Mais" desde a poda de 22/11
     if(window.TW_BAIRRO) at.push(['pin', window.TW_BAIRRO.t('tit'), 'data-bairro="abrir"']);   // Vida no bairro (tw-bairro.js)
     if(window.TW_COMUNIDADE){   // comunidade (tw-comunidade.js): concurso, convite, lembrete do show e app
       var cm = window.TW_COMUNIDADE;
@@ -1329,7 +1330,7 @@
   function telaTour(){
     if(!tourLista) tourCarregar();
     var L2 = tourLista || [];
-    return faixa(esc(tt2('tour')), tt2('tourSub')) + '<div class="twc-pag twc-tour">' + (tourLista === null ? '<p class="twc-tour-msg">' + esc(tt2('carregando')) + '</p>' :
+    return faixa(esc(tt2('tour')), tt2('tourSub')) + (window.TW_RITMO ? '<p class="twc-pag tw-tour-aviso">'+esc(TW_RITMO.t(26))+'</p>' : '') + '<div class="twc-pag twc-tour">' + (tourLista === null ? '<p class="twc-tour-msg">' + esc(tt2('carregando')) + '</p>' :
       !L2.length ? '<p class="twc-tour-msg">' + esc(tt2('vazio')) + '</p>' :
       '<div class="twc-tour-grade">' + L2.map(function(p, i){
         return '<button type="button" class="twc-card twc-tour-item" data-v="tour:' + esc(p.nick) + '" style="--c:' + corOshi(p.oshi) + '"><canvas data-tav="' + i + '" width="120" height="120" aria-hidden="true"></canvas>' +
@@ -1850,7 +1851,7 @@
     // Não clonar a árvore animada do hub a cada navegação: custo alto de DOM no iPhone.
     var serie = v === 'album' && tela.querySelector('details.album-fotos[open]');
     tela.innerHTML =
-      (v === 'abre' ? telaInicial() : barraTopo() + (v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : v === 'trio' ? telaTrio() : v === 'cal' ? telaCal() : v === 'tour' ? telaTour() : v.indexOf('tour:') === 0 ? telaTourVer(v.slice(5)) : v.indexOf('dentro:') === 0 ? telaDentro(v.slice(7)) : v.indexOf('emb:') === 0 ? telaEmb(v.slice(4)) : telaInicio()));
+      (v === 'abre' ? telaInicial() : barraTopo() + (v === 'ritmo' && window.TW_RITMO ? TW_RITMO.html() : v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : v === 'trio' ? telaTrio() : v === 'cal' ? telaCal() : v === 'tour' ? telaTour() : v.indexOf('tour:') === 0 ? telaTourVer(v.slice(5)) : v.indexOf('dentro:') === 0 ? telaDentro(v.slice(7)) : v.indexOf('emb:') === 0 ? telaEmb(v.slice(4)) : telaInicio()));
     var novaSerie = serie && tela.querySelector('details.album-fotos');
     if(novaSerie) novaSerie.replaceWith(serie);
     if(window.TW_ALBUM_FOTOS) TW_ALBUM_FOTOS.conferir();
@@ -2002,6 +2003,7 @@
 
   function clique(e){
     var b = e.target.closest && e.target.closest('button'); if(!b || !cel.contains(b) || b.disabled) return;
+    if(b.dataset.ritmo && window.TW_RITMO){ var focoRitmo=b.dataset.ritmo; if(TW_RITMO.agir(focoRitmo)){desenhar();var focoNovo=cel.querySelector('[data-ritmo="'+focoRitmo+'"]');if(focoNovo)focoNovo.focus();}return;}
     if(b.dataset.f){ var f = b.dataset.f;
       if(f === 'tutOk'){ tutI++; som(); if(tutI > 2) tutFim(); else tutMostrar(); return; }
       if(f === 'tutPular'){ tutFim(); return; }
@@ -2264,6 +2266,11 @@
     var v = $id('twcVisita'); if(v){ var tx = visita(); if(v.textContent !== tx){ v.textContent = tx; if(tela && tela.getAttribute('data-tela') !== 'abre') agendarRedesenho(); } }   // trocou quem passeia: refaz o selinho com a bolinha certa
   }, 5000);
   if(document.readyState !== 'loading') montar(); else document.addEventListener('DOMContentLoaded', montar);
-  window.TW_CELULAR = {toast:toast, tutContaChegou:tutContaChegou, txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, rotaPronta:function(){return tutVisto()&&!classico&&(!folha||folha.hidden);}, pontoAtual:pontoAtual, restaurarPonto:restaurarPonto, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
+  window.TW_CELULAR = {visitar:function(k){
+      if(k==='mapa'){acao('mapa');return;}
+      if(k==='tour'){ir('tour');return;}
+      if(k==='fotos'){ir('album');return;}
+      if(['run','sora','karaoke','loja','studio','pet'].indexOf(k)>=0)abrirCard(k);
+    },toast:toast, tutContaChegou:tutContaChegou, txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, rotaPronta:function(){return tutVisto()&&!classico&&(!folha||folha.hidden);}, pontoAtual:pontoAtual, restaurarPonto:restaurarPonto, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
 })();
 

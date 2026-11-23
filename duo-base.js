@@ -111,7 +111,7 @@ function duoJogoCarregar(depois){
   if(depois) duoJogoFila.push(depois);
   if(duoJogoPedido) return; duoJogoPedido = true;
   // duo.js redeclara duoFechar; o index.html já embrulhou o duoFechar desta página (música), então guardamos o embrulho
-  var embrulho = window.duoFechar, arqs = ['./duo.js?v=12', './duo-tela.js?v=6', './duo-pedido.js?v=4'], i = 0;
+  var embrulho = window.duoFechar, arqs = ['./duo.js?v=13', './duo-tela.js?v=7', './duo-pedido.js?v=4'], i = 0;
   (function proximo(){
     if(i >= arqs.length){
       if(window.duoFechar !== embrulho){ duoFecharJogo = window.duoFechar; window.duoFechar = embrulho; }

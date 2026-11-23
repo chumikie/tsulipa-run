@@ -92,6 +92,16 @@ duoOv.addEventListener('click', function(e){
     }).catch(function(){ t.disabled = false; duoMsg(tr('Não deu para falar com o servidor. Tente de novo.')); });
     return;
   }
+  // 23/11: "Salvar PNG" com o cenário abre a câmera no jeito do Center⭐Run! (tw-camera.js): nítida, moldura e "de perto".
+  // O Pedido de cena (duo-pedido.js) continua contando este toque; o PNG sem fundo segue baixando direto.
+  if(t.id === 'duoPng' && duoGu && window.TW_CAMERA){
+    e.preventDefault();
+    var nomes = (contaJ ? contaJ.nick : tr('Você')) + ' & ' + duoGu.nick;
+    if(TW_CAMERA.abrir({titulo:'Moon⭐Duo!', arquivo:'moon-duo-' + String(duoGu.nick).replace(/[^\w-]+/g, '') + '.png', W:960, H:600, foco:[480, 360], moldura:'palco',
+        legenda:['🌙 Moon⭐Duo! · TsuLiPa⭐World', nomes + ' · ' + new Date().toLocaleDateString()],
+        desenhar:function(x2, W2, H2, opc){ duoOffS = opc.S || 2; try{ duoRender(x2, W2, H2, true, false); } finally { duoOffS = 1; } },
+        aoSalvar:function(){ if(sfx.card) sfx.card(); }})) return;
+  }
   if(t.id === 'duoPng' || t.id === 'duoPngSem'){   // PNG com o cenário ou transparente (sem fundo)
     var cv = document.createElement('canvas'); cv.width = 960; cv.height = 600;
     try{ duoRender(cv.getContext('2d'), 960, 600, t.id === 'duoPng', false); }catch(er){}

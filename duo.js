@@ -29,14 +29,16 @@ var DUO_FALAS_CENA = {
   luzes:['Acende o lightstick! 💜'], pets:['Os pets também viraram amigos! 🐾']
 };
 var DUO_FALA_OSHI = 'Bora torcer por {oshi} juntos! 💖';
-var duoBalao = null, duoPulo = null, duoRegistrados = {}, duoPresEmo = '🧸', duoPresQt = 0, duoOff = null, duoPoseForce = '';
+var duoBalao = null, duoPulo = null, duoRegistrados = {}, duoPresEmo = '🧸', duoPresQt = 0, duoOff = null, duoPoseForce = ''; var duoOffS = 1;
 var DUO_OW = 680, DUO_OH = 560;   // largo para o brilho dos visuais não ficar cortado
 function duoBraco(x1, y1, x2, y2){ g.save(); g.lineCap = 'round'; g.strokeStyle = g.fillStyle; g.lineWidth = 4; g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.restore(); }
 function duoMao(x, y, c){ g.fillStyle = c.skin; g.beginPath(); g.arc(x, y, 2.4, 0, 7); g.fill(); }
 function duoGeo(av, t){ var big = av && av.visual === 'mega', sc = DUO_OH / (big ? 68 : 82), ch = DUO_OH * (big ? .95 : .9); return { sc:sc, ch:ch, tx:DUO_OW / 2 - 15 * sc, ty:ch - 44 * sc, bob:t ? Math.sin(t * .06) * 1.1 * sc : 0 }; }
 function duoIdolEm(x, av, sx, chao, pose, expr, t, espelho){
-  if(!duoOff){ duoOff = document.createElement('canvas'); duoOff.width = DUO_OW; duoOff.height = DUO_OH; }
-  var o = duoOff.getContext('2d'); o.setTransform(1, 0, 0, 1, 0, 0); o.clearRect(0, 0, DUO_OW, DUO_OH);
+  // duoOffS: a câmera (tw-camera.js) desenha a foto em 2×/3×; o rascunho de cada Idol acompanha para não borrar
+  var S = duoOffS || 1;
+  if(!duoOff || duoOff.__s !== S){ duoOff = document.createElement('canvas'); duoOff.width = DUO_OW * S; duoOff.height = DUO_OH * S; duoOff.__s = S; }
+  var o = duoOff.getContext('2d'); o.setTransform(S, 0, 0, S, 0, 0); o.clearRect(0, 0, DUO_OW, DUO_OH);
   var a = JSON.parse(JSON.stringify(av || {})), G = duoGeo(a, t);
   a.pet = null; a.expr = expr; a.pose = DUO_POSE_FN[pose] ? 'v' : (perfPoseInfo(pose) ? pose : '');
   duoPoseForce = DUO_POSE_FN[pose] ? pose : '';
@@ -44,7 +46,7 @@ function duoIdolEm(x, av, sx, chao, pose, expr, t, espelho){
   finally{ duoPoseForce = ''; }
   var ox = sx - DUO_OW / 2, oy = chao - G.ch;
   x.save(); if(espelho){ x.translate(sx * 2, 0); x.scale(-1, 1); }
-  x.drawImage(duoOff, ox, oy); x.restore();
+  x.drawImage(duoOff, ox, oy, DUO_OW, DUO_OH); x.restore();
 }
 function duoPonto(av, sx, chao, t, espelho, u, v){   // ponto do personagem (unidades do drawChar) → ponto do palco
   var G = duoGeo(av, t), X = sx - DUO_OW / 2 + G.tx + u * G.sc, Y = chao - G.ch + G.ty + v * G.sc + G.bob;

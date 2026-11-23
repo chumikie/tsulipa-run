@@ -402,6 +402,12 @@
   }
   function salvar(){
     if(!foto || fase !== 'foto' || foto.dono !== donoFoto()) return;
+    // 23/11: abre a câmera no jeito do Center⭐Run! (tw-camera.js): nítida, com moldura e "de perto". A pose e o resto
+    // da composição ficam como foram avaliados pelo fotógrafo (não mudam aqui).
+    var f0 = foto;
+    if(window.TW_CAMERA && TW_CAMERA.abrir({titulo:'Photo⭐Studio!', arquivo:'photo-studio-' + f0.dia + '.png', W:432, H:540, foco:[216, 270],
+        legenda:['⭐'.repeat(f0.estrelas) + '☆'.repeat(3 - f0.estrelas) + ' Photo⭐Studio!', f0.legenda + ' · ' + f0.dia.split('-').reverse().slice(0, 2).join('/')],
+        desenhar:function(x2, W2, H2){ cena(x2, W2, H2, f0.escolhas, f0.t0 / 1000, f0.avatar); }})) return;
     try{ var a = document.createElement('a'); a.download = 'photo-studio-' + foto.dia + '.png'; a.href = (window.twMarcaPng ? window.twMarcaPng(polaroidLimpa(foto)) : fotoUrl(foto)); document.body.appendChild(a); a.click(); a.remove(); }catch(e){ msg = t('erro'); ui(); }
   }
   function guardar(){

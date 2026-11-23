@@ -204,3 +204,6 @@ html body .battlep .battle-slotbtn.on .battle-idol{outline:3px solid var(--b1,#7
 .battle-carta-teste [aria-pressed=true]{outline:2px solid currentColor;outline-offset:-4px}
 
 .battle-carta-alvo{width:min(100%,140px);margin:0 auto 8px}
+
+.battle-slotbtn .battle-idol b{max-width:100%;overflow-wrap:anywhere;line-height:1.25}
+.battle-picks{scroll-padding-inline:6px;padding:6px}

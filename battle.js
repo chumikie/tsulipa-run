@@ -326,8 +326,15 @@ function montar(){
      cartaTeste=null;render();var pos=ov.querySelector('[data-battle="abrir-slot"]');if(pos)pos.focus();return;
    }
    if(cartaTeste)return;
-   if(a==='slot'){var si=Number(b.getAttribute('data-slot')),sv=b.getAttribute('data-nick'),sj=unit.indexOf(sv);if(sj>=0&&sj!==si)unit[sj]=unit[si];unit[si]=sv;slotAberto=-1;render();return;}
-   if(a==='abrir-slot'){var so=Number(b.getAttribute('data-slot'));slotAberto=slotAberto===so?-1:so;render();var sl=ov.querySelector('.battle-slot');if(sl&&sl.scrollIntoView)try{sl.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}return;}
+   if(a==='slot'){var si=Number(b.getAttribute('data-slot')),sv=b.getAttribute('data-nick'),sj=unit.indexOf(sv);if(sj>=0&&sj!==si)unit[sj]=unit[si];unit[si]=sv;slotAberto=-1;render();focarPosicao(si);return;}
+   if(a==='abrir-slot'){
+     var so=Number(b.getAttribute('data-slot'));
+     slotAberto=slotAberto===so?-1:so;
+     render();
+     var escolhido=ov.querySelector('.battle-pick[aria-pressed="true"]');
+     if(escolhido) escolhido.focus(); else focarPosicao(so);
+     return;
+   }
    if(a==='ir-gacha'){fechar();if(typeof gachaAbrir==='function')setTimeout(gachaAbrir,60);return;}
    if(a==='jogar'){jogar();return;}
    if(a==='revanche' && fase==='fim' && rodadas && !naArena()){
@@ -406,9 +413,14 @@ function abrir(atalho){
  }
 }
 // Ranking semanal de vitórias. Sem a função no servidor (ou com erro) a seção simplesmente não aparece.
+function mesmaVisita(sessao){
+ return sessao===battleSessao && battleDono===contaBattle() && ov && !ov.hidden;
+}
 function carregarRanking(){
  if(!logado())return;
+ var sessao=battleSessao;
  contaRpc('battle_ranking').then(function(r){
+   if(!mesmaVisita(sessao))return;
    if(!r||!r.ok||!Array.isArray(r.top))return;
    ranking=r;if(ov&&!ov.hidden&&(fase==='escalar'||fase==='fim'))render();
  }).catch(function(){});
@@ -416,7 +428,9 @@ function carregarRanking(){
 // Torcida de flores (v3). Sem a função no servidor a seção não aparece e nada muda.
 function carregarTorcida(){
  if(!logado())return;
+ var sessao=battleSessao;
  contaRpc('battle_torcida').then(function(r){
+   if(!mesmaVisita(sessao))return;
    if(!r||!r.ok||!r.flores||typeof r.flores!=='object')return;
    torcida=r;if(ov&&!ov.hidden&&fase==='escalar'&&!ocupado)render();
  }).catch(function(){});
@@ -429,10 +443,12 @@ function florDot(k){return FLOR[k]?'<i class="battle-fdot" style="background:'+F
 function levarFlor(k){
  if(ocupado||!torcida||torcida.hoje||!FLOR[k]||!(Number(torcida.flores[k])>0))return;
  ocupado=true;msg='';render();
+ var sessao=battleSessao;
  contaRpc('battle_torcida_levar',{p_flor:k}).then(function(r){
+   if(!mesmaVisita(sessao))return;
    if(!r||!r.ok)throw Error('flor');
    torcida.hoje=k;torcida.flores[k]=Number(r.qtd)||0;
- }).catch(function(){msg=trB('error');msgOk=false;carregarTorcida();}).then(function(){ocupado=false;render();});
+ }).catch(function(){if(!mesmaVisita(sessao))return;msg=trB('error');msgOk=false;carregarTorcida();}).then(function(){if(!mesmaVisita(sessao))return;ocupado=false;render();});
 }
 function torcidaHtml(){
  if(revanche||!torcida||!servidor)return '';
@@ -453,9 +469,9 @@ function torcidaHtml(){
 // Arena dos Idols (v2). Sem as funções no servidor a aba não aparece e nada muda.
 function carregarArena(){
  if(!logado())return Promise.resolve();
- var sess=battleSessao,dono=battleDono;
+ var sess=battleSessao;
  return contaRpc('battle_arena').then(function(r){
-   if(sess!==battleSessao || dono!==contaBattle())return;
+   if(!mesmaVisita(sess))return;
    if(!r||!r.ok||!Array.isArray(r.lista))return;
    arena=r;if(ov&&!ov.hidden&&fase==='escalar'&&!ocupado)render();
  }).catch(function(){});
@@ -465,12 +481,18 @@ function salvarUnit(){
  if(ocupado||!naArena())return;
  if(unit.length!==3||new Set(unit).size!==3){msg=trB('choose');msgOk=false;render();return;}
  ocupado=true;msg='';render();
+ var sessao=battleSessao;
  contaRpc('battle_unit_salvar',{p_unit:unit.slice()}).then(function(r){
+   if(!mesmaVisita(sessao))return;
    if(!r||!r.ok||!Array.isArray(r.unit))throw Error('unit');
    arena.minha={fas:Number(r.fas)||0,unit:r.unit};msg=trB('arenaSaved');msgOk=true;
- }).catch(function(){msg=trB('error');msgOk=false;}).then(function(){ocupado=false;render();});
+ }).catch(function(){if(!mesmaVisita(sessao))return;msg=trB('error');msgOk=false;}).then(function(){if(!mesmaVisita(sessao))return;ocupado=false;render();});
 }
 var slotAberto=-1;   // 17/11: a escolha abre só para a rodada tocada no trio
+function focarPosicao(i){
+ var botao=ov.querySelector('[data-battle="abrir-slot"][data-slot="'+i+'"]');
+ if(botao)botao.focus();
+}
 function slotsHtml(){
  var h='';
  for(var i=0;i<3;i++){
@@ -500,6 +522,10 @@ function arenaStatusHtml(){
  var max=Number(arena.max_desafios)||3,feitos=Number(arena.desafios)||0;
  return '<div class="battle-status real">'+esc(trB('arenaLeft'))+': '+Math.max(0,max-feitos)+' / '+max+'<br><small>'+esc(trB('friendly'))+'</small></div>';
 }
+function botoesEscalacao(){
+ return unit.map(function(n,i){var c=cardDe(n)||{nick:n},card=idolHtml(c,true,ico(i)+esc(nomeRound(i)),i).replace(/^<div /,'<span ').replace(/<\/div>$/,'</span>');
+     return '<button type="button" class="battle-slotbtn'+(slotAberto===i?' on':'')+'" data-battle="abrir-slot" data-slot="'+i+'" aria-expanded="'+(slotAberto===i)+'">'+card+'</button>';}).join('');
+}
 function lobbyHtml(){
  var max=Number(arena.max_desafios)||3,cheio=(Number(arena.desafios)||0)>=max;
  var minha=arena.minha&&Array.isArray(arena.minha.unit)&&arena.minha.unit.length===3?arena.minha:null;
@@ -507,7 +533,7 @@ function lobbyHtml(){
  if(minha)h+='<div class="battle-trio">'+minha.unit.map(function(c,i){return idolHtml(c,true,ico(i)+esc(nomeRound(i)),i);}).join('')+
    '</div><p class="battle-fas">'+ico(2)+(Number(minha.fas)||0)+' '+esc(trB('fans'))+'</p>';
  else h+='<p class="battle-hint">'+esc(trB('arenaNone'))+'</p>';
- h+='<p class="battle-hint">'+esc(trB('arenaSaveHint'))+'</p>'+slotsHtml()+
+ h+='<p class="battle-hint">'+esc(trB('arenaSaveHint'))+'</p><div class="battle-trio">'+botoesEscalacao()+'</div>'+slotsHtml()+
    '<div class="btns"><button type="button" class="btn alt" data-battle="salvar-unit"'+(ocupado?' disabled':'')+'>'+esc(trB('arenaSave'))+'</button></div>';
  if(msg)h+='<p class="battle-error'+(msgOk?' ok':'')+'">'+esc(msg)+'</p>';
  h+='</section>';
@@ -655,8 +681,7 @@ function render(){
    (emArena?alvo.idols:estado.rival).map(function(c){return idolHtml(c,false,'',-1,oculto(c));}).join('')+
    '</div><p class="battle-hint">'+esc(trB('rivalHint'))+'</p></section>';
  texto+='<section class="battle-escalar"><h3>'+esc(trB('stage'))+'</h3><div class="battle-trio">'+
-   unit.map(function(n,i){var c=cardDe(n)||{nick:n},card=idolHtml(c,true,ico(i)+esc(nomeRound(i)),i).replace(/^<div /,'<span ').replace(/<\/div>$/,'</span>');
-     return '<button type="button" class="battle-slotbtn'+(slotAberto===i?' on':'')+'" data-battle="abrir-slot" data-slot="'+i+'" aria-expanded="'+(slotAberto===i)+'">'+card+'</button>';}).join('')+
+   botoesEscalacao()+
    '</div><p class="battle-hint">'+esc(trocaTxt(0))+' · '+esc(trocaTxt(1))+'</p>'+
    '<p class="battle-hint">'+esc(estado.starter?trB('none'):trB('tapSlot'))+'</p>'+
    (estado.starter?'<div class="btns battle-semcards"><button type="button" class="btn alt" data-battle="ir-gacha">'+esc(trB('toGacha'))+'</button></div>':'');
@@ -697,10 +722,12 @@ function jogar(){
    msg=trB('error');ocupado=false;render();return;
  }
  var requisicao=window.crypto.randomUUID();
+ var sessao=battleSessao;
  if(naArena()&&alvo){
    // Desafio amistoso: o servidor resolve com a ordem secreta da defesa; nunca há ★.
    var desafiado=alvo;
    contaRpc('battle_desafiar',{p_alvo:desafiado.nick,p_unit:unit.slice(),p_requisicao:requisicao}).then(function(r){
+     if(!mesmaVisita(sessao))return;
      if(r&&r.ok===false&&r.erro){
        msg=r.erro==='limite'?trB('arenaLimit'):r.erro==='repetido'?trB('challenged'):(r.erro==='alvo'||r.erro==='indisponivel')?trB('arenaGone'):trB('error');
        if(r.erro!=='unit'){alvo=null;carregarArena();}
@@ -710,10 +737,11 @@ function jogar(){
      rodadas=r.rodadas;arena.desafios=Number(r.desafios)||0;desafiado.desafiado=true;estado.ultimo_premio=0;
      if(window.TWVidaCidade)window.TWVidaCidade.registrar('battle',{id:'arena/'+String(r.dia||'')+'/'+String(r.desafios||'')});
      ocupado=false;comecarShow();
-   }).catch(function(){msg=trB('error');ocupado=false;render();});
+   }).catch(function(){if(!mesmaVisita(sessao))return;msg=trB('error');ocupado=false;render();});
    return;
  }
  contaRpc('battle_jogar',{p_unit:unit.slice(),p_requisicao:requisicao}).then(function(r){
+   if(!mesmaVisita(sessao))return;
    if(!r||!r.ok||!Array.isArray(r.rodadas)||r.rodadas.length!==3)throw Error('invalid result');
    rodadas=r.rodadas;estado.tentativas=Number(r.tentativas);estado.ultimo_premio=Number(r.premio)||0;
    if(estado.ultimo_premio===5)estado.premiado=true;
@@ -723,7 +751,7 @@ function jogar(){
      if(typeof setBest==='function')try{setBest();}catch(e){}
    }
    ocupado=false;comecarShow();carregarRanking();
- }).catch(function(){msg=trB('error');ocupado=false;render();});
+ }).catch(function(){if(!mesmaVisita(sessao))return;msg=trB('error');ocupado=false;render();});
 }
 
 /* ---------- Show no palco ---------- */

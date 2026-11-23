@@ -17,7 +17,49 @@ assert.match(estado({regas:3,precisa:3,regado_hoje:true}),/Pronta para colher/);
 assert.equal(estado(null),'');
 assert.deepEqual(Object.keys(T).sort(),['en','es','id','ja','pt','th']);
 for(const l in T)for(const k in T.pt){assert.ok(T[l][k]&&T[l][k].trim(),l+'.'+k);for(const ph of ['{n}','{m}','{f}'])if(T.pt[k].includes(ph))assert.ok(T[l][k].includes(ph),l+'.'+k+' '+ph);}
+async function conferirLote(respostas, esperado){
+  const calls=[],sounds=[],events=[];
+  const garden={ok:true,canteiros:[{canteiro:0,regado_hoje:true}]};
+  const env={LANG:'pt',ocupado:false,stDono:'A',st:{antigo:true},msg:'',window:{},
+    donoJardim:()=> 'A',ui(){},idolIr(){},crescer(){},laco(){},
+    SEM:{tulipa:[]},t:k=>k,chuva:[],festa:[],performance:{now:()=>0},
+    som:k=>sounds.push(k),rpc:async(n)=>{
+      calls.push(n);
+      if(n==='jardim_estado')return garden;
+      const r=respostas.shift();
+      if(r instanceof Error)throw r;
+      return r;
+    }};
+  env.window.TWVidaCidade={registrar:e=>events.push(e)};
+  const textos=src.slice(src.indexOf('  var LOTE_TR'),src.indexOf('  var ARRANJO_TR'));
+  const batch=src.slice(src.indexOf('  function emSerie('),src.indexOf('  function canteiro('));
+  vm.runInNewContext(textos+batch,env);
+  await env.emSerie('jardim_regar',[0,1,2]);
+  assert.equal(env.ocupado,false);
+  assert.equal(env.st,garden,'reconsulta o estado mesmo após falha');
+  assert.equal(events.length,esperado);
+  assert.equal(sounds.length,esperado?1:0,'som exige ação confirmada');
+  assert.equal(calls.at(-1),'jardim_estado');
+  assert(env.msg.includes(esperado+'/3'));
+  return {env,calls};
+}
 (async()=>{
+  await conferirLote([{ok:false},{ok:false},{ok:false}],0);
+  await conferirLote([{ok:true},{ok:false},{ok:true}],2);
+  const interrompido=await conferirLote([{ok:true},new Error('rede'),{ok:true}],1);
+  assert.equal(interrompido.calls.length,3,'interrompe mutações após queda de rede e consulta o estado');
+  const completo=await conferirLote([{ok:true},{ok:true},{ok:true}],3);
+  const anterior=completo.env.st;
+  completo.env.rpc=async n=>n==='jardim_estado'?{ok:false}:{ok:true};
+  await completo.env.emSerie('jardim_regar',[0]);
+  assert.equal(completo.env.st,anterior,'falha de atualização preserva a última visualização');
+  assert(completo.env.msg.includes('Feche e abra'));
+  let owner='A';
+  completo.env.donoJardim=()=>owner;
+  completo.env.rpc=async()=>{owner='B';return {ok:true};};
+  await completo.env.emSerie('jardim_regar',[0,1]);
+  assert.equal(completo.env.st,anterior,'resposta de outra conta não substitui o jardim');
+
   ctx.hubCardsUI();await new Promise(r=>setTimeout(r,5));
   assert.equal(chamadas.length,0,'sem conta não consulta o servidor');
   ctx.contaJ={nick:'Ana'};resposta=new Error('Could not find the function public.jardim_estado');

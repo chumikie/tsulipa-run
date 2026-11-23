@@ -21,6 +21,18 @@
     ja:{tit:'Bloom⭐Garden!',sub:'種をまいて、毎日少しずつ水をあげて、花を摘もう。',cant:'花壇',vazio:'空き',plantar:'植える',regar:'水やり',regado:'今日は水やり済み ✓',colher:'摘む',pronta:'満開！',flores:'あなたの花',nenhuma:'まだ花はありません。',estrelas:'★が足りません。',erro:'うまくいきませんでした。もう一度試してね。',dia:'{n}/{m}日',login:'ログインして庭のお世話をしよう。',
       sakura:'さくら',tulipa:'チューリップ',girassol:'ひまわり',lunar:'月の花',colheu:'{f}を摘みました！',dica:'種ごとに必要な水やりの日数があります。また明日水をあげてね。',regarTudo:"全部に水やり",colherTudo:"全部摘む",escolha:"花壇{n}：種を選んでね",toque:"花壇をタップして、植える・水やり・摘むができます。",colhido:"収穫完了！",fechar:"あとで"}
   };
+  var LOTE_TR = {
+    pt:['Cuidados confirmados: {n}/{m}','Confira os canteiros antes de tentar novamente.','Não foi possível atualizar o jardim. Feche e abra para conferir.'],
+    en:['Confirmed actions: {n}/{m}','Check the beds before trying again.','Could not refresh the garden. Close and reopen it to check.'],
+    es:['Cuidados confirmados: {n}/{m}','Revisa los canteros antes de volver a intentarlo.','No se pudo actualizar el jardín. Ciérralo y ábrelo para comprobarlo.'],
+    id:['Perawatan terkonfirmasi: {n}/{m}','Periksa petak sebelum mencoba lagi.','Taman gagal diperbarui. Tutup dan buka kembali untuk memeriksa.'],
+    th:['ยืนยันการดูแลแล้ว {n}/{m}','ตรวจสอบแปลงก่อนลองอีกครั้ง','อัปเดตสวนไม่ได้ ปิดแล้วเปิดใหม่เพื่อตรวจสอบ'],
+    ja:['確認できたお世話：{n}/{m}','もう一度試す前に花壇を確認してください。','庭を更新できませんでした。閉じて開き直して確認してください。']
+  };
+  function loteTexto(i,n,m){
+    var textos=LOTE_TR[typeof LANG==='string'?LANG:'pt'] || LOTE_TR.pt;
+    return textos[i].replace('{n}',n).replace('{m}',m);
+  }
   var ARRANJO_TR = {
     pt:['Monte um arranjo com 2 ou 3 flores diferentes','Levar arranjo ao Studio'],
     en:['Arrange 2 or 3 different flowers','Take arrangement to Studio'],
@@ -179,22 +191,45 @@
     if(!ids.length || ocupado) return;
     var conta=donoJardim();
     ocupado = true; msg = ''; escolha = -1; ui();
-    var fila = Promise.resolve(), colhidas = [];
+    var fila = Promise.resolve(), colhidas = [], confirmados = 0;
+    msg = loteTexto(0,0,ids.length); ui();
     ids.forEach(function(i){
-      fila = fila.then(function(){ if(conta!==donoJardim() || conta!==stDono)return; idolIr(i); return rpc(nome, {p_canteiro:i}); }).then(function(r){
+      fila = fila.then(function(){
+        if(conta!==donoJardim() || conta!==stDono)return;
+        idolIr(i); return rpc(nome, {p_canteiro:i});
+      }).then(function(r){
         if(conta!==donoJardim() || conta!==stDono || !r || !r.ok) return;
-        if(window.TWVidaCidade)window.TWVidaCidade.registrar('bloom_'+nome.replace('jardim_',''),{flor:r.flor});if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
-        if(r.flor && SEM[r.flor]){ colhidas.push(t(r.flor)); for(var k = 0; k < 14; k++) festa.push({c:i, i:k, t0:performance.now(), k:r.flor}); }
-        else if(nome === 'jardim_regar'){ chuva.push({c:i, t0:performance.now()}); crescer(i); }
+        confirmados++;
+        if(window.TWVidaCidade)window.TWVidaCidade.registrar('bloom_'+nome.replace('jardim_',''),{flor:r.flor});
+        if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
+        if(r.flor && SEM[r.flor]){
+          colhidas.push(t(r.flor));
+          for(var k = 0; k < 14; k++) festa.push({c:i, i:k, t0:performance.now(), k:r.flor});
+        }else if(nome === 'jardim_regar'){
+          chuva.push({c:i, t0:performance.now()}); crescer(i);
+        }
+        msg = loteTexto(0,confirmados,ids.length); ui();
       });
     });
-    fila.then(function(){
+    // Mesmo após uma interrupção, consulta os cuidados que o servidor já guardou.
+    return fila.catch(function(){}).then(function(){
       if(conta!==donoJardim() || conta!==stDono)return;
-      if(colhidas.length){ msg = t('colhido') + ' ' + colhidas.join(' · '); som('colher'); }
-      else som('regar');
-      return rpc('jardim_estado').then(function(e){ if(conta===donoJardim() && conta===stDono && e && e.ok) st = e; });
-    }).catch(function(){ if(conta===donoJardim())msg = t('erro'); }).then(function(){ if(conta===stDono){ocupado = false; ui(); laco();} });
+      msg = loteTexto(0,confirmados,ids.length);
+      if(colhidas.length) msg += ' · ' + colhidas.join(' · ');
+      if(confirmados<ids.length) msg += ' ' + loteTexto(1);
+      if(confirmados) som(nome === 'jardim_colher' ? 'colher' : 'regar');
+      return rpc('jardim_estado').then(function(e){
+        if(conta!==donoJardim() || conta!==stDono)return;
+        if(e && e.ok) st = e;
+        else msg += ' ' + loteTexto(2);
+      }).catch(function(){
+        if(conta===donoJardim() && conta===stDono)msg += ' ' + loteTexto(2);
+      });
+    }).then(function(){
+      if(conta===donoJardim() && conta===stDono){ocupado = false; ui(); laco();}
+    });
   }
+
   function canteiro(i){ return st && Array.isArray(st.canteiros) ? st.canteiros.find(function(c){ return +c.canteiro === i; }) : null; }
   // Ícones desenhados (sem emoji): gota, broto, flor e mais. Herdam a cor do texto do botão.
   var IC = {

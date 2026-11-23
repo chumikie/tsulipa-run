@@ -11,6 +11,7 @@
 (function(){
   'use strict';
   var TXT = {
+    abrir:{pt:'Abrir câmera',en:'Open camera',es:'Abrir cámara',id:'Buka kamera',th:'เปิดกล้อง',ja:'カメラを開く'},
     cam:{pt:'Câmera',en:'Camera',es:'Cámara',id:'Kamera',th:'กล้อง',ja:'カメラ'},
     moldura:{pt:'Moldura',en:'Frame',es:'Marco',id:'Bingkai',th:'กรอบ',ja:'フレーム'},
     pose:{pt:'Pose',en:'Pose',es:'Pose',id:'Pose',th:'ท่าโพส',ja:'ポーズ'},
@@ -132,13 +133,15 @@
     return c;
   }
   function render(){
-    var ok = true, c;
-    try{ c = montar(); }catch(e){ ok = false; }
-    if(!ok || !c) return false;
+    var c, url;
+    try{
+      c = montar();
+      url = window.twMarcaPng ? window.twMarcaPng(c) : c.toDataURL('image/png');
+    }catch(e){ return false; }
     st.final = c;
-    var url = c.toDataURL('image/png'), img = ov.querySelector('.twcam-img'), a = ov.querySelector('.twcam-salvar');
+    var img = ov.querySelector('.twcam-img'), a = ov.querySelector('.twcam-salvar');
     img.src = url;
-    try{ a.href = window.twMarcaPng ? window.twMarcaPng(c) : url; }catch(e){ a.href = url; }
+    a.href = url;
     a.download = st.arquivo;
     return true;
   }
@@ -198,10 +201,11 @@
       if(f === 'fechar'){ fechar(); return; }
       if(f === 'guardar'){ if(st.aoGuardar) try{ st.aoGuardar(st.final, b); }catch(er){} return; }
       if(b.dataset.trava){ var m = ov.querySelector('.twcam-msg'); m.textContent = '🔒 ' + t('loja', {item:b.dataset.tnome, n:b.dataset.trava}); m.hidden = false; return; }
-      var v = b.dataset.cv;
+      var v = b.dataset.cv, anterior = st[f];
       if(f === 'moldura') st.moldura = v; else if(f === 'quadro') st.quadro = v; else if(f === 'pose') st.pose = v; else if(f === 'expr') st.expr = v;
       try{ if(typeof beep === 'function') beep(988, .04, 'triangle', .04); }catch(er){}
-      render(); opcoes();
+      if(!render()){ st[f] = anterior; return; }
+      opcoes();
       var nb = ov.querySelector('[data-cf="' + f + '"][data-cv="' + (window.CSS && CSS.escape ? CSS.escape(v) : v) + '"]'); if(nb) nb.focus();
     });
     // Esc fecha só a câmera: pega a tecla antes das telas de trás (Studio, Duo e TsuPhone também ouvem o Esc)

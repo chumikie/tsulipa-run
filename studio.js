@@ -173,6 +173,11 @@
   function sessaoAtiva(sess, dono){
     return sess === sessao && ov && !ov.hidden && dono === donoFoto();
   }
+  var CONFIRMANDO = {
+    pt:'Foto tirada. Aguardando a nota…', en:'Photo taken. Waiting for your score…',
+    es:'Foto tomada. Esperando la puntuación…', id:'Foto diambil. Menunggu nilai…',
+    th:'ถ่ายรูปแล้ว กำลังรอคะแนน…', ja:'撮影しました。採点中…'
+  };
   var MOMENTOS = {
     pt:['Guardar em Momentos','Guardada em Momentos!'],en:['Keep in Moments','Saved to Moments!'],
     es:['Guardar en Momentos','¡Guardada en Momentos!'],id:['Simpan di Momen','Tersimpan di Momen!'],
@@ -347,12 +352,12 @@
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
     if(pilotoStudio && esc_.fundo === pilotoStudio.fundo) TW_PILOTO_BAIRRO.iniciar('studio',pilotoStudio);
     if(window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('studio', false);
-    if(typeof twJogoSom === 'function'){ twJogoSom('toque'); setTimeout(function(){ twJogoSom('toque'); }, 600); setTimeout(function(){ twJogoSom('toque'); }, 1200); }
+    if(typeof twJogoSom === 'function'){ twJogoSom('toque'); setTimeout(function(){ if(sessaoAtiva(sess,dono)) twJogoSom('toque'); }, 600); setTimeout(function(){ if(sessaoAtiva(sess,dono)) twJogoSom('toque'); }, 1200); }
     setTimeout(function(){
       if(sess !== sessao) return;
       if(dono !== donoFoto()){ fase = 'monta'; ocupado = false; ui(); return; }
       var ac = acertos(), n = Math.max(1, ac.filter(Boolean).length);
-      if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
+      if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ if(sessaoAtiva(sess,dono) && foto === capturada) twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
       else if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
       foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), dia:hojeBR(), legenda:pauta ? t('t_' + pauta.detalhe.tipo) : '', dono:dono, verificada:false, premio:0};
       foto.retrato = retratoSeguro({v:1,avatar:foto.avatar,tempo:foto.t0 / 1000});
@@ -369,6 +374,7 @@
         fase='foto';ocupado=false;msg=referenciaT()[4];ui();return;
       }
       if(lookTemporario || !logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
+      ui();
       contaRpc('studio_clique', {p:capturada.escolhas}).then(function(r){
         if(sess !== sessao || dono !== donoFoto() || foto !== capturada) return;
         if(r && r.ok){
@@ -463,7 +469,16 @@
       obturador=document.createElement('button');obturador.type='button';obturador.className='btn stclique';
       obturador.dataset.st='clique';acao.appendChild(obturador);
     }
-    obturador.hidden=fase==='foto';
+    var aviso=acao.querySelector('.stconfirmando');
+    if(!aviso){
+      aviso=document.createElement('p');aviso.className='stmsg stconfirmando';
+      aviso.setAttribute('role','status');acao.appendChild(aviso);
+    }
+    var confirmando=fase==='contagem' && !!(foto && foto.cena);
+    aviso.hidden=!confirmando;
+    var mensagem=confirmando ? CONFIRMANDO[L()] : '';
+    if(aviso.textContent!==mensagem) aviso.textContent=mensagem;
+    obturador.hidden=fase==='foto' || confirmando;
     obturador.textContent=t('clique');
     obturador.disabled=ocupado||referenciaCarregando;
     var c = ov.querySelector('#studioCorpo'), hh = '';
@@ -475,7 +490,7 @@
       // As estrelas já estão na polaroid: aqui vai o que faltou na pauta (ou que ela ficou completa).
       var fa = pauta ? [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]].filter(function(p){ return !p[0]; }).map(function(p){ return p[1]; }) : [];
       resultados.innerHTML=(window.TW_ALBUM_FOTOS&&!foto.serie&&!foto.seriePendente?TW_ALBUM_FOTOS.botao('data-st="serie"'):'')+
-        '<button type="button" class="btn" data-st="salvar">💾 '+esc(t('salvar'))+'</button>';
+        '<button type="button" class="btn" data-st="salvar">'+esc(window.TW_CAMERA ? TW_CAMERA.t('abrir') : t('salvar'))+'</button>';
       if(foto.verificada && !publicou) hh += '<p class="stdica">' + esc(PARTILHA[L()]) + '</p>';
       hh += '<p class="stres">' + esc(t('estrelas').replace('{n}', foto.estrelas)) + '</p>' +
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
@@ -702,8 +717,11 @@
     x.save(); x.clearRect(0, 0, W, H);
     if(fase === 'foto' && foto){   // polaroid: moldura branca, foto, estrelas e data
       x.drawImage(polaroidLimpa(foto), 0, 0);
-      var fl = Math.max(0, 1 - (performance.now() - foto.t0) / 500); if(fl > 0){ x.fillStyle = 'rgba(255,255,255,' + fl + ')'; x.fillRect(0, 0, W, H); }
+      var fl = calmo ? 0 : Math.max(0, 1 - (performance.now() - foto.t0) / 500); if(fl > 0){ x.fillStyle = 'rgba(255,255,255,' + fl + ')'; x.fillRect(0, 0, W, H); }
       if(foto.estrelas >= 3) brilhos(x, W, H, (performance.now() - foto.t0) / 1000);
+    } else if(fase === 'contagem' && foto && foto.cena){
+      x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+      x.drawImage(foto.cena, 24, 24, W-48, (W-48)*1.25);
     } else {
       x.fillStyle = '#fff'; x.fillRect(0,0,W,H);
       x.save(); x.beginPath(); x.rect(24,24,W-48,(W-48)*1.25); x.clip(); x.translate(24,24);
@@ -721,7 +739,7 @@
     }
     x.restore();
   }
-  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; if(donoSessao !== donoFoto()){ fechar(); return; } if(!document.hidden && aba === 'estudio') desenhar(); anim = requestAnimationFrame(f); })(); }
+  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; if(donoSessao !== donoFoto()){ fechar(); return; } if(!document.hidden && aba === 'estudio' && !(fase === 'contagem' && foto && foto.cena)) desenhar(); anim = requestAnimationFrame(f); })(); }
   // Capa da semana no Idol⭐News! (aba Jogadores e eventos): a foto mais curtida do mural
   function capaNews(){
     var painel = document.getElementById('jnAbaComunidade'); if(!painel || !logado() || document.getElementById('jnCapaStudio')) return;

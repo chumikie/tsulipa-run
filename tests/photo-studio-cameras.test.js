@@ -92,3 +92,14 @@ test('Studio controls keep the color sample, name and selected indicator togethe
   const css=fs.readFileSync(path.join(root,'hub-polish.css'),'utf8');
   assert.match(css,/#studioVisor\[data-fase="monta"\][^\{]*\{position:sticky/);
 });
+
+test('Enquanto aguarda a nota, o visor exibe somente a captura do disparo', () => {
+  const src=fs.readFileSync(path.join(root,'studio.js'),'utf8');
+  const captura={}, imagens=[];
+  const x={save(){},restore(){},clearRect(){},fillRect(){},drawImage(...args){imagens.push(args);}};
+  const ctx={ov:{querySelector:()=>({width:480,height:680,getContext:()=>x})},
+    performance:{now:()=>2700},fase:'contagem',foto:{cena:captura}};
+  vm.runInNewContext(src.slice(src.indexOf('  function desenhar(){'),src.indexOf('  function laco()')),ctx);
+  ctx.desenhar();
+  assert.deepEqual(imagens,[[captura,24,24,432,540]]);
+});

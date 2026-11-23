@@ -44,3 +44,6 @@ html.kt-lista .kt-timing-readout:empty{border-color:transparent;background:none}
 
 /* O catálogo visual aprovado é a única lista no celular; o catálogo antigo permanece no DOM como motor de prévias. */
 html.kt-lista.kt-no-site #ktAudioLibrary{display:none!important}
+
+.ktl-ouvir[aria-pressed="true"]{outline:2px solid currentColor;outline-offset:-4px;font-weight:800}
+.ktl-ouvir:disabled{opacity:.55}

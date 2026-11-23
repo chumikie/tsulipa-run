@@ -69,6 +69,19 @@ try{
  global.clearInterval=originalClearInterval;
 }
 
+let unlock, muted=false;
+const delayed=harness({getResumePromise:()=>({then(fn){unlock=fn;}}),isMuted:()=>muted});
+delayed.context.state='suspended';
+delayed.player.play('tema');
+delayed.player.pause();
+delayed.context.state='running';
+unlock();
+assert.equal(delayed.player.state().paused,true,'late audio unlock respects pause');
+assert(!delayed.events.some(event=>event[0]==='tema'));
+muted=true;
+assert.equal(delayed.player.resume(),false,'resume respects mute');
+delayed.player.stop(false);
+
 const blocked=harness({isBusy:()=>true});
 assert.equal(blocked.player.play('fast'),false,'preview cannot run during a game');
 
@@ -81,7 +94,7 @@ for(const key of keys){
  assert(library.includes('data-kt-song-best="'+key+'"'),key+' keeps personal best');
 }
 for(const id of ['ktPreviewToggle','ktPreviewStop','ktPreviewProgress','ktPreviewTime','ktPreviewTitle','ktPreviewVolume'])assert(library.includes('id="'+id+'"')||(id==='ktPreviewVolume'&&library.includes('id=ktPreviewVolume')),'player includes '+id);
-assert(html.includes('<script src="./karaoke-music-preview.js?v=2"></script>'),'external controller loads');
+assert(html.includes('<script src="./karaoke-music-preview.js?v=3"></script>'),'external controller loads');
 assert(html.includes('window.KaraokeMusicPreview.create('),'game injects existing synthesizer');
 assert(moduleCode.includes('audioReady:true'),'independent preview marks its target ready for the shared beat renderer');
 assert(!moduleCode.includes('Prévia finalizada.')&&!moduleCode.includes('Prévia interrompida.'),'music previews finish and stop without completion/interruption announcements');

@@ -19,10 +19,11 @@
 - Testes rápidos aqui (`node tests/run-all.js`); os de navegador ficam para o CI, salvo o que a mudança tocou.
 
 ## Onde está
-- **`main`:** `ec2ad57` (22/11, merge da #131: Idol de lado completo e looks do Center⭐Run! como roupa). Antes: #130 (conferência visual, poda do Menu, 22/11), #129 (melhorias, 21/11), #127–#128, #126, #124 e #123 (20/11). As #118–#123 entraram pela #124.
-- **Esta rodada (23/11):** prévia de link nova (`og.jpg?v=16`), Humor compacto no Menu, cartão "Seu perfil" do Início sem repetir o avatar e esta RETOMADA em dia. [Conferência](qa/menu-og-20261123/)
-- **PRs abertas:** #133 (Expressão e convivência refeita sobre a #132; substitui a #125, que pode ser fechada) e #117 (rascunho: Bagunça no Idol⭐News! + Karaoke; conflita com a main).
-- **#133:** Seu ritmo (na pasta "Mais"), aproximação e Desfazer no editor, procedência das peças, ações da Praça e metadados do porta-retrato. [Escopo](qa/evolucao-expressao-convivencia-2026-11-20.md)
+- **`main`:** `789a8a1` (23/11, merge da #133). Antes: #132 (retomada, prévia de link, Humor compacto), #131 (Idol de lado e looks do Center⭐Run!), #130 (conferência visual, poda do Menu, 22/11), #129 (melhorias, 21/11), #127–#128, #126, #124 e #123 (20/11). As #118–#123 entraram pela #124.
+- **#132 (merge 23/11):** prévia de link nova (`og.jpg?v=16`), Humor compacto no Menu, cartão "Seu perfil" do Início sem repetir o avatar e esta RETOMADA em dia. [Conferência](qa/menu-og-20261123/)
+- **Câmeras (23/11, tarde):** Camarim VIP, Moon⭐Duo! e Photo⭐Studio! abrem a câmera no jeito do Center⭐Run! (`tw-camera.js`): nítida, com moldura, enquadramento e, no VIP, pose e expressão. [Capturas](qa/cameras-20261123/)
+- **PRs abertas:** #117 (rascunho: Bagunça no Idol⭐News! + Karaoke; conflita com a main). #132 e #133 entraram em 23/11.
+- **#133 (merge 23/11):** Seu ritmo (na pasta "Mais"), aproximação e Desfazer no editor, procedência das peças, ações da Praça e metadados do porta-retrato. [Escopo](qa/evolucao-expressao-convivencia-2026-11-20.md)
 - **CI (8 jobs):** `static-validation`, `postgres-center-run`, `browser-karaoke`, `browser-telas`, `webkit-continuidade`, `browser-karaoke-room` ×3.
 
 ## O site hoje

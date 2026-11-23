@@ -967,12 +967,20 @@
     x.fillStyle = '#5b2bb5'; x.font = '26px "Mochiy Pop One",sans-serif'; x.textAlign = 'center'; x.fillText('👑 ' + t2('vip') + ' · TsuLiPa⭐World', W / 2, cv.height + 62);
     x.fillStyle = '#9a86c8'; x.font = '700 16px "M PLUS Rounded 1c",sans-serif'; x.fillText(nick() + ' · ' + new Date().toLocaleDateString(), W / 2, cv.height + 90);
     if(serie){ TW_ALBUM_FOTOS.salvar('vip',o,serie); return; }
+    // 23/11: a foto abre na câmera no jeito do Center⭐Run! (tw-camera.js): nítida, com moldura, pose, expressão e "de perto"
+    function guardaMini(f){   // cópia pequena (JPEG) para o álbum do app Humor no TsuPhone e para o tapete vermelho do camarim
+      try{ var mini = document.createElement('canvas'), k = 360 / f.width; mini.width = 360; mini.height = Math.round(f.height * k);
+        mini.getContext('2d').drawImage(f, 0, 0, mini.width, mini.height);
+        if(window.TW_HUMOR) window.TW_HUMOR.guardarFotoVip(mini.toDataURL('image/jpeg', .82)); }catch(e){}
+      if(typeof petBg !== 'undefined') try{ petBg = null; }catch(e){}
+    }
+    var s0 = performance.now() / 1000, poseSala = vipPose;
+    if(window.TW_CAMERA && TW_CAMERA.abrir({titulo:t2('vip'), arquivo:'tsulipa-camarim-vip.png', W:cv.width, H:cv.height, foco:[320, 236], pose:true, expr:true, poseInicial:vipPose,
+        legenda:['👑 ' + t2('vip') + ' · TsuLiPa⭐World', nick() + ' · ' + new Date().toLocaleDateString()],
+        desenhar:function(x2, W2, H2, opc, falso){ var pv = vipPose, ev = vipExpr; vipPose = opc.pose || ''; vipExpr = opc.expr; try{ dentroDesenhar(falso, 'vip', s0); } finally { vipPose = pv; vipExpr = ev; } },
+        aoSalvar:guardaMini, aoFechar:function(){ vipPose = poseSala; }})) return;
     try{ var a = document.createElement('a'); a.href = (window.twMarcaPng?window.twMarcaPng(o):o.toDataURL('image/png')); a.download = 'tsulipa-camarim-vip.png'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
-    // guarda uma cópia pequena (JPEG) para o álbum do app Humor no TsuPhone e para o tapete vermelho do camarim
-    try{ var mini = document.createElement('canvas'), k = 360 / W; mini.width = 360; mini.height = Math.round(Hh * k);
-      mini.getContext('2d').drawImage(o, 0, 0, mini.width, mini.height);
-      if(window.TW_HUMOR) window.TW_HUMOR.guardarFotoVip(mini.toDataURL('image/jpeg', .82)); }catch(e){}
-    if(typeof petBg !== 'undefined') try{ petBg = null; }catch(e){}
+    guardaMini(o);
   }
 
   /* ---------- frases prontas (sem chat livre) ---------- */
@@ -992,6 +1000,7 @@
     vip:{cor:['#3a1a5c', '#7a2d6b', '#ffd23f', '#5a2470', '#4a1a52'], ico:'estrela', nome:'Camarim VIP'}};
   window.twMapaEntrar = function(id){ if(!cel || classico || !DENTRO[id] || !card(id)) return false; ir('dentro:' + id); return true; };
   var vipPose = ''; // apenas nesta sessão, sem persistência ou efeito em outros interiores
+  var vipExpr = ''; // expressão escolhida na câmera (tw-camera.js), só enquanto ela desenha a foto
   var vipReduzMov = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   function telaDentro(id){
     var d = DENTRO[id], c = id === 'vip' ? null : card(id), nome = id === 'vip' ? t2('vip') : c ? titulo(c) : d.nome;
@@ -1131,6 +1140,7 @@
       dentroUltimos.push({x:g.x, k:k, nick:g.nick, eu:!!g.eu, membro:g.membro ? MEMBROS.findIndex(function(m){ return m[1] === g.nick; }) : -1});
       var av = {}; for(var q in g.av) av[q] = g.av[q];
       av.pose = id === 'vip' && vipPose ? vipPose : (tocado ? ['coracao', 'tchau', 'v'][k % 3] : ['tchau', 'v', 'coracao', 'mic', 'luz'][Math.floor(s / 3 + k) % 5]);
+      if(id === 'vip' && g.eu && vipExpr !== '') av.expr = +vipExpr;
       x.save(); x.translate(px, chao - CH + 14 - pulo); x.scale(ES, ES);
       try{ if(typeof perfDesenharIdol === 'function') perfDesenharIdol(x, cw, ch, av, false, false, fr); }catch(e){}
       x.restore();

@@ -654,7 +654,7 @@ html body .stselo{display:inline-block;margin-right:6px;padding:1px 7px;border-r
 .bloomestado small{font:inherit}
 .bloomcard:has(.bloomestado[data-rega-estado="amanha"]){grid-template-areas:"ic tx" "estado estado"}
 #studioVisor[data-fase="monta"],#studioVisor[data-fase="contagem"]{position:sticky;top:0;z-index:2;background:var(--card,#fff8fc);padding:6px 10px;border:1px solid var(--tw-modal-edge,#eadcff);border-radius:14px}
-#studioVisor[data-fase="monta"] #studioCv,#studioVisor[data-fase="contagem"] #studioCv{height:clamp(98px,24dvh,245px);width:auto;max-width:100%;margin:0 auto}
+#studioVisor[data-fase="monta"] #studioCv,#studioVisor[data-fase="contagem"] #studioCv{height:clamp(120px,30dvh,300px);width:auto;max-width:100%;margin:0 auto}
 body.tw-cel #studioOv{scroll-padding-block:calc(76px + 24dvh + 64px) calc(96px + env(safe-area-inset-bottom))}
 body.tw-cel #studioVisor[data-fase="monta"],body.tw-cel #studioVisor[data-fase="contagem"]{top:calc(76px + env(safe-area-inset-top))}
 #studioPauta{margin:6px 0}

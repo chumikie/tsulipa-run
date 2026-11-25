@@ -700,3 +700,7 @@ body.tw-cel #studioVisor[data-fase="monta"],body.tw-cel #studioVisor[data-fase="
 .bloomarranjo .bloomic{width:28px;height:28px;flex:none}
 
 .tw-mapa-recarregar:not([hidden]){display:block;position:sticky;left:0;top:0;z-index:1;min-height:44px;padding:8px 14px;border:2px solid currentColor;border-radius:12px;background:var(--card,#fff);color:var(--ink,#432675);font:inherit;cursor:pointer}
+
+/* Jardineiro: a escolha de sementes não fica escondida atrás da barra do celular. */
+body.tw-cel #bloomOv .bloompick{scroll-margin-block:calc(84px + env(safe-area-inset-top)) calc(100px + env(safe-area-inset-bottom))}
+#bloomOv .bloomnao{min-height:44px}

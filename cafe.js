@@ -238,11 +238,13 @@ function cfEscolher(tipo, i){
   if(cf.fase !== 'pedido') return;
   if(tipo === 'lixo'){ cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cfUI(); return; }
   if(tipo !== 'doce' && tipo !== 'base' && cf.monta.base < 0) return;   // primeiro a base no copo
-  cf.monta[tipo] = cf.monta[tipo] === i && tipo === 'doce' ? -1 : i;
+  cf.monta[tipo] = cf.monta[tipo] === i && (tipo === 'doce' || tipo === 'cob') ? -1 : i;
   if(tipo === 'doce') cf.doceT = cfT;
   cf.aviso = '';
   cfSom('toque','card');
   cfUI();
+  var botao=$('cfCorpo').querySelector('[data-cf="'+tipo+':'+i+'"]');
+  if(botao&&typeof botao.focus==='function')botao.focus({preventScroll:true});
 }
 // O reencontro não altera perguntas, recompensas nem a memória do Handshake.
 function cfCidadeReencontro(f,conta,comprovante){
@@ -697,9 +699,9 @@ function cfDesenhar(){
     cf.hearts = cf.hearts.filter(function(h){ h.t++; h.y -= h.v; x.globalAlpha = Math.max(0, 1 - h.t / 70); x.fillText(h.e, W2 * h.x + Math.sin(h.t / 6) * 8, H2 * h.y); return h.t < 70; }); x.restore(); }
 }
 function cfBotoes(tipo, lista, tit, montado){
-  var m = montado || cf.monta, trava = tipo !== 'base' && tipo !== 'doce' && m.base < 0;
+  var m = montado || cf.monta, trava = (!montado && cf.fase === 'reacao') || (tipo !== 'base' && tipo !== 'doce' && m.base < 0);
   return '<div class="cfgrupo"><b>' + escHtml(tr(tit)) + '</b><div class="cfops">' + lista.map(function(o, i){
-    return '<button type="button" class="cfop' + (m[tipo] === i ? ' on' : '') + '" data-cf="' + tipo + ':' + i + '"' + (trava ? ' disabled' : '') + '><span>' + o[0] + '</span><small>' + escHtml(tr(o[1])) + '</small></button>';
+    return '<button type="button" class="cfop' + (m[tipo] === i ? ' on' : '') + '" data-cf="' + tipo + ':' + i + '" aria-pressed="' + (m[tipo] === i) + '"' + (trava ? ' disabled' : '') + '><span>' + o[0] + '</span><small>' + escHtml(tr(o[1])) + '</small></button>';
   }).join('') + '</div></div>';
 }
 var CF_FALA_REENCONTRO = {
@@ -748,7 +750,7 @@ function cfUI(){
         '📒 ' + escHtml(tr('Usar assinatura: base + enfeite')) + '</button></div>';
     }
     h += cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)') +
-      '<div class="cf-rodape"><div class="btns cfacoes"><button type="button" class="btn sec" data-cf="lixo:0">🗑️ ' + escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" id="cfServir"' + (cf.monta.base < 0 || cf.monta.enf < 0 || cf.fase !== 'pedido' ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>' +
+      '<div class="cf-rodape"><div class="btns cfacoes"><button type="button" class="btn sec" data-cf="lixo:0"' + (cf.fase !== 'pedido' ? ' disabled' : '') + '>🗑️ ' + escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" id="cfServir"' + (cf.monta.base < 0 || cf.monta.enf < 0 || cf.fase !== 'pedido' ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>' +
       cfRetornoPedido(cf.fase === 'reacao' ? cf.confirmacaoPedido : null) + '</div>';
   }
   else if(cf.fase === 'fim'){

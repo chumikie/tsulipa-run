@@ -290,7 +290,7 @@ function montar(){
  document.body.appendChild(ov);
  // tocar no palco (ou apertar espaço) durante o show também agita o lightstick
  ov.addEventListener('pointerdown',function(e){if(fase==='show'&&e.target&&e.target.id==='battleStage'){e.preventDefault();agitar();}});
- document.addEventListener('keydown',function(e){if(fase==='show'&&ov&&!ov.hidden&&(e.key===' '||e.key==='Enter')&&!(e.target&&e.target.closest&&e.target.closest('button,select,input'))){e.preventDefault();agitar();}});
+ document.addEventListener('keydown',function(e){if(fase==='show'&&ov&&!ov.hidden&&(e.key===' '||e.key==='Enter')&&!(e.target&&e.target.closest&&e.target.closest('button,select,input'))){e.preventDefault();if(!e.repeat)agitar();}});
  ov.addEventListener('click',function(e){
    if(e.target===ov){fechar();return;}
    var b=e.target.closest&&e.target.closest('[data-battle]');if(!b)return;
@@ -834,15 +834,19 @@ function ritmoResultado(){
    '<p class="battle-ritmo battle-skillres">'+esc(trB('skillRes').replace('{n}',ritmo.skN||0).replace('{c}',ritmo.cor||0))+'</p>';
 }
 function pararShow(){if(showRaf){cancelAnimationFrame(showRaf);showRaf=0;}}
+function mostrarPalco(){
+ var palco=ov&&ov.querySelector('#battleStage');
+ if(palco&&typeof palco.scrollIntoView==='function')palco.scrollIntoView({block:'start',inline:'nearest',behavior:'instant'});
+}
 function comecarShow(){
  if(!ov||ov.hidden||!rodadas)return;
  pararShow();
  if(calmo()||typeof requestAnimationFrame!=='function'){
-   fase='show-calmo'; rodadaCalma=0; ritmo=null; render();
+   fase='show-calmo'; rodadaCalma=0; ritmo=null; render();mostrarPalco();
    ov.querySelector('[data-battle="proxima-rodada"]').focus();
    return;
  }
- fase='show';rodadaCalma=0;showT0=agora();showSom=-1;ritmo={n:0,erros:0,pegas:{},festa:[],cor:0,sk:{},skN:0};render();
+ fase='show';rodadaCalma=0;showT0=agora();showSom=-1;ritmo={n:0,erros:0,pegas:{},festa:[],cor:0,sk:{},skN:0};render();mostrarPalco();
  quadroShow();
 }
 function quadroShow(){
@@ -871,6 +875,7 @@ function fimDoShow(){
  if(!rodadas || fase==='fim')return;
  if(!revanche && window.TW_HUMOR) window.TW_HUMOR.evento('battle');
  pararShow();fase='fim';render();desenharPalco(-1);desenharPolaroid();
+ var resumo=ov.querySelector('.battle-resultado h3');if(resumo&&typeof resumo.scrollIntoView==='function')resumo.scrollIntoView({block:'start',inline:'nearest',behavior:'instant'});
  som(rodadas.filter(function(r){return r.ganhou;}).length>=2?'rank':'over');
  var st=ov.querySelector('#battleStage');
  if(st){var w=rodadas.filter(function(r){return r.ganhou;}).length;st.setAttribute('aria-label','Idol⭐Battle! '+w+' × '+(3-w));}

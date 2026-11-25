@@ -207,3 +207,11 @@ html body .battlep .battle-slotbtn.on .battle-idol{outline:3px solid var(--b1,#7
 
 .battle-slotbtn .battle-idol b{max-width:100%;overflow-wrap:anywhere;line-height:1.25}
 .battle-picks{scroll-padding-inline:6px;padding:6px}
+
+/* Palco e controles permanecem alcançáveis em telas curtas. */
+body.tw-cel #battleStage,body.tw-cel #battleOv .battle-resultado h3{scroll-margin-top:calc(84px + env(safe-area-inset-top))}
+@media(max-width:420px) and (max-height:700px){
+  #battleStage{width:min(100%,34dvh);height:auto;margin-inline:auto}
+  .battlep .battle-chips{flex-wrap:wrap}
+}
+.battlep .battle-skip{min-height:44px}

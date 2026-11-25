@@ -88,7 +88,7 @@
 <link rel="stylesheet" href="./album.css?v=7">
 <link rel="stylesheet" href="./fa.css?v=3">
 <link rel="stylesheet" href="./handshake.css?v=5">
-<link rel="stylesheet" href="./cafe.css?v=8">
+<link rel="stylesheet" href="./cafe.css?v=9">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -174,7 +174,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<link rel="stylesheet" href="./hub-polish.css?v=51">
+<link rel="stylesheet" href="./hub-polish.css?v=52">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=8"><'+'/script>');</script>
@@ -457,7 +457,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=20','./cafe.js?v=31','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=14','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=20','./cafe.js?v=32','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=14','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
@@ -515,7 +515,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
     }).catch(function(){botao.disabled=false;botao.textContent=TW_CARGA.texto(1);});
   });
 })();</script>
-<script src="./bloom.js?v=15"></script>
+<script src="./bloom.js?v=16"></script>
 <script src="./shop.js?v=14"></script>
 <script src="./tw-piloto-bairro.js?v=9"></script>
 <script>
@@ -571,7 +571,7 @@ var jornalCarregar=(function(){
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
 (function(){var p=null;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
   if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
-  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=19'),arq('script','./battle.js?v=31')]);
+  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=20'),arq('script','./battle.js?v=32')]);
     p.then(function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);}).catch(function(){p=null;});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>

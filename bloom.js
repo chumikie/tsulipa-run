@@ -70,6 +70,12 @@
     var conta=donoJardim(), pedido=abertura, visita=trocaConta;
     rpc('jardim_estado').then(function(r){ if(visita===trocaConta && conta===donoJardim() && r && r.ok){ if(pedido===abertura){st=r;stDono=conta;} window.TW_BLOOM_ON = true; if(typeof hubCardsUI === 'function' && document.getElementById('hubCards')) try{ hubCardsUI(); }catch(e){} } }).catch(function(){});
   }
+  // Somente a área desenhada de cada caixote/plantação é acionável.
+  function canteiroNoToque(px, py, H){
+    var i=Math.round((px-100)/173), cx=100+i*173, by=H*.82;
+    if(i<0||i>3||Math.abs(px-cx)>76||py>by+34||py< (canteiro(i)?H*.42:by-84))return -1;
+    return i;
+  }
   function montarOv(){
     if(ov) return ov;
     ov = document.createElement('div'); ov.className = 'ov bloomov tw-window-overlay'; ov.id = 'bloomOv'; ov.hidden = true;
@@ -84,8 +90,8 @@
       if(ocupado || !st || stDono!==donoJardim()) return;
       var q = cvEl.getBoundingClientRect(); if(!q.width || !q.height) return;
       var px = (e.clientX - q.left) / q.width * cvEl.width, py = (e.clientY - q.top) / q.height * cvEl.height;
-      var i = Math.floor((px - 13.5) / 173);
-      if(i < 0 || i > 3 || py < cvEl.height * .42) return;
+      var i = canteiroNoToque(px, py, cvEl.height);
+      if(i < 0) return;
       tocar(i);
     });
     ov.addEventListener('click', function(e){
@@ -112,7 +118,7 @@
       else if(a === 'cancelar'){ escolha = -1; ui(); }
       else if(a === 'regar-tudo') emSerie('jardim_regar', pendentes(false));
       else if(a === 'colher-tudo') emSerie('jardim_colher', pendentes(true));
-      else if(a === 'abrir'){ escolha = escolha === c ? -1 : c; msg = ''; ui(); }
+      else if(a === 'abrir'){ escolha = escolha === c ? -1 : c; msg = ''; ui(); mostrarSementes(); }
       else if(a === 'regar') acao('jardim_regar', {p_canteiro:c});
       else if(a === 'colher') acao('jardim_colher', {p_canteiro:c});
     });
@@ -179,11 +185,16 @@
   }
   function tocar(i){
     var c = canteiro(i);
-    if(!c){ escolha = escolha === i ? -1 : i; msg = ''; ui(); return; }
+    if(!c){ escolha = escolha === i ? -1 : i; msg = ''; ui(); mostrarSementes(); return; }
     escolha = -1;
     if(pronta(c)) acao('jardim_colher', {p_canteiro:i});
     else if(!c.regado_hoje) acao('jardim_regar', {p_canteiro:i});
     else { msg = t('regado'); idolIr(i); ui(); }
+  }
+  function mostrarSementes(){
+    if(escolha<0||!ov)return;
+    var painel=ov.querySelector('.bloompick');
+    if(painel&&typeof painel.scrollIntoView==='function')painel.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});
   }
   function idolIr(i){ if(typeof i === 'number' && i >= 0 && i <= 3){ idolAlvo = 100 + i * 173; idolPulo = performance.now(); } }
   // Mesma ação em vários canteiros, um de cada vez (o servidor confere cada um como sempre).
@@ -355,9 +366,12 @@
     // A cerca fica à frente do caminho; nenhuma pedra cobre suas tábuas.
     // cerquinha
     var cf = noite ? '#d3c8ee' : '#fffaf2', cs = noite ? 'rgba(40,30,90,.25)' : 'rgba(170,130,150,.22)';
-    x.fillStyle = cs; x.fillRect(0, hz - 9, W, 5); x.fillRect(0, hz + 7, W, 5);
-    x.fillStyle = cf; x.fillRect(0, hz - 12, W, 5); x.fillRect(0, hz + 4, W, 5);
-    for(i = 0; i < 22; i++){ var fx = 6 + i * 34; x.fillStyle = cs; rr(x, fx + 2, hz - 28, 14, 46, 7); x.fill(); x.fillStyle = cf; rr(x, fx, hz - 30, 14, 46, 7); x.fill(); }
+    // Abertura central alinhada com o início do caminho (x ≈ 353–382).
+    [0, 1].forEach(function(lado){var a=lado?380:0, w=lado?W-380:346;
+      x.fillStyle=cs;x.fillRect(a,hz-9,w,5);x.fillRect(a,hz+7,w,5);
+      x.fillStyle=cf;x.fillRect(a,hz-12,w,5);x.fillRect(a,hz+4,w,5);
+    });
+    for(i = 0; i < 22; i++){ if(i===10)continue; var fx = 6 + i * 34; x.fillStyle = cs; rr(x, fx + 2, hz - 28, 14, 46, 7); x.fill(); x.fillStyle = cf; rr(x, fx, hz - 30, 14, 46, 7); x.fill(); }
     jardineiro(x, H, tm);
     for(i = 0; i < 4; i++){
       var cx = 100 + i * 173, by = H * .82, c = canteiro(i);

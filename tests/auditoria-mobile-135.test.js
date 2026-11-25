@@ -22,3 +22,22 @@ test('Studio: as três fases preservam a proporção do canvas 480 × 680',()=>{
   assert.match(css,/#studioVisor\[data-fase="monta"\] #studioCv[^{}]*\{width:min\(100%,[^}]*height:auto;aspect-ratio:12\/17/);
   assert.match(css,/#studioVisor\[data-fase="foto"\] #studioCv\{width:min\(100%,[^}]*height:auto;aspect-ratio:12\/17/);
 });
+
+test('Bloom: caminho e intervalos decorativos não acionam canteiros',()=>{
+  const s=read('bloom.js'), a=s.indexOf('function canteiroNoToque('), b=s.indexOf('function montarOv()',a);
+  const ctx={canteiro:()=>null};vm.runInNewContext(s.slice(a,b),ctx);
+  assert.equal(ctx.canteiroNoToque(100,328,400),0);
+  assert.equal(ctx.canteiroNoToque(273,266,400),1);
+  assert.equal(ctx.canteiroNoToque(359,328,400),-1);
+  assert.equal(ctx.canteiroNoToque(100,180,400),-1);
+  assert.equal(ctx.canteiroNoToque(100,390,400),-1);
+});
+test('Café: cobertura opcional pode ser retirada e os ingredientes indicam seleção',()=>{
+  const s=read('cafe.js'), a=s.indexOf('function cfEscolher('),b=s.indexOf('// O reencontro',a);
+  const ctx={cf:{fase:'pedido',monta:{base:0,cob:1,enf:2,doce:-1}},cfUI(){},cfSom(){},$:()=>({querySelector:()=>null})};
+  vm.runInNewContext(s.slice(a,b),ctx);ctx.cfEscolher('cob',1);assert.equal(ctx.cf.monta.cob,-1);
+  ctx.cfEscolher('cob',1);assert.equal(ctx.cf.monta.cob,1);assert.match(s,/aria-pressed="' \+ \(m\[tipo\] === i\)/);
+});
+test('Battle: teclado ignora repetição automática e show reposiciona o palco',()=>{
+  const s=read('battle.js');assert.match(s,/if\(!e.repeat\)agitar\(\)/);assert.match(s,/render\(\);mostrarPalco\(\);/);
+});

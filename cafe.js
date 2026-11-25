@@ -565,7 +565,10 @@ function cfCopo(x, cx, by, m, k){   // k = tamanho de 1 unidade (o mesmo do Idol
   if(m.base >= 0){ var cor = CF_BASES[m.base][2]; x.fillStyle = cor; T([-6.2, -17, 6.2, -17, 5, -1, -5, -1]); x.fillStyle = cfEscurece(cor, -40); T([2.5, -17, 6.2, -17, 5, -1, 1.8, -1]); }
   x.fillStyle = 'rgba(255,255,255,.7)'; R(-5.5, -19, 1.2, 16);   // brilho do vidro
   x.fillStyle = '#ff9ccf'; T([-6.6, -12, 6.6, -12, 6.3, -8.5, -6.3, -8.5]); x.fillStyle = '#fff'; R(-2.5, -11, 5, 1.4);   // faixa TsuLiPa
-  x.fillStyle = '#ffffff'; R(-7.6, -22, 15.2, 1.6);   // borda
+  // A borda elíptica dá profundidade ao copo sem mudar os ingredientes.
+  x.fillStyle = '#d7c6e3'; E(0,-21.5,7.6,1.65);
+  x.fillStyle = m.base>=0 ? CF_BASES[m.base][2] : '#edf4fa'; E(0,-21.65,6.3,.85);
+  x.fillStyle = 'rgba(255,255,255,.65)'; E(-3.4,-22.1,2,.35);
   var topo = -22;
   if(m.cob === 0 || m.cob === 2){ x.fillStyle = '#f1e6da'; E(0, -22, 7.5, 2.6); x.fillStyle = '#fffaf2'; E(0, -23.5, 7, 2.6); E(0, -26, 5, 2.4); E(0, -28.3, 3, 2); x.fillStyle = '#fffaf2'; T([-1, -29.5, 1, -29.5, 0, -32]); topo = -30;
     if(m.cob === 2){ [['#ff6fb5', -4, -24], ['#7b3ff0', 2, -25], ['#ffd23f', -1, -27], ['#3fc1ff', 4, -23], ['#5fd18b', -3, -26.5], ['#ff6fb5', 1, -29], ['#ffd23f', 5, -24.5], ['#3fc1ff', -5, -23]].forEach(function(p){ x.fillStyle = p[0]; R(p[1], p[2], 1.2, .6); }); } }

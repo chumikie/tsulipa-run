@@ -10,7 +10,8 @@
 'use strict';
 const {chromium}=require('playwright');
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
-const root=path.join(__dirname,'..'),out=process.argv[2]||'/tmp/telas-qa';
+const root=path.resolve(process.env.TW_VISUAL_ROOT||path.join(__dirname,'..')),out=process.argv[2]||'/tmp/telas-qa';
+const visualOnly=process.env.TW_VISUAL_ONLY==='1';
 fs.mkdirSync(out,{recursive:true});
 
 // servidor falso: dados inventados, só o necessário para as telas abrirem cheias
@@ -183,6 +184,11 @@ async function conferirCafe(browser,base,width=320,height=640){
   const base='http://127.0.0.1:'+server.address().port,browser=await chromium.launch();
   let falhas=[];
   try{
+    if(visualOnly){
+      for(const [nome,width,height,colorScheme] of [['compacto',320,640,'light'],['iphone',390,844,'light'],['iphone-escuro',390,844,'dark'],['desktop',1280,800,'light']]){
+        falhas=falhas.concat(await rodar(browser,base,nome,{viewport:{width,height},deviceScaleFactor:width<500?2:1,isMobile:width<500,hasTouch:width<500,colorScheme}));
+      }
+    }else{
     await conferirEstreia(browser,base);
     await conferirCafe(browser,base);
     await conferirCafe(browser,base,390,844);
@@ -192,6 +198,7 @@ async function conferirCafe(browser,base,width=320,height=640){
     const ua='Mozilla/5.0 (Linux; Android 14; SM-X710) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
     falhas=falhas.concat(await rodar(browser,base,'tablet-em-pe',{viewport:{width:800,height:1280},deviceScaleFactor:2,isMobile:true,hasTouch:true,userAgent:ua}));
     falhas=falhas.concat(await rodar(browser,base,'tablet-deitado',{viewport:{width:1280,height:800},deviceScaleFactor:2,isMobile:true,hasTouch:true,userAgent:ua}));
+    }
   }finally{await browser.close();server.close();}
   fs.writeFileSync(path.join(out,'resultado.txt'),falhas.length?falhas.join('\n'):'ok');
   assert.equal(falhas.length,0,'Telas com problema:\n'+falhas.join('\n'));

@@ -717,3 +717,22 @@ html[data-theme="dark"] #studioMural .stcoracao.on{background:#552d50;color:#ffe
   html:not([data-theme="light"]) #studioMural .stcoracao{background:#322348;color:#ffd5ec;border-color:#a86ba7}
   html:not([data-theme="light"]) #studioMural .stcoracao.on{background:#552d50;color:#ffe4f4;border-color:#e98abf}
 }
+
+/* Polish & Personality: superfícies de estado usam tons próprios no tema escuro,
+   sem alterar os desenhos pastel nem a semântica dos estados. */
+html[data-theme="dark"] body .sttema{background:#382b50;border-color:#a18ac9;color:#eedfff}
+html[data-theme="dark"] body .sttema.ok{background:#233e32;border-color:#7eb99a;color:#c7f2d7}
+html[data-theme="dark"] .bloomestado{background:#203b50;color:#d4edff}
+html[data-theme="dark"] .bloomestado[data-rega-estado="amanha"]{background:#3c2e52;color:#eadcff}
+html[data-theme="dark"] .bloomestado[data-rega-estado="colher"]{background:#254335;color:#cef5d7}
+html[data-theme="dark"] .tw-piloto-vitrine{background:#38263f;border-color:#b68bc6}
+html[data-theme="dark"] .tw-piloto-vitrine span{color:#f3d6f0}
+@media(prefers-color-scheme:dark){
+  html:not([data-theme="light"]) body .sttema{background:#382b50;border-color:#a18ac9;color:#eedfff}
+  html:not([data-theme="light"]) body .sttema.ok{background:#233e32;border-color:#7eb99a;color:#c7f2d7}
+  html:not([data-theme="light"]) .bloomestado{background:#203b50;color:#d4edff}
+  html:not([data-theme="light"]) .bloomestado[data-rega-estado="amanha"]{background:#3c2e52;color:#eadcff}
+  html:not([data-theme="light"]) .bloomestado[data-rega-estado="colher"]{background:#254335;color:#cef5d7}
+  html:not([data-theme="light"]) .tw-piloto-vitrine{background:#38263f;border-color:#b68bc6}
+  html:not([data-theme="light"]) .tw-piloto-vitrine span{color:#f3d6f0}
+}

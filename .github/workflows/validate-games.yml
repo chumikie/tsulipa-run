@@ -219,3 +219,36 @@ jobs:
           TW_BROWSER: webkit
           NODE_PATH: /tmp/continuidade/node_modules
         run: node tests/continuidade.browser.cjs
+
+  visual-comparativo:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: .visual-base
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preparar Chromium para comparação
+        run: |
+          npm install --prefix /tmp/visual-playwright --no-save playwright
+          /tmp/visual-playwright/node_modules/.bin/playwright install --with-deps chromium
+      - name: Capturar main e PR com as mesmas condições
+        env:
+          NODE_PATH: /tmp/visual-playwright/node_modules
+        run: node tests/visual-comparativo.cjs .visual-base . /tmp/polish-personality
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: polish-personality-comparativo
+          path: /tmp/polish-personality
+          if-no-files-found: warn
+          retention-days: 5

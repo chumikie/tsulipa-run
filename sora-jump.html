@@ -3939,6 +3939,12 @@ function soraDraw(){
       x.strokeStyle = 'rgba(255,255,255,.65)'; x.lineWidth = 1;
       x.strokeRect(pl.x + 2, pl.y + 2, pl.w - 4, 10);
     }
+    // Linha de apoio na coordenada real do pouso; não altera a colisão.
+    if(!pl.used){
+      x.shadowBlur=0;x.globalAlpha=1;x.lineCap='round';x.lineWidth=1.2;
+      x.strokeStyle=pl.k==='nuvem'?'rgba(137,93,162,.58)':pl.k==='caixa'?'#fecdd3':'rgba(89,61,129,.65)';
+      x.beginPath();x.moveTo(pl.x+4,pl.y);x.lineTo(pl.x+pl.w-4,pl.y);x.stroke();
+    }
     x.restore();
   });
 

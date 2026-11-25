@@ -1127,7 +1127,7 @@
   function passeioDoToque(q,tm){
     var m=meuPasseio;if(!m)return q;var t=tm-m.t0;
     if(t<0||t>m.ida+MEU_PARA+1.2){meuPasseio=null;return q;}
-    if(t<m.ida){var u=t/m.ida;u=u*u*(3-2*u);return {x:m.x0+(m.x1-m.x0)*u,dir:m.x1>=m.x0?1:-1,mov:1,volta:0};}
+    if(t<m.ida){var u=t/m.ida,passo=Math.max(0,Math.min(1,u*8,(1-u)*8));u=u*u*(3-2*u);return {x:m.x0+(m.x1-m.x0)*u,dir:m.x1>=m.x0?1:-1,mov:1,passo:passo,volta:0};}
     if(t<m.ida+MEU_PARA){
       if(!m.humor && Math.abs(m.x1-m.x0)>=40){m.humor=true;if(window.TW_HUMOR)window.TW_HUMOR.evento('mapa');}
       // Parou perto da fonte da Praça: joga uma moedinha e faz um desejo.
@@ -1135,7 +1135,7 @@
         toques.push({tipo:'agua',x:800,y:560,t0:tm,dur:reduzMov?1.2:1.4,txt:FALA_TOQUE[lang()]||FALA_TOQUE.pt});}
       return {x:m.x1,dir:m.x1>=m.x0?1:-1,mov:0,porta:-1,volta:0,pausa:t-m.ida,toque:true};
     }
-    var v=(t-m.ida-MEU_PARA)/1.2;v=v*v*(3-2*v);return {x:m.x1+(q.x-m.x1)*v,dir:q.x>=m.x1?1:-1,mov:1,volta:0};
+    var v=Math.max(0,Math.min(1,(t-m.ida-MEU_PARA)/1.2)),passo=Math.min(1,v*8,(1-v)*8);v=v*v*(3-2*v);return {x:m.x1+(q.x-m.x1)*v,dir:q.x>=m.x1?1:-1,mov:1,passo:passo,volta:0};
   }
   var ESCALA_RUA=1.75;   // Idols maiores só nas ruas; o mapa geral continua de longe.
   function andar(tm){
@@ -1174,6 +1174,8 @@
       rua.sort(function(a,b){return a.y-b.y;})   // quem está mais embaixo fica na frente
         .forEach(function(q){
         var p=q.p,c=p.oshiChar||perfChar(p.av),bob=q.mov&&!reduzMov?-Math.abs(Math.sin(tm*8+q.i))*1.8*sc*(q.passo==null?1:q.passo):0;
+        // Fase individual: os passeantes não repetem a mesma passada ao mesmo tempo.
+        frame=reduzMov?0:tm*60+q.i*13;
         var pulo=pulos[q.i];if(pulo!=null){var up=(tm-pulo)/.5;if(up>=0&&up<1&&!reduzMov)bob-=Math.sin(up*Math.PI)*16*k;if(tm-pulo>1.6)delete pulos[q.i];}
         ultimos.push({x:q.x,y:q.y,i:q.i,dono:!!p.dono,oshi:p.oshi||'',oshiK:p.oshiK});
         var segurando=!q.mov&&objeto&&q.porta===objeto.porta&&
@@ -1189,7 +1191,7 @@
         var expr=Number(p.av.expr),expressao=p.nomeFa?(reencontro&&!reconhecendo?p.av.expr:2):(p.av.expr!=null&&Number.isInteger(expr)&&expr>=0&&expr<=6?expr:2);
         ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(q.x,q.y,8*sc,1.8*sc,0,0,7);ctx.fill();
         ctx.save();if(q.dir<0){ctx.translate(q.x,0);ctx.scale(-1,1);ctx.translate(-q.x,0);}
-        perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=pose;drawChar(c,0,0,q.mov?1:0,expressao,false);});
+        perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=pose;drawChar(c,0,0,q.mov&&!reduzMov?1:0,expressao,false);});
         ctx.restore();
         // O seu Idol ganha uma estrelinha por cima, para achar você entre os passeantes.
         if(p.dono&&!(reencontro&&q===meuIdol&&!reconhecendo)){

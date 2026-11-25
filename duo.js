@@ -32,7 +32,12 @@ var DUO_FALA_OSHI = 'Bora torcer por {oshi} juntos! 💖';
 var duoBalao = null, duoPulo = null, duoRegistrados = {}, duoPresEmo = '🧸', duoPresQt = 0, duoOff = null, duoPoseForce = ''; var duoOffS = 1;
 var DUO_OW = 680, DUO_OH = 560;   // largo para o brilho dos visuais não ficar cortado
 function duoBraco(x1, y1, x2, y2){ g.save(); g.lineCap = 'round'; g.strokeStyle = g.fillStyle; g.lineWidth = 4; g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.restore(); }
-function duoMao(x, y, c){ g.fillStyle = c.skin; g.beginPath(); g.arc(x, y, 2.4, 0, 7); g.fill(); }
+function duoMao(x, y, c, ang){
+  // Palma e polegar arredondados, na mesma escala do braço; a pose continua no ponto original.
+  g.save();g.translate(x,y);g.rotate(ang||0);g.fillStyle=c.skin;
+  g.beginPath();g.ellipse(0,0,2.65,2.25,0,0,Math.PI*2);g.ellipse(-1.35,-1.6,1.15,1.45,-.4,0,Math.PI*2);g.fill();
+  g.restore();
+}
 function duoGeo(av, t){ var big = av && av.visual === 'mega', sc = DUO_OH / (big ? 68 : 82), ch = DUO_OH * (big ? .95 : .9); return { sc:sc, ch:ch, tx:DUO_OW / 2 - 15 * sc, ty:ch - 44 * sc, bob:t ? Math.sin(t * .06) * 1.1 * sc : 0 }; }
 function duoIdolEm(x, av, sx, chao, pose, expr, t, espelho){
   // duoOffS: a câmera (tw-camera.js) desenha a foto em 2×/3×; o rascunho de cada Idol acompanha para não borrar
@@ -62,6 +67,14 @@ var duoQuadro='aberto', duoInvertido=false;
 function duoQuadroGeo(w,h,unidade,cena){
   var deslocamento=cena[5]*unidade/2*(duoInvertido?-1:1);
   return {eu:w/2-deslocamento,gu:w/2+deslocamento,pivo:h*.42,zoom:duoQuadro==='perto'?1.13:1};
+}
+// Hitbox acompanha a escala real de cada Idol, inclusive quando só um usa o visual Mega.
+function duoAlvoToque(px,py,chao,q,escEu,escGu){
+  var alvos=[{k:'eu',x:q.eu,sc:escEu},{k:'gu',x:q.gu,sc:escGu}].filter(function(a){
+    return py>=chao-52*a.sc&&py<=chao+10&&Math.abs(px-a.x)<20*a.sc;
+  });
+  alvos.sort(function(a,b){return Math.abs(px-a.x)/a.sc-Math.abs(px-b.x)/b.sc;});
+  return alvos.length?alvos[0].k:'';
 }
 function duoRender(x, W2, H2, comFundo, comUI){
   var t = duoT || 1, inf = duoInfo(), eu = duoMeuAv(), gu = duoGuAv();

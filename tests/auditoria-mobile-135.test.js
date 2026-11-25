@@ -121,3 +121,12 @@ test('Mural: nota de publicação antiga não interrompe o desenho da Polaroid',
  for(const est of [9,-2,2.5,NaN,3])ctx.polaroid({width:240,height:300,getContext:()=>x},{},{},est,'',1);
  assert.deepEqual(textos,['⭐⭐⭐','☆☆☆','⭐⭐☆','☆☆☆','⭐⭐⭐']);
 });
+
+test('Moon Duo: hitbox de cada Idol acompanha a escala e escolhe o centro mais próximo',()=>{
+ const s=read('duo.js'),a=s.indexOf('function duoAlvoToque('),b=s.indexOf('function duoRender(',a),ctx={};vm.runInNewContext(s.slice(a,b),ctx);
+ const q={eu:200,gu:400};assert.equal(ctx.duoAlvoToque(400,120,500,q,6,8),'gu');assert.equal(ctx.duoAlvoToque(200,120,500,q,6,8),'');assert.equal(ctx.duoAlvoToque(204,460,500,q,6,8),'eu');assert.equal(ctx.duoAlvoToque(390,530,500,q,6,8),'');
+ assert.equal(ctx.duoAlvoToque(270,400,500,{eu:200,gu:280},6,6),'gu');
+});
+test('Mapa: passadas têm fase individual e respeitam movimento reduzido',()=>{
+ const s=read('tw-mapa.js');assert.match(s,/frame=reduzMov\?0:tm\*60\+q.i\*13/);assert.match(s,/drawChar\(c,0,0,q.mov&&!reduzMov\?1:0,expressao,false\)/);
+});

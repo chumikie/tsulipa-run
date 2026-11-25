@@ -478,7 +478,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   window.twAbrirJogoDoHub = function(nome){ atalho(nome)(); };
   window.TW_JOGOS_SOB_DEMANDA=true;window.twJogosCarregar=carregar;window.hsAbrir=atalho('hsAbrir');window.cfAbrir=atalho('cfAbrir');})();
 </script>
-<script src="./duo-base.js?v=11"></script>
+<script src="./duo-base.js?v=12"></script>
 <script src="./encontro-base.js?v=3"></script>
 <script src="./hub.js?v=36"></script>
 <script defer src="./hub-layout.js?v=7"></script>
@@ -496,7 +496,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido){
       var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
-      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=75');})
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=76');})
         .catch(function(e){pedido=null;throw e;});
     }
     return pedido;

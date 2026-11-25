@@ -793,6 +793,9 @@ async function leituraHandshake(browser){
       const resposta=await page.evaluate(()=>hs.ops.indexOf(hs.quiz[hs.qi].pres));
       await h.locator('[data-hs="'+resposta+'"]').click();
       await page.evaluate(()=>{hsT+=90;});
+      await h.getByRole('button',{name:'Continuar',exact:true}).waitFor();
+      assert.equal(await page.evaluate(()=>hs.fase),'resposta','resposta manual permanece até confirmar');
+      await h.getByRole('button',{name:'Continuar',exact:true}).click();
     }
     await h.getByRole('button',{name:'Repetir com o tempo padrão'}).click();
     assert.deepEqual(await page.evaluate(()=>hs.fila.map(f=>[f.nome,f.pres])),fila);

@@ -3,9 +3,9 @@
 // poses só do Moon⭐Duo! (pegam carona no "V" e trocam os braços aqui)
 var DUO_POSE_FN = {
   dmao: function(c, x, y){ duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 36, y + 30); duoMao(x + 37, y + 30.5, c); },
-  dhigh: function(c, x, y){ duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 34.5, y + 12); g.fillStyle = c.skin; g.beginPath(); g.arc(x + 35.5, y + 10.5, 3, 0, 7); g.fill(); },
+  dhigh: function(c, x, y){ duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 34.5, y + 12); duoMao(x + 35.5, y + 10.5, c, -1); },
   dguarda: function(c, x, y){ duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 33, y + 15.5); duoMao(x + 33.6, y + 14.8, c); },
-  dsegura: function(c, x, y){ duoBraco(x + 3, y + 26, x + 11, y + 28.5); duoBraco(x + 27, y + 26, x + 19, y + 28.5); g.fillStyle = c.skin; g.fillRect(x + 1, y + 24, 4, 3); g.fillRect(x + 25, y + 24, 4, 3); },
+  dsegura: function(c, x, y){ duoBraco(x + 3, y + 26, x + 11, y + 28.5); duoBraco(x + 27, y + 26, x + 19, y + 28.5); duoMao(x + 11, y + 28.5, c, .15); duoMao(x + 19, y + 28.5, c, Math.PI-.15); },
   dselfie: function(c, x, y){
     duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 36, y + 13.5);
     g.fillStyle = '#ff6fb5'; g.fillRect(x + 34, y + 5, 6.5, 10.5); g.fillStyle = '#2a2438'; g.fillRect(x + 34.8, y + 5.8, 4.9, 8.9);
@@ -65,12 +65,13 @@ duoOv.addEventListener('input',function(e){
 duoOv.addEventListener('keydown', function(e){ if(e.target.id === 'duoBusca') e.stopPropagation(); });
 $('duoCv').addEventListener('click', function(e){
   if(!duoGu) return;
-  var cv = this, r = cv.getBoundingClientRect(), px = (e.clientX - r.left) * cv.width / r.width, py = (e.clientY - r.top) * cv.height / r.height;
-  var inf=duoInfo(),U=duoGeo(duoMeuAv(),duoT).sc,chao=cv.height*.9,q=duoQuadroGeo(cv.width,cv.height,U,inf),sxE=q.eu,sxG=q.gu;
+  var cv = this, r = cv.getBoundingClientRect();if(!r.width||!r.height)return;
+  var px = (e.clientX - r.left) * cv.width / r.width, py = (e.clientY - r.top) * cv.height / r.height;
+  var inf=duoInfo(),U=duoGeo(duoMeuAv(),duoT).sc,UG=duoGeo(duoGuAv(),duoT+37).sc,chao=cv.height*.9,q=duoQuadroGeo(cv.width,cv.height,U,inf);
   px=cv.width/2+(px-cv.width/2)/q.zoom;py=q.pivo+(py-q.pivo)/q.zoom;
-  if(py < chao - 52 * U || py > chao + 10) return;
-  if(Math.abs(px - sxG) < 20 * U){ duoBalao = { txt:duoFala(), t0:duoT }; duoPulo = { quem:'gu', t0:duoT }; [1319, 1568, 2093].forEach(function(f, i){ beep(f, .09, 'triangle', .035, i * .07); }); }
-  else if(Math.abs(px - sxE) < 20 * U){ duoPulo = { quem:'eu', t0:duoT }; beep(988, .08, 'triangle', .04); }
+  var alvo=duoAlvoToque(px,py,chao,q,U,UG);
+  if(alvo==='gu'){ duoBalao = { txt:duoFala(), t0:duoT }; duoPulo = { quem:'gu', t0:duoT }; [1319, 1568, 2093].forEach(function(f, i){ beep(f, .09, 'triangle', .035, i * .07); }); }
+  else if(alvo==='eu'){ duoPulo = { quem:'eu', t0:duoT }; beep(988, .08, 'triangle', .04); }
 });
 // ---------- Painel organizado em abas: Cena · Cenário · Expressões · Presente ----------
 duoOv.addEventListener('click', function(e){

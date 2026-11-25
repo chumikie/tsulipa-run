@@ -130,3 +130,10 @@ test('Moon Duo: hitbox de cada Idol acompanha a escala e escolhe o centro mais p
 test('Mapa: passadas têm fase individual e respeitam movimento reduzido',()=>{
  const s=read('tw-mapa.js');assert.match(s,/frame=reduzMov\?0:tm\*60\+q.i\*13/);assert.match(s,/drawChar\(c,0,0,q.mov&&!reduzMov\?1:0,expressao,false\)/);
 });
+
+test('Studio: enquadramento de objeto inclui microfone e lightstick',()=>{
+ const s=read('studio.js');assert.match(s,/comObjeto = !!e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao'/);assert.match(s,/tm \* 60, quadro, comObjeto\)/);
+});
+test('Camarim: respiração e balanço das pernas respeitam movimento reduzido',()=>{
+ const s=read('pet-sala.js');assert.match(s,/var bal = petLifeMovimentoReduzido\(\) \? 0/);assert.match(s,/var bobIdol=petLifeMovimentoReduzido\(\)\?0/);
+});

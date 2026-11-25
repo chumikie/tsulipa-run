@@ -87,7 +87,7 @@ function petLifeSofa(x, frente, visual){
       var px = q.x + o;
       // Mesmo desenho das pernas do avatar (drawChar): retângulos 5×8 escuros, sem pé
       // separado. Só a altura encurta, porque a coxa vem para frente.
-      var bal = Math.sin(petT * .05 + (o > 0 ? 1.6 : 0)) * (petLifePose === 'sentar' ? 1.2 : 0);
+      var bal = petLifeMovimentoReduzido() ? 0 : Math.sin(petT * .05 + (o > 0 ? 1.6 : 0)) * (petLifePose === 'sentar' ? 1.2 : 0);
       x.fillStyle=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || '')) ? CH[sel].legcol : '#1c1c30';
       x.fillRect(px-6,q.y+6,12,15+bal);                               // canela 5u de largura
       petLifeCanelaRoupa(x, px, q.y + 6 + 15 + bal);                  // polainas da roupa (ex.: Nagareboshi) também sentado
@@ -1862,8 +1862,8 @@ function petDrawRoom(){
       g.beginPath();g.rect(0,0,360,limite);g.clip();
     }
     else { g.fillStyle = 'rgba(60,25,90,.18)'; g.beginPath(); g.ellipse(114, PET_FLOOR + 1, 21, 3.5, 0, 0, 7); g.fill(); }
-    g.translate(poseDesenho.x,
-      poseDesenho.y + Math.sin(petT * (petLifePose === 'descansar' ? .018 : .05)) * (pose ? .55 : 1.5) - (pose ? 0 : chop));
+    var bobIdol=petLifeMovimentoReduzido()?0:Math.sin(petT * (petLifePose === 'descansar' ? .018 : .05)) * (pose ? .55 : 1.5);
+    g.translate(poseDesenho.x,poseDesenho.y+bobIdol-(pose||petLifeMovimentoReduzido()?0:chop));
     if(pose && pose.rot) g.rotate(pose.rot);
     // Olhar sugerido pelo corpo, sem editar olhos/pupilas ou a função drawChar compartilhada.
     if(petLifePose === 'conviver' && !sleepy && !petAnim && !petLifePhoneOlhar &&

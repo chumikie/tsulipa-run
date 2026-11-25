@@ -498,12 +498,14 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera, comFlor){
     // Medido na tela (unidades a partir de tx/ty): cabelo y≈-5,5, boca ≈17, ombros ≈22, bermuda ≈33,
     // pés ≈42 e sombra ≈46; largura x≈0..30. Cada enquadramento mostra uma faixa desse mesmo desenho:
     // rosto = cabelo até o peito · meio = até o quadril · inteiro = dos pés à cabeça (com o Pet).
-    var faixa = camera === 'rosto' ? [-7, comFlor ? 31 : 27] : camera === 'meio' ? [-7, 35] : [-7, 49];
-    var largura = camera === 'rosto' ? (comFlor ? 34 : 30) : camera === 'meio' ? 36 : (pet ? 76 : 44);
+    var aceno = av.pose === 'tchau' || av.pose === 'v';
+    // A mão baixa chega a y=33, e o punho do objeto continua até y≈34.
+    // No retrato com objeto, reserve a mesma margem para flor, microfone e lightstick.
+    var faixa = camera === 'rosto' ? [-7, comFlor ? 34 : 27] : camera === 'meio' ? [-7, 35] : [-7, 49];
+    var largura = camera === 'rosto' ? (comFlor ? (aceno ? 46 : 37) : 30) : camera === 'meio' ? (comFlor && aceno ? 48 : comFlor ? 39 : 36) : (pet ? 76 : 44);
     if(camera !== 'inteiro') pet = null; // no close o Pet fica de fora, para o Idol não encolher
     sc = Math.min(H2 * .92 / (faixa[1] - faixa[0]), W2 * .96 / largura);
-    var aceno = av.pose === 'tchau' || av.pose === 'v';
-    tx = W2 / 2 - (pet ? 25 : aceno && camera !== 'rosto' ? 18.5 : 15) * sc;
+    tx = W2 / 2 - (pet ? 25 : aceno && (camera !== 'rosto' || comFlor) ? 18.5 : 15) * sc;
     ty = (H2 - (faixa[1] - faixa[0]) * sc) / 2 - faixa[0] * sc;   // faixa centralizada na foto
     chao = ty + 44 * sc;
   }

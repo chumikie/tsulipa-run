@@ -32,6 +32,16 @@ test('Photo Studio: rosto, meio and inteiro have genuinely different crops', () 
   assert.ok(cut[0] > 20 && cut[0] < 31, 'portrait ends around the shoulders');
   assert.ok(cut[1] > 34 && cut[1] < 44, 'half-body ends around the shorts');
   assert.ok(cut[2] > 46, 'full-body fits through the shoes and shadow');
+  for(const pose of ['', 'v', 'tchau', 'coracao']){
+    const close=scope.paintIdol(canvas,432,540,{pose},false,false,0,'rosto',true);
+    const meio=scope.paintIdol(canvas,432,540,{pose},false,false,0,'meio',true);
+    assert.ok(close.y+34*close.scale<=540,'punho inteiro no retrato');
+    if(pose==='v'||pose==='tchau'){
+      assert.ok(close.x+40*close.scale<=432,'dedos da pose dentro do retrato');
+      assert.ok(close.x-3*close.scale>=0,'mão esquerda não corta');
+    }
+    assert.ok(close.scale>=meio.scale,'retrato não fica menor que meio corpo');
+  }
 });
 
 test('Studio photo and mural reuse the same camera and props renderer', () => {

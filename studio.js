@@ -686,10 +686,16 @@
         x.beginPath(); x.moveTo(-.4,-3.2); x.lineTo(-.4,-7); x.stroke();
       }
     }
-    // Punho simples sobre a haste: uma faixa arredondada de dedos e o polegar por cima.
-    x.lineCap='round';x.strokeStyle=corpo.skin;x.lineWidth=2.6;
-    x.beginPath();x.moveTo(-1.5,.2);x.lineTo(1.5,.2);x.stroke();
-    x.lineWidth=1.2;x.beginPath();x.moveTo(1.4,1.2);x.quadraticCurveTo(.2,-.2,-.7,-1.7);x.stroke();
+    // Dedos fechados por cima do cabo, com polegar arredondado.
+    // Duas curvas suaves dão volume sem separar a mão do braço.
+    x.fillStyle=corpo.skin;x.beginPath();
+    x.moveTo(-1.9,-.65);x.quadraticCurveTo(-1.9,-1.45,-.8,-1.45);
+    x.lineTo(1.1,-1.25);x.quadraticCurveTo(2.15,-1.1,2.15,.1);
+    x.quadraticCurveTo(2.15,1.35,1.05,1.7);x.lineTo(-.95,1.45);
+    x.quadraticCurveTo(-2,1.2,-1.9,-.65);x.closePath();x.fill();
+    x.lineCap='round';x.strokeStyle='rgba(105,56,50,.17)';x.lineWidth=.45;
+    x.beginPath();x.moveTo(-1.4,.35);x.quadraticCurveTo(-.1,.6,1.25,.35);x.stroke();
+    x.strokeStyle=corpo.skin;x.lineWidth=1.45;x.beginPath();x.moveTo(1.4,1.2);x.quadraticCurveTo(.2,-.2,-.7,-1.7);x.stroke();
     x.restore();
   }
   function cena(x, W, H, e, tm, avOutro){
@@ -697,9 +703,9 @@
     var av = JSON.parse(JSON.stringify(avOutro || meuAv() || {})); av.pose = e.pose === 'normal' ? '' : e.pose; av.fundo = '';
     if(e.objeto === 'balao') baloes(x, W, H, tm);
     var corpo;
-    var quadro = e.quadro || 'inteiro', comFlor = (String(e.objeto || '').indexOf('flor_') === 0 || arranjoFlores(e.objeto).length>0);
+    var quadro = e.quadro || 'inteiro', comObjeto = !!e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao';
     if(typeof perfDesenharIdol === 'function'){
-      corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro, comFlor);
+      corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro, comObjeto);
     }
     if(corpo && e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao'){
       objetoNaMao(x, e.objeto, av.pose, corpo, av.cor, quadro);

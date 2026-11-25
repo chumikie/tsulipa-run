@@ -791,7 +791,8 @@ function petCartasHtml(){
 function petPhoneAgendaHtml(){
   if(!contaJ) return '<p class="petphone-dica">🔒 ' + escHtml(tr('Entre com Google para ver sua Agenda.')) + '</p>';
   if(petPhoneAgendaDono !== petPhoneContaChave()) return '<p class="petphone-dica">⌛ ' + escHtml(tr('Carregando...')) + '</p>';
-  if(petPhoneAgendaDados === null) return '<p class="petphone-dica">⌛ ' + escHtml(tr('Carregando...')) + '</p>';
+  if(petPhoneAgendaDados === null) return '<p class="petphone-dica" role="status">⌛ ' + escHtml(tr('Carregando...')) + '</p>';
+  if(petPhoneAgendaDados === false) return '<p class="petphone-dica" role="status">⚠️ ' + escHtml(tr('Não deu para falar com o servidor. Tente de novo.')) + '</p>';
   if(!petPhoneAgendaDados.length) return '<p class="petphone-dica">📅 ' + escHtml(tr('Nenhum compromisso disponível agora.')) + '</p>';
   var validas = petPhoneAgendaDados.filter(function(m){ return m && typeof m.k === 'string' && +m.meta > 0; }).slice(0, 6);
   if(!validas.length) return '<p class="petphone-dica">📅 ' + escHtml(tr('Nenhum compromisso disponível agora.')) + '</p>';
@@ -1281,6 +1282,8 @@ function petPhoneChatResponder(opcao){
 function petPhoneRender(){
   if(!petPhoneOpen) return;
   var corpo = $('petPhoneCorpo'); if(!corpo) return;
+  var ativo=typeof document!=='undefined'&&document.activeElement;
+  var voltaFoco=ativo&&corpo.contains&&corpo.contains(ativo)&&ativo.getAttribute('data-phone')==='voltar';
   var nomes = PET_PHONE_APPS[LANG] || PET_PHONE_APPS.pt;
   if(petPhoneTela === 'home'){
     corpo.innerHTML = '<div class="petphone-capa"><canvas id="petPhoneCapa" width="520" height="280" aria-hidden="true"></canvas>' +
@@ -1307,6 +1310,7 @@ function petPhoneRender(){
   else if(petPhoneTela === 'fotos') conteudo = petPhoneFotosHtml();
   else if(petPhoneTela === 'cartas') conteudo = petCartasHtml();
   corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>' + titulo + '</h2></header>' + conteudo;
+  if(voltaFoco&&corpo.querySelector){var voltar=corpo.querySelector('.petphone-pagetopo [data-phone="voltar"]');if(voltar)voltar.focus({preventScroll:true});}
   if(petPhoneTela === 'chat') petPhoneChatRetratos(corpo);
   if(petPhoneTela === 'cartas') petCartaFotoRender(corpo);
   if(petPhoneTela === 'fotos'){
@@ -1389,12 +1393,12 @@ function petPhoneAgendaCarregar(){
   if(cache && cache.dono === dono && Date.now() - cache.em < 30000){ petPhoneAgendaDados = cache.d; petPhoneAgendaDono = dono; petPhoneRender(); return; }
   petPhoneAgendaDados = null; petPhoneAgendaDono = dono; petPhoneRender();
   contaRpc('missoes').then(function(d){
-    if(Array.isArray(d)) petPhoneAgendaCache = {dono:dono, em:Date.now(), d:d};
     if(req !== petPhoneAgendaReq || !petPhoneOpen || petPhoneTela !== 'agenda' || dono !== petPhoneContaChave()) return;
-    petPhoneAgendaDados = Array.isArray(d) ? d : []; petPhoneAgendaDono = dono; petPhoneRender();
+    if(Array.isArray(d)) petPhoneAgendaCache = {dono:dono, em:Date.now(), d:d};
+    petPhoneAgendaDados = Array.isArray(d) ? d : false; petPhoneAgendaDono = dono; petPhoneRender();
   }).catch(function(){
     if(req === petPhoneAgendaReq && petPhoneOpen && petPhoneTela === 'agenda' && dono === petPhoneContaChave()){
-      petPhoneAgendaDados = []; petPhoneRender();
+      petPhoneAgendaDados = false; petPhoneRender();
     }
   });
 }

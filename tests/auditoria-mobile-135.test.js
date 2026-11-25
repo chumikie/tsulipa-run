@@ -100,3 +100,13 @@ test('Center: reset inicial é seguro antes de inicializar o conjunto de teclas'
  assert.ok(a>=0&&b>a);const ctx={crPointerPulo:undefined,crTeclasPulo:undefined,held:true};
  vm.runInNewContext(s.slice(a,b),ctx);ctx.crPuloLimpar();assert.equal(ctx.held,false);assert.equal(ctx.crPointerPulo,null);
 });
+
+test('Gacha: consulta anterior não substitui os cards da sessão atual',async()=>{
+ const s=read('gacha.js'),a=s.indexOf('function gachaCardsCarregar(){'),b=s.indexOf('\n}',a)+2;
+ let dono='A',reqs=[],desenhados=[];const box={innerHTML:'card A'},ctx={gachaCardsDono:'A',gachaCardsReq:0,cardsMem:{gachaCards:[1]},contaJ:{nick:'A'},$:id=>id==='gachaCards'?box:{},gachaContaAtual:()=>dono,tr:s=>s,escHtml:s=>s,contaRpc:()=>new Promise(r=>reqs.push(r)),cardsHtml:L=>L.join(','),cardsDesenhar:L=>desenhados.push(L)};
+ vm.runInNewContext(s.slice(a,b),ctx);ctx.gachaCardsCarregar();dono='B';ctx.gachaCardsCarregar();assert.doesNotMatch(box.innerHTML,/card A/);reqs[0](['A']);reqs[1](['B']);await Promise.resolve();assert.equal(box.innerHTML,'B');assert.equal(desenhados.length,1);
+});
+test('Agenda: falha de conexão não equivale a lista vazia',()=>{
+ const s=read('pet-sala.js'),a=s.indexOf('function petPhoneAgendaHtml(){'),b=s.indexOf('//←petPhoneFotoLimpar',a),ctx={contaJ:{nick:'A'},petPhoneAgendaDono:'A',petPhoneContaChave:()=> 'A',petPhoneAgendaDados:false,escHtml:s=>s,tr:s=>s};
+ vm.runInNewContext(s.slice(a,b),ctx);assert.match(ctx.petPhoneAgendaHtml(),/servidor/);ctx.petPhoneAgendaDados=[];assert.match(ctx.petPhoneAgendaHtml(),/Nenhum compromisso/);
+});

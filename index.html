@@ -423,9 +423,9 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script defer src="./karaoke-room-views.js?v=1"></script>
 <script src="./centerrun.js?v=45"></script>
 <script defer src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=154"></script>
-<script src="./perfil.js?v=41"></script>
-<script src="./gacha.js?v=7"></script>
+<script src="./pet.js?v=155"></script>
+<script src="./perfil.js?v=42"></script>
+<script src="./gacha.js?v=8"></script>
 <script src="./album-fotos.js?v=9"></script>
 <script src="./album.js?v=9"></script>
 <script defer src="./gacha-po.js?v=2"></script>
@@ -2615,7 +2615,7 @@ hubOv.addEventListener('click', function(e){ var b = e.target.closest('#hubBusca
 var gachaOv = document.createElement('div');
 gachaOv.className = 'ov gachaov tw-window-overlay'; gachaOv.id = 'gachaOv'; gachaOv.hidden = true;
 gachaOv.innerHTML = '<div class="panel gachap tw-modal tw-modal-gacha tw-window tw-window-surface" role="dialog" aria-modal="true" aria-labelledby="gachaTit"><button type="button" class="perfx tw-window-control tw-window-close" id="gachaX">✕</button><button type="button" class="ovsom tw-window-control tw-window-sound" data-som="1" aria-label="🔊"></button><h2 class="tw-modal-title" id="gachaTit" translate="no"></h2><small class="tw-modal-jp" lang="ja">スター・ガチャ</small><p class="tw-modal-lede" id="twGachaLede"></p>' +
-  '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
+  '<canvas id="gachaCv" width="640" height="420" aria-hidden="true"></canvas><p class="gacharesp" id="gachaTxt" role="status" aria-live="polite"></p><canvas id="gachaCardCv" width="360" height="504" hidden></canvas>' +
   '<div class="btns"><a class="btn alt" id="gachaCardDl" download="star-gacha-card.png" href="#" hidden></a><button type="button" class="btn" id="gachaGirar"></button><button type="button" class="btn alt" id="gachaBattle" hidden></button></div><div class="gachacards"><h3 id="gachaCardsT"></h3><div id="gachaCards"></div><div class="btns gachaalbum"><button type="button" class="btn alt" id="gachaAlbum"></button></div></div></div>';
 document.body.appendChild(gachaOv);
 // Handshake⭐Event! (handshake.js)
@@ -2677,13 +2677,13 @@ $('gachaGirar').onclick = function(){
         if(r.tipo === 'nada'){ beep(392, .2, 'triangle', .04); beep(330, .3, 'triangle', .04, .18); }
         else { [1047, 1319, 1568, 2093].forEach(function(f, i){ beep(f, .16, 'triangle', .04, i * .09); }); }
       } else if(r && r.erro === 'hoje'){ gachaFeito = true; gachaConferir(); }
-      if(!gachaOv.hidden){gachaUI();gachaCardUI();}
+      if(!gachaOv.hidden){gachaUI();gachaCardUI();if(!r||(!r.ok&&r.erro!=='hoje'))$('gachaTxt').textContent=tr('Não deu para falar com o servidor. Tente de novo.');}
       if(!hubOv.hidden)hubCardsUI();
       if(typeof gachaCardsCarregar==='function')setTimeout(function(){if(!gachaOv.hidden)gachaCardsCarregar();},600);
     }, 1600);
   }).catch(function(){
     if(gachaPedido!==pedido || gachaContaAtual()!==dono)return;
-    gachaPedido=null;gachaGiro=-1;if(!gachaOv.hidden)gachaUI();
+    gachaPedido=null;gachaGiro=-1;if(!gachaOv.hidden){gachaUI();$('gachaTxt').textContent=tr('Não deu para falar com o servidor. Tente de novo.');}
   });
 };
 

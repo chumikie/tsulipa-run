@@ -809,6 +809,11 @@ function perfMiniaturasLiberar(box){
 }
 function perfLojaUI(){
   var box = $('perfLoja'); if(!box) return;
+  var ativo=typeof document!=='undefined'&&document.activeElement;
+  var foco=null;
+  if(ativo&&box.contains&&box.contains(ativo)&&ativo.tagName==='BUTTON'){
+    ['data-provar','data-vestir','data-comprar'].some(function(a){if(ativo.hasAttribute(a)){foco={a:a,v:ativo.getAttribute(a)};return true;}return false;});
+  }
   var tmL = perfMeuAniverHoje ? 'aniversario' : (typeof temaAtual === 'function' ? temaAtual() : '');
   var lojaL = PERF_LOJA.filter(function(it){ return !it[4] || it[4] === tmL || perfLojaDono().indexOf(it[0]) >= 0; });
   lojaL.sort(function(a, b){ return (b[4] === tmL && !!tmL) - (a[4] === tmL && !!tmL); });   // a da temporada vem primeiro
@@ -827,6 +832,12 @@ function perfLojaUI(){
       escHtml(shopProvaTexto(0)+' · '+tr(it[2]))+'</button>' : '';
     return '<div class="perfroupa' + (prov ? ' on' : '') + (it[4] ? ' temp' : '') + '" data-provar="' + it[0] + '"><canvas width="160" height="160" data-roupa="' + it[0] + '"></canvas><b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b>' + tag + (window.TW_RITMO ? '<details class="tw-ritmo-origem"><summary>'+escHtml(TW_RITMO.origemTexto(0))+'</summary><p>'+escHtml(TW_RITMO.origemTexto(it[4]?2:1))+'</p><p>'+escHtml(TW_RITMO.t(28))+'</p></details>' : '') + provar + acao + '</div>';
   }).join('');
+  if(foco){
+    [].some.call(box.querySelectorAll('button['+foco.a+']'),function(b){
+      if(b.getAttribute(foco.a)!==foco.v||b.disabled)return false;
+      b.focus({preventScroll:true});return true;
+    });
+  }
   [].forEach.call(box.querySelectorAll('canvas[data-roupa]'), function(cv){
     perfMiniaturaLoja(cv,function(){
       var av=perfAvAtual({pose:'v',fundo:'basico'});av.c.out=cv.dataset.roupa;

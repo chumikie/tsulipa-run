@@ -6,7 +6,7 @@ var GACHA_SORTE = ['Hoje não veio nada... mas amanhã a sorte gira! 🍀', 'Cá
   'Só confete! 🎊 Volte amanhã', 'A Lirika guardou o prêmio pra amanhã 🐨', 'O Pati disse: amanhã é dia de coroa! 👑', 'Sorte pequena: um sorriso 😊', 'Hoje não... mas o Center te espera! ⭐'];
 var GACHA_BONUS = { ima:'🧲 Ímã', escudo:'🛡️ Escudo', fever:'🔥 Fever' };
 var gachaFeito = false, gachaRes = null, gachaT = 0, gachaAnim = 0, gachaGiro = -1, gachaAgora = false;
-var gachaDono='', gachaPedido=null;
+var gachaDono='', gachaPedido=null, gachaConsulta=0, gachaCardsReq=0, gachaCardsDono='';
 var GACHA_BATTLE_TR = {
   pt:'Testar no meu trio',en:'Try in my unit',es:'Probar en mi trío',
   id:'Uji di trioku',th:'ลองในทีมของฉัน',ja:'自分のユニットで試す'
@@ -15,12 +15,18 @@ function gachaContaAtual(){
   return typeof petPhoneContaChave==='function' ? petPhoneContaChave() : (contaJ && String(contaJ.id||contaJ.nick)||'');
 }
 function gachaConferir(){
-  var dono=gachaContaAtual();
-  if(gachaDono!==dono){gachaRes=null;gachaFeito=false;gachaGiro=-1;gachaPedido=null;}
+  var dono=gachaContaAtual(), req=++gachaConsulta;
+  if(gachaDono!==dono){
+    gachaRes=null;gachaFeito=false;gachaAgora=false;gachaGiro=-1;gachaPedido=null;
+    gachaCardsReq++;gachaCardsDono='';cardsMem.gachaCards=[];
+    var box=$('gachaCards');if(box)box.innerHTML='';
+    gachaDono=dono;
+    if(typeof gachaOv!=='undefined'&&!gachaOv.hidden){gachaUI();gachaCardUI();}
+  }
   gachaDono=dono;
   if(!dono)return;
   contaRpc('gacha_hoje').then(function(r){
-    if(dono!==gachaContaAtual() || gachaPedido || gachaAgora && gachaFeito)return;
+    if(req!==gachaConsulta || dono!==gachaContaAtual() || gachaPedido || gachaAgora && gachaFeito)return;
     gachaFeito=!!(r && r.tipo);gachaRes=gachaFeito?r:null;
     if(!hubOv.hidden)hubCardsUI();
     if(!gachaOv.hidden){gachaUI();gachaCardUI();}
@@ -28,7 +34,7 @@ function gachaConferir(){
 }
 function gachaTexto(r){
   if(!r) return '';
-  if(r.tipo === 'ticket') return ({pt:'🎟️ Você ganhou +1 ticket de Karaoke!',en:'🎟️ You won +1 Karaoke ticket!',es:'🎟️ ¡Ganaste +1 ticket de Karaoke!',th:'🎟️ คุณได้ตั๋วคาราโอเกะ +1 ใบ!',ja:'🎟️ カラオケチケットを1枚獲得！'}[LANG]||'🎟️ Você ganhou +1 ticket de Karaoke!');
+  if(r.tipo === 'ticket') return ({pt:'🎟️ Você ganhou +1 ticket de Karaoke!',en:'🎟️ You won +1 Karaoke ticket!',es:'🎟️ ¡Ganaste +1 ticket de Karaoke!',id:'🎟️ Kamu mendapat +1 tiket Karaoke!',th:'🎟️ คุณได้ตั๋วคาราโอเกะ +1 ใบ!',ja:'🎟️ カラオケチケットを1枚獲得！'}[LANG]||'🎟️ Você ganhou +1 ticket de Karaoke!');
   if(r.tipo === 'estrelas') return '⭐ ' + tr('Você ganhou') + ' ★' + r.valor + '!';
   if(r.tipo === 'bonus') return '✨ ' + tr('Bônus na próxima corrida') + ': ' + (GACHA_BONUS[r.valor] || r.valor) + '!';
   if(r.tipo === 'card') return '🃏 ' + tr('Você tirou o card de') + ' ' + (r.card ? r.card.nick : r.valor) + '!';
@@ -117,7 +123,7 @@ function gachaAbrir(){
   if(!gachaAnim)gachaAnim=requestAnimationFrame(gachaLoop);
   if(hubComecou)hubMusicaTocar();
 }
-function gachaFechar(){ gachaOv.hidden = true; hubMostrar(); }
+function gachaFechar(){ gachaOv.hidden = true; if(gachaAnim){cancelAnimationFrame(gachaAnim);gachaAnim=0;} hubMostrar(); }
 function gachaDesenhar(){
   var cv = $('gachaCv'); if(typeof twNitido === 'function') twNitido(cv); var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = gachaT, i;
   x.clearRect(0, 0, W2, H2);
@@ -204,7 +210,11 @@ function gachaCardsCarregar(){
   var box = $('gachaCards'); if(!box) return;
   $('gachaCardsT').textContent = '🃏 ' + tr('Seus últimos cards');
   var ab = $('gachaAlbum'); if(ab){ ab.textContent = '📖 ' + tr('Álbum de cards'); ab.hidden = !contaJ; }
+  var dono=gachaContaAtual(), req=++gachaCardsReq;
+  if(gachaCardsDono!==dono){gachaCardsDono=dono;cardsMem.gachaCards=[];box.innerHTML='';}
   if(!contaJ){ box.innerHTML = ''; return; }
-  var dono=gachaContaAtual();
-  contaRpc('meus_cards').then(function(L){ if(dono!==gachaContaAtual())return; box.innerHTML = cardsHtml(L || [], 'gachaCards', true); cardsDesenhar(L || [], 'gachaCards'); }).catch(function(){});
+  if(!box.innerHTML)box.innerHTML='<p class="perfcarr" role="status">'+escHtml(tr('Carregando...'))+'</p>';
+  function atual(){return req===gachaCardsReq&&dono===gachaContaAtual();}
+  function falhou(){if(atual()&&!cardsMem.gachaCards.length)box.innerHTML='<p class="perfcarr" role="status">'+escHtml(tr('Não deu para falar com o servidor. Tente de novo.'))+'</p>';}
+  contaRpc('meus_cards').then(function(L){ if(!atual())return;if(!Array.isArray(L)){falhou();return;} box.innerHTML=cardsHtml(L,'gachaCards',true);cardsDesenhar(L,'gachaCards'); }).catch(falhou);
 }

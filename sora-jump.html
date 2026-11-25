@@ -1872,6 +1872,10 @@ var soraFlashAlpha = 0;
 var soraPet = null;
 var soraDir = 0;
 var soraKeyL = false, soraKeyR = false, soraTouchDir = 0;
+var soraPointers = new Map();
+function soraTouchUpdate(){ soraTouchDir = 0; soraPointers.forEach(function(dir){ soraTouchDir = dir; }); }
+function soraTouchRelease(id){ soraPointers.delete(id); soraTouchUpdate(); }
+function soraTouchReset(){ soraPointers.clear(); soraTouchDir = 0; }
 var soraTiltOn = false, soraTiltGamma = 0;
 try{
   var sLb = JSON.parse(window.__TW_TEST_STORAGE.getItem(SORA_LB_KEY) || '[]');
@@ -4632,32 +4636,34 @@ function soraSetupUI(){
   soraCv.setAttribute('aria-label', 'Sora Jump: toque no lado esquerdo ou direito para mover a personagem');
   soraCv.setAttribute('role', 'img');
 
-  // Toque nas metades esquerda / direita da tela (funciona sempre!)
+  // Cada dedo mantém sua direção; soltar outro dedo não cancela o controle ativo.
+  function soraPointerDirection(e){
+    var r = soraCv.getBoundingClientRect();
+    return (e.clientX - r.left) / Math.max(1, r.width) < 0.5 ? -1 : 1;
+  }
   soraCv.addEventListener('pointerdown', function(e){
     if(!soraOpen || soraState !== 'play') return;
     e.preventDefault();
     try { soraCv.setPointerCapture(e.pointerId); } catch(_) {}
-    var r = soraCv.getBoundingClientRect();
-    var lx = (e.clientX - r.left) / Math.max(1, r.width);
-    soraTouchDir = lx < 0.5 ? -1 : 1;
+    soraPointers.set(e.pointerId, soraPointerDirection(e)); soraTouchUpdate();
   });
   soraCv.addEventListener('pointermove', function(e){
-    if(soraTouchDir === 0 || !soraOpen || soraState !== 'play') return;
+    if(!soraPointers.has(e.pointerId) || !soraOpen || soraState !== 'play') return;
     e.preventDefault();
-    var r = soraCv.getBoundingClientRect();
-    var lx = (e.clientX - r.left) / Math.max(1, r.width);
-    soraTouchDir = lx < 0.5 ? -1 : 1;
+    soraPointers.set(e.pointerId, soraPointerDirection(e)); soraTouchUpdate();
   });
-  ['pointerup','pointercancel','lostpointercapture','pointerleave'].forEach(function(ev){
-    soraCv.addEventListener(ev, function(){ soraTouchDir = 0; });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(function(ev){
+    soraCv.addEventListener(ev, function(e){ soraTouchRelease(e.pointerId); });
   });
-  // Se uma chamada, troca de app ou gesto do sistema interromper a partida, não deixa o controle preso.
-  window.addEventListener('pointerup', function(){ soraTouchDir = 0; });
-  window.addEventListener('pointercancel', function(){ soraTouchDir = 0; });
-  window.addEventListener('blur', function(){ soraTouchDir = 0; soraKeyL = false; soraKeyR = false; });
+  soraCv.addEventListener('pointerleave', function(e){
+    if(!soraCv.hasPointerCapture(e.pointerId)) soraTouchRelease(e.pointerId);
+  });
+  window.addEventListener('pointerup', function(e){ soraTouchRelease(e.pointerId); });
+  window.addEventListener('pointercancel', function(e){ soraTouchRelease(e.pointerId); });
+  window.addEventListener('blur', function(){ soraTouchReset(); soraKeyL = false; soraKeyR = false; });
   document.addEventListener('visibilitychange', function(){
     if(document.hidden){
-      soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraMusicStop();soraPararLoop();
+      soraTouchReset(); soraKeyL=false;soraKeyR=false;soraMusicStop();soraPararLoop();
     }else{
       soraAgendarLoop();
       if(soraOpen&&soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();
@@ -4669,7 +4675,7 @@ function soraSetupUI(){
     soraHostVisible=e.data.visible===true;
     if(soraCanvasMotionGate)soraCanvasMotionGate.refresh();
     if(!soraHostVisible){
-      soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraMusicStop();soraPararLoop();
+      soraTouchReset(); soraKeyL=false;soraKeyR=false;soraMusicStop();soraPararLoop();
     }else{
       soraAgendarLoop();
       if(soraOpen&&soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();
@@ -4818,7 +4824,7 @@ function soraBindTestProfileTools(){
   }
 }
 soraSetupUI();
-var soraCanvasMotionGate=window.TWMotionLifecycle&&soraCv?TWMotionLifecycle.watchLoop(soraCv,function(){var ov=$('soraOv');return !!(soraOpen&&soraHostVisible&&ov&&!ov.hidden);},function(){soraCanvasVisible=true;soraAgendarLoop();if(soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();},function(){soraCanvasVisible=false;soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraPararLoop();soraMusicStop();}):null;
+var soraCanvasMotionGate=window.TWMotionLifecycle&&soraCv?TWMotionLifecycle.watchLoop(soraCv,function(){var ov=$('soraOv');return !!(soraOpen&&soraHostVisible&&ov&&!ov.hidden);},function(){soraCanvasVisible=true;soraAgendarLoop();if(soraState==='play'&&soraSoundOn&&!muted)soraMusicStart();},function(){soraCanvasVisible=false;soraTouchReset(); soraKeyL=false;soraKeyR=false;soraPararLoop();soraMusicStop();}):null;
 function soraReturnToMenu(){
   if(soraState === 'play' && !soraTreinoPouso) soraOnlineAbortRun();
   soraMusicStop(); soraReset(); soraState = 'menu';
@@ -4876,7 +4882,7 @@ function soraOpenUIReady(){
 }
 // A background-cached iframe must resume RAF/audio on pageshow.
 function soraSuspendForNavigation(){
- soraMusicStop();soraTouchDir=0;soraKeyL=false;soraKeyR=false;soraPararLoop();
+ soraMusicStop();soraTouchReset(); soraKeyL=false;soraKeyR=false;soraPararLoop();
 }
 window.addEventListener('pagehide',soraSuspendForNavigation);
 window.addEventListener('pageshow',function(){
@@ -4887,7 +4893,7 @@ window.addEventListener('pageshow',function(){
 function soraCloseUI(){
   if(soraState === 'play' && !soraTreinoPouso) soraOnlineAbortRun();
   if($('soraHomeBtn')) $('soraHomeBtn').hidden = true;
-  soraMusicStop(); soraOpen = false; soraState = 'menu'; soraTouchDir = 0; soraKeyL = false; soraKeyR = false;
+  soraMusicStop(); soraOpen = false; soraState = 'menu'; soraTouchReset(); soraKeyL = false; soraKeyR = false;
   soraPararLoop(); if($('soraOv')) $('soraOv').hidden = true;
   var launcher = $('openSoraBtn'); if(launcher) launcher.style.display = '';
   if(soraSavedMutedBeforeOpen !== null){ muted = soraSavedMutedBeforeOpen; soraSavedMutedBeforeOpen = null; }

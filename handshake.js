@@ -231,15 +231,15 @@ function hsFechar(){ hsOv.hidden = true; hs = null; }
 // Com conta, só existe se o servidor mandar as rodadas extras (proposta SQL em supabase/sql/proposta/handshake_hora_extra_REVIEW_ONLY.sql);
 // sem isso, a partida termina na 5ª como sempre. Sem conta (treino), a hora extra já vale.
 var HS_LEITURA={
-  pt:['Treinar no meu ritmo','Próximo fã','Começar a lembrar','Repetir com o tempo padrão','Treino sem pontuação oficial'],
-  en:['Practice at my pace','Next fan','Start recall','Repeat with standard timing','Practice without official scoring'],
-  es:['Practicar a mi ritmo','Siguiente fan','Empezar a recordar','Repetir con el tiempo normal','Práctica sin puntuación oficial'],
-  id:['Berlatih sesuai ritmeku','Penggemar berikutnya','Mulai mengingat','Ulangi dengan waktu standar','Latihan tanpa skor resmi'],
-  th:['ฝึกตามจังหวะของฉัน','แฟนคนถัดไป','เริ่มทบทวน','เล่นซ้ำด้วยเวลาปกติ','ฝึกโดยไม่นับคะแนนทางการ'],
-  ja:['自分のペースで練習','次のファン','思い出す','標準時間でもう一度','公式スコアなしの練習']
+  pt:['Treinar no meu ritmo','Próximo fã','Começar a lembrar','Repetir com o tempo padrão','Treino sem pontuação oficial','Continuar'],
+  en:['Practice at my pace','Next fan','Start recall','Repeat with standard timing','Practice without official scoring','Continue'],
+  es:['Practicar a mi ritmo','Siguiente fan','Empezar a recordar','Repetir con el tiempo normal','Práctica sin puntuación oficial','Continuar'],
+  id:['Berlatih sesuai ritmeku','Penggemar berikutnya','Mulai mengingat','Ulangi dengan waktu standar','Latihan tanpa skor resmi','Lanjutkan'],
+  th:['ฝึกตามจังหวะของฉัน','แฟนคนถัดไป','เริ่มทบทวน','เล่นซ้ำด้วยเวลาปกติ','ฝึกโดยไม่นับคะแนนทางการ','ดำเนินการต่อ'],
+  ja:['自分のペースで練習','次のファン','思い出す','標準時間でもう一度','公式スコアなしの練習','続ける']
 };
 function hsLeitura(i){return (HS_LEITURA[LANG]||HS_LEITURA.pt)[i];}
-function hsFocar(sel){var alvo=$('hsCorpo').querySelector(sel);if(alvo)alvo.focus({preventScroll:true});}
+function hsFocar(sel){var alvo=$('hsCorpo').querySelector(sel);if(alvo){alvo.focus({preventScroll:true});if(typeof alvo.scrollIntoView==='function')alvo.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});}}
 function hsIniciarTreino(manual,fila){
   hsReiniciar();hs.donoMemoria=hsMemChave();hs.treinoLeitura=true;hs.leituraManual=manual;
   if(fila && fila.length)hsUsarFila(fila,fila.slice(),hsSorteio(Date.now()));
@@ -358,6 +358,7 @@ function hsResponder(i){
     return;
   }
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
+  if(hs.leituraManual)hsFocar('[data-hs-avancar]');
 }
 function hsResponderCor(j){
   if(!hs || hs.fase !== 'quizcor') return;
@@ -369,6 +370,7 @@ function hsResponderCor(j){
   if(c !== f.cor) hsAnotarPista(f,true,c);
   if(c === f.cor){ hs.pontos += 50; hs.fala = hsCorT().ok; if(typeof beep === 'function') try{ beep(1568, .07, 'triangle', .04); }catch(e){} }
   hs.fase = 'resposta'; hs.t0 = hsT; hsUI();
+  if(hs.leituraManual)hsFocar('[data-hs-avancar]');
 }
 function hsAplicarPet(r){
   if(!r || r.tipo !== 'pet' || !r.item) return true;
@@ -458,7 +460,7 @@ function hsLoop(ms){
     else if(!hs.leituraManual && hs.fase === 'lembrar' && dt > 100) hsProxima();
     else if(!hs.leituraManual && hs.fase === 'quiz' && dt > hsTempoPergunta()) hsResponder(-1);
     else if(!hs.leituraManual && hs.fase === 'quizcor' && dt > 210) hsResponderCor(-1);
-    else if(hs.fase === 'resposta' && dt > 80){ if(hs.hype <= 0) hsFim(); else hsProxima(); }
+    else if(!hs.leituraManual && hs.fase === 'resposta' && dt > 80){ if(hs.hype <= 0) hsFim(); else hsProxima(); }
     else if(hs.fase === 'pausa' && dt > 90) hsNovaRodada();
     if(hs.fase === 'quiz' || hs.fase === 'quizcor'){ var bar = $('hsTempo'); if(bar) bar.style.width = Math.max(0, 100 - dt / (hs.fase === 'quiz' ? hsTempoPergunta() : 210) * 100) + '%'; }
   }
@@ -619,6 +621,7 @@ function hsUI(){
       var p = HS_PRESENTES[o], cls = hs.fase === 'resposta' ? (o === hs.quiz[hs.qi].pres ? ' certo' : i === hs.resp ? ' errado' : '') : '';
       return '<button type="button" class="hsop' + cls + '" data-hs="' + i + '"' + (hs.fase === 'resposta' ? ' disabled' : '') + '><span>' + p[0] + '</span><small>' + escHtml(tr(p[1])) + '</small></button>';
     }).join('') + '</div>';
+    if(hs.leituraManual && hs.fase === 'resposta')h+='<p class="hsdica" role="status">'+escHtml(hs.fala || '')+'</p><button class="btn alt hscontinuar" type="button" data-hs-avancar>'+escHtml(hsLeitura(5))+'</button>';
   }
   else if(hs.fase === 'pausa') h += hs.rodada >= 5 ? '<p class="hsdica hsextra">⏰ ' + escHtml(tr('HORA EXTRA! Os fãs não querem ir embora: mais filas, menos tempo!')) + '</p>' : '<p class="hsdica">🎶 ' + escHtml(tr('Próxima fila chegando… agora com mais fãs!')) + '</p>';
   else if(hs.fase === 'fim'){
@@ -650,6 +653,7 @@ function hsClique(e){
     if(t.hasAttribute('data-hs-avancar') && hs.leituraManual){
       if(hs.fase==='fila')hsAvancarFila();
       else if(hs.fase==='lembrar')hsProxima();
+       else if(hs.fase==='resposta'){if(hs.hype<=0)hsFim();else hsProxima();}
       return;
     }
   }

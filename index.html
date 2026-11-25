@@ -457,7 +457,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=20','./cafe.js?v=33','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=15','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=21','./cafe.js?v=33','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=15','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=function(){e.remove();er(new Error(u));};document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
@@ -478,7 +478,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   window.twAbrirJogoDoHub = function(nome){ atalho(nome)(); };
   window.TW_JOGOS_SOB_DEMANDA=true;window.twJogosCarregar=carregar;window.hsAbrir=atalho('hsAbrir');window.cfAbrir=atalho('cfAbrir');})();
 </script>
-<script src="./duo-base.js?v=10"></script>
+<script src="./duo-base.js?v=11"></script>
 <script src="./encontro-base.js?v=3"></script>
 <script src="./hub.js?v=36"></script>
 <script defer src="./hub-layout.js?v=7"></script>
@@ -561,7 +561,7 @@ var jornalCarregar=(function(){
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=39';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=40';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
   window.studioCarregar=carregar;})();

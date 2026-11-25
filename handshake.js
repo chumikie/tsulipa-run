@@ -401,13 +401,16 @@ function hsFinalizarNoServidor(args){
 }
 function hsRecuperar(){
   if(!contaJ) return;
-  contaRpc('handshake_estado').then(function(r){ if(r && r.ok && r.entregue) hsReceberPremio(r, hs); }).catch(function(){});
-  var pendente = null;
-  try{ pendente = JSON.parse(localStorage.getItem('tw_hs_pendente') || 'null'); }catch(e){}
+  var dono=hsMemChave(), token=typeof contaSessaoToken==='number'?contaSessaoToken:null, atual=hs;
+  function mesmaSessao(){return !!contaJ&&dono===hsMemChave()&&(token===null||token===contaSessaoToken);}
+  contaRpc('handshake_estado').then(function(r){ if(mesmaSessao() && r && r.ok && r.entregue) hsReceberPremio(r, atual); }).catch(function(){});
+  var pendente = null, bruto=null;
+  try{ bruto=localStorage.getItem('tw_hs_pendente');pendente=JSON.parse(bruto||'null'); }catch(e){}
   if(!pendente || pendente.nick !== contaJ.nick || !pendente.sessao) return;
   hsFinalizarNoServidor({p_sessao:pendente.sessao,p_respostas:pendente.respostas}).then(function(r){
-    if(r && r.ok){ try{localStorage.removeItem('tw_hs_pendente');}catch(e){} hsReceberPremio(r, hs); }
-    else if(r && r.erro === 'pontos') try{localStorage.removeItem('tw_hs_pendente');}catch(e){}
+    if(!mesmaSessao())return;
+    if(r && (r.ok || r.erro==='pontos'))try{if(localStorage.getItem('tw_hs_pendente')===bruto)localStorage.removeItem('tw_hs_pendente');}catch(e){}
+    if(r && r.ok)hsReceberPremio(r, atual);
   }).catch(function(){});
 }
 function hsContaMudou(partida){

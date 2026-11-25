@@ -79,9 +79,9 @@ duoOv.addEventListener('click', function(e){
   if((b = t.closest('[data-dtrava]'))){ duoTravaUI(b.dataset.dtrava); return; }
   if((b = t.closest('[data-dcomprar]'))){ duoComprar(b.dataset.dcomprar, b); return; }
   if(t.id === 'duoEntrar'){ contaEntrar(); return; }
-  if(t.id === 'duoTrocar'){ duoGu = null; duoEscolhaUI(); return; }
+  if(t.id === 'duoTrocar'){ duoBuscaCancelar();duoLoadSeq++;duoGu = null;duoBalao=duoPulo=null;duoEscolhaUI();var busca=$('duoBusca');if(busca)busca.focus({preventScroll:true});return; }
   if((b = t.closest('[data-dnick]'))){ duoCarregar(b.dataset.dnick); return; }
-  if((b = t.closest('[data-dcena]'))){ duoCena = b.dataset.dcena; duoBalao = null; duoT = 0; duoPalcoUI(); duoRegistrar(); beep(1175, .05, 'triangle', .04); return; }
+  if((b = t.closest('[data-dcena]'))){ duoCena = b.dataset.dcena; duoBalao = duoPulo = null; duoT = 0; duoPalcoUI(); duoRegistrar(); beep(1175, .05, 'triangle', .04); return; }
   if((b = t.closest('[data-dfundo]'))){ duoFundo = b.dataset.dfundo; $('duoPresBox').hidden = true; duoPalcoUI(); duoTemaGuardarUI(duoFundo); beep(988, .05, 'triangle', .04); return; }
   if((b = t.closest('[data-dexeu]'))){ duoExEu = b.dataset.dexeu; duoPalcoUI(); return; }
   if((b = t.closest('[data-dexgu]'))){ duoExGu = b.dataset.dexgu; duoPalcoUI(); return; }

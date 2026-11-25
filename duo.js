@@ -77,7 +77,7 @@ function duoRender(x, W2, H2, comFundo, comUI){
   if(inf[0] === 'luzes' || inf[0] === 'neon'){ for(i = 0; i < 26; i++){ var cc = ['#ff6fb5', '#4dd8ff', '#b6ff3b', '#9b30d9', '#ffe14d'][i % 5]; x.globalAlpha = .35 + .3 * Math.sin(t * .08 + i); x.fillStyle = cc; x.beginPath(); x.arc((cenaHash(i) * W2), H2 * .55 + cenaHash(i + 40) * H2 * .3, 5 + (i % 3) * 2, 0, 7); x.fill(); } x.globalAlpha = 1; }
   if(inf[0] === 'neon'){ x.save(); x.lineWidth = 6; x.shadowBlur = 18; ['#ff6fb5', '#4dd8ff', '#b6ff3b'].forEach(function(cc, j){ x.strokeStyle = cc; x.shadowColor = cc; x.globalAlpha = .55 + .35 * Math.sin(t * .1 + j * 2); x.beginPath(); x.moveTo(0, H2 * (.18 + j * .09)); x.lineTo(W2, H2 * (.3 + j * .09) + Math.sin(t * .05 + j) * 20); x.stroke(); }); x.restore(); }
   // os dois Idols (com pulinho ao tocar e passinho na dança)
-  function pulo(quem){ if(!duoPulo || duoPulo.quem !== quem) return 0; var p = (t - duoPulo.t0) / 22; if(p >= 1) return 0; return -Math.sin(p * Math.PI) * 34; }
+  function pulo(quem){ if(!duoPulo || duoPulo.quem !== quem) return 0; var p = (t - duoPulo.t0) / 22; if(p < 0 || p >= 1) return 0; return -Math.sin(p * Math.PI) * 34; }
   var dz = inf[0] === 'danca' ? -Math.abs(Math.sin(t * .136)) * 14 : 0;
   var chE = chao + pulo('eu') + dz, chG = chao + pulo('gu') + dz;
   if(inf[0] === 'guarda') duoGuardaChuva(x, eu, sxE, chE, t, duoInvertido);
@@ -271,7 +271,7 @@ function duoCarregar(nick,recriar){
   contaRpc('duo_convidado', { p_nick: String(nick).slice(0, 24) }).then(function(r){
     if(seq!==duoLoadSeq||duoOv.hidden||dono!==petPhoneContaChave())return;
     if(!r || r.erro){ duoGu = null; duoEscolhaUI(tr(r && r.erro === 'eu' ? 'Escolha outra pessoa para a dupla 😉' : r && r.erro === 'off' ? 'Essa pessoa não está participando do Moon⭐Duo!' : 'Esse nome ainda não tem perfil (jogou sem conta).')); return; }
-    duoGu = r; duoBalao = null; if(recriar)duoAplicarCena(recriar); duoPalcoUI(); duoRegistrar();
+    duoGu = r; duoBalao = duoPulo = null; duoT = 0; if(recriar)duoAplicarCena(recriar); duoPalcoUI(); duoRegistrar();
     beep(1047, .08, 'triangle', .04); beep(1568, .1, 'triangle', .04, .08);
   }).catch(function(){ if(seq===duoLoadSeq&&!duoOv.hidden&&dono===petPhoneContaChave())duoEscolhaUI(tr('Não deu para falar com o servidor. Tente de novo.')); });
 }
@@ -306,7 +306,22 @@ function duoExRow(nome, sel, attr){
     return '<button type="button" class="duoexb' + (tv ? ' trava' : '') + '" ' + (tv ? 'data-dtrava="' + tv + '"' : attr + '="' + o[0] + '"') + ' aria-pressed="' + (!tv && o[0] === sel) + '" title="' + escHtml(tr(o[2]) + (tv ? ' · ★' + it[3] : '')) + '" aria-label="' + escHtml(tr(o[2])) + '">' + o[1] + (tv ? '<em>🔒</em>' : '') + '</button>';
   }).join('') + '</div><small>' + escHtml(tr((PET_PH_EXPRS.filter(function(o){ return o[0] === sel; })[0] || PET_PH_EXPRS[0])[2])) + '</small></div>';
 }
+// A aba é reconstruída ao escolher uma cena; mantém o alvo do teclado e a seção expandida.
+function duoFocoAtual(){
+  var b=document.activeElement;
+  if(!b||!duoOv.contains(b))return null;
+  var attrs=['data-dtab','data-dcena','data-dfundo','data-dexeu','data-dexgu','data-demo','data-dqt'];
+  for(var i=0;i<attrs.length;i++)if(b.hasAttribute(attrs[i]))return {attr:attrs[i],valor:b.getAttribute(attrs[i])};
+  return null;
+}
+function duoRestaurarFoco(f){
+  if(!f)return;
+  var botoes=duoOv.querySelectorAll('button['+f.attr+']');
+  for(var i=0;i<botoes.length;i++)if(botoes[i].getAttribute(f.attr)===f.valor&&!botoes[i].disabled){botoes[i].focus({preventScroll:true});break;}
+}
 function duoTabUI(){
+  var foco=typeof document!=='undefined'?duoFocoAtual():null;
+  var anterior=$('duoTabC'),mais=anterior.querySelector&&anterior.querySelector('.duo-mais-cenas'),aberto=mais&&mais.open;
   var tabs = [['cena', '🎬', 'Cena'], ['fundo', '🏞️', 'Cenário'], ['expr', '😊', 'Expressões'], ['pres', '🎁', 'Presente']];
   $('duoTabs').innerHTML = tabs.map(function(t){ return '<button type="button" role="tab" data-dtab="' + t[0] + '" aria-pressed="' + (duoTab === t[0]) + '"><span aria-hidden="true">' + t[1] + '</span> ' + escHtml(tr(t[2])) + '</button>'; }).join('');
   var c = $('duoTabC'), h = '';
@@ -314,7 +329,7 @@ function duoTabUI(){
     var livres = DUO_CENAS.filter(function(o){ return !duoTrava('data-dcena', o); });
     var principais = livres.slice(0, 6), outras = DUO_CENAS.filter(function(o){ return principais.indexOf(o) < 0; });
     h = duoCards(principais, duoCena, 'data-dcena');
-    if(outras.length) h += '<details class="duo-mais-cenas"' + (outras.some(function(o){return o[0] === duoCena;}) ? ' open' : '') + '><summary>' + escHtml(duoRotulo(2)) + ' (' + outras.length + ')</summary>' + duoCards(outras, duoCena, 'data-dcena') + '</details>';
+    if(outras.length) h += '<details class="duo-mais-cenas"' + (aberto||outras.some(function(o){return o[0] === duoCena;}) ? ' open' : '') + '><summary>' + escHtml(duoRotulo(2)) + ' (' + outras.length + ')</summary>' + duoCards(outras, duoCena, 'data-dcena') + '</details>';
   }
   else if(duoTab === 'fundo'){
     var perf = PERF_FUNDOS.filter(function(o){ return o[0] && o[0] !== 'temporada'; }), temas = [];
@@ -326,16 +341,19 @@ function duoTabUI(){
   else if(duoTab === 'expr') h = duoExRow(contaJ ? contaJ.nick : tr('Você'), duoExEu, 'data-dexeu') + duoExRow(duoGu.nick, duoExGu, 'data-dexgu');
   c.innerHTML = h;
   if(duoTab === 'pres') duoPresUI();
+  duoRestaurarFoco(foco);
   if(duoTab === 'fundo'){ var cor = perfChar(duoMeuAv()).hair; [].forEach.call(c.querySelectorAll('canvas[data-dthumb]'), function(cv){ try{ duoFundoDesenhar(cv.getContext('2d'), 160, 100, cv.dataset.dthumb, 40, cor); }catch(e){} }); }
 }
 function duoPresUI(){
   var box = $('duoTabC'); if(duoTab !== 'pres') return;
+  var foco=typeof document!=='undefined'?duoFocoAtual():null;
   box.innerHTML = '<b>🎁 ' + escHtml(tr('Presente para {nick}').replace('{nick}', duoGu.nick)) + '</b>' +
     '<div class="duopresemo">' + DUO_PRES_EMO.map(function(m){ return '<button type="button" class="duoexb" data-demo="' + m + '" aria-pressed="' + (m === duoPresEmo) + '">' + m + '</button>'; }).join('') + '</div>' +
     '<div class="duoseg">' + [0, 10, 30, 50].map(function(n){ return '<button type="button" data-dqt="' + n + '" aria-pressed="' + (n === duoPresQt) + '">' + (n ? '★' + n : escHtml(tr('Só carinho'))) + '</button>'; }).join('') + '</div>' +
     '<p class="duoresumo">' + escHtml(tr('Você vai enviar')) + ' <b>' + duoPresEmo + (duoPresQt ? ' + ★' + duoPresQt : '') + '</b> · ' + escHtml(tr('seu saldo')) + ' ★' + starT + '</p>' +
     '<small>' + escHtml(tr('As estrelas saem do seu saldo. 1 presente por pessoa por dia.')) + '</small>' +
     '<div class="btns"><button type="button" class="btn" id="duoPresOk">' + escHtml(tr('Enviar')) + ' ' + duoPresEmo + '</button></div>';
+  duoRestaurarFoco(foco);
 }
 var DUO_PRES_ERRO = { hoje:'Você já mandou um presente hoje para essa pessoa.', limite:'Você chegou ao limite de presentes de hoje.', saldo:'Estrelas insuficientes.', alvo:'Essa pessoa não está participando do Moon⭐Duo!', bloqueado:'Sua conta está bloqueada pela moderação.' };
 function duoMsg(t){var m=$('duoMsg');if(!m||duoOv.hidden)return;if(m._twTimeout){m._twTimeout.cancel();m._twTimeout=null;}m.textContent=t;m.hidden=!t;if(t)m._twTimeout=twTimeoutVisivel(m,function(){return !duoOv.hidden&&m.isConnected;},function(){m.hidden=true;m._twTimeout=null;},5000);}
@@ -346,7 +364,7 @@ function duoAbrir(nick,atalho){
   if(atalho&&window.TW_JANELAS)TW_JANELAS.preparar(duoOv,atalho.origem);
   duoVeioHub = !hubOv.hidden; lookSalvar();   // abre por cima da tela de início
   if(typeof perfOv !== 'undefined' && !perfOv.hidden) perfFechar();
-  duoOv.hidden = false; duoOv.scrollTop = 0; duoT = 0; duoBalao = null; duoTexto();
+  duoOv.hidden = false; duoOv.scrollTop = 0; duoT = 0; duoBalao = duoPulo = null; duoTexto();
   $('duoRuaStatus').textContent='';$('duoRuaFofa').disabled=false;
   if(duoTrava('data-dfundo', [duoFundo])){ var tk = typeof temaAtual === 'function' ? temaAtual() : ''; duoFundo = tk && tk !== 'halloween' && TEMA_INFO[tk] ? tk : 'basico'; }
   if(duoTrava('data-dcena', duoInfo())) duoCena = 'dueto';

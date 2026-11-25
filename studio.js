@@ -445,6 +445,13 @@
   }
   function ui(){
     if(!ov) return;
+    var ativo=document.activeElement, foco=ativo&&ov.contains(ativo)&&ativo.getAttribute('data-st');
+    var valorFoco=foco&&ativo.getAttribute('data-v');
+    function restaurarFoco(){
+      if(!foco||ativo.isConnected)return;
+      var alvos=ov.querySelectorAll('[data-st]');
+      for(var i=0;i<alvos.length;i++)if(alvos[i].getAttribute('data-st')===foco&&alvos[i].getAttribute('data-v')===valorFoco&&!alvos[i].disabled&&alvos[i].getClientRects().length){alvos[i].focus({preventScroll:true});break;}
+    }
     ov.querySelector('#studioTit').textContent = t('tit');
     var abas = ov.querySelector('#studioAbas'), noMural = aba === 'mural';
     abas.innerHTML = logado() ? ['estudio','mural'].map(function(k, i){ return '<button type="button" class="stabab' + (aba === k ? ' on' : '') + '" data-st="aba" data-v="' + k + '" aria-pressed="' + (aba === k) + '">' + esc(t(i ? 'aba2' : 'aba1')) + '</button>'; }).join('') : '';
@@ -455,7 +462,7 @@
     pautaBox.hidden=noMural || (!pauta && !temaHtml(esc_));
     pautaBox.open=pautaAberta;
     ov.querySelector('#studioMural').hidden = !noMural;
-    if(noMural){ muralUI(); return; }
+    if(noMural){ muralUI(); restaurarFoco(); return; }
     var ac = acertos(), d = pauta && pauta.detalhe;
     pautaBox.querySelector('summary').textContent=pauta?t('pauta')+' · '+ac.filter(Boolean).length+'/3':t('pauta');
     pautaBox.querySelector('div').innerHTML = pauta ? '<div class="stpauta"><b>' + esc(t('pauta')) + ': ' + esc(t('t_' + d.tipo)) + '</b><span>' +
@@ -511,8 +518,8 @@
       }
       if(!logado()) hh += '<p class="stdica">' + esc(t('treino')) + '</p>';
     }
-    c.innerHTML = hh; desenhar();
-    if(fase === 'foto' && visorAnterior === 'contagem' && visor.scrollIntoView) visor.scrollIntoView({block:'nearest'});
+    c.innerHTML = hh; desenhar(); restaurarFoco();
+    if(fase === 'foto' && visorAnterior === 'contagem' && visor.scrollIntoView){visor.scrollIntoView({block:'nearest',behavior:'instant'});var salvar=acao.querySelector('[data-st="salvar"]');if(salvar&&(!document.activeElement||document.activeElement===document.body||document.activeElement===obturador))salvar.focus({preventScroll:true});}
   }
   // ---------- Mural da revista (v2) ----------
   function publicar(){

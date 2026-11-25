@@ -84,3 +84,13 @@ test('Center: teclado, toque e pausa não duplicam nem cancelam o comando do out
  ctx.paused=false;ctx.crPuloPointer({pointerId:7,button:2});assert.equal(saltos,2);
  assert.match(read('centerrun.js'),/if\(v&&!paused&&typeof crPuloLimpar==='function'\)crPuloLimpar\(\)/);
 });
+
+test('Duo: reset de cena não herda impulso de uma pose anterior',()=>{
+ const s=read('duo.js'),t=read('duo-tela.js');assert.match(s,/if\(p < 0 \|\| p >= 1\) return 0/);assert.match(t,/duoBalao = duoPulo = null; duoT = 0/);
+});
+test('Handshake: resposta de recuperação não cruza sessão nem apaga partida mais recente',async()=>{
+ const s=read('handshake.js'),a=s.indexOf('function hsRecuperar(){'),b=s.indexOf('function hsContaMudou(',a);let raw=JSON.stringify({nick:'A',sessao:'antiga',respostas:[]}),premios=0,resolveEstado,resolveFim;
+ const ctx={contaJ:{nick:'A'},hs:{},contaSessaoToken:1,hsMemChave:()=> 'A',localStorage:{getItem:()=>raw,removeItem(){raw=null;}},contaRpc:()=>new Promise(r=>resolveEstado=r),hsFinalizarNoServidor:()=>new Promise(r=>resolveFim=r),hsReceberPremio(){premios++;}};
+ vm.runInNewContext(s.slice(a,b),ctx);ctx.hsRecuperar();ctx.contaSessaoToken=2;resolveEstado({ok:true,entregue:true});resolveFim({ok:true});await Promise.resolve();assert.equal(premios,0);assert.ok(raw);
+ ctx.hsRecuperar();raw=JSON.stringify({nick:'A',sessao:'nova',respostas:[]});resolveFim({ok:true});resolveEstado({ok:false});await Promise.resolve();assert.equal(premios,1);assert.match(raw,/nova/);
+});

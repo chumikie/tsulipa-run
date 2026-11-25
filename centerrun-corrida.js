@@ -1744,13 +1744,14 @@ function crAvisoObstaculo(){
   if(state !== 'play' || (pw && (pw.k === 'gigante' || pw.k === 'alien'))) return;
   for(var i = 0; i < obs.length; i++){
     var o = obs[i]; if(o.x <= W - 4 || o.x > W + 210) continue;
-    var perto = 1 - (o.x - W) / 210, a = (.25 + .45 * perto) * (.7 + .3 * Math.sin(frame * .45));
+    var calmo=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var perto = 1 - (o.x - W) / 210, a = (.25 + .45 * perto) * (calmo?1:(.7 + .3 * Math.sin(frame * .45)));
     var gr = g.createRadialGradient(W, GY, 2, W, GY, 46 + 24 * perto); gr.addColorStop(0, 'rgba(255,111,181,' + a.toFixed(3) + ')'); gr.addColorStop(1, 'rgba(255,111,181,0)');
     g.fillStyle = gr; g.fillRect(W - 72, GY - 64, 72, 86);
     var cy = Math.max(24, Math.min(GY - 12, o.y - 4));
     g.save(); g.globalAlpha = Math.min(1, .35 + perto); g.fillStyle = '#ff6fb5'; g.shadowColor = '#ff6fb5'; g.shadowBlur = 8;
     g.beginPath(); if(g.roundRect) g.roundRect(W - 22, cy - 9, 16, 18, 6); else g.rect(W - 22, cy - 9, 16, 18); g.fill(); g.shadowBlur = 0;
-    g.fillStyle = '#fff'; g.font = 'bold 13px "M PLUS Rounded 1c",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('!', W - 14, cy + .5); g.restore();
+    g.fillStyle = '#fff'; g.font = 'bold 13px "M PLUS Rounded 1c",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(o.high?'↓':'↑', W - 14, cy + .5); g.restore();
     break;
   }
 }

@@ -120,6 +120,7 @@
     },{passive:true});
     function soltarMapa(e){if(toque&&e.pointerId===toque.id)toque=null;}
     cv.addEventListener('pointercancel',function(e){soltarMapa(e);arrastou=true;hover=null;desenhar();});
+    cv.addEventListener('pointerup',soltarMapa);
     window.addEventListener('pointerup',soltarMapa);
     window.addEventListener('pointercancel',soltarMapa);
     cv.addEventListener('click',function(e){
@@ -650,7 +651,7 @@
     for(var k=0;k<seg.length;k++){var g=seg[k],xa=PORTAS[g[0]]+(i%2?-34:34)*(i>1?.5:1),xb=PORTAS[g[1]]+(i%2?-34:34)*(i>1?.5:1);
       if(t<PARA)return {x:xa,dir:xb>=xa?1:-1,mov:0,porta:g[0],volta:k,pausa:t};
       t-=PARA;
-      if(t<g[2]){var u=t/g[2];u=u*u*(3-2*u);return {x:xa+(xb-xa)*u,dir:xb>=xa?1:-1,mov:1,volta:k};}
+      if(t<g[2]){var u=t/g[2],passo=Math.min(1,u*8,(1-u)*8);u=u*u*(3-2*u);return {x:xa+(xb-xa)*u,dir:xb>=xa?1:-1,mov:1,passo:passo,volta:k};}
       t-=g[2];}
     return {x:PORTAS[0],dir:1,mov:0,porta:0,volta:0,pausa:0};
   }
@@ -1156,7 +1157,7 @@
         var noPalco=false;
         if(p.oshi){var pd=visitaPorta(p.oshiK);noPalco=cena==='palco'&&pd===1;   // no Star Stage, quem visita a porta do meio canta em cima do palco, no microfone
           q={x:noPalco?800:PORTAS[pd]+(pd===2?-95:95),dir:pd===2?-1:1,mov:0,porta:pd,volta:0,pausa:1,ativo:visitaAtividade(p.oshiK)};}
-        q.p=p;q.i=i;q.y=noPalco?474:744+(i%3)*6;return q;/* abaixo das placas; o chão acaba em 760 */
+        q.p=p;q.i=i;q.y=noPalco?474:730+(i%3)*8;return q;/* abaixo das placas; o chão acaba em 760 */
       });
       var fa=rua.find(function(q){return q.p.nomeFa;});
       var meuIdol=rua.find(function(q){return q.p.dono;});
@@ -1165,13 +1166,13 @@
       var despedindo=reencontro&&!reduzMov&&meuIdol.pausa>PARA-.65;
       if(fa){
         // O fã espera na Praça. O gesto acontece quando o Idol para por perto.
-        fa.x=900;fa.y=756;fa.mov=0;fa.dir=-1;
+        fa.x=900;fa.y=746;fa.mov=0;fa.dir=-1;
         if(reencontro)meuIdol.dir=1;
       }
       ultimos=[];visitaEtiquetas=[];falas=[];diamantes=[];
       rua.sort(function(a,b){return a.y-b.y;})   // quem está mais embaixo fica na frente
         .forEach(function(q){
-        var p=q.p,c=p.oshiChar||perfChar(p.av),bob=q.mov?-Math.abs(Math.sin(tm*8+q.i))*2.4*sc:0;
+        var p=q.p,c=p.oshiChar||perfChar(p.av),bob=q.mov&&!reduzMov?-Math.abs(Math.sin(tm*8+q.i))*1.8*sc*(q.passo==null?1:q.passo):0;
         var pulo=pulos[q.i];if(pulo!=null){var up=(tm-pulo)/.5;if(up>=0&&up<1&&!reduzMov)bob-=Math.sin(up*Math.PI)*16*k;if(tm-pulo>1.6)delete pulos[q.i];}
         ultimos.push({x:q.x,y:q.y,i:q.i,dono:!!p.dono,oshi:p.oshi||'',oshiK:p.oshiK});
         var segurando=!q.mov&&objeto&&q.porta===objeto.porta&&
@@ -1184,7 +1185,7 @@
           if(!reencontro||reconhecendo)pose='';
           else if(despedindo)pose=p.jeitoFa==='timido'?'':'tchau';
         }
-        var expressao=p.nomeFa?(reencontro&&!reconhecendo?p.av.expr:2):(+p.av.expr||2);
+        var expr=Number(p.av.expr),expressao=p.nomeFa?(reencontro&&!reconhecendo?p.av.expr:2):(p.av.expr!=null&&Number.isInteger(expr)&&expr>=0&&expr<=6?expr:2);
         ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(q.x,q.y,8*sc,1.8*sc,0,0,7);ctx.fill();
         ctx.save();if(q.dir<0){ctx.translate(q.x,0);ctx.scale(-1,1);ctx.translate(-q.x,0);}
         perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=pose;drawChar(c,0,0,q.mov?1:0,expressao,false);});
@@ -1509,7 +1510,7 @@
       gente.forEach(function(g){var c=perfChar(g.av),bob=reduzMov?0:-Math.abs(Math.sin(tm*7+g.i))*1.6;frame=reduzMov?0:tm*60+g.i*13;
         ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(g.x,g.y,7,1.6,0,0,7);ctx.fill();
         ctx.save();if(g.dir<0){ctx.translate(g.x,0);ctx.scale(-1,1);ctx.translate(-g.x,0);}
-        perfCharContorno(ctx,g.x-15*sc,g.y-44*sc+bob,sc,function(){charPose='';drawChar(c,0,0,reduzMov?0:1,+g.av.expr||2,false);});ctx.restore();});
+        perfCharContorno(ctx,g.x-15*sc,g.y-44*sc+bob,sc,function(){charPose='';drawChar(c,0,0,reduzMov?0:1,g.av.expr!=null&&Number.isInteger(+g.av.expr)&&+g.av.expr>=0&&+g.av.expr<=6?+g.av.expr:2,false);});ctx.restore();});
     }catch(e){if(window.TW_MAPA_DEBUG)console.warn('mapa gente',e);}finally{state=oS;pw=oPw;dpw=oDpw;rankI=oR;sash=oSa;accSel=oA;frame=oF;charPose=oP;}
   }
   // o TsuLiPa (trio) com os pets na praça, desenhado com as mesmas funções do palco (drawChar + contorno de adesivo)

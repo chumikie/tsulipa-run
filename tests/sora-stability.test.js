@@ -79,7 +79,8 @@ function evaluate(script,context){
 }
 // Leaving and restoring a mobile iframe must not strand or duplicate RAF.
 {
-  const script=between('function soraSuspendForNavigation(){','function soraCloseUI(){');
+  const reset=html.match(/function soraTouchReset\(\)\{[^}]*\}/)[0];
+  const script='var soraPointers=new Map();\n'+reset+'\n'+between('function soraSuspendForNavigation(){','function soraCloseUI(){');
   const handlers={};
   let stops=0,resumes=0,requested=0,loopStops=0;
   const sandbox={
@@ -94,7 +95,10 @@ function evaluate(script,context){
     window:{addEventListener:(event,cb)=>{handlers[event]=cb;}}
   };
   const env=evaluate(script,sandbox);
+  env.soraPointers.set(1,1);
   handlers.pagehide();
+  assert.equal(env.soraTouchDir,0);
+  assert.equal(env.soraPointers.size,0);
   assert.equal(env.soraRaf,0);
   assert.equal(stops,1);
   assert.equal(loopStops,1,'pagehide cancels the canvas RAF as well as music');

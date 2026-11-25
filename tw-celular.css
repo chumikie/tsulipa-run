@@ -1333,3 +1333,11 @@ html body #hub .twc-emb-missoes #hubMisT{display:none}
 
 .twpa-panel .twpa-letra.dica{box-shadow:0 0 0 3px #4169e1;animation:twpaBrilha .9s ease-in-out 2}
 .twpa-panel [data-twpa-dica]{margin-top:10px}
+
+/* Override final: vitrine usa o espaço apenas quando há card e outros destaques. */
+#perfCorpo .twp-vit-grade{grid-template-columns:minmax(0,1fr);gap:12px}
+#perfCorpo .twp-vit-grade:has(.twp-vit-card):has(.twp-vit-lado:not(:empty)){grid-template-columns:minmax(90px,132px) minmax(0,1fr)}
+#perfCorpo .twp-vit-lado:empty{display:none}
+#perfCorpo .twp-vit-card{width:100%;max-width:132px}
+#perfCorpo .twp-vit-card canvas{width:100%;height:auto;aspect-ratio:5/7}
+:root[data-theme="dark"] #perfCorpo .twp-vitrine h3{color:var(--ink,#e6d6ff)}

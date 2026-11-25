@@ -570,7 +570,8 @@
     cabeca(x, k, tx, ty, r + Math.sin(tm * 2.2 + cx) * .8 * e, tm, hora() >= 19 || hora() < 6);
   }
   function rr(x, a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
-  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; desenhar(); var reduz = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; if(!reduz || festa.length || chuva.length || Object.keys(cresce).length) anim = requestAnimationFrame(f); })(); }
+  function laco(){ cancelAnimationFrame(anim); anim=0; (function f(ms){ anim=0;if(!ov || ov.hidden || document.hidden) return; var reduz = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; if(reduz){festa=[];chuva=[];cresce={};} if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(ov,ms)||reduz)desenhar(); if(!reduz)anim=requestAnimationFrame(f); })(); }
+  document.addEventListener('visibilitychange',function(){if(document.hidden){cancelAnimationFrame(anim);anim=0;}else if(ov&&!ov.hidden)laco();});
   window.bloomAbrir = abrir;
   // Resumo para o card do Hub (hub-novos.js): quantos canteiros pedem rega ou colheita, do último estado carregado.
   window.bloomResumo = function(){ return st && stDono===donoJardim() ? {regar:pendentes(false).length, colher:pendentes(true).length} : null; };

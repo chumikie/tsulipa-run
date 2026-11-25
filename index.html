@@ -421,7 +421,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=3"><'+'/script>');})();</script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=8"><'+'/script>');</script>
 <script defer src="./karaoke-room-views.js?v=1"></script>
-<script src="./centerrun.js?v=43"></script>
+<script src="./centerrun.js?v=44"></script>
 <script defer src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=153"></script>
 <script src="./perfil.js?v=41"></script>
@@ -458,7 +458,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
 (function(){var p=null,ARQ=['./handshake.js?v=20','./cafe.js?v=32','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=14','./flores.js?v=2'];
-  function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
+  function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=function(){e.remove();er(new Error(u));};document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
     while(proximo < ARQ.length){ await um(ARQ[proximo]); proximo++; }
@@ -496,7 +496,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido){
       var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
-      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=73');})
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=74');})
         .catch(function(e){pedido=null;throw e;});
     }
     return pedido;
@@ -515,7 +515,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
     }).catch(function(){botao.disabled=false;botao.textContent=TW_CARGA.texto(1);});
   });
 })();</script>
-<script src="./bloom.js?v=16"></script>
+<script src="./bloom.js?v=17"></script>
 <script src="./shop.js?v=14"></script>
 <script src="./tw-piloto-bairro.js?v=9"></script>
 <script>
@@ -569,10 +569,10 @@ var jornalCarregar=(function(){
 <script>
 /* Idol⭐Battle! sob demanda: o CSS e o JS (≈60 KB) só baixam no primeiro toque.
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
-(function(){var p=null;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
-  if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=er;document.head.appendChild(e);});}
-  function atalho(){var a=arguments;if(!p)p=Promise.all([arq('link','./battle.css?v=20'),arq('script','./battle.js?v=32')]);
-    p.then(function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);}).catch(function(){p=null;});}
+(function(){var p=null,cssPronto=false;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
+  if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=function(){e.remove();er(new Error(u));};document.head.appendChild(e);});}
+  function carregar(){if(!p)p=(cssPronto?Promise.resolve():arq('link','./battle.css?v=20').then(function(){cssPronto=true;})).then(function(){return arq('script','./battle.js?v=32');}).catch(function(e){p=null;throw e;});return p;}
+  function atalho(){var a=arguments;TW_CARGA.abrir('Idol⭐Battle!',carregar,function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>
 <script src="./jogos-trilha.js?v=2"></script>
@@ -590,9 +590,9 @@ var jornalCarregar=(function(){
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=61"><script src="./tw-humor.js?v=10"><'+'/script><script defer src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=9"><'+'/script><script defer src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=78"><'+'/script><script defer src="./tw-presenca.js?v=3"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=62"><script src="./tw-humor.js?v=10"><'+'/script><script defer src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=9"><'+'/script><script defer src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=78"><'+'/script><script defer src="./tw-presenca.js?v=3"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=61';document.head.appendChild(l);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=62';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=10';hm.async=false;document.body.appendChild(hm);
   var vbi=document.createElement('script');vbi.src='./tw-bichos.js?v=2';vbi.async=false;document.body.appendChild(vbi);
   var vb=document.createElement('script');vb.src='./tw-bairro.js?v=9';vb.async=false;document.body.appendChild(vb);

@@ -68,7 +68,7 @@
   function sondar(){
     if(typeof contaJ === 'undefined' || !contaJ) return;
     var conta=donoJardim(), pedido=abertura, visita=trocaConta;
-    rpc('jardim_estado').then(function(r){ if(visita===trocaConta && conta===donoJardim() && r && r.ok){ if(pedido===abertura){st=r;stDono=conta;} window.TW_BLOOM_ON = true; if(typeof hubCardsUI === 'function' && document.getElementById('hubCards')) try{ hubCardsUI(); }catch(e){} } }).catch(function(){});
+    rpc('jardim_estado').then(function(r){ if(visita===trocaConta && conta===donoJardim() && r && r.ok){ if(pedido===abertura && !ocupado){st=r;stDono=conta;} window.TW_BLOOM_ON = true; if(typeof hubCardsUI === 'function' && document.getElementById('hubCards')) try{ hubCardsUI(); }catch(e){} } }).catch(function(){});
   }
   // Somente a área desenhada de cada caixote/plantação é acionável.
   function canteiroNoToque(px, py, H){
@@ -127,14 +127,15 @@
   }
   function abrir(){
     if(typeof contaJ === 'undefined' || !contaJ){ if(typeof contaEntrar === 'function') contaEntrar(); return; }
-    var conta=donoJardim(), pedido=++abertura;
+    var conta=donoJardim(), pedido=++abertura, geracao=trocaConta;
     if(stDono!==conta){st=null;stDono=conta;ocupado=false;}
     montarOv(); ov.hidden = false; msg = ''; escolha = -1; arranjo=[]; ui();
+    if(ocupado){laco();return;}
     rpc('jardim_estado').then(function(r){
-      if(pedido!==abertura || conta!==donoJardim())return;
+      if(pedido!==abertura || geracao!==trocaConta || conta!==donoJardim() || ocupado)return;
       if(r && r.ok){ st = r; window.TW_BLOOM_ON = true; } else msg = t('erro');
       ui();
-    }).catch(function(){ if(pedido===abertura && conta===donoJardim()){msg = t('erro');ui();} });
+    }).catch(function(){ if(pedido===abertura && geracao===trocaConta && conta===donoJardim() && !ocupado){msg = t('erro');ui();} });
     laco();
   }
   function fechar(){ if(ov) ov.hidden = true; cancelAnimationFrame(anim); anim = 0; if(typeof hubCardsUI === 'function' && document.getElementById('hubCards')) try{ hubCardsUI(); }catch(e){} }
@@ -145,10 +146,11 @@
     if(typeof beep === 'function') try{ beep(k === 'regar' ? 880 : 1175, .07, 'triangle', .04); }catch(e){}
   }
   function acao(nome, args){
-    var conta=donoJardim();
+    var conta=donoJardim(), geracao=trocaConta;
+    function mesmaConta(){return geracao===trocaConta && conta===donoJardim() && conta===stDono;}
     ocupado = true; msg = ''; escolha = -1; idolIr(args && args.p_canteiro); ui();
     rpc(nome, args).then(function(r){
-      if(conta!==donoJardim() || conta!==stDono)return;
+      if(!mesmaConta())return;
       if(r && r.ok){
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('bloom_'+nome.replace('jardim_',''),{flor:r.flor});if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
         if(typeof r.stars === 'number' && typeof starT !== 'undefined'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(e){} if(typeof setBest === 'function') try{ setBest(); }catch(e){} }
@@ -156,8 +158,8 @@
         if(nome === 'jardim_colher'){ msg = t('colheu', t(r.flor)); for(var i = 0; i < 14; i++) festa.push({c:args.p_canteiro, i:i, t0:performance.now(), k:r.flor}); som('colher'); }
         else { if(nome === 'jardim_plantar') for(var j = 0; j < 8; j++) festa.push({c:args.p_canteiro, i:Math.round(j * 14 / 8), t0:performance.now(), k:'broto'}); som(nome === 'jardim_regar' ? 'regar' : 'plantar'); }
       } else msg = r && r.erro === 'estrelas' ? t('estrelas') : t('erro');
-      return rpc('jardim_estado').then(function(e){ if(conta===donoJardim() && conta===stDono && e && e.ok) st = e; });
-    }).catch(function(){ if(conta===donoJardim())msg = t('erro'); }).then(function(){ if(conta===stDono){ocupado = false; ui();} });
+      return rpc('jardim_estado').then(function(e){ if(mesmaConta() && e && e.ok) st = e; });
+    }).catch(function(){ if(mesmaConta())msg = t('erro'); }).then(function(){ if(mesmaConta()){ocupado = false; ui();} });
   }
   var ESTADO_CANTEIRO = {
     pt:['Pode regar','Volte amanhã','Pronta para colher','Falta 1 rega','Faltam {n} regas'],
@@ -200,16 +202,17 @@
   // Mesma ação em vários canteiros, um de cada vez (o servidor confere cada um como sempre).
   function emSerie(nome, ids){
     if(!ids.length || ocupado) return;
-    var conta=donoJardim();
+    var conta=donoJardim(), geracao=trocaConta;
+    function mesmaConta(){return geracao===trocaConta && conta===donoJardim() && conta===stDono;}
     ocupado = true; msg = ''; escolha = -1; ui();
     var fila = Promise.resolve(), colhidas = [], confirmados = 0;
     msg = loteTexto(0,0,ids.length); ui();
     ids.forEach(function(i){
       fila = fila.then(function(){
-        if(conta!==donoJardim() || conta!==stDono)return;
+        if(!mesmaConta())return;
         idolIr(i); return rpc(nome, {p_canteiro:i});
       }).then(function(r){
-        if(conta!==donoJardim() || conta!==stDono || !r || !r.ok) return;
+        if(!mesmaConta() || !r || !r.ok) return;
         confirmados++;
         if(window.TWVidaCidade)window.TWVidaCidade.registrar('bloom_'+nome.replace('jardim_',''),{flor:r.flor});
         if(typeof twMissoesAtualizar==='function')twMissoesAtualizar();
@@ -224,20 +227,20 @@
     });
     // Mesmo após uma interrupção, consulta os cuidados que o servidor já guardou.
     return fila.catch(function(){}).then(function(){
-      if(conta!==donoJardim() || conta!==stDono)return;
+      if(!mesmaConta())return;
       msg = loteTexto(0,confirmados,ids.length);
       if(colhidas.length) msg += ' · ' + colhidas.join(' · ');
       if(confirmados<ids.length) msg += ' ' + loteTexto(1);
       if(confirmados) som(nome === 'jardim_colher' ? 'colher' : 'regar');
       return rpc('jardim_estado').then(function(e){
-        if(conta!==donoJardim() || conta!==stDono)return;
+        if(!mesmaConta())return;
         if(e && e.ok) st = e;
         else msg += ' ' + loteTexto(2);
       }).catch(function(){
-        if(conta===donoJardim() && conta===stDono)msg += ' ' + loteTexto(2);
+        if(mesmaConta())msg += ' ' + loteTexto(2);
       });
     }).then(function(){
-      if(conta===donoJardim() && conta===stDono){ocupado = false; ui(); laco();}
+      if(mesmaConta()){ocupado = false; ui(); laco();}
     });
   }
 
@@ -582,7 +585,10 @@
   var contaSondada = '', trocaConta = 0;
   ['hubCardsUI','contaUI'].forEach(function(n){ var o = window[n]; if(typeof o !== 'function') return;
     window[n] = function(){ var conta = donoJardim(), mudou = conta !== contaSondada;
-      if(mudou){ trocaConta++; contaSondada = conta; window.TW_BLOOM_ON = false; }
+      if(mudou){ trocaConta++; abertura++; contaSondada = conta; window.TW_BLOOM_ON = false;
+        st=null;stDono='';ocupado=false;msg='';escolha=-1;arranjo=[];festa=[];chuva=[];cresce={};
+        if(ov){ov.hidden=true;cancelAnimationFrame(anim);anim=0;}
+      }
       var r = o.apply(this, arguments);
       if(mudou && conta) sondar();
       return r; }; });

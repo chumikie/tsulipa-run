@@ -110,8 +110,8 @@ async function conferirEstreia(browser, base){
   console.log('✓ estreia: visitante conclui corrida e foto, com tempos de escolha, início e conclusão');
 }
 
-async function conferirCafe(browser,base){
-  const ctx=await browser.newContext({viewport:{width:320,height:640},isMobile:true,hasTouch:true});
+async function conferirCafe(browser,base,width=320,height=640){
+  const ctx=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true});
   try{
     await ctx.route(/supabase\.co|jsdelivr|googleapis|gstatic|youtube/,r=>r.abort());
     const page=await ctx.newPage();
@@ -160,7 +160,7 @@ async function conferirCafe(browser,base){
         if(indice>=0)await page.locator('#cfOv [data-cf="'+tipo+':'+indice+'"]').click();
       }
       const visivel=await comanda.boundingBox();
-      assert.ok(visivel && visivel.y>=0 && visivel.y+visivel.height<=640);
+      assert.ok(visivel && visivel.y>=0 && visivel.y+visivel.height<=height);
       await servir.click();
       await page.getByText(/Confirmando com o servidor/).waitFor();
       const antes=await servir.boundingBox();
@@ -171,10 +171,10 @@ async function conferirCafe(browser,base){
       await page.getByText(lado===0?'1 de 2 pedidos confirmados':'Missão do Café concluída').waitFor();
       const depois=await servir.boundingBox();
       assert.ok(antes && depois && Math.abs(antes.y-depois.y)<=1,'a resposta online não desloca o botão Servir');
-      assert.ok(depois.x>=0 && depois.x+depois.width<=320,'Servir cabe na tela de 320 px');
+      assert.ok(depois.x>=0 && depois.x+depois.width<=width,'Servir cabe na tela móvel');
     }
-    await page.screenshot({path:path.join(out,'cafe-320.png')});
-    console.log('✓ Café em 320 px: dois copos independentes, prioridade e progresso da missão sem salto.');
+    await page.screenshot({path:path.join(out,'cafe-'+width+'.png')});
+    console.log('✓ Café em '+width+'×'+height+': dois copos independentes, prioridade e progresso da missão sem salto.');
   }finally{await ctx.close();}
 }
 
@@ -185,6 +185,7 @@ async function conferirCafe(browser,base){
   try{
     await conferirEstreia(browser,base);
     await conferirCafe(browser,base);
+    await conferirCafe(browser,base,390,844);
     falhas=falhas.concat(await rodar(browser,base,'celular',{viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true}));
     falhas=falhas.concat(await rodar(browser,base,'computador',{viewport:{width:1280,height:800},deviceScaleFactor:1.25}));
     // tablets Android (Galaxy Tab, Xiaomi Pad e parecidos): em pé e deitado, com toque

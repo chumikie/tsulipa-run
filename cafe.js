@@ -413,8 +413,8 @@ function cfBarraPedido(sufixo,fracao,nome){
     escHtml(tr('Paciência do cliente') + (nome ? ' · ' + nome : '')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pc +
     '"><b id="cfPacEmo'+sufixo+'" aria-hidden="true">😊</b><i id="cfPac'+sufixo+'" style="width:'+pc+'%"></i></div>';
 }
-function cfRetornoPedido(indice,nome){
-  return '<div class="cf-retorno">' + cfConfirmacaoHtml(indice,nome) + cfMissaoHtml() + '</div>';
+function cfRetornoPedido(indice,nome,detalhe){
+  return '<div class="cf-retorno">' + (detalhe||'') + cfConfirmacaoHtml(indice,nome) + cfMissaoHtml() + '</div>';
 }
 function cfConfirmacaoHtml(indice,nome){
   var mensagem = (CF_CONFIRMACAO[LANG] || CF_CONFIRMACAO.pt)[indice];
@@ -712,6 +712,19 @@ var CF_FALA_REENCONTRO = {
   th:'คุณจำของขวัญของฉันได้! วันนี้ฉันมาลองสูตรของคุณ',
   ja:'プレゼントを覚えてくれてたね！今日はあなたのレシピを味わいに来たよ。'
 };
+// As três regiões do turno ficam no fluxo, sem sobreposição. Preserva a rolagem dos ingredientes durante atualizações.
+function cfRenderCorpo(c,h){
+  var anterior=c.querySelector&&c.querySelector('.cf-turno'), lista=anterior&&anterior.querySelector('.cf-montagem'), y=lista?lista.scrollTop:0;
+  var topo=anterior&&anterior.getBoundingClientRect?anterior.getBoundingClientRect().top:null;
+  var overlay=typeof cfOv!=='undefined'&&cfOv, painel=overlay&&overlay.querySelector&&overlay.querySelector('.cfp');
+  var rolo=overlay&&typeof getComputedStyle==='function'&&getComputedStyle(overlay).overflowY==='auto'?overlay:painel;
+  c.innerHTML=h;
+  var turno=c.querySelector&&c.querySelector('.cf-turno');if(!turno)return;
+  var nova=turno.querySelector('.cf-montagem');if(nova)nova.scrollTop=y;
+  if(typeof matchMedia!=='function'||!matchMedia('(max-width:680px) and (min-height:480px)').matches)return;
+  if(topo!==null&&rolo&&turno.getBoundingClientRect){rolo.scrollTop+=turno.getBoundingClientRect().top-topo;}
+  else if(turno.scrollIntoView)turno.scrollIntoView({block:'end',inline:'nearest',behavior:'instant'});
+}
 function cfUI(){
   var c = $('cfCorpo'); if(!c || !cf) return;
   if(cf.fase === 'fim' && cf.pratica){ c.innerHTML = cfPraticaHtml(); return; }
@@ -727,9 +740,9 @@ function cfUI(){
     (typeof twLinkBotao === 'function' ? twLinkBotao('cafe') : '') + '</div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
     // Pedido também em letra grande (no desenho o balão fica pequeno no celular).
-    h += '<section class="cf-comanda"><p class="cfpedidotxt"><b>' + escHtml(tr('Pedido')) + ':</b> ' +
+    h += '<div class="cf-turno"><section class="cf-comanda"><p class="cfpedidotxt"><b>' + escHtml(tr('Pedido')) + ':</b> ' +
       escHtml(cfPedidoIlustrativo(cf.cli.pedido).replace(/^☕ /, '')) + '</p>' +
-      cfBarraPedido('',cf.fase === 'pedido' ? 1-(cfT-cf.t0)/cfPaciencia() : 0) + '</section>';
+      cfBarraPedido('',cf.fase === 'pedido' ? 1-(cfT-cf.t0)/cfPaciencia() : 0) + '</section><div class="cf-montagem">';
     if(cf.visitaAlvo === cf.cli && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono) h += '<p class="hsdica">✨ Visita⭐Surpresa! · <b>' + escHtml(cf.visitaComunidade.nick) + '</b></p>';
     if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido') h += cfSaudacaoFa(cf.cli.hsLembranca);
     if(cf.fase === 'reacao'){
@@ -750,8 +763,8 @@ function cfUI(){
         '📒 ' + escHtml(tr('Usar assinatura: base + enfeite')) + '</button></div>';
     }
     h += cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)') +
-      '<div class="cf-rodape"><div class="btns cfacoes"><button type="button" class="btn sec" data-cf="lixo:0"' + (cf.fase !== 'pedido' ? ' disabled' : '') + '>🗑️ ' + escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" id="cfServir"' + (cf.monta.base < 0 || cf.monta.enf < 0 || cf.fase !== 'pedido' ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>' +
-      cfRetornoPedido(cf.fase === 'reacao' ? cf.confirmacaoPedido : null) + '</div>';
+      '</div><div class="cf-rodape"><div class="btns cfacoes"><button type="button" class="btn sec" data-cf="lixo:0"' + (cf.fase !== 'pedido' ? ' disabled' : '') + '>🗑️ ' + escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" id="cfServir"' + (cf.monta.base < 0 || cf.monta.enf < 0 || cf.fase !== 'pedido' ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>' +
+      cfRetornoPedido(cf.fase === 'reacao' ? cf.confirmacaoPedido : null) + '</div></div>';
   }
   else if(cf.fase === 'fim'){
     h += '<p class="hsfim">' + (cf.novoRec ? '🏆 ' + escHtml(tr('Novo recorde!')) + ' ' : '') + escHtml(tr('O café fechou!')) + ' <b>' + cf.pontos.toLocaleString('pt-BR') + '</b> ' + escHtml(tr('pts')) + '</p>' +
@@ -768,7 +781,7 @@ function cfUI(){
     if(cf.erroPratica) h += '<div class="btns"><button type="button" class="btn alt" data-cf-pratica="abrir">' + escHtml(cfPraticaTexto(0)) + '</button></div>';
     h += cfCaderno(rec) + '<div class="btns"><button type="button" class="btn" id="cfJogar">🔁 ' + escHtml(tr('Jogar de novo')) + '</button></div>';
   }
-  c.innerHTML = h;
+  cfRenderCorpo(c,h);
 }
 function cfCaderno(rec){
   rec = rec || {};

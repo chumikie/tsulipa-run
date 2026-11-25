@@ -66,9 +66,6 @@
 .cf-retorno .hsdica,.cf-missao{margin:2px 0;font-size:.75rem;line-height:1.25;text-align:center}
 .cf-missao{font-weight:800;color:inherit}
 @media(max-width:680px){
-  .cfp:has(.cf-comanda){scroll-padding-block:140px 132px}
-  .cf-comanda{position:sticky;top:0;z-index:3}
-  .cf-rodape{position:sticky;bottom:0;z-index:2}
   .cf-comanda .cfpedidotxt{font-size:.78rem}
 }
 :root[data-theme="dark"] .cfp{--cf-painel:#291f42;--cf-texto:#fff0fa;--cf-borda:#65477f;--cf-selecao:#492b6a;--cf-contorno:#c79aea;--cf-botao:#37234f;--cf-botao-borda:#9a75b7;--cf-urgente:#ffd1a8;--cf-primeiro:#ffc7a3}
@@ -95,8 +92,15 @@
 
 .cfop:focus-visible{outline:3px solid #8351bb;outline-offset:2px}
 .cfop[aria-pressed="true"]:disabled{opacity:.8}
-@media(max-width:680px){
-  body.tw-cel #cfOv .cf-comanda{top:calc(76px + env(safe-area-inset-top))}
-  body.tw-cel #cfOv .cf-rodape{bottom:calc(92px + env(safe-area-inset-bottom))}
-  body.tw-cel #cfOv{scroll-padding-block:calc(160px + env(safe-area-inset-top)) calc(180px + env(safe-area-inset-bottom))}
+/* O pedido, a montagem e as ações dividem espaço em vez de sobrepor os alvos de toque. */
+.cf-turno,.cf-montagem{min-width:0}
+@media(max-width:680px) and (min-height:480px){
+  .cf-turno{display:grid;grid-template-rows:minmax(0,auto) minmax(76px,1fr) auto;gap:6px;height:calc(100dvh - 68px);min-height:0;box-sizing:border-box}
+  .cf-turno .cf-comanda{min-height:0;max-height:100%;overflow:auto;overscroll-behavior:contain}
+  .cf-turno .cf-montagem{min-height:0;overflow-y:auto;overscroll-behavior-y:contain;scroll-padding-block:5px;padding:2px;scrollbar-width:thin}
+  .cf-turno .cf-rodape{margin:0;min-width:0}
+  body.tw-cel #cfOv .cf-turno{height:calc(100dvh - 188px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+  body.tw-cel #cfOv{scroll-padding-block:calc(76px + env(safe-area-inset-top)) calc(92px + env(safe-area-inset-bottom))}
 }
+@media(max-height:479px){.cf-turno .cf-comanda,.cf-turno .cf-rodape{position:static}}
+

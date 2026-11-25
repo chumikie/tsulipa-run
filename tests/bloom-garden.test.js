@@ -20,7 +20,7 @@ for(const l in T)for(const k in T.pt){assert.ok(T[l][k]&&T[l][k].trim(),l+'.'+k)
 async function conferirLote(respostas, esperado){
   const calls=[],sounds=[],events=[];
   const garden={ok:true,canteiros:[{canteiro:0,regado_hoje:true}]};
-  const env={LANG:'pt',ocupado:false,stDono:'A',st:{antigo:true},msg:'',window:{},
+  const env={LANG:'pt',ocupado:false,trocaConta:0,stDono:'A',st:{antigo:true},msg:'',window:{},
     donoJardim:()=> 'A',ui(){},idolIr(){},crescer(){},laco(){},
     SEM:{tulipa:[]},t:k=>k,chuva:[],festa:[],performance:{now:()=>0},
     som:k=>sounds.push(k),rpc:async(n)=>{
@@ -60,6 +60,11 @@ async function conferirLote(respostas, esperado){
   await completo.env.emSerie('jardim_regar',[0,1]);
   assert.equal(completo.env.st,anterior,'resposta de outra conta não substitui o jardim');
 
+  owner='A';completo.env.ocupado=false;
+  const eventosAntes=completo.env.st;
+  completo.env.rpc=async()=>{completo.env.trocaConta+=2;return {ok:true};};
+  await completo.env.emSerie('jardim_regar',[0,1]);
+  assert.equal(completo.env.st,eventosAntes,'retornar à mesma conta não aceita resposta da sessão antiga');
   ctx.hubCardsUI();await new Promise(r=>setTimeout(r,5));
   assert.equal(chamadas.length,0,'sem conta não consulta o servidor');
   ctx.contaJ={nick:'Ana'};resposta=new Error('Could not find the function public.jardim_estado');

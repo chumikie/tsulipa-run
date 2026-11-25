@@ -88,7 +88,7 @@
 <link rel="stylesheet" href="./album.css?v=7">
 <link rel="stylesheet" href="./fa.css?v=3">
 <link rel="stylesheet" href="./handshake.css?v=5">
-<link rel="stylesheet" href="./cafe.css?v=10">
+<link rel="stylesheet" href="./cafe.css?v=11">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -496,7 +496,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido){
       var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
-      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=76');})
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=77');})
         .catch(function(e){pedido=null;throw e;});
     }
     return pedido;

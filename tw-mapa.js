@@ -1138,6 +1138,10 @@
     var v=Math.max(0,Math.min(1,(t-m.ida-MEU_PARA)/1.2)),passo=Math.min(1,v*8,(1-v)*8);v=v*v*(3-2*v);return {x:m.x1+(q.x-m.x1)*v,dir:q.x>=m.x1?1:-1,mov:1,passo:passo,volta:0};
   }
   var ESCALA_RUA=1.75;   // Idols maiores só nas ruas; o mapa geral continua de longe.
+  function acessorioPasseante(av){
+    var a=av&&av.a;
+    return typeof a==='string'&&typeof ACC!=='undefined'&&Array.isArray(ACC)&&ACC.some(function(item){return item[0]===a;})?a:'';
+  }
   function andar(tm){
     if(typeof perfChar!=='function'||typeof drawChar!=='function'||typeof perfCharContorno!=='function')return;
     // Escala dos Idols nas ruas (era 1.45). Os enfeites em volta acompanham por k.
@@ -1175,7 +1179,7 @@
         .forEach(function(q){
         var p=q.p,c=p.oshiChar||perfChar(p.av),bob=q.mov&&!reduzMov?-Math.abs(Math.sin(tm*8+q.i))*1.8*sc*(q.passo==null?1:q.passo):0;
         // Fase individual: os passeantes não repetem a mesma passada ao mesmo tempo.
-        frame=reduzMov?0:tm*60+q.i*13;
+        frame=reduzMov?0:tm*60+q.i*13;accSel=acessorioPasseante(p.av);
         var pulo=pulos[q.i];if(pulo!=null){var up=(tm-pulo)/.5;if(up>=0&&up<1&&!reduzMov)bob-=Math.sin(up*Math.PI)*16*k;if(tm-pulo>1.6)delete pulos[q.i];}
         ultimos.push({x:q.x,y:q.y,i:q.i,dono:!!p.dono,oshi:p.oshi||'',oshiK:p.oshiK});
         var segurando=!q.mov&&objeto&&q.porta===objeto.porta&&
@@ -1510,7 +1514,7 @@
       gente.push({av:av,x:ps.x,y:ps.y,dir:(f<1?1:-1)*(ps.dx>=0?1:-1),i:i});});
     gente.sort(function(a,b){return a.y-b.y;});
     try{state='play';pw=null;dpw=null;rankI=0;sash=false;accSel='';
-      gente.forEach(function(g){var c=perfChar(g.av),bob=reduzMov?0:-Math.abs(Math.sin(tm*7+g.i))*1.6;frame=reduzMov?0:tm*60+g.i*13;
+      gente.forEach(function(g){var c=perfChar(g.av),bob=reduzMov?0:-Math.abs(Math.sin(tm*7+g.i))*1.6;frame=reduzMov?0:tm*60+g.i*13;accSel=acessorioPasseante(g.av);
         ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(g.x,g.y,7,1.6,0,0,7);ctx.fill();
         ctx.save();if(g.dir<0){ctx.translate(g.x,0);ctx.scale(-1,1);ctx.translate(-g.x,0);}
         perfCharContorno(ctx,g.x-15*sc,g.y-44*sc+bob,sc,function(){charPose='';drawChar(c,0,0,reduzMov?0:1,g.av.expr!=null&&Number.isInteger(+g.av.expr)&&+g.av.expr>=0&&+g.av.expr<=6?+g.av.expr:2,false);});ctx.restore();});

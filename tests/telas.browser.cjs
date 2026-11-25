@@ -19,6 +19,7 @@ const FALSO=`window.__instalarFalso=function(){
   var av={v:1,expr:2,pose:'v',fundo:'basico',visual:'',c:{hair:'#7b3ff0',skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',out:'',outcol:'#ffffff',legcol:'#444466'}};
   var hoje=new Date().toISOString();
   var R={
+    meu_perfil:{nick:'Idol QA',best:900,avatar:av,visuais:[],oshi:'tsu',coracoes:12},
     news_posts:[{titulo:'Ensaio aberto no palco',legenda:'Teste automático: post inventado.',criado:hoje,imagem:''}],
     duo_sugestoes:[{nick:'Teste A',best:120},{nick:'Teste B',best:80}],
     ranking:[{nick:'Teste A',score:900,avatar:av}],
@@ -37,18 +38,26 @@ const server=http.createServer((req,res)=>{
   });
 });
 
-const TELAS=[['v','jogos'],['v','trio'],['a','news'],['a','nov'],['a','album'],['a','mapa'],['ir','perfil'],['ir','gacha'],['ir','loja']];
+const TELAS=[['v','jogos','.twc-jogos'],['v','trio','#twcTela [data-trioaba]'],['a','news','#jornalOv'],['a','nov','#twcEmbSlot .twc-nov-tem'],['a','album','.twc-album'],['a','mapa','#twcEmbSlot #twMapa canvas'],['ir','perfil','#perfOv #perfFoto'],['ir','gacha','#gachaOv'],['ir','loja','#shopOv']];
+const CONTA=new Set(['album','perfil','gacha','loja']);
 
 async function rodar(browser,base,nome,opcoes){
   const ctx=await browser.newContext(opcoes);
-  await ctx.route(/supabase\.co|jsdelivr|googleapis|gstatic|youtube/,r=>r.abort());
+  await ctx.route('**/*',r=>new URL(r.request().url()).origin===base?r.continue():r.abort());
   const p=await ctx.newPage(),erros=[];
   p.on('pageerror',e=>erros.push(String(e.message||e).slice(0,200)));
-  await p.addInitScript(()=>{try{localStorage.setItem('tw_cel_tut_v1','1');localStorage.setItem('tw_index2_tut_v2','1');}catch(e){}});
-  await p.goto(base+'/index.html');await p.waitForTimeout(1500);
-  await p.addScriptTag({content:FALSO});
-  const abrirInicio=()=>p.evaluate(()=>{__instalarFalso();TW_CELULAR.desligar();TW_CELULAR.ligar();var c=document.querySelector('[data-a="comecar"]');if(c)c.click();});
-  await abrirInicio();await p.waitForTimeout(1000);
+  await p.addInitScript(()=>{try{localStorage.setItem('brs48cr_celular','1');localStorage.setItem('tw_cel_tut_v1','1');localStorage.setItem('tw_index2_tut_v2','1');}catch(e){}});
+  async function abrirInicio(conta){
+    await p.goto(base+'/index.html?lang=pt',{waitUntil:'domcontentloaded'});
+    await p.waitForFunction(()=>!!window.TW_CELULAR);
+    await p.addScriptTag({content:FALSO});
+    await p.evaluate(id=>{__instalarFalso();contaJ=id?{id:'qa-visual',nick:'Idol QA'}:null;contaAuthUserId=id?'qa-visual':'';},conta);
+    for(const sel of ['[data-f="manutTentar"]','[data-a="comecar"]','[data-f="tutPular"]']){
+      const b=p.locator(sel+':visible').first();if(await b.isVisible())await b.click();
+    }
+    await p.locator('#twcTela .twc-inicio').waitFor({state:'visible',timeout:10000});
+  }
+  await abrirInicio(false);await p.waitForTimeout(500);
   const falhas=[];
   const conferir=async tela=>{
     const r=await p.evaluate(()=>{
@@ -63,16 +72,28 @@ async function rodar(browser,base,nome,opcoes){
     if(r.texto<20&&r.graficos===0)falhas.push(nome+' · '+tela+': tela vazia');
   };
   await conferir('inicio');await p.screenshot({path:path.join(out,nome+'-inicio.png')});
-  for(const [t,v] of TELAS){
-    await abrirInicio();await p.waitForTimeout(400);
-    const abriu=await p.evaluate(([t,v])=>{const sel='[data-'+t+'="'+v+'"]';let e=document.querySelector(sel);
-      if(!e){const m=document.querySelector('[data-n="menu"]');if(m)m.click();e=document.querySelector(sel);}
-      if(!e){const f=document.querySelector('[data-a="menuMais"]');if(f)f.click();e=document.querySelector(sel);}   // pasta "Mais" do Menu (poda de 22/11)
-      if(!e){const j=document.querySelector('[data-v="jogos"]');if(j)j.click();e=document.querySelector(sel);}
-      if(e){e.click();return true;}return false;},[t,v]);
-    if(!abriu){falhas.push(nome+' · '+v+': botão não encontrado');continue;}
-    await p.waitForTimeout(1600);
-    await conferir(v);await p.screenshot({path:path.join(out,nome+'-'+v+'.png')});
+  for(const [t,v,alvo] of TELAS.concat(visualOnly?[['ir','studio','#studioOv #studioCv'],['ir','cafe','#cfOv #cfCv'],['ir','handshake','#hsOv #hsCv']]:[])){
+    try{
+      await abrirInicio(CONTA.has(v));
+      const sel='[data-'+t+'="'+v+'"]:visible';
+      const achar=()=>p.locator('#twcTela '+sel+',#twcNav '+sel+',#twcFolha '+sel).first();
+      let e=achar();
+      if(!await e.isVisible()&&!['perfil','loja'].includes(v)){await p.locator('#twcNav [data-n="menu"]:visible').click();e=achar();}
+      if(!await e.isVisible()){const m=p.locator('[data-a="menuMais"]:visible').first();if(await m.isVisible())await m.click();e=achar();}
+      if(!await e.isVisible()){const j=p.locator('[data-v="jogos"]:visible').first();if(await j.isVisible())await j.click();e=achar();}
+      if(!await e.isVisible())e=p.locator(sel).first();
+      await e.click({timeout:6000});
+      await p.locator(alvo).first().waitFor({state:'visible',timeout:8000});
+      await p.waitForTimeout(500);
+      const identidade=await p.evaluate(sel=>{
+        const esperado=document.querySelector(sel);if(!esperado)return false;
+        const r=esperado.getBoundingClientRect(),top=document.elementFromPoint(Math.max(0,Math.min(innerWidth-1,r.x+r.width/2)),Math.max(0,Math.min(innerHeight-1,r.y+Math.min(r.height/2,80))));
+        const ov=esperado.closest('.tw-window-overlay');
+        return !!top&&(ov?ov.contains(top):esperado.contains(top)||!!top.closest('#twcTela')&&!top.closest('.tw-window-overlay'));
+      },alvo);
+      if(!identidade)throw Error('tela esperada encoberta ou ausente: '+alvo);
+      await conferir(v);await p.screenshot({path:path.join(out,nome+'-'+v+'.png')});
+    }catch(e){falhas.push(nome+' · '+v+': '+String(e.message||e).split('\n')[0]);}
   }
   if(erros.length)falhas.push(nome+': erro de JavaScript → '+[...new Set(erros)].slice(0,4).join(' | '));
   await ctx.close();

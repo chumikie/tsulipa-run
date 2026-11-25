@@ -141,3 +141,7 @@ test('Camarim: respiração e balanço das pernas respeitam movimento reduzido',
 test('Polish: apoio visual do Sora não altera a coordenada da colisão',()=>{
  const s=read('sora-jump.html');assert.match(s,/x\.moveTo\(pl.x\+4,pl.y\);x\.lineTo\(pl.x\+pl.w-4,pl.y\)/);assert.match(s,/feetPrev <= pl.y \+ 10 && feetNow >= pl.y/);
 });
+
+test('Mapa: acessório acompanha o look e ignora identificadores inválidos',()=>{
+ const s=read('tw-mapa.js'),a=s.indexOf('function acessorioPasseante('),b=s.indexOf('function andar(',a),ctx={ACC:[[''],['mic'],['laco']]};vm.runInNewContext(s.slice(a,b),ctx);assert.equal(ctx.acessorioPasseante({a:'mic'}),'mic');assert.equal(ctx.acessorioPasseante({a:'invalid'}),'');assert.equal(ctx.acessorioPasseante(null),'');assert.match(s,/accSel=acessorioPasseante\(p.av\)/);assert.match(s,/accSel=acessorioPasseante\(g.av\)/);
+});

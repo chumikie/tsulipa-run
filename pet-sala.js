@@ -337,6 +337,12 @@ function petArrumoSoltar(ev){
 //←petArrumoModo
 function petArrumoModo(on){   // liga/desliga o modo e o gesto de arrastar no toque
   petArrumoLer();
+  // Apenas pointerup confirma a mudança. Fechar o modo durante o gesto desfaz o deslocamento.
+  if(petArrastando)petArrumoSoltar({type:'pointercancel'});
+  if(typeof petArrumoPointer!=='undefined' && petArrumoPointer!==null){
+    var id=petArrumoPointer;petArrumoPointer=null;
+    if(typeof petCv!=='undefined'&&petCv&&petCv.releasePointerCapture)try{petCv.releasePointerCapture(id);}catch(e){}
+  }
   petArrumando = !!on; petArrastando = null; petArrumoAnterior = null;
   if(!on) petArrumoSalvar();
   if(typeof petCv !== 'undefined' && petCv && petCv.style) petCv.style.touchAction = on ? 'none' : '';

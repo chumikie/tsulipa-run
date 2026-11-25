@@ -423,7 +423,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script defer src="./karaoke-room-views.js?v=1"></script>
 <script src="./centerrun.js?v=44"></script>
 <script defer src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=153"></script>
+<script src="./pet.js?v=154"></script>
 <script src="./perfil.js?v=41"></script>
 <script src="./gacha.js?v=7"></script>
 <script src="./album-fotos.js?v=9"></script>
@@ -496,7 +496,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido){
       var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
-      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=74');})
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=75');})
         .catch(function(e){pedido=null;throw e;});
     }
     return pedido;
@@ -571,7 +571,7 @@ var jornalCarregar=(function(){
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
 (function(){var p=null,cssPronto=false;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
   if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=function(){e.remove();er(new Error(u));};document.head.appendChild(e);});}
-  function carregar(){if(!p)p=(cssPronto?Promise.resolve():arq('link','./battle.css?v=20').then(function(){cssPronto=true;})).then(function(){return arq('script','./battle.js?v=32');}).catch(function(e){p=null;throw e;});return p;}
+  function carregar(){if(!p)p=(cssPronto?Promise.resolve():arq('link','./battle.css?v=20').then(function(){cssPronto=true;})).then(function(){return arq('script','./battle.js?v=33');}).catch(function(e){p=null;throw e;});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Idol⭐Battle!',carregar,function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>

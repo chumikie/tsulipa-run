@@ -110,19 +110,20 @@
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
     sec.querySelector('.tw-mapa-recarregar').addEventListener('click',function(){mostrarCena(cena);});
     mostrarCena('mundo');
-    cv.addEventListener('mousemove',function(e){var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
+    cv.addEventListener('mousemove',function(e){if(toque&&arrastou)return;var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
     var rolo=sec.querySelector('.tw-mapa-rolo');['pointerdown','touchstart','wheel'].forEach(function(ev){rolo.addEventListener(ev,function(){sec.classList.add('mexeu');},{passive:true,once:true});});
     cv.addEventListener('mouseleave',function(){hover=null;desenhar();});
     var toque=null,arrastou=false;
     cv.addEventListener('pointerdown',function(e){if(toque||e.isPrimary===false){arrastou=true;hover=null;desenhar();return;}toque={id:e.pointerId,x:e.clientX,y:e.clientY};arrastou=false;hover=achar(e);desenhar();},{passive:true});
     cv.addEventListener('pointermove',function(e){
-      if(toque&&e.pointerId===toque.id&&Math.hypot(e.clientX-toque.x,e.clientY-toque.y)>10){arrastou=true;hover=null;desenhar();}
+      if(toque&&e.pointerId===toque.id&&!arrastou&&Math.hypot(e.clientX-toque.x,e.clientY-toque.y)>10){arrastou=true;hover=null;desenhar();}
     },{passive:true});
     function soltarMapa(e){if(toque&&e.pointerId===toque.id)toque=null;}
-    cv.addEventListener('pointercancel',function(e){soltarMapa(e);arrastou=true;hover=null;desenhar();});
+    function cancelarMapa(e){if(!toque||e.pointerId!==toque.id)return;soltarMapa(e);arrastou=true;hover=null;desenhar();}
+    cv.addEventListener('pointercancel',cancelarMapa);
     cv.addEventListener('pointerup',soltarMapa);
     window.addEventListener('pointerup',soltarMapa);
-    window.addEventListener('pointercancel',soltarMapa);
+    window.addEventListener('pointercancel',cancelarMapa);
     cv.addEventListener('click',function(e){
       if(arrastou){arrastou=false;return;}
       if(!mapaAtivo()||mergulho)return;

@@ -290,7 +290,11 @@ function montar(){
  document.body.appendChild(ov);
  // tocar no palco (ou apertar espaço) durante o show também agita o lightstick
  ov.addEventListener('pointerdown',function(e){if(fase==='show'&&e.target&&e.target.id==='battleStage'){e.preventDefault();agitar();}});
- document.addEventListener('keydown',function(e){if(fase==='show'&&ov&&!ov.hidden&&(e.key===' '||e.key==='Enter')&&!(e.target&&e.target.closest&&e.target.closest('button,select,input'))){e.preventDefault();if(!e.repeat)agitar();}});
+ document.addEventListener('keydown',function(e){if(fase!=='show'||!ov||ov.hidden||(e.key!==' '&&e.key!=='Enter'))return;
+   var alvo=e.target&&e.target.closest&&e.target.closest('button,select,input,textarea,[contenteditable="true"]');
+   if(alvo){if(e.repeat&&alvo.matches('[data-battle="agitar"]'))e.preventDefault();return;}
+   e.preventDefault();if(!e.repeat)agitar();
+ });
  ov.addEventListener('click',function(e){
    if(e.target===ov){fechar();return;}
    var b=e.target.closest&&e.target.closest('[data-battle]');if(!b)return;

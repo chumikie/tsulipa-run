@@ -55,3 +55,12 @@ test('Mapa e Center preservam o dono do gesto',()=>{
 test('Karaoke preserva rolagem ao reconstruir catálogo',()=>{
  const s=read('karaoke-lista.js');assert.match(s,/gradeAnterior\?gradeAnterior.scrollTop:0/);assert.match(s,/gradeNova.scrollTop=rolagem/);
 });
+
+test('Camarim: sair da decoração com gesto ativo grava apenas o arranjo anterior',()=>{
+ const s=read('pet-sala.js'),a=s.indexOf('function petArrumoSoltar('),b=s.indexOf('//←petArrumoPadrao',a);
+ const A={chao:{abajur:90}},salvos=[],soltos=[],ctx={petArrumoLer:()=>A,petArrumando:true,petArrumoAnterior:null,petArrastando:{tipo:'chao',k:'abajur',antes:70,dono:'a'},petArrumoDono:'a',petArrumoPointer:8,petCv:{style:{},releasePointerCapture:id=>soltos.push(id)},petBg:{},petArrumoSalvar(){salvos.push(A.chao.abajur);}};
+ vm.runInNewContext(s.slice(a,b),ctx);ctx.petArrumoModo(false);assert.deepEqual(salvos,[70]);assert.deepEqual(soltos,[8]);assert.equal(ctx.petArrumoPointer,null);assert.equal(ctx.petArrumando,false);
+});
+test('Battle: Enter repetido no botão de lightstick não gera cliques automáticos',()=>{
+ const s=read('battle.js');assert.match(s,/if\(e.repeat&&alvo.matches\('\[data-battle="agitar"\]'\)\)e.preventDefault\(\)/);
+});

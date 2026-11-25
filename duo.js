@@ -221,10 +221,16 @@ function duoEscolhaUI(msg){
   $('duoEscolha').innerHTML = (msg ? '<p class="perfmsg">' + escHtml(msg) + '</p>' : '') + DUO_CENA_HTML +
     '<p class="duodica">' + escHtml(tr('Escolha com quem fazer a dupla:')) + '</p>' +
     '<input class="nick duobusca" id="duoBusca" maxlength="24" autocomplete="off" placeholder="🔍 ' + escHtml(tr('Procurar Idol pelo nome')) + '" aria-label="' + escHtml(tr('Procurar Idol pelo nome')) + '">' +
-    '<div class="duosug" id="duoRes"></div><p class="duodica"><b>✨ ' + escHtml(tr('Sugestões')) + '</b></p><div class="duosug" id="duoSug"><p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p></div>';
+    '<div class="duosug" id="duoRes" aria-live="polite"></div><p class="duodica"><b>✨ ' + escHtml(tr('Sugestões')) + '</b></p><div class="duosug" id="duoSug"><p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p></div>';
   duoCenaDesenhar();
   // sem sugestões (ou sem rede), nunca um espaço vazio: o Tsu e a Lirika, que sempre topam uma dupla
-  function duoSugMostrar(L){ var b = $('duoSug'); if(!b) return; b.innerHTML = (Array.isArray(L) && L.length ? L : DUO_SUG_RESERVA).map(duoNickBtn).join(''); }
+  var sugestoes = $('duoSug'), dono = petPhoneContaChave();
+  function duoSugMostrar(L){
+    if(duoOv.hidden || !sugestoes.isConnected || dono !== petPhoneContaChave()) return;
+    var lista = duoOutrosPerfis(L);
+    if(!lista.length) lista = duoOutrosPerfis(DUO_SUG_RESERVA);
+    sugestoes.innerHTML = lista.map(duoNickBtn).join('');
+  }
   contaRpc('duo_sugestoes').then(duoSugMostrar).catch(function(){ duoSugMostrar(null); });
 }
 var DUO_SUG_RESERVA = [{nick:'Tsu'}, {nick:'Lirika'}];
@@ -246,19 +252,28 @@ function duoCenaDesenhar(){
   x.font = '400 64px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#fff'; x.fillText('?', cx, cy - 4);
   duoCoracao(x, W2 / 2, chao - 70, 18, '#ff6fb5');
 }
+function duoOutrosPerfis(lista){
+  var meuNick = contaJ && contaJ.nick.toLowerCase();
+  return Array.isArray(lista) ? lista.filter(function(p){ return p && typeof p.nick === 'string' && p.nick && p.nick.toLowerCase() !== meuNick; }) : [];
+}
 function duoNickBtn(p){ return '<button type="button" class="duochip" data-dnick="' + escHtml(p.nick) + '">🌙 ' + escHtml(p.nick) + (p.best != null ? ' <small>' + (+p.best || 0) + '</small>' : '') + '</button>'; }
 var duoBuscaT=0,duoBuscaSeq=0;
 function duoBuscaCancelar(){clearTimeout(duoBuscaT);duoBuscaT=0;duoBuscaSeq++;}
 var duoLoadSeq=0;
 function duoCarregar(nick,recriar){
   var seq=++duoLoadSeq, dono=petPhoneContaChave();
-  $('duoEscolha').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
+  duoBuscaCancelar();
+  duoGu = null;
+  if(duoAnim){ cancelAnimationFrame(duoAnim); duoAnim = 0; }
+  $('duoPalco').hidden = true;
+  $('duoEscolha').hidden = false;
+  $('duoEscolha').innerHTML = '<p class="perfcarr" role="status">' + escHtml(tr('Carregando...')) + '</p>';
   contaRpc('duo_convidado', { p_nick: String(nick).slice(0, 24) }).then(function(r){
     if(seq!==duoLoadSeq||duoOv.hidden||dono!==petPhoneContaChave())return;
     if(!r || r.erro){ duoGu = null; duoEscolhaUI(tr(r && r.erro === 'eu' ? 'Escolha outra pessoa para a dupla 😉' : r && r.erro === 'off' ? 'Essa pessoa não está participando do Moon⭐Duo!' : 'Esse nome ainda não tem perfil (jogou sem conta).')); return; }
     duoGu = r; duoBalao = null; if(recriar)duoAplicarCena(recriar); duoPalcoUI(); duoRegistrar();
     beep(1047, .08, 'triangle', .04); beep(1568, .1, 'triangle', .04, .08);
-  }).catch(function(){ if(seq===duoLoadSeq&&!duoOv.hidden)duoEscolhaUI(tr('Não deu para falar com o servidor. Tente de novo.')); });
+  }).catch(function(){ if(seq===duoLoadSeq&&!duoOv.hidden&&dono===petPhoneContaChave())duoEscolhaUI(tr('Não deu para falar com o servidor. Tente de novo.')); });
 }
 function duoRegistrar(){   // conta a cena para a missão do dia e a insígnia (o servidor não deixa contar repetido no mesmo dia)
   if(!duoGu || !contaJ) return;

@@ -42,15 +42,24 @@ duoOv.addEventListener('input',function(e){
   if(e.target.id!=='duoBusca')return;
   duoBuscaCancelar();
   var inp=e.target,q=inp.value.trim(),seq=duoBuscaSeq;
-  if(q.length<2){$('duoRes').innerHTML='';return;}
+  var box=$('duoRes'), dono=petPhoneContaChave();
+  function buscaAtual(){
+    return !(seq!==duoBuscaSeq||duoOv.hidden||!inp.isConnected||!box.isConnected||inp.value.trim()!==q||dono!==petPhoneContaChave());
+  }
+  function aviso(chave){ box.innerHTML='<p class="perfcarr">'+escHtml(tr(chave))+'</p>'; }
+  if(q.length<2){box.innerHTML='';return;}
+  aviso('Carregando...');
   duoBuscaT=setTimeout(function(){
     duoBuscaT=0;
-    if(seq!==duoBuscaSeq||duoOv.hidden||!inp.isConnected||inp.value.trim()!==q)return;
+    if(!buscaAtual())return;
     contaRpc('buscar_perfis',{p_q:q}).then(function(L){
-      var box=$('duoRes');
-      if(seq!==duoBuscaSeq||duoOv.hidden||!inp.isConnected||inp.value.trim()!==q||!box||!box.isConnected)return;
-      box.innerHTML=Array.isArray(L)&&L.length?L.filter(function(p){return !contaJ||p.nick.toLowerCase()!==contaJ.nick.toLowerCase();}).map(duoNickBtn).join(''):'<p class="perfcarr">'+escHtml(tr('Ninguém com esse nome.'))+'</p>';
-    }).catch(function(){});
+      if(!buscaAtual())return;
+      var lista=duoOutrosPerfis(L);
+      if(lista.length) box.innerHTML=lista.map(duoNickBtn).join('');
+      else aviso('Ninguém com esse nome.');
+    }).catch(function(){
+      if(buscaAtual()) aviso('Não deu para falar com o servidor. Tente de novo.');
+    });
   },280);
 });
 duoOv.addEventListener('keydown', function(e){ if(e.target.id === 'duoBusca') e.stopPropagation(); });
@@ -81,15 +90,19 @@ duoOv.addEventListener('click', function(e){
   if((b = t.closest('[data-dqt]'))){ duoPresQt = +b.dataset.dqt; duoPresUI(); return; }
   if(t.id === 'duoPresOk'){
     t.disabled = true;
-    contaRpc('duo_presente', { p_nick: duoGu.nick, p_emoji: duoPresEmo, p_estrelas: duoPresQt }).then(function(r){
+    var dono=petPhoneContaChave(), convidado=duoGu, emoji=duoPresEmo, sessao=duoLoadSeq;
+    function presenteVisivel(){ return !duoOv.hidden && sessao===duoLoadSeq && convidado===duoGu && dono===petPhoneContaChave(); }
+    contaRpc('duo_presente', { p_nick: convidado.nick, p_emoji: emoji, p_estrelas: duoPresQt }).then(function(r){
       t.disabled = false;
+      if(dono!==petPhoneContaChave()) return;
       if(r && r.ok){
         if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(er){} setBest(); }
-        duoTab = 'cena'; duoTabUI(); duoMsg(duoPresEmo + ' ' + tr('Presente enviado! {nick} vai receber quando entrar no jogo.').replace('{nick}', duoGu.nick));
-        duoBalao = { txt:tr('Obrigado pelo presente! {emo}').replace('{emo}', duoPresEmo), t0:duoT }; duoPulo = { quem:'gu', t0:duoT };
+        if(!presenteVisivel()) return;
+        duoTab = 'cena'; duoTabUI(); duoMsg(emoji + ' ' + tr('Presente enviado! {nick} vai receber quando entrar no jogo.').replace('{nick}', convidado.nick));
+        duoBalao = { txt:tr('Obrigado pelo presente! {emo}').replace('{emo}', emoji), t0:duoT }; duoPulo = { quem:'gu', t0:duoT };
         [1047, 1319, 1568, 2093].forEach(function(f, i){ beep(f, .14, 'triangle', .04, i * .08); });
-      } else duoMsg(tr(DUO_PRES_ERRO[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.'));
-    }).catch(function(){ t.disabled = false; duoMsg(tr('Não deu para falar com o servidor. Tente de novo.')); });
+      } else if(presenteVisivel()) duoMsg(tr(DUO_PRES_ERRO[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.'));
+    }).catch(function(){ t.disabled = false; if(presenteVisivel()) duoMsg(tr('Não deu para falar com o servidor. Tente de novo.')); });
     return;
   }
   // 23/11: "Salvar PNG" com o cenário abre a câmera no jeito do Center⭐Run! (tw-camera.js): nítida, moldura e "de perto".

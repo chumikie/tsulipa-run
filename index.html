@@ -421,7 +421,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=3"><'+'/script>');})();</script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=8"><'+'/script>');</script>
 <script defer src="./karaoke-room-views.js?v=1"></script>
-<script src="./centerrun.js?v=44"></script>
+<script src="./centerrun.js?v=45"></script>
 <script defer src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=154"></script>
 <script src="./perfil.js?v=41"></script>
@@ -994,15 +994,32 @@ if(menuTitleEl) {
   };
 }
 
-document.addEventListener('keydown',function(e){
-  if(e.code==='Space'||e.code==='ArrowUp'){
-    if(e.repeat){if(state==='play')e.preventDefault();return;} // segurar mantém o pulo, não enfileira outros
-    if(document.activeElement&&(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='SELECT'))return;
-    if(state==='play'){e.preventDefault();jump();}
-  }
-});
-var crPointerPulo=null;
-function crPuloPointer(e){if(crPointerPulo!==null||state!=='play'||paused)return;if(typeof jump==='function'){crPointerPulo=e.pointerId;jump();}}
+// Teclado e toque são fontes independentes; um comando físico novo só dispara quando não há outro pressionado.
+var crPointerPulo=null,crTeclasPulo=new Set();
+function crPuloLivre(){return crPointerPulo===null&&!crTeclasPulo.size;}
+function crPuloLimpar(){
+  crPointerPulo=null;crTeclasPulo.clear();held=false;
+  if(typeof crPuloGuardado!=='undefined')crPuloGuardado=0;
+  if(typeof crPuloSegura!=='undefined')crPuloSegura=0;
+}
+function crPuloTecla(e){
+  if(e.code!=='Space'&&e.code!=='ArrowUp')return;
+  var alvo=e.target||document.activeElement;
+  if(alvo&&(alvo.isContentEditable||/^(INPUT|SELECT|TEXTAREA)$/.test(alvo.tagName)))return;
+  if(state!=='play'||paused||e.defaultPrevented)return;
+  e.preventDefault();
+  if(e.repeat||crTeclasPulo.has(e.code))return;
+  var livre=crPuloLivre();crTeclasPulo.add(e.code);
+  if(livre&&typeof jump==='function')jump();
+}
+function crPuloPointer(e){
+  if(crPointerPulo!==null||state!=='play'||paused||e.isPrimary===false||(e.button!=null&&e.button!==0))return;
+  var livre=crPuloLivre();crPointerPulo=e.pointerId;
+  if(livre&&typeof jump==='function')jump();
+}
+function crPuloSoltarTecla(e){if(crTeclasPulo.delete(e.code)&&crPuloLivre())held=false;}
+function crPuloSoltarPointer(e){if(e.pointerId===crPointerPulo){crPointerPulo=null;if(crPuloLivre())held=false;}}
+document.addEventListener('keydown',crPuloTecla);
 document.getElementById('stage').addEventListener('pointerdown',function(e){
   if(e.target.closest('button')||e.target.closest('.ov'))return;
   crPuloPointer(e);
@@ -1174,10 +1191,11 @@ $('shPhone').onclick=function(){
   }
   $('shPhone').textContent = petPhoneMomentoTexto(1);$('shPhone').disabled=true;
 };
-document.addEventListener('keyup',function(e){if(e.code==='Space'||e.code==='ArrowUp')held=false});
-['pointerup','pointercancel'].forEach(function(ev){document.addEventListener(ev,function(e){if(e.pointerId===crPointerPulo){crPointerPulo=null;held=false;}})});
-window.addEventListener('blur',function(){crPointerPulo=null;held=false;});
-document.addEventListener('visibilitychange',function(){if(document.hidden){crPointerPulo=null;held=false;}});
+document.addEventListener('keyup',crPuloSoltarTecla);
+['pointerup','pointercancel'].forEach(function(ev){window.addEventListener(ev,crPuloSoltarPointer);});
+window.addEventListener('blur',crPuloLimpar);
+window.addEventListener('pagehide',crPuloLimpar);
+document.addEventListener('visibilitychange',function(){if(document.hidden)crPuloLimpar();});
 (function(){var done=false;function un(){if(done)return;done=true;ac();sync()}['pointerdown','keydown','touchend'].forEach(function(ev){document.addEventListener(ev,un,true)})})();
 $('tomenu').onclick=function(){
   clearTimeout(overTimer);
@@ -1186,7 +1204,7 @@ $('tomenu').onclick=function(){
   $('pause').style.display='none';
   $('cam').style.display='none';
   $('jb').style.display='none';
-  state='menu';
+  state='menu';crPuloLimpar();
   document.body.classList.remove('jogando');
   sync();
 };

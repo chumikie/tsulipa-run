@@ -391,7 +391,7 @@ function end(impacto){
   var cm = typeof crMeta !== 'undefined' ? crMeta : null;
   if(cm) cm.acabou = true;
   if(state==='over')return;
-  state='over';sfx.over();sync();shake=14;
+  state='over';if(typeof crPuloLimpar==='function')crPuloLimpar();sfx.over();sync();shake=14;
   if(!isTestGame && window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('run', true);
   document.body.classList.remove('jogando');
   $('jb').style.display='none';
@@ -554,6 +554,7 @@ function crPraticaComecar(naPista){
     return {k:alvo,x:P.x+t*velo,y:GY-(obst&&obst.top||h),w:obst ? obst.w : cabo ? 56 : 36,h:h,high:!!(naPista && crPraticaAlvo.suspenso)};
   });
   if(naPista) dist = Math.max(0,dist-velo*120);
+  if(typeof crPuloLimpar==='function')crPuloLimpar();
   items=[];pops=[];fans=[];pw=null;inv=0;shield=0;shake=0;held=false;paused=false;
   s2Sliding=false;s2SlideTimer=0;crPuloGuardado=0;crPuloSegura=0;window.activePetFly=null;sp=velo;
   $('menu').hidden=true;$('over').hidden=true;$('crPraticaPainel').hidden=false;$('crPraticaTempo').textContent=crPraticaTexto(1).replace('{n}',Math.ceil(crPratica.limite/60));
@@ -569,6 +570,7 @@ function crPraticaTerminar(completo){
   var registro = crPratica, a = registro.anterior; crPratica=null;
   P=a.P;obs=a.obs;items=a.items;pops=a.pops;fans=a.fans;sp=a.sp;frame=a.frame;dist=a.dist;pw=a.pw;shake=a.shake;
   inv=a.inv;shield=a.shield;s2Sliding=a.s2Sliding;s2SlideTimer=a.s2SlideTimer;window.activePetFly=a.pet;
+  if(typeof crPuloLimpar==='function')crPuloLimpar();
   held=false;paused=false;state=a.estado;
   s2ShowSlideButton();
   $('jb').style.display='none';$('pause').style.display='none';$('pz').hidden=true;$('crPraticaPainel').hidden=true;

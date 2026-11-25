@@ -64,3 +64,23 @@ test('Camarim: sair da decoração com gesto ativo grava apenas o arranjo anteri
 test('Battle: Enter repetido no botão de lightstick não gera cliques automáticos',()=>{
  const s=read('battle.js');assert.match(s,/if\(e.repeat&&alvo.matches\('\[data-battle="agitar"\]'\)\)e.preventDefault\(\)/);
 });
+
+test('Center: teclado, toque e pausa não duplicam nem cancelam o comando do outro',()=>{
+ const s=read('index.html'),a=s.indexOf('var crPointerPulo=null,crTeclasPulo='),b=s.indexOf("document.addEventListener('keydown',crPuloTecla);",a);
+ assert.ok(a>=0&&b>a);let saltos=0,prev=0;
+ const ctx={state:'play',paused:false,held:false,crPuloGuardado:9,crPuloSegura:8,jump(){saltos++;ctx.held=true;}};
+ vm.runInNewContext(s.slice(a,b),ctx);
+ const key=(code,extra={})=>({code,target:{tagName:'BODY'},preventDefault(){prev++;},...extra});
+ ctx.crPuloTecla(key('Space'));ctx.crPuloPointer({pointerId:3});assert.equal(saltos,1);
+ ctx.crPuloSoltarTecla(key('Space'));assert.equal(ctx.held,true);
+ ctx.crPuloSoltarPointer({pointerId:4});assert.equal(ctx.held,true);
+ ctx.crPuloSoltarPointer({pointerId:3});assert.equal(ctx.held,false);
+ ctx.crPuloPointer({pointerId:5});ctx.crPuloTecla(key('ArrowUp'));assert.equal(saltos,2);
+ ctx.crPuloSoltarPointer({pointerId:5});assert.equal(ctx.held,true);
+ ctx.crPuloTecla(key('ArrowUp',{repeat:true}));assert.equal(saltos,2);
+ ctx.crPuloLimpar();assert.equal(ctx.held,false);assert.equal(ctx.crPuloGuardado,0);assert.equal(ctx.crPuloSegura,0);assert.equal(ctx.crPuloLivre(),true);
+ const n=prev;ctx.crPuloTecla(key('Space',{target:{tagName:'TEXTAREA'},repeat:true}));assert.equal(prev,n);
+ ctx.paused=true;ctx.crPuloPointer({pointerId:6});ctx.crPuloTecla(key('Space'));assert.equal(saltos,2);assert.equal(ctx.crPuloLivre(),true);
+ ctx.paused=false;ctx.crPuloPointer({pointerId:7,button:2});assert.equal(saltos,2);
+ assert.match(read('centerrun.js'),/if\(v&&!paused&&typeof crPuloLimpar==='function'\)crPuloLimpar\(\)/);
+});

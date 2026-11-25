@@ -108,7 +108,7 @@ test('parte 2: site — Duo, álbum, corrida, perfil e retrospectiva', () => {
   assert.match(com, /searchParams\.get\('perfil'\)/, 'abre perfil pelo link');
   assert.match(com, /tw_retro_auto_/, 'retrospectiva automática uma vez por mês e por conta');
   assert.match(ler('centerrun-corrida.js'), /new CustomEvent\('tw-corrida-fim'/);
-  assert.match(ler('centerrun.js'), /TW_CORRIDA_ARQ='\.\/centerrun-corrida\.js\?v=19'/);
+  assert.match(ler('centerrun.js'), /TW_CORRIDA_ARQ='\.\/centerrun-corrida\.js\?v=20'/);
   const album = ler('album.js');
   assert.match(album, /contaRpc\('album_metas'\)/);
   assert.match(album, /contaRpc\('album_meta_resgatar'/);

@@ -998,7 +998,7 @@ if(menuTitleEl) {
 var crPointerPulo=null,crTeclasPulo=new Set();
 function crPuloLivre(){return crPointerPulo===null&&!crTeclasPulo.size;}
 function crPuloLimpar(){
-  crPointerPulo=null;crTeclasPulo.clear();held=false;
+  crPointerPulo=null;if(crTeclasPulo)crTeclasPulo.clear();held=false;
   if(typeof crPuloGuardado!=='undefined')crPuloGuardado=0;
   if(typeof crPuloSegura!=='undefined')crPuloSegura=0;
 }

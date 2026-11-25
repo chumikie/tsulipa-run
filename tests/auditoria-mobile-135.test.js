@@ -94,3 +94,9 @@ test('Handshake: resposta de recuperação não cruza sessão nem apaga partida 
  vm.runInNewContext(s.slice(a,b),ctx);ctx.hsRecuperar();ctx.contaSessaoToken=2;resolveEstado({ok:true,entregue:true});resolveFim({ok:true});await Promise.resolve();assert.equal(premios,0);assert.ok(raw);
  ctx.hsRecuperar();raw=JSON.stringify({nick:'A',sessao:'nova',respostas:[]});resolveFim({ok:true});resolveEstado({ok:false});await Promise.resolve();assert.equal(premios,1);assert.match(raw,/nova/);
 });
+
+test('Center: reset inicial é seguro antes de inicializar o conjunto de teclas',()=>{
+ const s=read('index.html'),a=s.indexOf('function crPuloLimpar(){'),b=s.indexOf('function crPuloTecla(',a);
+ assert.ok(a>=0&&b>a);const ctx={crPointerPulo:undefined,crTeclasPulo:undefined,held:true};
+ vm.runInNewContext(s.slice(a,b),ctx);ctx.crPuloLimpar();assert.equal(ctx.held,false);assert.equal(ctx.crPointerPulo,null);
+});

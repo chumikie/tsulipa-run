@@ -161,3 +161,13 @@ button.perfcora:not([aria-pressed="true"]){animation:perfbate 1.6s ease-in-out i
 @media (max-width:380px){.perftabs button{white-space:normal;line-height:1.15;overflow:visible;text-overflow:clip;font-size:11.5px}}
 .perfrecresp{margin-top:4px;padding:3px 10px;border-radius:999px;border:1.5px solid var(--b1,#7b3ff0);background:transparent;color:var(--b1,#7b3ff0);font:800 11.5px/1.3 inherit;cursor:pointer}
 .perfrecresp:hover{background:rgba(123,63,240,.1)}
+
+/* Vitrine e perfil: o conteúdo define as colunas, não o contrário. */
+#perfCorpo .twp-vit-lado:empty{display:none}
+#perfCorpo .twp-vit-grade{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+#perfCorpo .twp-vit-grade:has(.twp-vit-card):has(.twp-vit-lado:not(:empty)){grid-template-columns:minmax(80px,112px) minmax(0,1fr)}
+#perfCorpo .twp-vit-card canvas{display:block;width:100%;max-width:112px;height:auto;aspect-ratio:5/7;margin-inline:auto}
+#perfCorpo .twp-vit-lado{min-width:0}
+#perfCorpo .twp-vit-lado b,#perfCorpo .perfnm{white-space:normal;overflow-wrap:anywhere}
+#perfCorpo .twp-vit-ed{min-height:44px}
+@media(max-width:420px){#perfCorpo .perfhero{padding:12px;gap:8px}#perfCorpo .perftabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr))}#perfCorpo .perftabs button{white-space:normal;overflow-wrap:anywhere;line-height:1.2}}

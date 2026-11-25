@@ -316,10 +316,14 @@ function petArrumoAbaixo(lx, ly){
   return true;   // no modo arrumar, o toque não vira carinho nem abre objetos
 }
 //←petArrumoSoltar
-function petArrumoSoltar(){
+function petArrumoSoltar(ev){
   var A = petArrumoLer(), a = petArrastando;
   if(!a) return false;
   petArrastando = null;
+  if(ev && ev.type !== 'pointerup'){
+    if(a.dono===petArrumoDono){if(a.antes===undefined)delete A[a.tipo][a.k];else A[a.tipo][a.k]=a.antes;petBg=null;}
+    return true;
+  }
   if(a.dono === petArrumoDono && JSON.stringify(a.antes) !== JSON.stringify(A[a.tipo][a.k])){
     petArrumoAnterior = {tipo:a.tipo, k:a.k, antes:a.antes, dono:a.dono};
     petArrumoSalvar();
@@ -1877,7 +1881,7 @@ function petDrawRoom(){
   petBrinquedoEspontaneo(x, petData.ativo, p.cfg, petT,
     !petLifePose && !petLifePhoneOlhar && !sleepy && !petAnim && !petGame && petHop <= 0);
   // Sombra + pet: o jeito aparece apenas quando está acordado e sem ação em andamento.
-  var hop = petHop > 0 ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
+  var hop = petHop > 0 && !petLifeMovimentoReduzido() ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
   var recebendo = petRecepcaoFrames > 0 && !sleepy && !petAnim && petHop <= 0;
   if(recebendo) hop += petRecepcaoPulo(petData.ativo, p.cfg, petRecepcaoFrames);
   var podeReagir = !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
@@ -1888,6 +1892,7 @@ function petDrawRoom(){
   var livre = podeReagir && !petLifePhoneOlhar && !companhia && petLifePose !== 'conviver' && petLifePetPerto < .1;
   var rotina = petRotinaVisual(petData.ativo, p.cfg, petT, livre);
   hop += rotina.pulo + (companhia ? companhia.pulo : 0);
+  if(petLifeMovimentoReduzido())hop=0;
   var jeito = petIdleJeito(petData.ativo, p.cfg, petT, livre);
   if(rotina.modo === 'descanso'){ jeito.x *= .25; jeito.y *= .25; }
   var passeio = petPasseioBrinquedo(petData.ativo, p.cfg, petT, livre);

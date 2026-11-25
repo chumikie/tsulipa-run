@@ -52,6 +52,8 @@
     // só refaz quando algo que aparece mudou (o motor do karaoke mexe nesses textos o tempo todo)
     var assinatura = [atual, sem, bloqueado, cantarBloqueado, cont && cont.textContent, pips && pips.textContent, rec && rec.textContent, lista.length, idioma()].join('|');
     if(assinatura === box.getAttribute('data-k')) return; box.setAttribute('data-k', assinatura);
+    var gradeAnterior=box.querySelector('.ktl-grade'), rolagem=gradeAnterior?gradeAnterior.scrollTop:0;
+    var foco=document.activeElement, seletorFoco=box.contains(foco)&&foco.dataset?(foco.dataset.ktl?'[data-ktl="'+esc(foco.dataset.ktl)+'"]':foco.dataset.ktlOuvir?'[data-ktl-ouvir]':foco.dataset.ktlCantar?'[data-ktl-cantar]':''):'';
     box.innerHTML =
       '<div class="ktl-cab"><h2 class="ktl-aba">' + esc(t('musicas')) + '</h2>' +
         '<span class="ktl-pt"><b>' + esc(t('shows')) + '</b><span>' + esc(cont ? cont.textContent : '') + '</span><i aria-hidden="true">' + esc(pips ? pips.textContent : '') + '</i></span></div>' +
@@ -66,6 +68,8 @@
           '<p class="ktl-rec">' + esc(rec ? rec.textContent.replace(/\s*·\s*⭐.*$/, '') : recorde(a.k)) + '</p></div>' +
         '<div class="ktl-acoes"><button type="button" class="ktl-ouvir" data-ktl-ouvir="' + esc(a.k) + '">▶ ' + esc(t('ouvir')) + '</button>' +
           '<button type="button" class="ktl-cantar" data-ktl-cantar="1"' + (cantarBloqueado ? ' disabled' : '') + '>🎤 ' + esc(t('cantar')) + '</button></div></div>' : '');
+    var gradeNova=box.querySelector('.ktl-grade');if(gradeNova)gradeNova.scrollTop=rolagem;
+    if(seletorFoco){var novoFoco=box.querySelector(seletorFoco);if(novoFoco&&!novoFoco.disabled)novoFoco.focus({preventScroll:true});}
     sincronizarPrevia();
   }
   function clique(e){

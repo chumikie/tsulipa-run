@@ -47,3 +47,10 @@ html.kt-lista.kt-no-site #ktAudioLibrary{display:none!important}
 
 .ktl-ouvir[aria-pressed="true"]{outline:2px solid currentColor;outline-offset:-4px;font-weight:800}
 .ktl-ouvir:disabled{opacity:.55}
+
+/* Títulos longos não somem nem mudam a altura de uma única capa. */
+.ktl-nome{white-space:normal;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;min-block-size:2.3em}
+.ktl-info h3{overflow-wrap:anywhere}
+.ktl-capa small{color:#8a5a00}
+html.kt-lista[data-theme="dark"] .ktl-capa small{color:#ffda83}
+@media(max-width:360px){.ktl-grade{gap:6px;padding-inline:3px}.ktl{padding-inline:9px}.ktl-detalhe{grid-template-columns:68px minmax(0,1fr)}.ktl-arte-g{width:68px}.ktl-acoes{gap:6px}.ktl-ouvir{font-size:13px!important}}

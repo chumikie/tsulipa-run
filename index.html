@@ -53,7 +53,7 @@
 (function(){var l='';try{l=new URLSearchParams(location.search).get('lang')||localStorage.getItem('brs48cr_lang')||'';}catch(e){}if(l==='ja')twFontesJa();})();</script>
 <link rel="stylesheet" href="./centerrun.css?v=20">
 <link rel="stylesheet" href="./pet.css?v=16">
-<link rel="stylesheet" href="./perfil.css?v=3">
+<link rel="stylesheet" href="./perfil.css?v=4">
 <style>
 .lbn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
 .lbn:hover,.lbn:focus-visible{color:var(--b1)}
@@ -423,7 +423,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script defer src="./karaoke-room-views.js?v=1"></script>
 <script src="./centerrun.js?v=43"></script>
 <script defer src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=152"></script>
+<script src="./pet.js?v=153"></script>
 <script src="./perfil.js?v=41"></script>
 <script src="./gacha.js?v=7"></script>
 <script src="./album-fotos.js?v=9"></script>
@@ -496,7 +496,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido){
       var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
-      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=72');})
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=73');})
         .catch(function(e){pedido=null;throw e;});
     }
     return pedido;
@@ -996,14 +996,16 @@ if(menuTitleEl) {
 
 document.addEventListener('keydown',function(e){
   if(e.code==='Space'||e.code==='ArrowUp'){
-    if(e.repeat && s2Challenge && s2Challenge.active) return; // segurar não acerta notas futuras
+    if(e.repeat){if(state==='play')e.preventDefault();return;} // segurar mantém o pulo, não enfileira outros
     if(document.activeElement&&(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='SELECT'))return;
     if(state==='play'){e.preventDefault();jump();}
   }
 });
+var crPointerPulo=null;
+function crPuloPointer(e){if(crPointerPulo!==null||state!=='play'||paused)return;if(typeof jump==='function'){crPointerPulo=e.pointerId;jump();}}
 document.getElementById('stage').addEventListener('pointerdown',function(e){
   if(e.target.closest('button')||e.target.closest('.ov'))return;
-  if(typeof jump==='function')jump();
+  crPuloPointer(e);
 });
 document.getElementById('play').onclick=start;
 document.getElementById('again').onclick=start;
@@ -1021,7 +1023,7 @@ document.addEventListener('visibilitychange',function(){
 window.addEventListener('pagehide',twIndex2PauseBaseFrames);
 window.addEventListener('pageshow',twIndex2ResumeBaseFrames);
 document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.stage'))e.preventDefault()});
-$('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();if(typeof jump==='function')jump()});
+$('jb').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();crPuloPointer(e)});
 var twIdCarregamento=null, twIdiomaEscolhaToken=0;
 function twIntegrarDicionariosId(){
   var dados=window.TW_ID_PREVIEW_DATA&&window.TW_ID_PREVIEW_DATA.central;
@@ -1173,7 +1175,9 @@ $('shPhone').onclick=function(){
   $('shPhone').textContent = petPhoneMomentoTexto(1);$('shPhone').disabled=true;
 };
 document.addEventListener('keyup',function(e){if(e.code==='Space'||e.code==='ArrowUp')held=false});
-['pointerup','pointercancel'].forEach(function(ev){document.addEventListener(ev,function(){held=false})});
+['pointerup','pointercancel'].forEach(function(ev){document.addEventListener(ev,function(e){if(e.pointerId===crPointerPulo){crPointerPulo=null;held=false;}})});
+window.addEventListener('blur',function(){crPointerPulo=null;held=false;});
+document.addEventListener('visibilitychange',function(){if(document.hidden){crPointerPulo=null;held=false;}});
 (function(){var done=false;function un(){if(done)return;done=true;ac();sync()}['pointerdown','keydown','touchend'].forEach(function(ev){document.addEventListener(ev,un,true)})})();
 $('tomenu').onclick=function(){
   clearTimeout(overTimer);
@@ -1237,11 +1241,13 @@ var petCv = $('petc'), petCtx = petCv.getContext('2d');
 
 
 // ---------- Carinho (tocar no pet) ----------
+var petArrumoPointer=null;
 petCv.addEventListener('pointerdown', function(e){
+  if(petArrumoPointer!==null || e.isPrimary===false)return;
   var p = petAtivo(); if(!p) return;
   var r = petCv.getBoundingClientRect();
   var lx = (e.clientX - r.left) * 360 / r.width, ly = (e.clientY - r.top) * 220 / r.height;
-  if(petArrumoAbaixo(lx, ly)){ try{ petCv.setPointerCapture(e.pointerId); }catch(err){} e.preventDefault(); return; }   // Arrumar o quarto
+  if(petArrumoAbaixo(lx, ly)){ petArrumoPointer=e.pointerId; try{ petCv.setPointerCapture(e.pointerId); }catch(err){} e.preventDefault(); return; }   // Arrumar o quarto
   if(petGameTap(lx, ly) || petRoomTap(lx, ly) || petLifeTap(lx, ly)) return;   // minijogo, tema e objetos do camarim
   if(lx > 70 && lx < 158 && ly > PET_FLOOR - 112 && ly < PET_FLOOR + 4){ petCharTap(); return; }   // tocou no personagem
   var cy = PET_FLOOR - 12 * PET_SC;
@@ -1260,12 +1266,12 @@ petCv.addEventListener('pointerdown', function(e){
 });
 
 petCv.addEventListener('pointermove', function(e){
-  if(!petArrastando) return;
+  if(!petArrastando || e.pointerId!==petArrumoPointer) return;
   var r = petCv.getBoundingClientRect();
   petArrumoMover((e.clientX - r.left) * 360 / r.width, (e.clientY - r.top) * 220 / r.height);
   e.preventDefault();
 });
-['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function(t){ petCv.addEventListener(t, function(e){ return petArrumoSoltar.call(this, e); }); });
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function(t){ petCv.addEventListener(t, function(e){ if(e.pointerId!==petArrumoPointer)return;petArrumoPointer=null;return petArrumoSoltar(e); }); });
 
 // ---------- Abrir / fechar ----------
 
@@ -3214,7 +3220,7 @@ document.addEventListener('keyup', function(e){
       sy = null;
     }
   }, { passive:true });
-  stg.addEventListener('touchend', function(){ sy = null; }, { passive:true });
+  ['touchend','touchcancel'].forEach(function(ev){stg.addEventListener(ev,function(){sy=null;},{passive:true});});
 })();
 
 

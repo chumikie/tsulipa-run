@@ -114,12 +114,14 @@
     var rolo=sec.querySelector('.tw-mapa-rolo');['pointerdown','touchstart','wheel'].forEach(function(ev){rolo.addEventListener(ev,function(){sec.classList.add('mexeu');},{passive:true,once:true});});
     cv.addEventListener('mouseleave',function(){hover=null;desenhar();});
     var toque=null,arrastou=false;
-    cv.addEventListener('pointerdown',function(e){toque={x:e.clientX,y:e.clientY};arrastou=false;hover=achar(e);desenhar();},{passive:true});
+    cv.addEventListener('pointerdown',function(e){if(toque||e.isPrimary===false){arrastou=true;hover=null;desenhar();return;}toque={id:e.pointerId,x:e.clientX,y:e.clientY};arrastou=false;hover=achar(e);desenhar();},{passive:true});
     cv.addEventListener('pointermove',function(e){
-      if(toque&&Math.hypot(e.clientX-toque.x,e.clientY-toque.y)>10){arrastou=true;hover=null;desenhar();}
+      if(toque&&e.pointerId===toque.id&&Math.hypot(e.clientX-toque.x,e.clientY-toque.y)>10){arrastou=true;hover=null;desenhar();}
     },{passive:true});
-    cv.addEventListener('pointercancel',function(){toque=null;arrastou=true;hover=null;desenhar();});
-    cv.addEventListener('pointerup',function(){toque=null;});
+    function soltarMapa(e){if(toque&&e.pointerId===toque.id)toque=null;}
+    cv.addEventListener('pointercancel',function(e){soltarMapa(e);arrastou=true;hover=null;desenhar();});
+    window.addEventListener('pointerup',soltarMapa);
+    window.addEventListener('pointercancel',soltarMapa);
     cv.addEventListener('click',function(e){
       if(arrastou){arrastou=false;return;}
       if(!mapaAtivo()||mergulho)return;
@@ -343,7 +345,7 @@
     arte=imagens[destino];if(arte.complete&&arte.naturalWidth){desenhar();centralizar();}
     textos();atualizarVitrine();recadoRosa();
   }
-  function achar(e){var r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*MW/r.width+OX,y=(e.clientY-r.top)*MH/r.height+OY;
+  function achar(e){var r=cv.getBoundingClientRect();if(!r.width||!r.height)return null;var x=(e.clientX-r.left)*MW/r.width+OX,y=(e.clientY-r.top)*MH/r.height+OY;
     if(cena==='mundo'){
       var achado=null,area=Infinity;
       Object.keys(BAIRROS).forEach(function(id){var b=BAIRROS[id].box;

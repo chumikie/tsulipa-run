@@ -41,3 +41,17 @@ test('Café: cobertura opcional pode ser retirada e os ingredientes indicam sele
 test('Battle: teclado ignora repetição automática e show reposiciona o palco',()=>{
   const s=read('battle.js');assert.match(s,/if\(!e.repeat\)agitar\(\)/);assert.match(s,/render\(\);mostrarPalco\(\);/);
 });
+
+test('Camarim: cancelar arrasto restaura a posição e não grava',()=>{
+ const s=read('pet-sala.js'),a=s.indexOf('function petArrumoSoltar('),b=s.indexOf('//←petArrumoModo',a);
+ const A={chao:{abajur:90}},ctx={petArrumoLer:()=>A,petArrastando:{tipo:'chao',k:'abajur',antes:70,dono:'a'},petArrumoDono:'a',petBg:{},petArrumoSalvar(){throw Error('cancelamento não grava');}};
+ vm.runInNewContext(s.slice(a,b),ctx);ctx.petArrumoSoltar({type:'pointercancel'});assert.equal(A.chao.abajur,70);assert.equal(ctx.petArrastando,null);
+});
+test('Mapa e Center preservam o dono do gesto',()=>{
+ const m=read('tw-mapa.js'),h=read('index.html');
+ assert.match(m,/e.pointerId===toque.id/);assert.match(h,/e.pointerId===crPointerPulo/);
+ assert.match(h,/e.pointerId!==petArrumoPointer/);
+});
+test('Karaoke preserva rolagem ao reconstruir catálogo',()=>{
+ const s=read('karaoke-lista.js');assert.match(s,/gradeAnterior\?gradeAnterior.scrollTop:0/);assert.match(s,/gradeNova.scrollTop=rolagem/);
+});

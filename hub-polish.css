@@ -704,3 +704,16 @@ body.tw-cel #studioVisor[data-fase="monta"],body.tw-cel #studioVisor[data-fase="
 /* Jardineiro: a escolha de sementes não fica escondida atrás da barra do celular. */
 body.tw-cel #bloomOv .bloompick{scroll-margin-block:calc(84px + env(safe-area-inset-top)) calc(100px + env(safe-area-inset-bottom))}
 #bloomOv .bloomnao{min-height:44px}
+
+/* Mural: moldura fotográfica clara preservada; legenda e controles seguem o tema. */
+#studioMural .stpost{min-width:0;background:var(--card,#fff);border:1px solid var(--tw-modal-edge,#eadcff)}
+#studioMural .stpost figcaption{color:var(--ink,#3c2a8f);min-width:0;gap:6px}
+#studioMural .stpost figcaption b{min-width:0;max-width:100%;overflow-wrap:anywhere}
+#studioMural .stcoracao{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+#studioMural .stcoracao:focus-visible{outline:3px solid #b889f5;outline-offset:2px}
+html[data-theme="dark"] #studioMural .stcoracao{background:#322348;color:#ffd5ec;border-color:#a86ba7}
+html[data-theme="dark"] #studioMural .stcoracao.on{background:#552d50;color:#ffe4f4;border-color:#e98abf}
+@media(prefers-color-scheme:dark){
+  html:not([data-theme="light"]) #studioMural .stcoracao{background:#322348;color:#ffd5ec;border-color:#a86ba7}
+  html:not([data-theme="light"]) #studioMural .stcoracao.on{background:#552d50;color:#ffe4f4;border-color:#e98abf}
+}

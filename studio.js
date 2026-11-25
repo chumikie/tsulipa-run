@@ -595,7 +595,8 @@
     x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
     x.save(); x.beginPath(); x.rect(left, m, fw, fh); x.clip(); x.translate(left, m); cena(x, fw, fh, e, typeof tempo === 'number' ? tempo : 1, av); x.restore();
     x.fillStyle = '#3c2a8f'; x.textAlign = 'center'; x.font = Math.round(W * .07) + 'px "Mochiy Pop One",sans-serif';
-    x.fillText('⭐'.repeat(est) + '☆'.repeat(3 - est), W / 2, H - m * 2.2);
+    var nota=Math.max(0,Math.min(3,Math.floor(Number(est)||0)));
+    x.fillText('⭐'.repeat(nota) + '☆'.repeat(3 - nota), W / 2, H - m * 2.2);
     if(legenda){ x.font = Math.round(W * .05) + 'px "Mochiy Pop One",sans-serif'; x.fillStyle = '#b83a9e'; x.fillText(legenda, W / 2, H - m * .8); }
   }
   window.studioPolaroid = polaroid;

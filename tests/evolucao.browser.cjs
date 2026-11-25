@@ -877,6 +877,9 @@ async function reencontroDeUmaPista(browser){
     const pos=await page.evaluate(()=>hs.ops.indexOf(hs.quiz[0].pres));
     await painel.locator('[data-hs="'+pos+'"]').click();
     await page.evaluate(()=>{hsT+=90;});
+    await painel.getByRole('button',{name:'Continuar',exact:true}).waitFor();
+    assert.equal(await page.evaluate(()=>hs.fase),'resposta','o treino manual não avança sozinho');
+    await painel.getByRole('button',{name:'Continuar',exact:true}).click();
     await painel.getByText(/Agora você lembrou/).waitFor();
     assert.equal(await page.evaluate(()=>hsPistaPendente()),null);
     assert.deepEqual(erros,[]);

@@ -613,7 +613,7 @@ function hsUI(){
       (fv && fv.presAnterior !== undefined ? ' · ' + escHtml(fv.nome + ' · ' + hsRevisaoT()[0].replace('{p}',hsPresenteNome(fv.pres))) : '') +
       (fv && fv.cor !== undefined ? ' · <span class="hscor" style="background:' + HS_CORES[fv.cor] + '"></span> ' + escHtml(hsCorT().l + ': ' + hsCorT().n[fv.cor]) : '') + '</p>'; }
   else if(hs.fase === 'quizcor'){
-    h += '<p class="hsdica">💡 ' + escHtml(hsCorT().q) + '</p><div class="hstempo"><i id="hsTempo" style="width:100%"></i></div><div class="hsops hscores">' + hs.corOps.map(function(c, i){
+    h += '<p class="hsdica">💡 ' + escHtml(hsCorT().q) + '</p>' + (hs.leituraManual?'':'<div class="hstempo"><i id="hsTempo" style="width:100%"></i></div>') + '<div class="hsops hscores">' + hs.corOps.map(function(c, i){
       return '<button type="button" class="hsop" data-hscor="' + i + '"><span class="hscor" style="background:' + HS_CORES[c] + '"></span><small>' + escHtml(hsCorT().n[c]) + '</small></button>'; }).join('') + '</div>';
   }
   else if(hs.fase === 'lembrar') h += '<p class="hsdica">✨ ' + escHtml(tr('Agora eles voltam! Lembra do presente de cada um?')) + '</p>'+

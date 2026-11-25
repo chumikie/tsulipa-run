@@ -110,3 +110,14 @@ test('Agenda: falha de conexão não equivale a lista vazia',()=>{
  const s=read('pet-sala.js'),a=s.indexOf('function petPhoneAgendaHtml(){'),b=s.indexOf('//←petPhoneFotoLimpar',a),ctx={contaJ:{nick:'A'},petPhoneAgendaDono:'A',petPhoneContaChave:()=> 'A',petPhoneAgendaDados:false,escHtml:s=>s,tr:s=>s};
  vm.runInNewContext(s.slice(a,b),ctx);assert.match(ctx.petPhoneAgendaHtml(),/servidor/);ctx.petPhoneAgendaDados=[];assert.match(ctx.petPhoneAgendaHtml(),/Nenhum compromisso/);
 });
+
+test('Handshake: pergunta de cor sem cronômetro no treino manual',()=>{
+ const s=read('handshake.js'),a=s.indexOf("else if(hs.fase === 'quizcor'){",s.indexOf('function hsUI(){')),b=s.indexOf("else if(hs.fase === 'lembrar')",a);assert.ok(a>=0&&b>a);assert.match(s.slice(a,b),/hs\.leituraManual\?'':'<div class="hstempo">/);
+});
+test('Mural: nota de publicação antiga não interrompe o desenho da Polaroid',()=>{
+ const s=read('studio.js'),a=s.indexOf('function polaroid('),b=s.indexOf('window.studioPolaroid',a);const textos=[];
+ const x={fillRect(){},save(){},beginPath(){},rect(){},clip(){},translate(){},restore(){},fillText(t){textos.push(t);}};
+ const ctx={cena(){}};vm.runInNewContext(s.slice(a,b),ctx);
+ for(const est of [9,-2,2.5,NaN,3])ctx.polaroid({width:240,height:300,getContext:()=>x},{},{},est,'',1);
+ assert.deepEqual(textos,['⭐⭐⭐','☆☆☆','⭐⭐☆','☆☆☆','⭐⭐⭐']);
+});

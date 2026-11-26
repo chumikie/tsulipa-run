@@ -501,12 +501,15 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera, comFlor){
     var aceno = av.pose === 'tchau' || av.pose === 'v';
     // A mão baixa chega a y=33, e o punho do objeto continua até y≈34.
     // No retrato com objeto, reserve a mesma margem para flor, microfone e lightstick.
-    var faixa = camera === 'rosto' ? [-7, comFlor ? 34 : 27] : camera === 'meio' ? [-7, 35] : [-7, 49];
-    var largura = camera === 'rosto' ? (comFlor ? (aceno ? 46 : 37) : 30) : camera === 'meio' ? (comFlor && aceno ? 48 : comFlor ? 39 : 36) : (pet ? 76 : 44);
+    var faixa = camera === 'rosto' ? [-7, comFlor ? 34 : 27] : camera === 'meio' ? [-7, 39] : [-7, 49];
+    var largura = camera === 'rosto' ? (comFlor ? (aceno ? 44 : 34) : 30) : camera === 'meio' ? (aceno ? 44 : 36) : (pet ? 76 : 44);
     if(camera !== 'inteiro') pet = null; // no close o Pet fica de fora, para o Idol não encolher
     sc = Math.min(H2 * .92 / (faixa[1] - faixa[0]), W2 * .96 / largura);
     tx = W2 / 2 - (pet ? 25 : aceno && (camera !== 'rosto' || comFlor) ? 18.5 : 15) * sc;
     ty = (H2 - (faixa[1] - faixa[0]) * sc) / 2 - faixa[0] * sc;   // faixa centralizada na foto
+    // Em retratos estreitos a largura limita o zoom. Prenda o corte ao corpo:
+    // o espaço extra fica acima do cabelo, sem revelar os pés no meio-corpo.
+    if(camera !== 'inteiro') ty = H2 - (faixa[1] + 2) * sc;
     chao = ty + 44 * sc;
   }
   var bob = t ? Math.sin(t * .06) * 1.1 * sc : 0;

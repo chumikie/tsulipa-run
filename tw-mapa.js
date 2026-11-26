@@ -1201,6 +1201,12 @@
           else if(despedindo)pose=p.jeitoFa==='timido'?'':'tchau';
         }
         var expr=Number(p.av.expr),expressao=p.nomeFa?(reencontro&&!reconhecendo?p.av.expr:2):(p.av.expr!=null&&Number.isInteger(expr)&&expr>=0&&expr<=6?expr:2);
+        if(cena==='praca' && p.dono){
+          // Marca de piso sob o próprio Idol, visível mesmo com o cristal ativo.
+          ctx.save();ctx.beginPath();ctx.ellipse(q.x,q.y,15*sc,3.8*sc,0,0,Math.PI*2);
+          ctx.strokeStyle='#543277';ctx.lineWidth=3.4*sc;ctx.stroke();
+          ctx.strokeStyle='#f8efbb';ctx.lineWidth=1.5*sc;ctx.stroke();ctx.restore();
+        }
         sombraPasseante(q.x,q.y,sc,bob);
         ctx.save();if(q.dir<0){ctx.translate(q.x,0);ctx.scale(-1,1);ctx.translate(-q.x,0);}
         perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=pose;drawChar(c,0,0,q.mov&&!reduzMov?1:0,expressao,false);});

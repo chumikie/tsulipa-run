@@ -19,6 +19,7 @@ const FALSO=`window.__instalarFalso=function(){
   var av={v:1,expr:2,pose:'v',fundo:'basico',visual:'',c:{hair:'#7b3ff0',skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',out:'',outcol:'#ffffff',legcol:'#444466'}};
   var hoje=new Date().toISOString();
   var R={
+    jardim_estado:{ok:true,flores:{tulipa:1}},
     meu_perfil:{nick:'Idol QA',best:900,avatar:av,visuais:[],oshi:'tsu',coracoes:12},
     news_posts:[{titulo:'Ensaio aberto no palco',legenda:'Teste automático: post inventado.',criado:hoje,imagem:''}],
     duo_sugestoes:[{nick:'Teste A',best:120},{nick:'Teste B',best:80}],
@@ -40,6 +41,44 @@ const server=http.createServer((req,res)=>{
 
 const TELAS=[['v','jogos','.twc-jogos'],['v','trio','#twcTela [data-trioaba]'],['a','news','#jornalOv'],['a','nov','#twcEmbSlot .twc-nov-tem'],['a','album','.twc-album'],['a','mapa','#twcEmbSlot #twMapa canvas'],['ir','perfil','#perfOv #perfFoto'],['ir','gacha','#gachaOv'],['ir','loja','#shopOv']];
 const CONTA=new Set(['album','perfil','gacha','loja']);
+
+const CH_NOMES=['tsu','lirika','pati'];
+async function conferirFotos(p){
+  const selecionar=async(tipo,valor)=>{
+    await p.locator('#studioOv [data-st="categoria"][data-v="'+tipo+'"]').click();
+    await p.locator('#studioOv [data-st="'+tipo+'"][data-v="'+valor+'"]').click();
+  };
+  await selecionar('objeto','flor_tulipa');
+  await selecionar('pose','coracao');
+  const pares=[];
+  for(const modo of ['rosto','meio','inteiro']){
+    await selecionar('quadro',modo);
+    const previa=await p.locator('#studioCv').evaluate(cv=>cv.toDataURL());
+    await p.locator('#studioOv [data-st="clique"]').click();
+    await p.locator('#studioOv [data-st="salvar"]').click();
+    const png=await p.locator('#twCamera .twcam-salvar').getAttribute('href');
+    assert.match(png,/^data:image\/png;base64,/);
+    fs.writeFileSync(path.join(out,'foto-'+modo+'.png'),Buffer.from(png.split(',')[1],'base64'));
+    pares.push([modo,previa,png]);
+    await p.locator('#twCamera .twcam-x').click();
+    await p.locator('#studioOv [data-st="outra"]').click();
+  }
+  const folha=await p.evaluate(async pares=>{
+    const cv=document.createElement('canvas');cv.width=720;cv.height=680;
+    const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,720,680);
+    for(const [i,[modo,...urls]] of pares.entries()){
+      for(const [j,url] of urls.entries()){
+        const im=new Image();im.src=url;await im.decode();
+        const k=Math.min(232/im.width,306/im.height);
+        x.drawImage(im,240*i+(240-im.width*k)/2,340*j+24,im.width*k,im.height*k);
+        x.fillStyle='#472c61';x.font='16px sans-serif';
+        x.fillText(modo+' · '+(j?'PNG salvo':'visor'),240*i+8,340*j+19);
+      }
+    }
+    return cv.toDataURL();
+  },pares);
+  fs.writeFileSync(path.join(out,'studio-tres-enquadramentos.png'),Buffer.from(folha.split(',')[1],'base64'));
+}
 
 async function rodar(browser,base,nome,opcoes){
   const ctx=await browser.newContext(opcoes);
@@ -74,7 +113,7 @@ async function rodar(browser,base,nome,opcoes){
   await conferir('inicio');await p.screenshot({path:path.join(out,nome+'-inicio.png')});
   for(const [t,v,alvo] of TELAS.concat(visualOnly?[['ir','studio','#studioOv #studioCv'],['ir','cafe','#cfOv #cfCv'],['ir','handshake','#hsOv #hsCv']]:[])){
     try{
-      await abrirInicio(CONTA.has(v));
+      await abrirInicio(CONTA.has(v) || visualOnly && v==='studio');
       const sel='[data-'+t+'="'+v+'"]:visible';
       const achar=()=>p.locator('#twcTela '+sel+',#twcNav '+sel+',#twcFolha '+sel).first();
       let e=achar();
@@ -101,6 +140,13 @@ async function rodar(browser,base,nome,opcoes){
       },alvo);
       if(!identidade)throw Error('tela esperada encoberta ou ausente: '+alvo);
       await conferir(v);await p.screenshot({path:path.join(out,nome+'-'+v+'.png')});
+      if(visualOnly && nome==='iphone' && v==='studio') await conferirFotos(p);
+      if(visualOnly && nome==='compacto' && v==='mapa'){
+        await p.evaluate(()=>window.TW_BAIRRO?.pularGuia());
+        await p.locator('[data-tw-bairro="praca"]').click();
+        await p.locator('#twMapa[data-cena="praca"]').waitFor();
+        await p.screenshot({path:path.join(out,'compacto-praca.png')});
+      }
       if(v==='loja'){
         // O cenário só desenha quando aberto. Confere também a saudação da atendente,
         // em vez de medir um canvas escondido e ainda não pintado.
@@ -130,6 +176,36 @@ async function rodar(browser,base,nome,opcoes){
         await botao.click({timeout:8000});await p.waitForFunction(k=>petLifePose===k,pose);
         await p.waitForTimeout(750);await cv.screenshot({path:path.join(out,nome+'-camarim-'+pose+'.png')});
       }
+      if(nome==='iphone'){
+        for(const [i,look] of [[0,''],[1,'sweet'],[2,'estrelado']]){
+          await p.evaluate(([i,look])=>{sel=i;CH[i].out=look;},[i,look]);
+          for(const pose of ['sentar','descansar','conviver']){
+            await p.locator('#petLifePoses [data-pose="'+pose+'"]').click();
+            await p.waitForTimeout(650);
+            await cv.screenshot({path:path.join(out,CH_NOMES[i]+'-'+pose+'.png')});
+          }
+        }
+        await cv.evaluate(canvas=>{
+          const stream=canvas.captureStream(24), recorder=new MediaRecorder(stream);
+          const partes=[];
+          window.videoPosturas=new Promise(resolve=>{
+            recorder.ondataavailable=e=>partes.push(e.data);
+            recorder.onstop=async()=>{
+              stream.getTracks().forEach(t=>t.stop());
+              const reader=new FileReader();
+              reader.onload=()=>resolve(reader.result.split(',')[1]);
+              reader.readAsDataURL(new Blob(partes,{type:recorder.mimeType}));
+            };
+          });
+          window.pararVideo=()=>recorder.stop();recorder.start();
+        });
+        for(const [pose,pausa] of [['sentar',700],['descansar',850],['conviver',800],['conviver',800],['sentar',70],['descansar',800]]){
+          await p.locator('#petLifePoses [data-pose="'+pose+'"]').click();await p.waitForTimeout(pausa);
+        }
+        const video=await p.evaluate(()=>{pararVideo();return videoPosturas;});
+        fs.writeFileSync(path.join(out,'camarim-posturas.webm'),Buffer.from(video,'base64'));
+      }
+      if(nome==='desktop')await p.screenshot({path:path.join(out,'desktop-camarim-completo.png')});
     }catch(e){falhas.push(nome+' · camarim: '+String(e.message||e).split('\n')[0]);}
   }
   if(erros.length)falhas.push(nome+': erro de JavaScript → '+[...new Set(erros)].slice(0,4).join(' | '));

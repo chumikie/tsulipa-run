@@ -388,7 +388,13 @@
   }
   function capturarCena(f){
     var cv = document.createElement('canvas'); cv.width = 432; cv.height = 540;
-    cena(cv.getContext('2d'), cv.width, cv.height, f.escolhas, f.t0 / 1000, f.avatar);
+    var escala = Math.min(3, Math.max(2, Math.round(window.devicePixelRatio || 1)));
+    var original = document.createElement('canvas');
+    original.width = cv.width * escala; original.height = cv.height * escala;
+    var pincel = original.getContext('2d'); pincel.scale(escala, escala);
+    cena(pincel, cv.width, cv.height, f.escolhas, f.t0 / 1000, f.avatar);
+    cv.getContext('2d').drawImage(original, 0, 0, cv.width, cv.height);
+    f.original = original;
     f.cena = cv;
   }
   function polaroidLimpa(f){
@@ -413,7 +419,7 @@
     var f0 = foto;
     if(window.TW_CAMERA && TW_CAMERA.abrir({titulo:'Photo⭐Studio!', arquivo:'photo-studio-' + f0.dia + '.png', W:432, H:540, foco:[216, 270],
         legenda:['⭐'.repeat(f0.estrelas) + '☆'.repeat(3 - f0.estrelas) + ' Photo⭐Studio!', f0.legenda + ' · ' + f0.dia.split('-').reverse().slice(0, 2).join('/')],
-        desenhar:function(x2, W2, H2){ cena(x2, W2, H2, f0.escolhas, f0.t0 / 1000, f0.avatar); }})) return;
+        desenhar:function(x2, W2, H2){ x2.drawImage(f0.original, 0, 0, W2, H2); }})) return;
     try{ var a = document.createElement('a'); a.download = 'photo-studio-' + foto.dia + '.png'; a.href = (window.twMarcaPng ? window.twMarcaPng(polaroidLimpa(foto)) : fotoUrl(foto)); document.body.appendChild(a); a.click(); a.remove(); }catch(e){ msg = t('erro'); ui(); }
   }
   function guardar(){
@@ -679,6 +685,8 @@
         x.fillStyle = '#746980'; x.beginPath(); x.ellipse(0,-5.3,1.85,2.15,0,0,7); x.fill();
         x.strokeStyle = '#ded6e4'; x.lineWidth = .46;
         x.beginPath(); x.moveTo(-1.3,-5.3); x.lineTo(1.3,-5.3); x.stroke();
+        x.fillStyle='#c6a4c8'; x.fillRect(-.64,-3.3,1.28,.7);
+        x.fillStyle='#5b4260'; x.fillRect(-.66,1.3,1.32,1.4);
       } else {
         x.strokeStyle = cor || '#ef83bb'; x.lineWidth = 2.4;
         x.beginPath(); x.moveTo(0,-2.8); x.lineTo(0,-7.6); x.stroke();

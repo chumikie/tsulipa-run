@@ -107,5 +107,5 @@
 
 /* Rótulo completo em telas estreitas, inclusive no modo dois copos. */
 #cfOv .cfacoes .btn{min-width:0;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.2;overflow-wrap:anywhere}
-#cfOv .cfacoes [data-cfd-servir],#cfOv .cfacoes #cfServir{flex:1 1 44%;min-width:0;padding-inline:8px}
-#cfOv .cfacoes .btn.sec{flex:1 1 50%;min-width:0;padding-inline:8px}
+#cfOv .cfacoes [data-cfd-servir],#cfOv .cfacoes #cfServir{flex:1 1 56%;min-width:0;padding-inline:8px}
+#cfOv .cfacoes .btn.sec{flex:1 1 38%;min-width:0;padding-inline:8px}

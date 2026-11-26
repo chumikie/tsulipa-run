@@ -48,6 +48,7 @@
 .petren{border:0;background:none;cursor:pointer;font-size:15px;padding:0 4px;vertical-align:middle}
 .petrenbox{display:inline-flex;gap:4px;align-items:center;margin-left:4px}.petrenbox[hidden]{display:none}.petrenbox .nick{width:120px;padding:4px 8px;font-size:14px}.petrenbox .btn{padding:4px 10px}
 #petov{z-index:23!important}
+body.tw-cel:has(#petov:not([hidden])) .twc-moldura-topo{visibility:hidden}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}

@@ -52,7 +52,7 @@
 <script>function twFontesJa(){if(document.getElementById('twFontesJa'))return;var k=document.createElement('link');k.id='twFontesJa';k.rel='stylesheet';k.href='https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap';document.head.appendChild(k);}
 (function(){var l='';try{l=new URLSearchParams(location.search).get('lang')||localStorage.getItem('brs48cr_lang')||'';}catch(e){}if(l==='ja')twFontesJa();})();</script>
 <link rel="stylesheet" href="./centerrun.css?v=20">
-<link rel="stylesheet" href="./pet.css?v=17">
+<link rel="stylesheet" href="./pet.css?v=18">
 <link rel="stylesheet" href="./perfil.css?v=4">
 <style>
 .lbn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
@@ -88,7 +88,7 @@
 <link rel="stylesheet" href="./album.css?v=7">
 <link rel="stylesheet" href="./fa.css?v=3">
 <link rel="stylesheet" href="./handshake.css?v=5">
-<link rel="stylesheet" href="./cafe.css?v=11">
+<link rel="stylesheet" href="./cafe.css?v=12">
 <style>
 body{background:radial-gradient(circle at 0 0,rgba(255,111,181,.22),transparent 42%),radial-gradient(circle at 100% 30%,rgba(123,63,240,.2),transparent 45%),radial-gradient(circle at 20% 100%,rgba(92,199,44,.16),transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-color:var(--bg2)}
 .sitepart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -424,7 +424,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./centerrun.js?v=47"></script>
 <script defer src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=158"></script>
-<script src="./perfil.js?v=44"></script>
+<script src="./perfil.js?v=45"></script>
 <script src="./gacha.js?v=9"></script>
 <script src="./album-fotos.js?v=9"></script>
 <script src="./album.js?v=9"></script>
@@ -496,7 +496,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido){
       var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
-      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=78');})
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=79');})
         .catch(function(e){pedido=null;throw e;});
     }
     return pedido;
@@ -561,7 +561,7 @@ var jornalCarregar=(function(){
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=42';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=43';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
   window.studioCarregar=carregar;})();

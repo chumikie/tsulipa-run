@@ -30,7 +30,7 @@
     // ---------- cabelo de trás (atrás da cabeça, do lado da nuca) ----------
     g.fillStyle = hg;
     if(c.back === 'chanel'){ g.beginPath(); g.moveTo(x + 8, y - 2); g.quadraticCurveTo(x - .8, y + 4, x + 1.2, y + 18); g.lineTo(x + 1.6, y + 24.4); g.lineTo(x + 13, y + 24.4); g.lineTo(x + 13, y + 8); g.closePath(); g.fill(); }   // chanel curto, reto
-    else if(c.back === 'pixie'){ T([x + 5, y + 2, x + 1, y + 12, x + 3.6, y + 13, x + 2.4, y + 19, x + 7.5, y + 15.5, x + 9, y + 18.5, x + 11, y + 10]); }
+    else if(c.back === 'pixie'){ g.beginPath();g.moveTo(x+5,y+2);g.quadraticCurveTo(x+.2,y+6,x+1,y+12);g.lineTo(x+3.6,y+13);g.quadraticCurveTo(x+1.7+vt*.25,y+17,x+2.4+vt*.25,y+19);g.quadraticCurveTo(x+5,y+18.1,x+7.5,y+15.5);g.lineTo(x+9,y+18.5);g.lineTo(x+11,y+10);g.closePath();g.fill(); }
     else if(c.back === 'longo'){ g.beginPath(); g.moveTo(x + 7, y - 1); g.quadraticCurveTo(x + .5, y + 5, x + 1, y + 18); g.quadraticCurveTo(x + .4 + vt * .5, y + 30, x + 2.4 + vt, y + 37); g.quadraticCurveTo(x + 6.4 + vt, y + 39.2, x + 10.5, y + 37); g.lineTo(x + 12, y + 9); g.closePath(); g.fill(); }
     else if(c.back === 'onduladof'){ g.beginPath(); g.moveTo(x + 7, y - 1); g.quadraticCurveTo(x + .5, y + 5, x + 1.4, y + 14); g.quadraticCurveTo(x - 1.2 + vt * .3, y + 19, x + 1.2 + vt * .5, y + 23); g.quadraticCurveTo(x - 1 + vt * .7, y + 28, x + 2 + vt, y + 33);
       g.quadraticCurveTo(x + 6 + vt, y + 35.6, x + 10, y + 32); g.lineTo(x + 12, y + 9); g.closePath(); g.fill(); }
@@ -71,7 +71,8 @@
       g.fillStyle = longe ? '#cfc6e4' : '#ece7f6'; g.fillRect(px + .6, py + 2.6, 7, .55);   // solado
       g.fillStyle = longe ? '#d77aa8' : '#ff6fb5'; g.beginPath(); g.ellipse(px + 3.9, py + 1.35, 2.4, .42, 0, 0, 7); g.fill(); }
     if(corre){   // perna de lá vai para trás quando a de cá vai para a frente
-      var pl = -passo * 2.6, sobe = Math.max(0, passo) * 1.4;
+      var amplitude=c.n==='Tsu'?2.9:c.n==='Lirika'?2.2:c.n==='Pati'?2.7:2.6;
+      var pl = -passo * amplitude, sobe = Math.max(0, passo) * 1.4;
       g.fillStyle = escuro(perna, 16); g.fillRect(x + 15.4 + pl, y + 38 - Math.max(0, -passo) * 1.4, 4.6, 4.6); tenis(x + 14.6 + pl, y + 41.4 - Math.max(0, -passo) * 1.4, true);
     } else { g.fillStyle = escuro(perna, 16); g.fillRect(x + 15.4, y + 38 + pe, 4.6, 4.6 - pe); tenis(x + 14.6, y + 41.4, true); }
     // 22/11: cada roupa com a sua parte de baixo e as suas cores (antes todas viravam a mesma camiseta lisa e saia cinza)

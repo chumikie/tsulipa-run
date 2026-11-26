@@ -616,6 +616,9 @@
   function fundo(x, W, H, f, tm){
     var g;
     if(f === 'rosa'){ g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#ffd6ea'); g.addColorStop(.75, '#ffeef6'); g.addColorStop(1, '#f7c5dd'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+      // Fundo infinito curvo, com encontro parede/piso suave e duas abas de ciclorama.
+      x.fillStyle='#f1bbd4';x.beginPath();x.moveTo(0,H*.71);x.quadraticCurveTo(W*.5,H*.8,W,H*.71);x.lineTo(W,H);x.lineTo(0,H);x.closePath();x.fill();
+      x.fillStyle='#fbe1ed';x.beginPath();x.moveTo(W*.08,H*.12);x.lineTo(W*.14,H*.17);x.lineTo(W*.14,H*.72);x.lineTo(W*.08,H*.75);x.closePath();x.fill();
       x.fillStyle = 'rgba(255,255,255,.5)'; x.beginPath(); x.ellipse(W / 2, H * .9, W * .55, H * .08, 0, 0, 7); x.fill(); }
     else if(f === 'cortina'){ x.fillStyle = '#fff4e6'; x.fillRect(0, 0, W, H); x.fillStyle = '#bfe9ff'; x.fillRect(W * .2, H * .1, W * .6, H * .45); x.fillStyle = '#fff'; x.fillRect(W * .495, H * .1, W * .01, H * .45); x.fillRect(W * .2, H * .32, W * .6, H * .01);
       for(var s = 0; s < 2; s++){
@@ -637,7 +640,11 @@
         x.save();if(s){x.translate(W,0);x.scale(-1,1);}
         x.fillStyle='#f2c67e';x.beginPath();x.ellipse(W*.205,H*.395,W*.043,H*.009,-.12,0,7);x.fill();x.restore();
       }
-      x.fillStyle = '#f3d3b8'; x.fillRect(0, H * .82, W, H * .18); }
+      x.fillStyle='#d7ad98';x.fillRect(0,H*.8,W,H*.02);
+      x.fillStyle = '#f3d3b8'; x.fillRect(0, H * .82, W, H * .18);
+      x.strokeStyle='#dfb59e';x.lineWidth=1.2;x.beginPath();
+      for(var j=0;j<7;j++){var u=W*j/6;x.moveTo(W*.5+(u-W*.5)*.55,H*.82);x.lineTo(u,H);}
+      x.stroke(); }
     else if(f === 'nuvens'){ g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#9fd8ff'); g.addColorStop(1, '#fbe7ff'); x.fillStyle = g; x.fillRect(0, 0, W, H);
       x.fillStyle = '#fff'; [[.2, .2, 1], [.75, .32, .8], [.35, .78, 1.3], [.85, .85, 1]].forEach(function(n, i){ var cx = W * n[0] + Math.sin(tm / 2 + i) * W * .0125, cy = H * n[1], r = W * .0625 * n[2];
         x.beginPath(); x.arc(cx, cy, r, 0, 7); x.arc(cx - r, cy + W / 60, r * .7, 0, 7); x.arc(cx + r, cy + W / 80, r * .75, 0, 7); x.fill(); }); }
@@ -674,7 +681,8 @@
     x.scale(corpo.scale, corpo.scale);
     x.rotate(angulo);
     // A palma e o polegar acompanham o lado anatômico da mão que segura o objeto.
-    if(mao[0]<15)x.scale(-1,1);
+    var espelhoMao=mao[0]<15;
+    x.save();if(espelhoMao)x.scale(-1,1);
     x.lineCap = 'round';
     // Mão: palma arredondada na largura do braço; a haste passa entre a palma e os dedos (desenhados depois).
     x.fillStyle=corpo.skin;x.beginPath();
@@ -684,6 +692,7 @@
     x.save();x.clip();var palma=x.createLinearGradient(-2.35,0,2.35,0);
     palma.addColorStop(0,'rgba(255,255,255,.10)');palma.addColorStop(.58,'rgba(255,255,255,0)');palma.addColorStop(1,'rgba(70,35,65,.19)');
     x.fillStyle=palma;x.fillRect(-2.5,-2.5,5,5.3);x.restore();
+    x.restore(); // o arranjo permanece na ordem escolhida; apenas a mão é espelhada
     if(arranjo.length && typeof window.bloomDesenharFlor === 'function'){
       var pos = arranjo.length===2 ? [[-2.8,-8],[2.5,-9]] : [[-3.4,-8],[0,-11],[3.4,-8.6]];
       arranjo.forEach(function(k,i){
@@ -708,7 +717,7 @@
       x.strokeStyle = '#49375f'; x.lineWidth = 1.55;
       x.beginPath(); x.moveTo(0,1.6); x.lineTo(0,-4.4); x.stroke();
       if(mic){
-        x.fillStyle = '#746980'; x.beginPath(); x.ellipse(0,-5.3,1.85,2.15,0,0,7); x.fill();
+        x.fillStyle='#544960';x.beginPath();x.moveTo(-1,-3.5);x.quadraticCurveTo(-1.8,-4.4,-1.8,-5.4);x.quadraticCurveTo(-1.8,-7.3,0,-7.4);x.quadraticCurveTo(1.8,-7.3,1.8,-5.4);x.quadraticCurveTo(1.8,-4.4,1,-3.5);x.closePath();x.fill();
         x.strokeStyle = '#ded6e4'; x.lineWidth = .46;
         x.beginPath(); x.moveTo(-1.3,-5.3); x.lineTo(1.3,-5.3); x.stroke();
         x.fillStyle='#c6a4c8'; x.fillRect(-.64,-3.3,1.28,.7);
@@ -720,6 +729,7 @@
         x.beginPath(); x.moveTo(-.4,-3.2); x.lineTo(-.4,-7); x.stroke();
       }
     }
+    if(espelhoMao)x.scale(-1,1);
     // Dedos fechados por cima do cabo, com polegar arredondado.
     // Duas curvas suaves dão volume sem separar a mão do braço.
     x.fillStyle=corpo.skin;x.beginPath();

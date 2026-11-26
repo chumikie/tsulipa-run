@@ -840,11 +840,19 @@ function drawCity(arr,w,off,base,col,win,widthLimit){
         g.fillStyle=col;g.fillRect(x-1,base-b.h,Math.max(2,b.w+2),2.5);
         g.fillStyle='rgba(38,28,74,.16)';
         g.fillRect(x+b.w*.81,base-b.h,b.w*.19,b.h);
+        // Os edifícios próximos ganham embasamento, peitoril e cobertura.
+        g.fillStyle='rgba(42,30,76,.20)';g.fillRect(x+2,base-7,b.w*.78,7);
+        if(b.w>23&&b.h>35){
+          g.fillStyle='rgba(255,255,255,.16)';g.fillRect(x+2,base-b.h+3,b.w*.76,2);
+          g.fillStyle='rgba(35,26,61,.24)';g.fillRect(x+b.w*.27,base-15,b.w*.22,15);
+          g.fillStyle='rgba(255,220,185,.28)';g.fillRect(x+b.w*.30,base-12,b.w*.16,10);
+        }
         g.fillStyle=win;
         var seed=(bi*37+Math.floor(b.s*100))|0;
         for(var r=0,yy=base-b.h+10;yy<base-10;yy+=14,r++){
           for(var c=0,xx=x+7;xx<x+b.w-9;xx+=12,c++){
-            if(((c*5+r*13+seed)%7)<2) g.fillRect(xx,yy,4,5);
+            if(((c*5+r*13+seed)%7)<2){g.fillRect(xx,yy,4,5);
+              g.fillStyle='rgba(32,22,62,.18)';g.fillRect(xx+1.75,yy,.5,5);g.fillRect(xx-.5,yy+5,5,1);g.fillStyle=win;}
           }
         }
       }

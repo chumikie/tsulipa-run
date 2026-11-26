@@ -503,6 +503,13 @@ function hsDesenhar(){
   x.save();x.strokeStyle='rgba(209,196,255,.26)';x.lineWidth=1;
   x.beginPath();for(var junta=-3;junta<=3;junta++){x.moveTo(W2*.46+junta*W2*.05,H2*.57);x.lineTo(W2*.46+junta*W2*.2,H2);}
   [.66,.79,.93].forEach(function(h){x.moveTo(0,H2*h);x.lineTo(W2,H2*h);});x.stroke();x.restore();
+  // Pórticos da área de atendimento, atrás dos fãs e fora da mesa.
+  x.save();[.055,.935].forEach(function(u){
+    var px=W2*u,bw=W2*.025;
+    x.fillStyle='#6852a2';x.fillRect(px,0,bw,H2*.64);
+    x.fillStyle='#9987ce';x.fillRect(px,0,bw*.38,H2*.64);
+    x.fillStyle='#cbb9e6';x.fillRect(px-bw*.35,H2*.61,bw*1.7,H2*.024);
+  });x.restore();
   // fila de verdade: os próximos fãs (mesmo visual sorteado), pequenos e esperando a vez, com plaquinha de nº
   if(hs && hs.fase === 'fila'){
     var prox = hs.fila.slice(hs.vi + 1, hs.vi + 5);

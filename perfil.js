@@ -515,7 +515,7 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera, comFlor){
   // A câmera não desloca o corpo para fora dos limites definidos pelo enquadramento.
   // Uma fotografia histórica usa a fase gravada, não a preferência atual de quem a visualiza.
   var reduz = !camera && typeof matchMedia==='function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var bob = t && !reduz ? Math.sin(t * .06) * (camera ? .32 : .85) * sc : 0;
+  var bob = t && !reduz ? Math.sin(t * .06) * (camera ? .32 : .85) * sc : 0; // mesma fase de duoGeo e do retrato histórico
   var cx = tx + 15 * sc, cy = ty + 22 * sc + bob, i, gira = t * .012, pulso = t ? 1 + .05 * Math.sin(t * .08) : 1;
   // sombra no chão
   x.fillStyle = 'rgba(30,10,60,.25)'; x.beginPath(); x.ellipse(cx, chao, 15 * sc * (1 - bob / sc * .04), 2.6 * sc, 0, 0, 7); x.fill();

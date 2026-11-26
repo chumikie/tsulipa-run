@@ -686,6 +686,13 @@ function cfDesenhar(){
   }
   // balcão de madeira
   hsBalcaoArte(x, 0, H2 * .74, W2, H2 * .26);
+  // Frente do balcão em painéis de marcenaria; os objetos continuam no tampo.
+  x.save();x.fillStyle='#a96c49';x.fillRect(0,H2*.976,W2,H2*.024);
+  x.strokeStyle='rgba(104,58,40,.25)';x.lineWidth=Math.max(1,W2/480);
+  for(var painel=0;painel<4;painel++){
+    var ax=W2*(painel+.5)/4,aw=W2*.21;
+    x.strokeRect(ax-aw/2,H2*.843,aw,H2*.112);
+  }x.restore();
   cfDecor(x, W2, H2, H2 * .74 / 82 * 1.25, t);
   if(typeof eventoPetDesenhar === 'function'){ var rb = cf ? cfT - cf.rouboT : 999, kk = H2 * .74 / 82 * 1.25;
     eventoPetDesenhar(x, W2, H2 * .74 - 8, t, 1.7, rb < 80 ? W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0) : W2 * (.74 + .06 * Math.sin(t / 120)), 'cafe');

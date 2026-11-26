@@ -803,3 +803,13 @@ html body .studiop .stgrupo>b{color:var(--ink,#432675);letter-spacing:.01em;marg
 .stgrupo .stchip{flex:0 1 auto}
 .stgrupo .stchip[aria-pressed="true"]{outline:1px solid currentColor;outline-offset:-3px}
 @media(max-width:360px){.stgrupo{margin-block:6px}.stcategorias .stabab{min-height:44px;line-height:1.25}}
+
+/* Signature World — hierarquia, não uma nova camada decorativa. */
+#perfCorpo .twp-vazia{box-shadow:none;border-radius:12px;padding:14px;line-height:1.5}
+#perfCorpo .twp-vazia [data-twp="vitrine-editar"]{box-shadow:none;border-width:1px;font-size:13px}
+.studiop .stgrupo{border-top:1px solid var(--twc-borda,rgba(130,100,180,.2));padding-top:8px}
+.studiop .stgrupo>b{letter-spacing:0;text-transform:none}
+.stgrupo .stchip{border-width:1px;box-shadow:none}
+.stgrupo .stchip.on{box-shadow:none;font-weight:800}
+.shopprov{border-radius:12px;box-shadow:none}
+@media(max-width:390px){#perfCorpo .twp-vazia{padding:12px}.studiop .stgrupo>div{gap:5px}}

@@ -469,7 +469,11 @@
     x.fillStyle = '#a96a36'; rr(x, cx - 76, by - 14, 152, 48, 13); x.fill();
     x.fillStyle = '#d29a63'; rr(x, cx - 76, by - 20, 152, 46, 13); x.fill();
     x.strokeStyle = 'rgba(120,70,36,.28)'; x.lineWidth = 2; x.beginPath(); x.moveTo(cx - 26, by - 6); x.lineTo(cx - 26, by + 24); x.moveTo(cx + 26, by - 6); x.lineTo(cx + 26, by + 24); x.stroke();
-    x.fillStyle = '#ebbf90'; rr(x, cx - 76, by - 22, 152, 12, 6); x.fill();
+    // Travessas frontais e laterais de madeira, com borda superior real.
+    x.fillStyle='#a86d3d';x.beginPath();x.moveTo(cx+69,by-11);x.lineTo(cx+76,by-20);x.lineTo(cx+76,by+22);x.lineTo(cx+69,by+28);x.closePath();x.fill();
+    x.fillStyle='#ebbf90'; rr(x, cx - 76, by - 22, 152, 12, 6); x.fill();
+    x.strokeStyle='#b58151';x.lineWidth=1.5;
+    [cx-60,cx+60].forEach(function(px){x.beginPath();x.moveTo(px,by-7);x.lineTo(px,by+23);x.stroke();});
     x.fillStyle = molhado ? '#6a4127' : '#8f5e39'; rr(x, cx - 68, by - 20, 136, 9, 4.5); x.fill();
     x.fillStyle = molhado ? 'rgba(160,215,255,.5)' : 'rgba(255,255,255,.16)'; for(var k = 0; k < 5; k++){ x.beginPath(); x.arc(cx - 52 + k * 26 + (k % 2) * 5, by - 15.5, 1.6, 0, 7); x.fill(); }
     if(sel){ x.strokeStyle = '#ffd84a'; x.lineWidth = 4; rr(x, cx - 80, by - 26, 160, 58, 16); x.stroke(); }

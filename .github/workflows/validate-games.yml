@@ -223,7 +223,7 @@ jobs:
   visual-comparativo:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -233,6 +233,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           path: .visual-base
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 2ed2825bc758db6d28dd4365a737c0ce8467de11
+          path: .visual-signature-base
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
@@ -244,7 +249,7 @@ jobs:
       - name: Capturar main e PR com as mesmas condições
         env:
           NODE_PATH: /tmp/visual-playwright/node_modules
-        run: node tests/visual-comparativo.cjs .visual-base . /tmp/polish-personality
+        run: node tests/visual-comparativo.cjs .visual-base . /tmp/polish-personality .visual-signature-base
       - uses: actions/upload-artifact@v4
         if: always()
         with:

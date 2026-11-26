@@ -24,8 +24,8 @@
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=4"></script>
 <script src="./tw-avatar-hair.js?v=16"></script>
-<script src="./tw-lado.js?v=7"></script>
-<script src="./tw-avatar-roupa.js?v=20"></script><script src="./tw-avatar-rosto.js?v=8"></script>
+<script src="./tw-lado.js?v=8"></script>
+<script src="./tw-avatar-roupa.js?v=21"></script><script src="./tw-avatar-rosto.js?v=9"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -52,7 +52,7 @@
 <script>function twFontesJa(){if(document.getElementById('twFontesJa'))return;var k=document.createElement('link');k.id='twFontesJa';k.rel='stylesheet';k.href='https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap';document.head.appendChild(k);}
 (function(){var l='';try{l=new URLSearchParams(location.search).get('lang')||localStorage.getItem('brs48cr_lang')||'';}catch(e){}if(l==='ja')twFontesJa();})();</script>
 <link rel="stylesheet" href="./centerrun.css?v=20">
-<link rel="stylesheet" href="./pet.css?v=19">
+<link rel="stylesheet" href="./pet.css?v=20">
 <link rel="stylesheet" href="./perfil.css?v=5">
 <style>
 .lbn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
@@ -174,7 +174,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<link rel="stylesheet" href="./hub-polish.css?v=61">
+<link rel="stylesheet" href="./hub-polish.css?v=62">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=8"><'+'/script>');</script>
@@ -421,10 +421,10 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=3"><'+'/script>');})();</script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=8"><'+'/script>');</script>
 <script defer src="./karaoke-room-views.js?v=1"></script>
-<script src="./centerrun.js?v=51"></script>
+<script src="./centerrun.js?v=52"></script>
 <script defer src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=164"></script>
-<script src="./perfil.js?v=48"></script>
+<script src="./pet.js?v=165"></script>
+<script src="./perfil.js?v=49"></script>
 <script src="./gacha.js?v=9"></script>
 <script src="./album-fotos.js?v=9"></script>
 <script src="./album.js?v=9"></script>
@@ -457,7 +457,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=25','./cafe.js?v=36','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=15','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=26','./cafe.js?v=37','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=15','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=function(){e.remove();er(new Error(u));};document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
@@ -478,7 +478,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   window.twAbrirJogoDoHub = function(nome){ atalho(nome)(); };
   window.TW_JOGOS_SOB_DEMANDA=true;window.twJogosCarregar=carregar;window.hsAbrir=atalho('hsAbrir');window.cfAbrir=atalho('cfAbrir');})();
 </script>
-<script src="./duo-base.js?v=14"></script>
+<script src="./duo-base.js?v=15"></script>
 <script src="./encontro-base.js?v=3"></script>
 <script src="./hub.js?v=36"></script>
 <script defer src="./hub-layout.js?v=7"></script>
@@ -496,7 +496,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido){
       var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
-      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=88');})
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=89');})
         .catch(function(e){pedido=null;throw e;});
     }
     return pedido;
@@ -515,7 +515,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
     }).catch(function(){botao.disabled=false;botao.textContent=TW_CARGA.texto(1);});
   });
 })();</script>
-<script src="./bloom.js?v=21"></script>
+<script src="./bloom.js?v=22"></script>
 <script src="./shop.js?v=16"></script>
 <script src="./tw-piloto-bairro.js?v=9"></script>
 <script>
@@ -561,7 +561,7 @@ var jornalCarregar=(function(){
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=48';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=49';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
   window.studioCarregar=carregar;})();
@@ -571,7 +571,7 @@ var jornalCarregar=(function(){
    O mapa, a agenda e o card chamam battleAbrir(); este atalho carrega o jogo e repassa a chamada. */
 (function(){var p=null,cssPronto=false;function arq(t,u){return new Promise(function(ok,er){var e=document.createElement(t);
   if(t==='link'){e.rel='stylesheet';e.href=u;}else{e.src=u;}e.onload=ok;e.onerror=function(){e.remove();er(new Error(u));};document.head.appendChild(e);});}
-  function carregar(){if(!p)p=(cssPronto?Promise.resolve():arq('link','./battle.css?v=20').then(function(){cssPronto=true;})).then(function(){return arq('script','./battle.js?v=36');}).catch(function(e){p=null;throw e;});return p;}
+  function carregar(){if(!p)p=(cssPronto?Promise.resolve():arq('link','./battle.css?v=20').then(function(){cssPronto=true;})).then(function(){return arq('script','./battle.js?v=37');}).catch(function(e){p=null;throw e;});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Idol⭐Battle!',carregar,function(){if(window.battleAbrir!==atalho)window.battleAbrir.apply(window,a);});}
   window.TW_BATTLE_ON=true;window.TW_BATTLE_SOB_DEMANDA=true;window.battleAbrir=atalho;})();
 </script>

@@ -55,6 +55,10 @@ function petLifeSofa(x, frente, visual){
   if(!frente){
     x.fillStyle = 'rgba(88,44,112,.18)'; x.beginPath(); x.ellipse(95,199,57,6,0,0,7); x.fill();
     x.fillStyle='#b77bc4';x.fillRect(49,186,7,13);x.fillRect(136,186,7,13);
+    // Carcaça estofada com lateral e base estruturais; as âncoras do assento não mudam.
+    x.fillStyle='#a96ab7';x.beginPath();x.moveTo(40,160);x.quadraticCurveTo(37,153,45,148);
+    x.lineTo(147,148);x.quadraticCurveTo(155,151,155,162);x.lineTo(155,187);
+    x.quadraticCurveTo(151,196,140,196);x.lineTo(49,196);x.quadraticCurveTo(40,194,40,186);x.closePath();x.fill();
     x.fillStyle='#c68bd0';x.beginPath();x.roundRect(40,147,110,46,13);x.fill();
     x.fillStyle='#f4c9e8';x.beginPath();x.roundRect(46,151,98,30,11);x.fill();
     var tecido=x.createLinearGradient(0,161,0,183);tecido.addColorStop(0,'#f2cbe9');tecido.addColorStop(.55,'#e6b5e4');tecido.addColorStop(1,'#cb94d0');x.fillStyle=tecido;x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
@@ -76,6 +80,9 @@ function petLifeSofa(x, frente, visual){
       x.quadraticCurveTo(apoio.x,174+apoio.afunda,apoio.x+25,170+apoio.afunda);x.stroke();
       x.restore();
     }
+    // A almofada única tem costura contínua e uma face frontal em tecido.
+    x.fillStyle='#d7a1d3';x.beginPath();x.moveTo(52,173);x.quadraticCurveTo(95,179,138,173);
+    x.lineTo(137,180);x.quadraticCurveTo(95,185,53,180);x.closePath();x.fill();
     x.strokeStyle='#ffe6f5'; x.lineWidth=1.4;
     x.beginPath(); x.roundRect(52,162,86,18,7); x.stroke();
     x.strokeStyle='rgba(130,75,150,.23)';x.lineWidth=.8;
@@ -551,6 +558,8 @@ function petMakeBg(){
   x.fillStyle = '#dfb1dc'; RR(152, 150, 28, 13, 3); x.fill();                           // gaveta
   x.fillStyle = '#c68dbd'; x.fillRect(155, 156, 22, 1.5);
   x.fillStyle = '#fff4c9'; x.beginPath(); x.arc(166, 159.5, 1.4, 0, 7); x.fill();
+  x.fillStyle='#ae77b0';x.beginPath();x.moveTo(178,150);x.lineTo(183,146);x.lineTo(183,159);x.lineTo(178,163);x.closePath();x.fill();
+  x.fillStyle='#f8ddf0';x.beginPath();x.moveTo(150,147);x.lineTo(155,143);x.lineTo(185,143);x.lineTo(181,147);x.closePath();x.fill();
   x.fillStyle = '#efc6ea'; RR(150, 147, 32, 4, 2); x.fill();                            // tampo
   // Celular em pé no suporte, proporcional à mesinha.
   x.fillStyle = '#b77bc4'; x.beginPath(); x.moveTo(160, 147); x.lineTo(172, 147); x.lineTo(170, 143); x.lineTo(162, 143); x.closePath(); x.fill();
@@ -572,6 +581,8 @@ function petMakeBg(){
   x.fillStyle = '#ffe37a'; RR(197, 152, 7, 10, 2); x.fill();
   x.fillStyle = '#9b30d9'; x.fillRect(207, 153, 8, 9);
   x.fillStyle = '#fff4c9'; x.font = '7px sans-serif'; x.fillText('★', 211, 160);
+  x.fillStyle='#a66bb0';x.beginPath();x.moveTo(216,149);x.lineTo(220,145);x.lineTo(220,173);x.lineTo(216,177);x.closePath();x.fill();
+  x.fillStyle='#efd0e9';x.beginPath();x.moveTo(181,144);x.lineTo(185,141);x.lineTo(222,141);x.lineTo(219,144);x.closePath();x.fill();
   x.fillStyle = '#bd82c1'; RR(181, 144, 38, 5, 2); x.fill();
   x.restore();
 
@@ -1971,7 +1982,7 @@ function petDrawRoom(){
     if(pose){
       // Inclinação a partir do quadril para manter o contato com a almofada.
       // Três assinaturas corporais, sem inferir personalidade do Idol personalizado.
-      var atitude = sel === 0 ? .085 : sel === 1 ? -.06 : sel === 2 ? .035 : 0;
+      var atitude = sel === 0 ? .11 : sel === 1 ? -.07 : sel === 2 ? .045 : 0;
       if(petLifePose==='descansar')atitude-=.045;
       if(petLifePose==='conviver')atitude+=sel===1?.025:.055;
       var respira=petLifeMovimentoReduzido()?0:Math.sin(petT*(sel===1?.022:sel===2?.028:.034))*.012;

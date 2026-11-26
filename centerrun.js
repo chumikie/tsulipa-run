@@ -421,7 +421,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   else if(b==='cacheado'){[[15,3,8],[4,8,8],[26,8,8],[1.5,16,7.5],[28.5,16,7.5],[3.5,23,5.8],[26.5,23,5.8]].forEach(function(p){E(x+p[0],y+p[1]+6,p[2],p[2])})}   // cachos menores embaixo: não viram capa sobre os braços
   if(OF===3){g.fillStyle='#b01e3a';T([x+5,y+22,x-8+sw,y+42,x+9,y+40])}
   if(OF===5){g.fillStyle='rgba(255,252,235,.95)';E(x-4,y+27,5,13,-.5+sw*.04);E(x+34,y+27,5,13,.5-sw*.04);g.fillStyle='rgba(255,226,140,.8)';E(x-2,y+30,3,9,-.5+sw*.04);E(x+32,y+30,3,9,.5-sw*.04)}
-  g.fillStyle=(typeof c.legcol==='string'&&/^#[0-9a-f]{6}$/i.test(c.legcol))?c.legcol:'#1c1c30';if(typeof TWAvatarRoupa!=='undefined'&&TWAvatarRoupa.pernas){TWAvatarRoupa.pernas(g,x,y,up);}else{g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));}if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto)TWAvatarRosto.pes(g,c,x,y);
+  g.fillStyle=(typeof c.legcol==='string'&&/^#[0-9a-f]{6}$/i.test(c.legcol))?c.legcol:'#1c1c30';if(typeof TWAvatarRoupa!=='undefined'&&TWAvatarRoupa.pernas){TWAvatarRoupa.pernas(g,x,y,up,c);}else{g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));}if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto)TWAvatarRosto.pes(g,c,x,y);
   var TWR=typeof TWAvatarRoupa!=='undefined'?TWAvatarRoupa:null,twRoupa=(OF>0||ALV)?'-':(c.out||'');   // folha E: saia ou bermuda, ombro e luz contínua
   if(!(TWR&&TWR.baixo(g,c,x,y,twRoupa))){g.fillStyle=OUT[1];g.fillRect(x+7,y+32,16,6);}
   
@@ -1750,7 +1750,7 @@ function s2ShowSlideButton(){
 // ---------- Corrida sob demanda (centerrun-corrida.js) ----------
 // O resto do site nunca chama a corrida; ela baixa quando o palco do Center Run aparece ou ao tocar em JOGAR.
 // twCorridaAoCarregar guarda o que precisa da corrida (os invólucros da Temporada 2 no index.html) e roda na ordem.
-var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=25',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
+var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=26',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
 function twCorridaAoCarregar(f){if(TW_CORRIDA_PRONTA)f();else twCorridaFila.push(f);}
 function twCorridaCarregar(){
   if(TW_CORRIDA_PRONTA)return Promise.resolve();

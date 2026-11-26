@@ -96,8 +96,13 @@ function duoRender(x, W2, H2, comFundo, comUI){
   // As âncoras das mãos e adereços recebem exatamente a mesma altura.
   var danca=inf[0]==='danca'&&!reduzDuo;
   var dz=danca?-Math.pow(Math.max(0,Math.sin(t*.136)),2)*12:0;
-  var dzGu=danca?-Math.pow(Math.max(0,Math.sin((t-3)*.136)),2)*12:0;
+  var dzGu=danca?-Math.pow(Math.max(0,Math.sin((t-3)*.136)),2)*10:0;
   var chE = chao + pulo('eu') + dz, chG = chao + pulo('gu') + dzGu;
+  // Sombras de contato da dupla mantêm a referência do chão durante os passos.
+  if(danca){
+    x.save();x.fillStyle='rgba(51,27,79,.13)';
+    [sxE,sxG].forEach(function(px){x.beginPath();x.ellipse(px,chao,28,5,0,0,7);x.fill();});x.restore();
+  }
   if(inf[0] === 'guarda') duoGuardaChuva(x, eu, sxE, chE, t, duoInvertido);
   duoIdolEm(x, eu, sxE, chE, poseE, exE, t, duoInvertido);
   duoIdolEm(x, gu, sxG, chG, poseG, exG, t + 37, !duoInvertido);

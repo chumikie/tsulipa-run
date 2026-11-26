@@ -938,6 +938,13 @@ function fundoPalco(x,cor,t){
  // O salão tem dois pilares e um friso, atrás do telão e dos competidores.
  x.save();[26,SW-46].forEach(function(px){x.fillStyle='#b6a2db';x.fillRect(px,60,20,240);x.fillStyle='#ece3fa';x.fillRect(px+2,60,12,240);x.fillStyle='#c5afd9';x.fillRect(px-4,58,28,9);x.fillRect(px-4,291,28,9);});
  x.fillStyle='#cab7e9';x.fillRect(0,93,SW,5);x.restore();
+ // Estrutura do telão: treliça e apoios, mantendo a área do placar livre.
+ x.save();x.fillStyle='#9784c0';x.fillRect(62,103,436,9);
+ for(var k=0;k<8;k++){
+   var bx=68+k*53;x.beginPath();x.moveTo(bx,103);x.lineTo(bx+26,115);x.lineTo(bx+52,103);
+   x.strokeStyle='#b5a3d8';x.lineWidth=2;x.stroke();
+ }
+ x.restore();
  // telão com arco-íris de giz e estrelinhas
  rrect(x,70,118,420,170,16);x.fillStyle='#d8b98c';x.fill();
  rrect(x,78,126,404,154,10);var tg=x.createLinearGradient(0,126,0,280);tg.addColorStop(0,'#2d1b5e');tg.addColorStop(1,'#3e2a7c');x.fillStyle=tg;x.fill();

@@ -1385,6 +1385,12 @@
       ctx.strokeStyle='#c8af9c';ctx.lineWidth=1.2;
       for(var j=0;j<9;j++){var xx=600+j*50;ctx.beginPath();ctx.moveTo(xx,584);ctx.lineTo(xx+(xx-800)*.12,608);ctx.stroke();}
       ctx.restore();
+      // Quatro pilares de pedra e moldura do pedestal dão à fonte uma base construída.
+      ctx.fillStyle='#bb9dc8';ctx.fillRect(786,507,28,45);
+      ctx.fillStyle='#ebd9f3';ctx.fillRect(789,507,9,45);
+      ctx.fillStyle='#a78bb8';ctx.beginPath();ctx.ellipse(800,552,27,9,0,0,7);ctx.fill();
+      ctx.fillStyle='#efe0f9';ctx.beginPath();ctx.ellipse(800,548,26,7,0,0,7);ctx.fill();
+      ctx.fillStyle='#d5bbeb';ctx.fillRect(774,548,52,6);
       // Bancos de praça, com encosto e assento em dois planos.
       [540,1020].forEach(function(bx){
         ctx.fillStyle='#91716d';ctx.fillRect(bx+3,554,4,23);ctx.fillRect(bx+32,554,4,23);
@@ -1412,6 +1418,11 @@
         ctx.beginPath();ctx.ellipse(px,562,15,8,-.15,0,7);ctx.fill();
         ctx.fillStyle='#ffe4ee';ctx.beginPath();ctx.arc(px-5,558,2.4,0,7);ctx.arc(px+4,560,2,0,7);ctx.fill();
       });
+      // Pavilhão lunar: arquitrave e dois fustes sustentam a cobertura.
+      // A base do pavilhão fica dentro da área ilustrada, acima da zona de passeio.
+      ctx.fillStyle='#b6a5e4';ctx.beginPath();ctx.moveTo(707,538);ctx.lineTo(893,538);ctx.lineTo(915,552);ctx.lineTo(685,552);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#efdcff';ctx.fillRect(704,535,192,6);
+      ctx.fillStyle='#b69cd8';ctx.fillRect(711,543,178,5);
       // Studio: pilastra da fachada no sistema de coordenadas de rua.py.
       ctx.save();ctx.translate(1300,558);ctx.scale(1.28,1.28);ctx.translate(-1300,-558);
       var pilastra=ctx.createLinearGradient(1440,0,1458,0);pilastra.addColorStop(0,'#f4eaff');pilastra.addColorStop(1,'#bca8dc');
@@ -1427,6 +1438,11 @@
         ctx.fillStyle='#ffe0ad';ctx.fillRect(Math.min(X(0),X(-12)),275,12,7);
         ctx.fillStyle='#c48788';ctx.fillRect(Math.min(X(20),X(-17)),544,37,10);
         ctx.fillStyle='#ffe0ad';ctx.fillRect(Math.min(X(20),X(-17)),544,37,3);
+      });
+      // Travessa superior do proscênio em perspectiva, sem encobrir a estrela central.
+      [448,1030].forEach(function(px){
+        ctx.fillStyle='#c27d99';ctx.beginPath();ctx.moveTo(px,275);ctx.lineTo(px+122,275);ctx.lineTo(px+112,291);ctx.lineTo(px+10,291);ctx.closePath();ctx.fill();
+        ctx.fillStyle='#f3c8a7';ctx.fillRect(px,275,122,6);
       });
       // As cortinas assentam no tablado; pregas verticais fazem a moldura parecer tecido.
       [1,-1].forEach(function(lado){var a=lado===1?470:1130;
@@ -1490,6 +1506,13 @@
       ctx.fillStyle='#4c286f';ctx.beginPath();ctx.moveTo(681,410);ctx.quadraticCurveTo(800,360,919,410);
       ctx.lineTo(924,426);ctx.quadraticCurveTo(800,383,676,426);ctx.closePath();ctx.fill();
       ctx.strokeStyle='#eac6f3';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(679,413);ctx.quadraticCurveTo(800,364,921,413);ctx.stroke();
+      // Contrafortes e bases da arena: face interna em recuo, face externa sólida.
+      [1,-1].forEach(function(k){var a=800+k*151;
+        ctx.fillStyle='#9e6ccf';ctx.beginPath();ctx.moveTo(a,438);ctx.lineTo(a+k*16,436);
+        ctx.lineTo(a+k*32,539);ctx.lineTo(a,539);ctx.closePath();ctx.fill();
+        ctx.fillStyle='#d7b5f1';ctx.beginPath();ctx.moveTo(a,438);ctx.lineTo(a+k*7,441);ctx.lineTo(a+k*17,535);ctx.lineTo(a,535);ctx.closePath();ctx.fill();
+        ctx.fillStyle='#7651a8';ctx.fillRect(a+(k<0?-34:0),539,34,8);
+      });
       // Vidraças inclinadas acompanham a cobertura da arena.
       ctx.fillStyle='#41326f';ctx.beginPath();ctx.moveTo(704,423);ctx.quadraticCurveTo(800,374,896,423);
       ctx.lineTo(904,461);ctx.quadraticCurveTo(800,432,696,461);ctx.closePath();ctx.fill();

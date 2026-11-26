@@ -46,3 +46,22 @@ CI anterior: execução 45855779885, Chromium, WebKit, comparação visual e Pos
 - Testes: as três falhas anteriores foram tratadas no código/testes, sem suprimir os casos; novos testes verificam mechas, âncoras do Duo, isolamento da galeria e fase da fotografia. A validação integral do novo commit e as capturas em 320×640, 390×844 e desktop dependem do CI, não do resultado anterior. Clone local indisponível (DNS). Aprovação visual final continua pendente, especialmente em iPhone físico.
 
 Sem novos textos de interface, mecânicas, mudanças de recompensas, economia, SQL, Supabase, merge, deploy manual ou PR adicional.
+
+
+## Signature World — Remaster 5.1–5.9
+
+Referência: commit 2ed2825bc758db6d28dd4365a737c0ce8467de11, CI 45871345689 (9/9 jobs, 131/131 verificações estáticas), artefato 15141904791. Seleção revisada: trio, home, perfil, Studio, mapa, Camarim e fotos, Café, Handshake, loja, álbum, modo escuro e quatro bairros. Os personagens ainda compartilham parte da grade; os cenários ainda são estilizados.
+
+| Etapa | Alteração desta rodada | Critério ainda a conferir |
+|---|---|---|
+| 5.1 Signature Idols | Silhuetas de cintura/joelhos e olhos oficiais diferentes; pixie lateral reconstruído com curvas. | Identidade nas três cópias e nas poses, sem alteração de looks personalizados. |
+| 5.2 Fashion Atelier | Lapelas e recortes Cheeky/City Pop; costuras próprias Estrelado, Sweet e Zipper; camisa com silhueta por Idol. | Todos os figurinos, âncoras e cores, inclusive ranks. |
+| 5.3 Architectural Identity | Pedestal da fonte, pavilhão lunar, travessa do proscênio e contrafortes da Arena. | Fachadas e acessos visíveis nas quatro regiões. |
+| 5.4 A Place to Belong | Carcaça e almofada do sofá, tampo e lateral de mesa/estante; postura individual. | Apoio do corpo, decoração salva e contato com Pet. |
+| 5.5 Idol Photography | Ciclorama, piso da janela, microfone com cápsula; espelhamento apenas da mão, não do arranjo. | Retratos, mão e adereços nos três enquadramentos. |
+| 5.6 Premium UI | Hierarquia de Vitrine, Loja, Studio e Memórias, menos bordas pesadas e sombras. | Modo escuro, seis idiomas e navegação móvel. |
+| 5.7 Animação | Assinatura de postura e passada, joelhos com âncoras estáveis, dança Duo com amplitudes diferentes. | Naturalidade e movimento reduzido. |
+| 5.8 Atividades | Fachadas Center Run, casco/plataforma Sora, painéis acústicos Karaoke, marcenaria Café, pórticos Handshake, caixotes Bloom, sofá Pet, treliça Battle, composição Duo e acabamento das Memórias. | Capturas e vídeos; não implica reconstrução integral de todas as cenas. |
+| 5.9 Auditoria | Novo teste de geometria/expressão/espelho; CI compara main, 2ed2825 e HEAD nos mesmos tamanhos. | CI completo, capturas novas e iPhone físico; aprovação visual não automática. |
+
+Sem novos textos de interface, estados, mecânicas, recompensas, economia, SQL ou alteração de Supabase. Fotos armazenadas não são regravadas. Sem merge, nova PR ou publicação manual.

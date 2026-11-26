@@ -30,6 +30,17 @@
   // Um olho aberto, sem traços (só formas cheias): x0 = x+10 (esquerdo) ou x+18 (direito).
   function olho(g, c, x0, y, lado){
     var f = forma(c), cor = hex(c && c.eye, '#5a3b2e');
+    if(f===''&&c&&['Tsu','Lirika','Pati'].indexOf(c.n)>=0){
+      // Olhar autoral apenas do trio; escolhas explícitas e o rosto clássico de jogadores são intocados.
+      var w0=c.n==='Tsu'?3.5:c.n==='Lirika'?3.1:3.6,h0=c.n==='Lirika'?4.4:c.n==='Pati'?3.45:3.9;
+      var cx=x0+1.5,cy=y+20.1;
+      g.fillStyle=cor;E(g,cx,cy,w0/2,h0/2);
+      g.fillStyle=PUPILA;E(g,cx+.18,cy+.15,w0*.29,h0*.31);
+      g.fillStyle=TINTA;g.beginPath();g.moveTo(cx-w0*.55,cy-h0*.37);
+      g.quadraticCurveTo(cx,cy-h0*.79,cx+w0*.55,cy-h0*.38);
+      g.lineTo(cx+w0*.52,cy-h0*.16);g.quadraticCurveTo(cx,cy-h0*.48,cx-w0*.52,cy-h0*.16);g.closePath();g.fill();
+      g.fillStyle='#fff';E(g,cx-.6,cy-.65,.56,.72);E(g,cx+.65,cy+.88,.28,.3);return;
+    }
     if(f === ''){   // clássico: contrato pixel a pixel, inclusive para saves antigos
       g.fillStyle = TINTA; g.fillRect(x0, y + 17, 3, 1);
       g.fillStyle = cor; g.fillRect(x0, y + 18, 3, 4);

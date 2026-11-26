@@ -279,3 +279,9 @@ body.tw-cel:has(#petov:not([hidden])) .twc-moldura-topo{visibility:hidden}
 .petphone-momento-revisao .petphone-momento-polaroid img{max-height:min(46dvh,320px);object-fit:contain}
 .petphone-momento-revisao :is(a,button):focus-visible{outline:3px solid var(--petphone-oshi);outline-offset:2px}
 @media(max-width:340px){.petphone-momentos-grid{gap:6px}.petphone-momento{padding:4px}}
+
+/* Álbum e celular: fotografias em primeiro plano; foco e toque permanecem acessíveis. */
+.petphone-momento{gap:6px}
+.petphone-momento a{box-shadow:none;border-width:1px}
+.petphone-momento-polaroid{border-radius:6px;box-shadow:0 2px 4px rgba(55,33,82,.14)}
+.petphone-momento-polaroid figcaption{line-height:1.45}

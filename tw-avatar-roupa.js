@@ -17,6 +17,17 @@
     seifuku: { cor:'#1b2a5e', linha:'#2e4183' },
     citypop: { cor:'#f1e7d0', linha:'#d8caa8' }
   };
+  // Assinaturas dos personagens oficiais, nunca gravadas no avatar ou atribuídas por gênero.
+  // Os pés, punhos e ombros conservam as âncoras usadas nas poses e nas colisões.
+  var PERFIS=Object.freeze({
+    Tsu:Object.freeze({cintura:7.1,ombro:4.1,perna:0.25,joelho:.7,assim:.45}),
+    Lirika:Object.freeze({cintura:8.2,ombro:4.8,perna:-.25,joelho:.4,assim:0}),
+    Pati:Object.freeze({cintura:6.4,ombro:3.9,perna:.45,joelho:.25,assim:-.25})
+  });
+  var NEUTRO=Object.freeze({cintura:7.2,ombro:4.2,perna:0,joelho:0,assim:0});
+  function assinatura(c){
+    return c&&Object.prototype.hasOwnProperty.call(PERFIS,c.n)?PERFIS[c.n]:NEUTRO;
+  }
   function tem(roupa){ return typeof roupa === 'string' && Object.prototype.hasOwnProperty.call(BAIXO, roupa); }
   function qual(c, roupa){
     var b = c && c.baixo;
@@ -58,6 +69,15 @@
       else if(roupa === 'citypop'){ g.rect(x + 7, y + 22, 4, 11); g.rect(x + 19, y + 22, 4, 11); }
       else g.rect(x + 4, y + 22, 22, 12);
     }, false);
+    // Abas costuradas em tecido: Cheeky tem recorte oblíquo, City Pop uma lapela e bolso.
+    if(roupa==='y2k'||roupa==='citypop'){
+      g.save();g.fillStyle='rgba(40,10,70,.19)';
+      var a=roupa==='y2k'?10:11;
+      T(g,[x+7,y+22,x+a,y+22,x+7.4,y+27]);
+      T(g,[x+30-a,y+22,x+23,y+22,x+22.6,y+27]);
+      g.strokeStyle='rgba(255,255,255,.36)';g.lineWidth=.45;
+      g.beginPath();g.moveTo(x+8,y+30);g.lineTo(x+9.5,y+30);g.moveTo(x+20.5,y+30);g.lineTo(x+22,y+30);g.stroke();g.restore();
+    }
   }
 
   // Parte de baixo no lugar do retângulo claro comum. Devolve false quando a roupa não usa (fica o desenho antigo).
@@ -167,6 +187,17 @@
   function parte(g, x, y, nome){
     var p = PARTES[nome]; if(!p) return;
     luz(g, x, y, function(){ p[1](g, x, y); }, p[0]);
+    // Corte e costura distintos nos três figurinos de palco; os ornamentos originais vêm por cima.
+    g.save();g.beginPath();p[1](g,x,y);g.clip();g.lineWidth=.55;g.strokeStyle='rgba(54,30,80,.24)';g.lineCap='round';
+    if(nome==='estrelado-baixo'||nome==='sweet-saia'||nome==='zipper-saia'){
+      var xs=nome==='zipper-saia'?[6,24]:nome==='sweet-saia'?[5,10,20,25]:[8,13,17,22];
+      xs.forEach(function(a){g.beginPath();g.moveTo(x+a,y+32);g.quadraticCurveTo(x+a+(a-15)*.12,y+37,x+a+(a-15)*.3,y+43);g.stroke();});
+    }else if(nome==='zipper-mangas'||nome==='zipper-tronco'){
+      [2,28].forEach(function(a){g.beginPath();g.moveTo(x+a-2,y+24);g.quadraticCurveTo(x+a,y+26,x+a+2,y+24);g.stroke();});
+    }else{
+      [7,23].forEach(function(a){g.beginPath();g.moveTo(x+a,y+24);g.quadraticCurveTo(x+a+(15-a)*.15,y+28,x+a,y+32);g.stroke();});
+    }
+    g.restore();
   }
 
   // V3.1 (06/11/2026): pele, cabelo e gravata com a mesma luz contínua da roupa. Usado pelas três cópias do drawChar.
@@ -182,14 +213,15 @@
   }
   // Contorno comum, ombro largo e mão curva. Mantém a régua 30×44.
   function camisa(g,x,y,c){
+    var a=assinatura(c),w=a.cintura,omb=a.ombro;
     g.save();g.beginPath();g.moveTo(x+11,y+21.6);
-    g.quadraticCurveTo(x+6.8,y+21.2,x+4.2,y+24);
-    g.quadraticCurveTo(x+5.9,y+26.6,x+6.8,y+29.4);
-    g.quadraticCurveTo(x+7.2,y+31.5,x+6.1,y+33.6);
+    g.quadraticCurveTo(x+6.8,y+21.2,x+omb,y+24);
+    g.quadraticCurveTo(x+5.9,y+26.6,x+w,y+29.4);
+    g.quadraticCurveTo(x+w+.3,y+31.5,x+w-1.1,y+33.6+a.assim);
     g.quadraticCurveTo(x+10.3,y+34.7,x+15,y+34.4);
-    g.quadraticCurveTo(x+19.7,y+34.7,x+23.9,y+33.6);
-    g.quadraticCurveTo(x+22.8,y+31.5,x+23.2,y+29.4);
-    g.quadraticCurveTo(x+24.1,y+26.6,x+25.8,y+24);
+    g.quadraticCurveTo(x+19.7,y+34.7,x+31.1-w,y+33.6-a.assim);
+    g.quadraticCurveTo(x+29.7-w,y+31.5,x+30-w,y+29.4);
+    g.quadraticCurveTo(x+24.1,y+26.6,x+30-omb,y+24);
     g.quadraticCurveTo(x+23.2,y+21.2,x+19,y+21.6);
     g.closePath();g.clip();g.fillRect(x+4,y+21,22,15);
     tronco(g,x,y,'',c);
@@ -249,13 +281,15 @@
     });
   }
   function bracosBase(g,x,y){g.beginPath();formaBracos(g,x,y);g.fill();}
-  function pernas(g,x,y,up){
+  function pernas(g,x,y,up,c){
+    var a=assinatura(c);
     [9,17].forEach(function(dx,i){
       var X=x+dx,Y=y+36+((i===0?!up:up)?-2:0),B=y+44;
-      g.beginPath();g.moveTo(X,Y);g.lineTo(X+5,Y);
-      g.quadraticCurveTo(X+5,B-3,X+4.5,B-1);g.lineTo(X+4.5,B);
+      var k=i===0?-a.joelho:a.joelho;
+      g.beginPath();g.moveTo(X-a.perna,Y);g.lineTo(X+5+a.perna,Y);
+      g.quadraticCurveTo(X+5+a.perna+k,B-4,X+4.5,B-1);g.lineTo(X+4.5,B);
       g.lineTo(X+.5,B);g.lineTo(X+.5,B-1);
-      g.quadraticCurveTo(X,B-3,X,Y);g.closePath();g.fill();
+      g.quadraticCurveTo(X-a.perna+k,B-4,X-a.perna,Y);g.closePath();g.fill();
     });
   }
   function bracos(g, x, y){   // braços parados
@@ -371,7 +405,7 @@
     return true;
   }
 
-  var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
+  var api = { assinatura:assinatura, tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
               bracos:bracos, bracosBase:bracosBase, pernas:pernas, camisa:camisa, pescoco:pescoco, coques:coques, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, reta:reta, gravata:gravata,
               cr:cr, crLook:crLook, CR_COR:CR_COR };
   root.TWAvatarRoupa = api;

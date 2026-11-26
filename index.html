@@ -496,7 +496,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido){
       var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
-      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=80');})
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=81');})
         .catch(function(e){pedido=null;throw e;});
     }
     return pedido;

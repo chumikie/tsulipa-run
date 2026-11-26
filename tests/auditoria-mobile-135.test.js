@@ -180,3 +180,22 @@ test('Polish: pernas e polainas acompanham o apoio nas três posturas',()=>{
 test('Polish: pista de obstáculos suspensos preserva coordenadas e movimento reduzido',()=>{
  const s=read('centerrun-corrida.js');assert.match(s,/if\(o.high\)\{g.fillStyle='rgba\(37,19,66,.15\)'/);assert.match(s,/g.ellipse\(o.x\+o.w\/2,GY\+1,o.w\*\.52,2.5/);assert.match(s,/pulse = calmo \? .85/);assert.match(s,/Math.min\(6,o.w-fi\)/);
 });
+
+test('Praça mobile: enquadramento inicial mantém o Idol e reduz cortes dos letreiros',()=>{
+ const s=read('tw-mapa.js'),a=s.indexOf('function enquadrarPraca('),b=s.indexOf('function centralizar(',a),ctx={};
+ assert.ok(a>=0&&b>a);vm.runInNewContext(s.slice(a,b),ctx);
+ const placas=[[52,505],[1100,1500]];
+ const cortes=(inicio,w)=>placas.reduce((n,p)=>n+Number(inicio>p[0]&&inicio<p[1])+Number(inicio+w>p[0]&&inicio+w<p[1]),0);
+ let melhorou=0;
+ for(const w of [320,420,480,600,670,760,1000,1200,1600]){
+   for(let px=60;px<=1540;px+=5){
+     const inicio=ctx.enquadrarPraca(px,w),base=Math.max(0,Math.min(1600-w,px-w/2));
+     assert.ok(inicio>=0&&inicio<=1600-w&&px>=inicio&&px<=inicio+w);
+     assert.ok(cortes(inicio,w)<=cortes(base,w));
+     if(cortes(inicio,w)<cortes(base,w))melhorou++;
+   }
+ }
+ assert.ok(melhorou>0);
+ assert.equal(cortes(ctx.enquadrarPraca(800,550),550),0);
+ assert.match(s,/px=enquadrarPraca\(dono\.x,largura\)\+largura\/2/);
+});

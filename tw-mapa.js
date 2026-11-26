@@ -218,6 +218,25 @@
     var z=sec.querySelector('.tw-mapa-zoom');if(z)z.textContent=sec.classList.contains('tw-mapa-zoomed')?ui('geral'):ui('zoom');
     var nv=sec.querySelector('.tw-mapa-bairros');if(nv)nv.setAttribute('aria-label',ui('bairros'));
     if(sec.querySelectorAll)[].forEach.call(sec.querySelectorAll('[data-tw-rotulo]'),function(el){el.textContent=rotulo(el.getAttribute('data-tw-rotulo'));});}
+  // Na chegada à Praça, preserve o Idol e prefira placas inteiras ou fora da janela.
+  function enquadrarPraca(px, largura) {
+    var limite=Math.max(0,1600-largura);
+    var margem=Math.min(85,largura/4);
+    var min=Math.max(0,Math.min(limite,px-largura+margem));
+    var max=Math.max(min,Math.min(limite,px-margem));
+    function ajustar(v){return Math.max(min,Math.min(max,v));}
+    var base=ajustar(px-largura/2),melhor=base,menor=Infinity;
+    // Limites das placas desenhadas em mapa-rua-praca.svg, com respiro para a borda.
+    var placas=[[52,505],[1100,1500]],opcoes=[base,min,max];
+    placas.forEach(function(p){opcoes.push(p[0]-largura,p[1],p[0],p[1]-largura);});
+    opcoes.forEach(function(v){
+      var inicio=ajustar(v),fim=inicio+largura,cortes=0;
+      placas.forEach(function(p){if(inicio>p[0]&&inicio<p[1])cortes++;if(fim>p[0]&&fim<p[1])cortes++;});
+      var custo=cortes*1600+Math.abs(inicio-base);
+      if(custo<menor){menor=custo;melhor=inicio;}
+    });
+    return melhor;
+  }
   function centralizar(){var r=document.querySelector('#twMapa .tw-mapa-rolo');
     if(centrado||!r||!cv)return;
     var sec=document.getElementById('twMapa');
@@ -230,7 +249,10 @@
     var px=800,py=cena==='mundo'?610:450;
     if(cena==='praca' && window.matchMedia && window.matchMedia('(max-width:760px)').matches){
       var dono=ultimos.find(function(p){return p.dono;});
-      if(dono){px=dono.x;py=dono.y-50;}
+      if(dono&&k>0&&r.clientWidth>0){
+        var largura=r.clientWidth/k;
+        px=enquadrarPraca(dono.x,largura)+largura/2;py=dono.y-50;
+      }
     }
     r.scrollLeft=Math.max(0,(px-OX)*k-r.clientWidth/2);
     r.scrollTop=Math.max(0,(py-OY)*k-r.clientHeight/2);centrado=true;

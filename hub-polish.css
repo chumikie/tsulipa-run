@@ -518,6 +518,11 @@ html body #hub #hubCards .hubcard.tw-hubnovo-studio{--hc1:#c9a2ff;--hc2:#8250e6}
 html body #hub #hubCards .hubcard.tw-hubnovo-battle{--hc1:#ffb056;--hc2:#f0558f}
 
 
+/* Polish 2: hierarquia sem alterar dimensões ou áreas de toque. */
+html body #hub #hubCards .hubcard:not(.tw-alert-pink){box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 rgba(30,16,90,.22),0 9px 18px -12px rgba(10,5,40,.5);transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease}
+html body #hub #hubCards .hubcard:not(.tw-alert-pink)::before{opacity:.14}
+@media(prefers-reduced-motion:reduce){html body #hub #hubCards .hubcard:not(.tw-alert-pink){transition:none;transform:none}}
+
 /* Mapa Vivo⭐ — lote pequeno de legibilidade e toque móvel, após PR #88.
    Mantém o panorama, as áreas clicáveis do Canvas e a navegação do Hub. */
 html body #hub .tw-mapa-botao:focus-visible{
@@ -747,7 +752,3 @@ html[data-theme="dark"] .tw-piloto-vitrine span{color:#f3d6f0}
 }
 #perfCorpo .twp-vazia [data-twp="vitrine-editar"]{min-height:44px;white-space:normal;overflow-wrap:anywhere}
 
-/* Polish 2: hierarquia sem alterar dimensões ou áreas de toque. */
-html body #hub #hubCards .hubcard:not(.tw-alert-pink){box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 rgba(30,16,90,.22),0 9px 18px -12px rgba(10,5,40,.5);transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease}
-html body #hub #hubCards .hubcard:not(.tw-alert-pink)::before{opacity:.14}
-@media(prefers-reduced-motion:reduce){html body #hub #hubCards .hubcard:not(.tw-alert-pink){transition:none;transform:none}}

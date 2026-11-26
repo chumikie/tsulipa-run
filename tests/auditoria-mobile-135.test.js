@@ -155,7 +155,7 @@ test('Polish: sombra do passeante permanece no piso e suaviza no salto',()=>{
  const s=read('tw-mapa.js'),a=s.indexOf('function sombraPasseante('),b=s.indexOf('function andar(',a),elipses=[],cores=[];
  const ctx={Math,ctx:{save(){},restore(){},beginPath(){},ellipse(...a){elipses.push(a)},fill(){cores.push(this.fillStyle)}}};vm.runInNewContext(s.slice(a,b),ctx);
  ctx.sombraPasseante(50,730,1.75,0);ctx.sombraPasseante(50,730,1.75,-15);
- assert.ok(elipses.every(e=>e[1]===730));assert.ok(elipses[2][2]>elipses[0][2]);assert.notEqual(cores[1],cores[3]);
+ assert.ok(elipses.every(e=>e[1]===730));assert.equal(elipses.length,6);assert.ok(elipses[4][2]>elipses[1][2]);assert.notEqual(cores[2],cores[5]);
 });
 test('Polish: pernas e polainas acompanham o apoio nas três posturas',()=>{
  const fonte=read('pet-sala.js');
@@ -167,7 +167,7 @@ test('Polish: pernas e polainas acompanham o apoio nas três posturas',()=>{
  vm.runInNewContext(fonte.slice(a,b),ctx);
  for(const [pose,rot] of [['sentar',0],['conviver',.12],['descansar',-.16]]){
    const pes=[];
-   const x=new Proxy({globalAlpha:1,fillRect(px,py,w,h){if(w===12)pes.push(py+h);}},
+   const x=new Proxy({globalAlpha:1,createLinearGradient(){return {addColorStop(){}}},fillRect(px,py,w,h){if(w===12)pes.push(py+h);}},
      {get(obj,k){return k in obj?obj[k]:()=>{};}});
    ctx.petLifePose=pose; bases.length=0;
    ctx.petLifeSofa(x,true,{sit:1,rot});

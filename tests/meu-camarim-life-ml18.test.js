@@ -104,7 +104,7 @@ test('ML1.8-A: 320×640 e 390×844 preservam Canvas 360:220 e botões acessívei
 test('ML1.8-A: sofá desenha saia, vestido e bermuda sem erro nos dois visores simulados',()=>{
   for(const [largura,altura] of [[320,640],[390,844]]){
     const {ctx}=quarto(), op=[];
-    const x={globalAlpha:1,save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},clip(){},quadraticCurveTo(){},
+    const x={globalAlpha:1,createLinearGradient(){return {addColorStop(){}}},save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},clip(){},quadraticCurveTo(){},
       fillRect(a,b,w,h){op.push(['ret',a,b,w,h]);},moveTo(){},lineTo(){},closePath(){},
       fill(){op.push(['preenche']);},stroke(){},strokeRect(){},fillText(){}};
     for(const out of ['seifuku','sweet','zipper']){
@@ -131,7 +131,7 @@ test('ML1.8-A: levantar mantém canelas e saia até completar a transição em 3
       assert.equal(ctx.petLifePose,'');
       function desenho(t){
         const retangulos=[],poligonos=[];
-        const x={globalAlpha:1,save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},clip(){},quadraticCurveTo(){},
+        const x={globalAlpha:1,createLinearGradient(){return {addColorStop(){}}},save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},clip(){},quadraticCurveTo(){},
           fillRect(a,b,w,h){retangulos.push([a,b,w,h]);},moveTo(a,b){poligonos.push([a,b]);},
           lineTo(){},closePath(){},fill(){},stroke(){},strokeRect(){},fillText(){}};
         const visual=ctx.petLifePoseDesenho(t);

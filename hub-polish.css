@@ -752,3 +752,18 @@ html[data-theme="dark"] .tw-piloto-vitrine span{color:#f3d6f0}
 }
 #perfCorpo .twp-vazia [data-twp="vitrine-editar"]{min-height:44px;white-space:normal;overflow-wrap:anywhere}
 
+/* Polish & Personality: controles com um único contorno de seleção e
+   resposta ao toque sem deslocar layout, inclusive nas seis línguas. */
+.stgrupo .stchip.on{box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.stgrupo .stchip{min-height:44px;box-sizing:border-box;text-align:center;line-height:1.3}
+.stgrupo .stchip:not(:disabled):active{box-shadow:inset 0 2px 5px rgba(48,26,81,.18)}
+.stgrupo .stchip:focus-visible{outline-offset:2px}
+@media(max-width:360px){
+  .stgrupo .stchip{padding-inline:5px;gap:3px}
+}
+@media(prefers-reduced-motion:no-preference){
+  .stgrupo .stchip{transition:background-color .16s ease,border-color .16s ease,box-shadow .12s ease}
+}
+@media(prefers-reduced-motion:reduce){
+  .stgrupo .stchip{transition:none}
+}

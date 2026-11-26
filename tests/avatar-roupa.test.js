@@ -37,7 +37,7 @@ for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
   assert(s.includes('g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11)')&&!s.includes('g.fillRect(x+2, y+22, 6, 5)'),f+': City Pop só desenha abas do paletó, sem segunda manga');
   assert(/\{n:'Tsu',[^}]*baixo:'bermuda'\}/.test(s)&&/\{n:'Lirika',[^}]*baixo:'saia'\}/.test(s)&&/\{n:'Pati',[^}]*baixo:'bermuda'\}/.test(s),f+': Tsu bermuda, Lirika saia, Pati bermuda');
 }
-for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=12"></script>'),f+' carrega tw-avatar-roupa.js');
+for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=13"></script>'),f+' carrega tw-avatar-roupa.js');
 const perfil=ler('perfil.js'),index=ler('index.html');
 assert(perfil.includes('data-m="baixo"')&&perfil.includes("if(v === 'saia' || v === 'bermuda') c.baixo = v;"),'Montar Idol tem Saia/Bermuda e o perfil só aceita esses valores');
 assert(index.includes("'outcol', 'legcol', 'baixo', 'hat'")&&index.includes("item.baixo === 'saia' || item.baixo === 'bermuda'"),'campo salvo no avatar e no save dos personagens');
@@ -76,7 +76,7 @@ assert(R.luzPropria('estrelado')&&R.luzPropria('zipper')&&R.luzPropria('sweet')&
 { const gg=fake();R.parte(gg,0,0,'sweet-tronco');assert(gg.log.includes('clip'),'luz da Sweet recortada no vestido'); }
 // Sentado no sofá do Camarim, a canela repete as polainas da Nagareboshi (Estrelado) em vez de virar meia preta.
 const pet=require('./pet-fonte.js')();   // pet.js + pet-sala.js na ordem original
-assert(pet.includes('petLifeCanelaRoupa(x, px, q.y + 6 + 15 + bal);')&&/function petLifeCanelaRoupa[\s\S]{0,200}c\.out !== 'estrelado'[\s\S]{0,300}#ff9ccd[\s\S]{0,120}#ffe14d[\s\S]{0,120}#4dd8ff/.test(pet),'polainas listradas também sentado');
+assert(pet.includes('petLifeCanelaRoupa(x, px, q.y+6+altura);')&&/function petLifeCanelaRoupa[\s\S]{0,200}c\.out !== 'estrelado'[\s\S]{0,300}#ff9ccd[\s\S]{0,120}#ffe14d[\s\S]{0,120}#4dd8ff/.test(pet),'polainas listradas também sentado');
 console.log('avatar-roupa: ok');
 
 // V3.1 (06/11/2026): pele com a luz contínua, costas do chanel/longo emendadas, sombra da franja, franja da Tsu e gravata.

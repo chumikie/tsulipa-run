@@ -1142,6 +1142,14 @@
     var a=av&&av.a;
     return typeof a==='string'&&typeof ACC!=='undefined'&&Array.isArray(ACC)&&ACC.some(function(item){return item[0]===a;})?a:'';
   }
+  // Contato no mesmo plano dos pés; ao saltar, a sombra fica no piso e se suaviza.
+  function sombraPasseante(x,y,sc,bob){
+    var altura=Math.max(0,-bob),proximidade=1-Math.min(1,altura/(18*sc));
+    ctx.save();ctx.fillStyle='rgba(43,27,70,'+(.10+.08*proximidade)+')';
+    ctx.beginPath();ctx.ellipse(x+1.2*sc,y, (9.2+2*(1-proximidade))*sc,2.25*sc,0,0,7);ctx.fill();
+    ctx.fillStyle='rgba(43,27,70,'+(.14*proximidade)+')';
+    ctx.beginPath();ctx.ellipse(x,y,6.2*sc,1.35*sc,0,0,7);ctx.fill();ctx.restore();
+  }
   function andar(tm){
     if(typeof perfChar!=='function'||typeof drawChar!=='function'||typeof perfCharContorno!=='function')return;
     // Escala dos Idols nas ruas (era 1.45). Os enfeites em volta acompanham por k.
@@ -1193,7 +1201,7 @@
           else if(despedindo)pose=p.jeitoFa==='timido'?'':'tchau';
         }
         var expr=Number(p.av.expr),expressao=p.nomeFa?(reencontro&&!reconhecendo?p.av.expr:2):(p.av.expr!=null&&Number.isInteger(expr)&&expr>=0&&expr<=6?expr:2);
-        ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(q.x,q.y,8*sc,1.8*sc,0,0,7);ctx.fill();
+        sombraPasseante(q.x,q.y,sc,bob);
         ctx.save();if(q.dir<0){ctx.translate(q.x,0);ctx.scale(-1,1);ctx.translate(-q.x,0);}
         perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=pose;drawChar(c,0,0,q.mov&&!reduzMov?1:0,expressao,false);});
         ctx.restore();

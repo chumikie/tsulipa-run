@@ -89,16 +89,24 @@ function petLifeSofa(x, frente, visual){
       // separado. Só a altura encurta, porque a coxa vem para frente.
       var bal = petLifeMovimentoReduzido() ? 0 : Math.sin(petT * .05 + (o > 0 ? 1.6 : 0)) * (petLifePose === 'sentar' ? 1.2 : 0);
       x.fillStyle=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || '')) ? CH[sel].legcol : '#1c1c30';
-      x.fillRect(px-6,q.y+6,12,15+bal);                               // canela 5u de largura
-      petLifeCanelaRoupa(x, px, q.y + 6 + 15 + bal);                  // polainas da roupa (ex.: Nagareboshi) também sentado
+      var base=PET_FLOOR+bal,altura=Math.max(8,base-(q.y+6));
+      // A canela termina no plano do piso, inclusive na pose inclinada.
+      x.beginPath();x.roundRect(px-6,q.y+6,12,altura,[1,1,2.5,2.5]);x.fill();
+      x.fillStyle='rgba(255,255,255,.12)';x.fillRect(px-4.5,q.y+8,2,Math.max(0,altura-5));
+      petLifeCanelaRoupa(x, px, q.y+6+altura); // preserva as polainas do figurino
       if(!roupa){ x.fillStyle=petLifeCorColo;
-        x.fillRect(px-7,q.y-3,14,10); }                              // bermuda: coxas retas
+        x.beginPath();x.roundRect(px-7,q.y-3,14,10,[2,2,3,3]);x.fill();
+        x.fillStyle='rgba(40,10,70,.13)';x.fillRect(px-5,q.y+5,10,1.5);
+      }
     });
     if(roupa){ // mesma silhueta trapezoidal do figurino; tecido repousa sobre as coxas
       var largura = roupa === 'sweet' ? 31 : roupa === 'zipper' ? 27 : 23;
       x.fillStyle=petLifeCorSaia;
       x.beginPath();x.moveTo(q.x-17,q.y-3);x.lineTo(q.x+17,q.y-3);
       x.lineTo(q.x+largura,q.y+12);x.lineTo(q.x-largura,q.y+12);x.closePath();x.fill();
+      x.save();x.clip();x.fillStyle='rgba(40,10,70,.10)';x.fillRect(q.x-largura,q.y+9,largura*2,3);
+      x.strokeStyle='rgba(255,255,255,.19)';x.lineWidth=1;
+      [-9,9].forEach(function(d){x.beginPath();x.moveTo(q.x+d,q.y);x.lineTo(q.x+d*1.5,q.y+10);x.stroke();});x.restore();
     }
     if(petLifePose === 'descansar'){   // mantinha no colo na cor do Oshi
       var ac = { tsu:'#c58cf0', lirika:'#8fdca7', pati:'#9dbcf5' }[OSHI] || '#ffb3d6';

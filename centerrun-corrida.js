@@ -1962,6 +1962,8 @@ function s2Plateia(x0, gap){
 }
 function s2ObsNovo(o){
   g.save();
+  // Obstáculos suspensos projetam sombra no piso, nunca uma base falsa na altura de colisão.
+  if(o.high){g.fillStyle='rgba(37,19,66,.15)';g.beginPath();g.ellipse(o.x+o.w/2,GY+1,o.w*.52,2.5,0,0,7);g.fill();}
   // Destaque musical se for obstáculo do Desafio de Fim de Cenário
   if(o.challenge){
     g.strokeStyle = '#ffe14d';
@@ -1973,7 +1975,8 @@ function s2ObsNovo(o){
   }
   // Seta de aviso para obstáculos que andam (carrinho de maquiagem e câmera em trilho)
   if(o.warn && o.x > P.x){
-    var pulse = 0.55 + 0.45 * Math.sin(frame * 0.25);
+    var calmo=typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var pulse = calmo ? .85 : 0.55 + 0.45 * Math.sin(frame * 0.25);
     g.fillStyle = 'rgba(239,68,68,' + pulse + ')';
     g.font = '800 12px "M PLUS Rounded 1c",sans-serif';
     g.textAlign = 'center';
@@ -2105,7 +2108,7 @@ function s2ObsNovo(o){
     if(o.high){
       g.fillStyle = '#fde047'; g.fillRect(o.x, o.y + 10, o.w, 14);
       g.fillStyle = '#111827';
-      for(var fi = 0; fi < o.w; fi += 12) g.fillRect(o.x + fi, o.y + 10, 6, 14);
+      for(var fi = 0; fi < o.w; fi += 12) g.fillRect(o.x + fi, o.y + 10, Math.min(6,o.w-fi), 14);
       g.fillStyle = '#fff'; g.font = '800 10px "M PLUS Rounded 1c",sans-serif'; g.textAlign = 'center';
       g.fillText('▼', o.x + o.w/2, o.y + 8);
     } else {

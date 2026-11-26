@@ -1208,7 +1208,7 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
 // O quarto, o celular, a agenda, o camarim, o minijogo e a adoção baixam ao abrir o pet. Cada "//→nome" acima marca o
 // lugar de uma função que mora em pet-sala.js (lá ela vem depois de "//←nome"); tests/pet-fonte.js remonta a ordem.
 // Se mudar pet-sala.js, suba a versão em PET_SALA_ARQ.
-var PET_SALA_ARQ='./pet-sala.js?v=28',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
+var PET_SALA_ARQ='./pet-sala.js?v=29',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
 function petSalaAoCarregar(f){if(PET_SALA_PRONTA)f();else petSalaFila.push(f);}
 function petSalaCarregar(){
   if(PET_SALA_PRONTA)return Promise.resolve();

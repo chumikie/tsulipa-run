@@ -1341,3 +1341,11 @@ html body #hub .twc-emb-missoes #hubMisT{display:none}
 #perfCorpo .twp-vit-card{width:100%;max-width:132px}
 #perfCorpo .twp-vit-card canvas{width:100%;height:auto;aspect-ratio:5/7}
 :root[data-theme="dark"] #perfCorpo .twp-vitrine h3{color:var(--ink,#e6d6ff)}
+
+/* Polish & Personality: hierarquia leve; mantém os alvos de toque, conteúdo e paleta Oshi. */
+body.tw-cel .twc .twc-card{border-width:1px;box-shadow:0 2px 6px rgba(49,24,82,.08)}
+body.tw-cel .twc .twc-jogos .twc-jogo{border-width:1px;box-shadow:0 2px 4px rgba(49,24,82,.12);border-radius:20px}
+body.tw-cel .twc .twc-jogos .twc-jogo-txt b{line-height:1.35;overflow-wrap:anywhere}
+body.tw-cel .twc .twc-jogos .twc-jogo:focus-visible{outline:3px solid currentColor;outline-offset:2px}
+@media(max-width:359px){body.tw-cel .twc .twc-jogos .twc-jogo{gap:8px;padding-inline:6px 10px}
+body.tw-cel .twc .twc-pag{padding-inline:10px}}

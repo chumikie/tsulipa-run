@@ -1749,7 +1749,7 @@ function s2ShowSlideButton(){
 // ---------- Corrida sob demanda (centerrun-corrida.js) ----------
 // O resto do site nunca chama a corrida; ela baixa quando o palco do Center Run aparece ou ao tocar em JOGAR.
 // twCorridaAoCarregar guarda o que precisa da corrida (os invólucros da Temporada 2 no index.html) e roda na ordem.
-var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=20',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
+var TW_CORRIDA_ARQ='./centerrun-corrida.js?v=21',TW_CORRIDA_PRONTA=false,twCorridaFila=[],twCorridaP=null;
 function twCorridaAoCarregar(f){if(TW_CORRIDA_PRONTA)f();else twCorridaFila.push(f);}
 function twCorridaCarregar(){
   if(TW_CORRIDA_PRONTA)return Promise.resolve();

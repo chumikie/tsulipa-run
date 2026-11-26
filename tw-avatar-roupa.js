@@ -110,6 +110,20 @@
     function todas(){ formas.forEach(function(f){ f(); }); }
     g.save(); g.fillStyle = cor; g.beginPath(); todas(); g.fill(); g.restore();
     luz(g, x, y, todas, false);
+    // Costura do punho dentro da manga, acompanhando a mesma direção do braço.
+    g.save();g.lineWidth=.55;g.lineCap='round';g.strokeStyle='rgba(40,10,70,.21)';
+    ['L','R'].forEach(function(lado){
+      var b=mov[lado];
+      if(b){
+        var ox=b[0]+(blazer?(lado==='L'?.5:-.5):0),dx=b[2]-ox,dy=b[3]-b[1],n=Math.hypot(dx,dy)||1;
+        var ux=dx/n,uy=dy/n,raio=(blazer?3.4:2.7)-.6,dist=(blazer?6:4)-.7;
+        var cx=x+ox+ux*dist,cy=y+b[1]+uy*dist;
+        g.beginPath();g.moveTo(cx-uy*raio,cy+ux*raio);g.lineTo(cx+uy*raio,cy-ux*raio);g.stroke();
+      }else{
+        var sx=lado==='L'?x+(blazer?1.8:1.4):x+(blazer?21.3:24.6),sy=y+(blazer?28.1:25.9),sw=blazer?6.7:4;
+        g.beginPath();g.moveTo(sx,sy);g.lineTo(sx+sw,sy);g.stroke();
+      }
+    });g.restore();
   }
 
 

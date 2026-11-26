@@ -149,3 +149,18 @@ test('Mapa: acessório acompanha o look e ignora identificadores inválidos',()=
 test('Loja: cena aberta desenha imediatamente e respeita movimento reduzido',()=>{
  const s=read('shop.js');assert.match(s,/if\(painel.open&&!shopOv.hidden\)shopDesenhar\(\)/);assert.match(s,/visualT=reduz\?0:t/);assert.match(s,/px = reduz\?alvo:/);assert.match(s,/charPose = oP; perfAntena = oAnt/);
 });
+
+
+test('Polish: sombra do passeante permanece no piso e suaviza no salto',()=>{
+ const s=read('tw-mapa.js'),a=s.indexOf('function sombraPasseante('),b=s.indexOf('function andar(',a),elipses=[],cores=[];
+ const ctx={Math,ctx:{save(){},restore(){},beginPath(){},ellipse(...a){elipses.push(a)},fill(){cores.push(this.fillStyle)}}};vm.runInNewContext(s.slice(a,b),ctx);
+ ctx.sombraPasseante(50,730,1.75,0);ctx.sombraPasseante(50,730,1.75,-15);
+ assert.ok(elipses.every(e=>e[1]===730));assert.ok(elipses[2][2]>elipses[0][2]);assert.notEqual(cores[1],cores[3]);
+});
+test('Polish: pernas sentadas apoiadas no piso com polainas preservadas',()=>{
+ const s=read('pet-sala.js');assert.match(s,/base=PET_FLOOR\+bal,altura=Math.max\(8,base-\(q.y\+6\)\)/);assert.match(s,/petLifeCanelaRoupa\(x, px, q.y\+6\+altura\)/);
+ for(const y of [165.6,169.6,176])for(const bal of [-1,0,1])assert.ok(Math.abs(y+6+Math.max(8,196+bal-(y+6))-(196+bal))<1e-9);
+});
+test('Polish: pista de obstáculos suspensos preserva coordenadas e movimento reduzido',()=>{
+ const s=read('centerrun-corrida.js');assert.match(s,/if\(o.high\)\{g.fillStyle='rgba\(37,19,66,.15\)'/);assert.match(s,/g.ellipse\(o.x\+o.w\/2,GY\+1,o.w\*\.52,2.5/);assert.match(s,/pulse = calmo \? .85/);assert.match(s,/Math.min\(6,o.w-fi\)/);
+});

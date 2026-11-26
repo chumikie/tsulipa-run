@@ -115,6 +115,23 @@ async function rodar(browser,base,nome,opcoes){
       }
     }catch(e){falhas.push(nome+' · '+v+': '+String(e.message||e).split('\n').slice(0,12).join('\n'));}
   }
+  if(visualOnly){
+    try{
+      await abrirInicio(true);
+      await p.evaluate(async()=>{await petSalaCarregar();$('nick').value='Idol QA';petOpenUI();});
+      await p.locator('#petov').waitFor({state:'visible',timeout:8000});
+      if(await p.locator('#petPick').isVisible()){
+        await p.locator('#petPick [data-k="tsu"]').click();
+        await p.locator('#petName').fill('Teste');await p.locator('#petGo').click();
+      }
+      const cv=p.locator('#petov #petc');await cv.waitFor({state:'visible'});
+      for(const pose of ['sentar','descansar','conviver']){
+        const botao=p.locator('#petLifePoses [data-pose="'+pose+'"]');
+        await botao.click({timeout:8000});await p.waitForFunction(k=>petLifePose===k,pose);
+        await p.waitForTimeout(750);await cv.screenshot({path:path.join(out,nome+'-camarim-'+pose+'.png')});
+      }
+    }catch(e){falhas.push(nome+' · camarim: '+String(e.message||e).split('\n')[0]);}
+  }
   if(erros.length)falhas.push(nome+': erro de JavaScript → '+[...new Set(erros)].slice(0,4).join(' | '));
   await ctx.close();
   return falhas;

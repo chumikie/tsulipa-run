@@ -25,7 +25,7 @@
 <script src="./tw-avatar-items.js?v=4"></script>
 <script src="./tw-avatar-hair.js?v=15"></script>
 <script src="./tw-lado.js?v=7"></script>
-<script src="./tw-avatar-roupa.js?v=12"></script><script src="./tw-avatar-rosto.js?v=6"></script>
+<script src="./tw-avatar-roupa.js?v=13"></script><script src="./tw-avatar-rosto.js?v=6"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -421,9 +421,9 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script src="./i18n/'+l+'.js?v=3"><'+'/script>');})();</script>
 <script>if(new URLSearchParams(location.search).get('lang')==='id'||localStorage.getItem('brs48cr_lang')==='id')document.write('<script src="./translations/id/preview-data.js?v=8"><'+'/script>');</script>
 <script defer src="./karaoke-room-views.js?v=1"></script>
-<script src="./centerrun.js?v=45"></script>
+<script src="./centerrun.js?v=46"></script>
 <script defer src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=156"></script>
+<script src="./pet.js?v=157"></script>
 <script src="./perfil.js?v=44"></script>
 <script src="./gacha.js?v=9"></script>
 <script src="./album-fotos.js?v=9"></script>
@@ -496,7 +496,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido){
       var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
-      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=77');})
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=78');})
         .catch(function(e){pedido=null;throw e;});
     }
     return pedido;
@@ -590,9 +590,9 @@ var jornalCarregar=(function(){
 try{if(q==='1')localStorage.setItem(k,'1');else if(q==='0')localStorage.setItem(k,'0');pref=localStorage.getItem(k);}catch(e){pref=q;}
 on=pref!=='0';
 window.TW_CELULAR_LIGADO=on;
-if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=62"><script src="./tw-humor.js?v=10"><'+'/script><script defer src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=9"><'+'/script><script defer src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=78"><'+'/script><script defer src="./tw-presenca.js?v=3"><'+'/script>');}
+if(on){document.write('<link rel="stylesheet" href="./tw-celular.css?v=63"><script src="./tw-humor.js?v=10"><'+'/script><script defer src="./tw-bichos.js?v=2"><'+'/script><script src="./tw-bairro.js?v=9"><'+'/script><script defer src="./tw-calendario.js?v=8"><'+'/script><script src="./tw-celular.js?v=78"><'+'/script><script defer src="./tw-presenca.js?v=3"><'+'/script>');}
 function carregar(){if(window.TW_CELULAR&&window.TW_CELULAR.ligar){window.TW_CELULAR.ligar();return;}
-  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=62';document.head.appendChild(l);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='./tw-celular.css?v=63';document.head.appendChild(l);
   var hm=document.createElement('script');hm.src='./tw-humor.js?v=10';hm.async=false;document.body.appendChild(hm);
   var vbi=document.createElement('script');vbi.src='./tw-bichos.js?v=2';vbi.async=false;document.body.appendChild(vbi);
   var vb=document.createElement('script');vb.src='./tw-bairro.js?v=9';vb.async=false;document.body.appendChild(vb);

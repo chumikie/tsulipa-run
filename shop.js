@@ -289,8 +289,13 @@ function shopDesenhar(){
   ['#ff6fb5', '#4dd8ff', '#ffe14d', '#b6ff3b', '#9b30d9'].forEach(function(cor, j){
     var hx = bx - 132 + j * 23, sw = reduz?0:Math.sin(t * .05 + j) * 1.5;
     x.strokeStyle = '#8a6a9e'; x.lineWidth = 2; x.beginPath(); x.arc(hx, 138, 4, Math.PI, 0); x.stroke();
-    x.fillStyle = cor; x.beginPath(); x.moveTo(hx - 9 + sw, 144); x.lineTo(hx + 9 + sw, 144); x.lineTo(hx + 11 + sw, 182); x.lineTo(hx - 11 + sw, 182); x.closePath(); x.fill();
-    x.fillStyle = 'rgba(255,255,255,.55)'; x.fillRect(hx - 9 + sw, 150, 18, 3);
+    // Silhueta de figurino no cabide: ombros, mangas e gola em vez de uma faixa retangular.
+    x.save();x.translate(hx+sw,144);
+    x.fillStyle='rgba(83,48,111,.14)';x.fillRect(-7,4,16,37);
+    x.fillStyle=cor;x.beginPath();x.moveTo(-5,0);x.lineTo(-10,3);x.lineTo(-11,12);x.lineTo(-7,13);x.lineTo(-7,38);x.lineTo(7,38);x.lineTo(7,13);x.lineTo(11,12);x.lineTo(10,3);x.lineTo(5,0);x.quadraticCurveTo(0,5,-5,0);x.closePath();x.fill();
+    x.strokeStyle='rgba(83,48,111,.27)';x.lineWidth=.85;x.stroke();
+    x.strokeStyle='rgba(255,255,255,.65)';x.beginPath();x.moveTo(-5,1);x.quadraticCurveTo(0,7,5,1);x.moveTo(-5,25);x.lineTo(5,25);x.stroke();
+    x.restore();
   });
   // atendente do dia atrás do balcão
   var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oA = accSel, oF = frame, oP=charPose,oAnt=perfAntena, sc = 2.6;

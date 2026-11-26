@@ -1130,6 +1130,13 @@ function twNitido(cv){
   // que aparecem com ~390 px, eram pintados a 1760 px de largura — 2,5× mais pixels que a tela mostra, a cada quadro.)
   // Teto igual ao do tw-nitidez.js: 2× para palcos grandes (> 150 mil pixels lógicos), 3× para os pequenos.
   var z = window.devicePixelRatio || 1, vis = cv.clientWidth || st.w, teto = st.w * st.h > 150000 ? 2 : 3;
+  // As duas vitrines animadas de 640 px precisam de mais um degrau em tablets
+  // largos de alta densidade. Mantém o teto dos jogos e das demais cenas.
+  if((cv.id==='shopCv'||cv.id==='gachaCv')&&st.w===640&&st.w*st.h<=270000){
+    teto=2.25;
+    var rect=cv.getBoundingClientRect&&cv.getBoundingClientRect();
+    if(rect&&rect.width>0)vis=Math.max(vis,rect.width);
+  }
   var k = Math.min(teto, Math.max(1, Math.ceil(z * vis / st.w * 4) / 4));
   if(k !== st.k){
     st.k = k; st.dw.set.call(cv, Math.round(st.w * k)); st.dh.set.call(cv, Math.round(st.h * k));

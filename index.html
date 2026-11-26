@@ -424,7 +424,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script src="./centerrun.js?v=52"></script>
 <script defer src="./center-recovery.js?v=1"></script>
 <script src="./pet.js?v=165"></script>
-<script src="./perfil.js?v=49"></script>
+<script src="./perfil.js?v=50"></script>
 <script src="./gacha.js?v=9"></script>
 <script src="./album-fotos.js?v=9"></script>
 <script src="./album.js?v=9"></script>
@@ -496,7 +496,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido){
       var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
-      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=89');})
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=90');})
         .catch(function(e){pedido=null;throw e;});
     }
     return pedido;

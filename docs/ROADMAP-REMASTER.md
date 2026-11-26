@@ -65,3 +65,12 @@ Referência: commit 2ed2825bc758db6d28dd4365a737c0ce8467de11, CI 45871345689 (9/
 | 5.9 Auditoria | Novo teste de geometria/expressão/espelho; CI compara main, 2ed2825 e HEAD nos mesmos tamanhos. | CI completo, capturas novas e iPhone físico; aprovação visual não automática. |
 
 Sem novos textos de interface, estados, mecânicas, recompensas, economia, SQL ou alteração de Supabase. Fotos armazenadas não são regravadas. Sem merge, nova PR ou publicação manual.
+
+
+### Revisão corretiva de b888ead — 26/11/2026
+
+CI 45877813312 concluído: 8/9 jobs, 129/132 verificações rápidas. Navegadores e comparação visual aprovados. Artefato 15146367158: manifesto confirma main, anterior 2ed2825 e PR b888ead, todos com código 0; 86 PNG por versão e vídeos do Camarim. Revisão visual anterior/PR nas 86 telas: a evolução é discreta nas silhuetas sentadas e no pavilhão lunar, com maior diferença no ciclorama fotográfico. O retrato com aceno sem objeto tinha enquadramento horizontal que não reservava a largura da mão levantada. Nesta rodada:
+- ML1.6 exige o mesmo fallback e cor de meias, agora com c na chamada de pernas; roupas Center Run conserva todas as verificações de recordes, ranks e renderização e exige versão lateral >=8; teste de rosto importa a propriedade CommonJS real. Nenhum cenário de teste removido.
+- Foto: todos os retratos com aceno reservam a largura e centro adequados independentemente de adereço; novo caso verifica os dois braços, zoom e fases da animação. PNGs históricos não regravados.
+- Moon Duo no Jardim das Nuvens: reconstrução da base, fustes, capitéis, cobertura e degrau na régua do SVG, sem alterar acessos.
+- A comparação tripla do CI permanece ativa; novas capturas e iPhone físico ainda precisam de validação. Sem merge, publicação manual, SQL, Supabase ou alterações de regras.

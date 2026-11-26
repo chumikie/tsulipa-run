@@ -41,6 +41,15 @@ test('Photo Studio: rosto, meio and inteiro have genuinely different crops', () 
       assert.ok(close.x-3*close.scale>=0,'mão esquerda não corta');
     }
     assert.ok(close.scale>meio.scale,'retrato deve ser maior que meio corpo, mesmo com aceno/objeto');
+    if(pose==='v'||pose==='tchau'){
+      for(const t of [0,26,78]){
+        const livre=scope.paintIdol(canvas,432,540,{pose},false,false,t,'rosto',false);
+        const meioLivre=scope.paintIdol(canvas,432,540,{pose},false,false,t,'meio',false);
+        assert.ok(livre.x+40*livre.scale<=432,'aceno sem objeto mantém os dedos dentro da foto');
+        assert.ok(livre.x-3*livre.scale>=0,'mão oposta dentro do quadro');
+        assert.ok(livre.scale>meioLivre.scale,'retrato sem objeto não vira meio-corpo');
+      }
+    }
   }
 });
 

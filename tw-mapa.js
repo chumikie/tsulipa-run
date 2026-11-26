@@ -1418,11 +1418,30 @@
         ctx.beginPath();ctx.ellipse(px,562,15,8,-.15,0,7);ctx.fill();
         ctx.fillStyle='#ffe4ee';ctx.beginPath();ctx.arc(px-5,558,2.4,0,7);ctx.arc(px+4,560,2,0,7);ctx.fill();
       });
-      // Pavilhão lunar: arquitrave e dois fustes sustentam a cobertura.
-      // A base do pavilhão fica dentro da área ilustrada, acima da zona de passeio.
-      ctx.fillStyle='#b6a5e4';ctx.beginPath();ctx.moveTo(707,538);ctx.lineTo(893,538);ctx.lineTo(915,552);ctx.lineTo(685,552);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#efdcff';ctx.fillRect(704,535,192,6);
-      ctx.fillStyle='#b69cd8';ctx.fillRect(711,543,178,5);
+      // Pavilhão lunar, reconstruído na mesma régua do SVG: origem (800,566), escala 2.05.
+      // A estrutura deixa aberto o centro do mirante e não toca na placa ou na área de clique.
+      ctx.save();ctx.translate(800,566);ctx.scale(2.05,2.05);
+      ctx.fillStyle='#7771c4';ctx.beginPath();ctx.moveTo(-63,-23);ctx.lineTo(63,-23);
+      ctx.lineTo(73,-13);ctx.lineTo(-73,-13);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#d9c9fa';ctx.beginPath();ctx.moveTo(-63,-24);ctx.lineTo(63,-24);
+      ctx.lineTo(67,-18);ctx.lineTo(-67,-18);ctx.closePath();ctx.fill();
+      // Bases, fustes e capitéis com frente e lado; o vão central permanece desimpedido.
+      [-46,46].forEach(function(px){
+        ctx.fillStyle='#a89bdc';ctx.fillRect(px-7,-89,14,66);
+        ctx.fillStyle='#f5efff';ctx.fillRect(px-7,-89,9,66);
+        ctx.fillStyle='#d8cbf6';ctx.fillRect(px+2,-89,4,66);
+        ctx.fillStyle='#ece2ff';rr(px-10,-27,20,5,1.5);ctx.fill();
+        ctx.fillStyle='#b2a3e4';rr(px-10,-92,20,5,1.5);ctx.fill();
+      });
+      // Nervuras da cobertura: superfícies curvas que convergem para o ápice.
+      ctx.fillStyle='#9381df';ctx.beginPath();ctx.moveTo(-74,-92);ctx.quadraticCurveTo(0,-158,74,-92);
+      ctx.lineTo(55,-92);ctx.quadraticCurveTo(0,-148,-55,-92);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#cfc0f7';ctx.lineWidth=1.6;ctx.beginPath();
+      [-38,0,38].forEach(function(px){ctx.moveTo(px,-94);ctx.quadraticCurveTo(px*.65,-120,0,-125);});ctx.stroke();
+      // Degrau com espelho próprio, abaixo do piso e acima do rótulo Moon Duo.
+      ctx.fillStyle='#b6a5e4';ctx.fillRect(-57,-13,114,4);
+      ctx.fillStyle='#efdcff';ctx.fillRect(-57,-13,114,1.4);
+      ctx.restore();
       // Studio: pilastra da fachada no sistema de coordenadas de rua.py.
       ctx.save();ctx.translate(1300,558);ctx.scale(1.28,1.28);ctx.translate(-1300,-558);
       var pilastra=ctx.createLinearGradient(1440,0,1458,0);pilastra.addColorStop(0,'#f4eaff');pilastra.addColorStop(1,'#bca8dc');

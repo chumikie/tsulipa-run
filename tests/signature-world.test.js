@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const R=require('../tw-avatar-roupa.js'),F=require('../tw-avatar-rosto.js');
+const R=require('../tw-avatar-roupa.js'),F=require('../tw-avatar-rosto.js').TWAvatarRosto;
 const read=p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8');
 function recorder(){
   const pts=[],g=new Proxy({createLinearGradient(){return {addColorStop(){}}},createRadialGradient(){return {addColorStop(){}}}},{

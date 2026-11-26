@@ -62,7 +62,7 @@ async function rodar(browser,base,nome,opcoes){
   const conferir=async tela=>{
     const r=await p.evaluate(()=>{
       const P=Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype,'width'),borrados=[];
-      document.querySelectorAll('canvas').forEach(c=>{const R=c.getBoundingClientRect();if(R.width<60||R.height<40||R.bottom<0||R.top>innerHeight||getComputedStyle(c).visibility==='hidden')return;
+      document.querySelectorAll('canvas').forEach(c=>{if(c.closest('details:not([open])')||c.closest('[hidden]'))return;const R=c.getBoundingClientRect();if(R.width<60||R.height<40||R.bottom<0||R.top>innerHeight||getComputedStyle(c).visibility==='hidden')return;
         const q=P.get.call(c)/(R.width*devicePixelRatio),teto=window.TW_NITIDEZ&&(TW_NITIDEZ.escala(c)>=2||(TW_NITIDEZ.limitado&&TW_NITIDEZ.limitado(c)));if(q<0.9&&!teto)borrados.push((c.id||c.className||'canvas')+' '+q.toFixed(2));});
       const tela=document.getElementById('twcTela')||document.body,slot=document.getElementById('twcEmbSlot');
       const texto=(slot||tela).innerText.trim().length,graficos=(slot||tela).querySelectorAll('canvas,img,svg').length;
@@ -78,11 +78,19 @@ async function rodar(browser,base,nome,opcoes){
       const sel='[data-'+t+'="'+v+'"]:visible';
       const achar=()=>p.locator('#twcTela '+sel+',#twcNav '+sel+',#twcFolha '+sel).first();
       let e=achar();
+      if(['gacha','studio','cafe','handshake'].includes(v)){
+        const jogos=p.locator('#twcTela [data-v="jogos"]:visible').first();
+        await jogos.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+        await jogos.click({timeout:8000});
+        await p.locator('#twcTela .twc-jogos').waitFor({state:'visible'});
+        e=p.locator('#twcTela .twc-jogos '+sel).first();
+      }
       if(!await e.isVisible()&&!['perfil','loja'].includes(v)){await p.locator('#twcNav [data-n="menu"]:visible').click();e=achar();}
       if(!await e.isVisible()){const m=p.locator('[data-a="menuMais"]:visible').first();if(await m.isVisible())await m.click();e=achar();}
       if(!await e.isVisible()){const j=p.locator('[data-v="jogos"]:visible').first();if(await j.isVisible())await j.click();e=achar();}
       if(!await e.isVisible())e=p.locator(sel).first();
-      await e.click({timeout:6000});
+      await e.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}),undefined,{timeout:6000});
+      await e.click({timeout:8000});
       await p.locator(alvo).first().waitFor({state:'visible',timeout:8000});
       await p.waitForTimeout(500);
       const identidade=await p.evaluate(sel=>{
@@ -93,7 +101,19 @@ async function rodar(browser,base,nome,opcoes){
       },alvo);
       if(!identidade)throw Error('tela esperada encoberta ou ausente: '+alvo);
       await conferir(v);await p.screenshot({path:path.join(out,nome+'-'+v+'.png')});
-    }catch(e){falhas.push(nome+' · '+v+': '+String(e.message||e).split('\n')[0]);}
+      if(v==='loja'){
+        // O cenário só desenha quando aberto. Confere também a saudação da atendente,
+        // em vez de medir um canvas escondido e ainda não pintado.
+        const abrir=p.locator('#shopOv .shop-saudacao summary');
+        await abrir.click({timeout:8000});
+        const cena=p.locator('#shopCv');
+        await cena.waitFor({state:'visible'});
+        await cena.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+        await p.waitForTimeout(800);
+        await conferir('loja-cenario');
+        await p.screenshot({path:path.join(out,nome+'-loja-cenario.png')});
+      }
+    }catch(e){falhas.push(nome+' · '+v+': '+String(e.message||e).split('\n').slice(0,12).join('\n'));}
   }
   if(erros.length)falhas.push(nome+': erro de JavaScript → '+[...new Set(erros)].slice(0,4).join(' | '));
   await ctx.close();

@@ -145,3 +145,7 @@ test('Polish: apoio visual do Sora não altera a coordenada da colisão',()=>{
 test('Mapa: acessório acompanha o look e ignora identificadores inválidos',()=>{
  const s=read('tw-mapa.js'),a=s.indexOf('function acessorioPasseante('),b=s.indexOf('function andar(',a),ctx={ACC:[[''],['mic'],['laco']]};vm.runInNewContext(s.slice(a,b),ctx);assert.equal(ctx.acessorioPasseante({a:'mic'}),'mic');assert.equal(ctx.acessorioPasseante({a:'invalid'}),'');assert.equal(ctx.acessorioPasseante(null),'');assert.match(s,/accSel=acessorioPasseante\(p.av\)/);assert.match(s,/accSel=acessorioPasseante\(g.av\)/);
 });
+
+test('Loja: cena aberta desenha imediatamente e respeita movimento reduzido',()=>{
+ const s=read('shop.js');assert.match(s,/if\(painel.open&&!shopOv.hidden\)shopDesenhar\(\)/);assert.match(s,/visualT=reduz\?0:t/);assert.match(s,/px = reduz\?alvo:/);assert.match(s,/charPose = oP; perfAntena = oAnt/);
+});

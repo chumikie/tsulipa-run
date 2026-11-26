@@ -103,10 +103,18 @@ function petLifeSofa(x, frente, visual){
       var altura = Math.max(8, PET_FLOOR + bal - recolhimento - (q.y+6));
       // A canela termina no plano do piso, inclusive na pose inclinada.
       x.fillRect(px-6,q.y+6,12,altura);
-      x.fillStyle='rgba(255,255,255,.12)';x.fillRect(px-4.5,q.y+8,2,Math.max(0,altura-5));
+      // A canela continua com a régua de 12 px; a luz arredonda o volume sem deslocar os pés.
+      var perna=x.createLinearGradient(px-6,0,px+6,0);
+      perna.addColorStop(0,'rgba(40,10,70,.14)');perna.addColorStop(.26,'rgba(255,255,255,.13)');
+      perna.addColorStop(.56,'rgba(255,255,255,0)');perna.addColorStop(1,'rgba(40,10,70,.22)');
+      x.fillStyle=perna;x.fillRect(px-5.9,q.y+6,11.8,altura);
+      x.fillStyle='rgba(40,10,70,.14)';x.fillRect(px-5.5,q.y+6+altura-2,11,2);
       petLifeCanelaRoupa(x, px, q.y+6+altura); // preserva as polainas do figurino
       if(!roupa){ x.fillStyle=petLifeCorColo;
         x.fillRect(px-7,q.y-3,14,10);
+        var coxa=x.createLinearGradient(0,q.y-3,0,q.y+7);coxa.addColorStop(0,'rgba(40,10,70,.12)');
+        coxa.addColorStop(.48,'rgba(255,255,255,.13)');coxa.addColorStop(1,'rgba(40,10,70,.18)');
+        x.fillStyle=coxa;x.fillRect(px-6.8,q.y-3,13.6,10);
         x.fillStyle='rgba(40,10,70,.13)';x.fillRect(px-5,q.y+5,10,1.5);
       }
     });
@@ -114,10 +122,14 @@ function petLifeSofa(x, frente, visual){
       var largura = roupa === 'sweet' ? 31 : roupa === 'zipper' ? 27 : 23;
       x.fillStyle=petLifeCorSaia;
       x.beginPath();x.moveTo(q.x-17,q.y-3);x.lineTo(q.x+17,q.y-3);
-      x.lineTo(q.x+largura,q.y+12);x.lineTo(q.x-largura,q.y+12);x.closePath();x.fill();
-      x.save();x.clip();x.fillStyle='rgba(40,10,70,.10)';x.fillRect(q.x-largura,q.y+9,largura*2,3);
+      x.quadraticCurveTo(q.x+largura-4,q.y+5,q.x+largura,q.y+11);
+      x.quadraticCurveTo(q.x,q.y+14,q.x-largura,q.y+11);
+      x.quadraticCurveTo(q.x-largura+4,q.y+5,q.x-17,q.y-3);x.closePath();x.fill();
+      x.save();x.clip();var caimento=x.createLinearGradient(0,q.y-3,0,q.y+13);
+      caimento.addColorStop(0,'rgba(40,10,70,.12)');caimento.addColorStop(.42,'rgba(255,255,255,.12)');caimento.addColorStop(1,'rgba(40,10,70,.17)');
+      x.fillStyle=caimento;x.fillRect(q.x-largura,q.y-3,largura*2,16);
       x.strokeStyle='rgba(255,255,255,.19)';x.lineWidth=1;
-      [-9,9].forEach(function(d){x.beginPath();x.moveTo(q.x+d,q.y);x.lineTo(q.x+d*1.5,q.y+10);x.stroke();});x.restore();
+      [-9,9].forEach(function(d){x.beginPath();x.moveTo(q.x+d,q.y);x.quadraticCurveTo(q.x+d*1.2,q.y+5,q.x+d*1.5,q.y+10);x.stroke();});x.restore();
     }
     if(petLifePose === 'descansar'){   // mantinha no colo na cor do Oshi
       var ac = { tsu:'#c58cf0', lirika:'#8fdca7', pati:'#9dbcf5' }[OSHI] || '#ffb3d6';
@@ -148,9 +160,11 @@ function petLifeSofa(x, frente, visual){
 }
 //←petLifeSofaBracos
 function petLifeSofaBracos(x){
-  x.fillStyle='#c38acb';x.beginPath();x.roundRect(38,166,18,29,8);x.fill();
+  var tecido=x.createLinearGradient(0,166,0,195);tecido.addColorStop(0,'#e3addc');tecido.addColorStop(.45,'#cd94d1');tecido.addColorStop(1,'#b87dc1');
+  x.fillStyle=tecido;x.beginPath();x.roundRect(38,166,18,29,8);x.fill();
   x.beginPath();x.roundRect(136,166,18,29,8);x.fill();
-  x.fillStyle='#f4c6e5';x.beginPath();x.roundRect(42,167,12,15,6);x.fill();
+  var topo=x.createLinearGradient(0,167,0,182);topo.addColorStop(0,'#fce0f1');topo.addColorStop(.48,'#f4c6e5');topo.addColorStop(1,'#d9a1d2');
+  x.fillStyle=topo;x.beginPath();x.roundRect(42,167,12,15,6);x.fill();
   x.beginPath();x.roundRect(138,167,12,15,6);x.fill();
 }
 //←petLifeMovimentoReduzido

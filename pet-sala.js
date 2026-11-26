@@ -98,7 +98,9 @@ function petLifeSofa(x, frente, visual){
     // canelas descem até o chão. Cada pose tem lugar e postura próprios.
     var q = petLifeQuadril(visual), roupa = petLifeRoupaSaia();
     var borda=x.createLinearGradient(0,174,0,186);borda.addColorStop(0,'#e8b8e3');borda.addColorStop(1,'#c48dcc');x.fillStyle=borda;x.beginPath();x.roundRect(47,174,97,12,6);x.fill();   // borda do assento
-    x.fillStyle='#e8b8e3';x.fillRect(62,176,67,2);
+    x.fillStyle='#e8b8e3';x.beginPath();x.moveTo(62,176);
+    x.quadraticCurveTo(q.x,176+visual.sit*1.6,129,176);x.lineTo(129,178);
+    x.quadraticCurveTo(q.x,178+visual.sit*1.6,62,178);x.closePath();x.fill();
     x.fillStyle='rgba(60,25,90,.13)';x.beginPath();x.ellipse(q.x+1,198,20,2.5,0,0,7);x.fill();
     x.save();x.globalAlpha *= visual ? visual.sit : 1;
     // O quadril continua apoiado enquanto cada Idol escolhe onde firmar os pés.
@@ -146,7 +148,7 @@ function petLifeSofa(x, frente, visual){
         var raiz=q.x+o*.7,coxaEsq=px-7;x.save();x.beginPath();
         x.moveTo(raiz-6,q.y-3);x.quadraticCurveTo(px-7,q.y-1,px-7,q.y+5);
         x.quadraticCurveTo(px,q.y+9,px+7,q.y+5);
-        x.quadraticCurveTo(px+7,q.y,raiz+6,q.y-3);
+        x.quadraticCurveTo(px+7,q.y-1,raiz+6,q.y-3);
         x.closePath();x.clip();
         x.fillRect(Math.min(px-7,raiz-6),q.y-3,Math.max(px+7,raiz+6)-Math.min(px-7,raiz-6),10);
         var coxa=x.createLinearGradient(0,q.y-3,0,q.y+7);coxa.addColorStop(0,'rgba(40,10,70,.12)');
@@ -230,7 +232,8 @@ function petLifePetAproximar(quer, delta){
 function petLifeRoupaSaia(){
   var c = CH[sel];if(!c)return '';
   var out = c.out || '';
-  if(out === 'sweet' || out === 'zipper') return out;
+  if(out === 'sweet' || out === 'zipper') return c.baixo==='bermuda'?'':out;
+  if(out==='estrelado')return c.baixo==='saia'?'saia':'';
   if(['','y2k','seifuku','citypop'].indexOf(out) < 0) return '';
   return typeof TWAvatarRoupa !== 'undefined' && TWAvatarRoupa.qual(c,out) === 'saia' ? 'saia' : '';
 }

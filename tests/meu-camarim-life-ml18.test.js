@@ -75,7 +75,8 @@ test('ML1.8-A: joelho de Conviver não cruza o braço; saia mantém volume, berm
   assert.ok(q.x+10.8+7<136,'coxa direita termina antes do braço direito');
   for(const [out,baixo,esperado] of [
     ['seifuku','saia','saia'],['seifuku','bermuda',''],['citypop','bermuda',''],
-    ['','saia','saia'],['sweet',undefined,'sweet'],['zipper',undefined,'zipper']
+    ['','saia','saia'],['sweet',undefined,'sweet'],['zipper',undefined,'zipper'],
+    ['sweet','bermuda',''],['zipper','bermuda',''],['estrelado','saia','saia'],['estrelado','bermuda','']
   ]){
     ctx.CH[0]={out,baixo};
     assert.equal(ctx.petLifeRoupaSaia(),esperado,out+'/'+baixo);

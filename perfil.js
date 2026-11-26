@@ -136,6 +136,27 @@ function perfData(iso){
 function perfRot(o){ return o[1] + ' ' + tr(o[2]); }
 //→perfLogo
 function perfRgba(hex, a){ var c = parseInt(String(hex).replace('#', ''), 16) || 0; return 'rgba(' + (c >> 16) + ',' + ((c >> 8) & 255) + ',' + (c & 255) + ',' + a + ')'; }
+// Signature 5.10: somente referências locais ao elenco oficial podem carregar sua assinatura.
+ // WeakMap não viaja no JSON, não modifica avatares recebidos e não cria campos de save.
+var PERF_IDENTIDADE_LOCAL = new WeakMap();
+function perfIdentidadeOficial(src){
+  if(!src || typeof src!=='object')return '';
+  var n=PERF_IDENTIDADE_LOCAL.get(src);
+  if(n)return n;
+  if(typeof CH!=='undefined'&&Array.isArray(CH)){
+    var idx=CH.indexOf(src);if(idx>=0&&idx<3)return ['Tsu','Lirika','Pati'][idx];
+  }
+  if(typeof HUB_TRIO_DRAW_CHARS!=='undefined'&&typeof HUB_TRIO!=='undefined'){
+    var i=HUB_TRIO_DRAW_CHARS.indexOf(src),m=HUB_TRIO[i];
+    if(i>=0&&m&&m[0]>=0&&m[0]<3)return ['Tsu','Lirika','Pati'][m[0]];
+  }
+  return '';
+}
+function perfCopiarCharOficial(src){
+  var c=JSON.parse(JSON.stringify(src||{})),n=perfIdentidadeOficial(src);
+  if(n)PERF_IDENTIDADE_LOCAL.set(c,n);
+  return c;
+}
 function perfChar(av){
   var c = {}, src = (av && av.c && typeof av.c === 'object') ? av.c : {}, k;
   for(k in PERF_BASE) c[k] = PERF_BASE[k];
@@ -146,6 +167,8 @@ function perfChar(av){
     else if(f === 'baixo'){ if(v === 'saia' || v === 'bermuda') c.baixo = v; }   // saia ou bermuda; vazio = padrão da roupa
     else if(typeof v === 'string' && v.length <= 16) c[f] = v;
   });
+  var oficial=typeof perfIdentidadeOficial==='function'?perfIdentidadeOficial(src):'';
+  if(oficial){c.n=oficial;PERF_IDENTIDADE_LOCAL.set(c,oficial);}
   c.img = c.hair;
   return c;
 }
@@ -578,7 +601,7 @@ function perfFotoRedonda(cv, av, zoom){   // foto do perfil: o avatar recortado 
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height;
   if(window.TW_NITIDEZ) kn = TW_NITIDEZ.escala(cv) || kn;
   var tmp = document.createElement('canvas'); tmp.width = Math.round(W2 * kn); tmp.height = Math.round(H2 * kn);
-  if(av && !av.fundo){ av = JSON.parse(JSON.stringify(av)); av.fundo = 'basico'; }   // na foto redonda sempre tem fundo
+  if(av && !av.fundo){ var oficial=perfIdentidadeOficial(av.c), origem=av.c; av = JSON.parse(JSON.stringify(av)); if(oficial)av.c=perfCopiarCharOficial(origem); av.fundo = 'basico'; }   // na foto redonda sempre tem fundo
   var tx2 = tmp.getContext('2d'); tx2.scale(kn, kn);
   perfDesenharIdol(tx2, W2, H2, av, true, zoom !== false);
   x.clearRect(0, 0, W2, H2);

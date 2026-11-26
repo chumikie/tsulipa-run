@@ -74,3 +74,17 @@ CI 45877813312 concluído: 8/9 jobs, 129/132 verificações rápidas. Navegadore
 - Foto: todos os retratos com aceno reservam a largura e centro adequados independentemente de adereço; novo caso verifica os dois braços, zoom e fases da animação. PNGs históricos não regravados.
 - Moon Duo no Jardim das Nuvens: reconstrução da base, fustes, capitéis, cobertura e degrau na régua do SVG, sem alterar acessos.
 - A comparação tripla do CI permanece ativa; novas capturas e iPhone físico ainda precisam de validação. Sem merge, publicação manual, SQL, Supabase ou alterações de regras.
+
+
+## Signature World 5.10–5.15 — construção e coerência
+
+Base e58256f66d6cc1cd17c167545ea45a7ecdca7882: CI 45881694854, 9/9 jobs e 132/132 verificações estáticas. Artefato 15148850802 confirma 86 capturas por revisão (main, 2ed2825, e58256f), código 0 no manifesto. Revisão por amostragem dos bairros, do trio, Camarim, telas compactas/desktop e três enquadramentos: cenário e poses continuam estilizados; o último refinamento do pavilhão é visível, os olhos/contornos ainda precisam de coerência.
+
+- 5.10: identidade oficial local por referência e WeakMap no Perfil e cópias do trio do celular, sem reconhecer nomes de avatares recebidos, sem campos persistentes novos. Vista lateral reutiliza olhos compartilhados.
+- 5.11: braços do aceno/coração com cotovelo curvo na frente; perna lateral com joelho articulado e flexão do cotovelo na passada, mantendo âncoras dos sapatos.
+- 5.12: saia e bermuda laterais com recortes curvos; padrão sem escolha segue bermuda da frente; escolhas Sweet/Zipper/Estrelado correspondem à frente, e no Camarim.
+- 5.13: partes estáticas de fonte, proscênio, contrafortes e pavilhão transferidas do Canvas para as quatro artes SVG e seu gerador, mantendo coordenadas e placas. Outros detalhes e efeitos animados permanecem no Canvas.
+- 5.14: costura da almofada responde ao peso do quadril; saia/bermuda seguem a escolha. Não altera posições salvas, hitboxes nem as regras de convívio.
+- 5.15: cabeçalhos de controles do Studio alinhados, abas da loja com menos efeitos, controles compactos e área de foto preservada.
+
+Testes de identidade local/normalização, escolha dos figurinos, traçado lateral, SVG e Camarim; o CI agora compara main, e58256f e HEAD. Capturas e validação física no iPhone ainda pendentes; não implica reconstrução integral de todos os figurinos, fachadas ou poses. Sem nova PR, merge, publicação manual, force push, SQL, Supabase, economia ou novas mecânicas.

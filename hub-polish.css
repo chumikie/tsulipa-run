@@ -813,3 +813,12 @@ html body .studiop .stgrupo>b{color:var(--ink,#432675);letter-spacing:.01em;marg
 .stgrupo .stchip.on{box-shadow:none;font-weight:800}
 .shopprov{border-radius:12px;box-shadow:none}
 @media(max-width:390px){#perfCorpo .twp-vazia{padding:12px}.studiop .stgrupo>div{gap:5px}}
+
+/* Signature World 5.15 — hierarquia editorial, sem ocultar controles. */
+#studioVisor[data-fase="monta"],#studioVisor[data-fase="contagem"]{padding:8px 4px;box-shadow:none;border-radius:12px}
+html body .studiop .stgrupo>b{text-align:start;font-size:12px;font-weight:800;margin:8px 0 6px}
+.studiop .stgrupo>div{justify-content:flex-start}
+#shopAbas [data-shop-aba]{box-shadow:none;border-width:1px}
+#shopAbas [aria-pressed="true"]{outline-offset:-2px}
+#perfCorpo .twp-vazia{border-radius:10px}
+@media(max-width:390px){.studiop .stgrupo .stchip{flex:1 1 auto;min-width:0}.shopprov .shop-comparar{gap:6px}}

@@ -299,7 +299,7 @@
   var MEMBROS = [['tsu', 'Tsu', '#9b30d9'], ['lirika', 'Lirika', '#3cb043'], ['pati', 'Pati', '#4169e1']];
   function membroAv(k){
     if(typeof HUB_TRIO === 'undefined' || typeof HUB_TRIO_DRAW_CHARS === 'undefined' || typeof CH === 'undefined' || !HUB_TRIO[k]) return null;
-    var m = HUB_TRIO[k], c = JSON.parse(JSON.stringify(HUB_TRIO_DRAW_CHARS[k])), base = CH[m[0]];
+    var m = HUB_TRIO[k], c = typeof perfCopiarCharOficial==='function'?perfCopiarCharOficial(HUB_TRIO_DRAW_CHARS[k]):JSON.parse(JSON.stringify(HUB_TRIO_DRAW_CHARS[k])), base = CH[m[0]];
     if(base){ c.out = base.out; c.outcol = base.outcol; }
     return {c:c, pose:'', expr:m[4], fundo:'basico'};
   }

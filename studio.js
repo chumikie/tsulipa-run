@@ -655,7 +655,7 @@
     x.rotate(angulo);
     x.lineCap = 'round';
     // Mão: palma arredondada na largura do braço; a haste passa entre a palma e os dedos (desenhados depois).
-    x.fillStyle=corpo.skin;x.beginPath();
+    var palma=x.createLinearGradient(-2.35,0,2.35,0);palma.addColorStop(0,corpo.skin);palma.addColorStop(.65,corpo.skin);palma.addColorStop(1,'rgba(105,65,85,.65)');x.fillStyle=palma;x.beginPath();
     if(x.roundRect)x.roundRect(-2.35,-2.3,4.7,5,1.7);else x.rect(-2.35,-2.3,4.7,5);
     x.fill();
     if(arranjo.length && typeof window.bloomDesenharFlor === 'function'){

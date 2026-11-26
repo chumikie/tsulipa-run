@@ -57,7 +57,7 @@ function petLifeSofa(x, frente, visual){
     x.fillStyle='#b77bc4';x.fillRect(49,186,7,13);x.fillRect(136,186,7,13);
     x.fillStyle='#c68bd0';x.beginPath();x.roundRect(40,147,110,46,13);x.fill();
     x.fillStyle='#f4c9e8';x.beginPath();x.roundRect(46,151,98,30,11);x.fill();
-    x.fillStyle='#e6b5e4';x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
+    var tecido=x.createLinearGradient(0,161,0,183);tecido.addColorStop(0,'#f2cbe9');tecido.addColorStop(.55,'#e6b5e4');tecido.addColorStop(1,'#cb94d0');x.fillStyle=tecido;x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
     // Encosto capitonê: costuras e botões permanecem atrás dos ombros.
     for(var botao = 59; botao <= 131; botao += 24){
       x.strokeStyle = '#dfaad5'; x.lineWidth = 1;
@@ -88,7 +88,7 @@ function petLifeSofa(x, frente, visual){
     // da almofada (na cor da roupa do avatar), os joelhos passam da borda e as
     // canelas descem até o chão. Cada pose tem lugar e postura próprios.
     var q = petLifeQuadril(visual), roupa = petLifeRoupaSaia();
-    x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,174,97,12,6);x.fill();   // borda do assento
+    var borda=x.createLinearGradient(0,174,0,186);borda.addColorStop(0,'#e8b8e3');borda.addColorStop(1,'#c48dcc');x.fillStyle=borda;x.beginPath();x.roundRect(47,174,97,12,6);x.fill();   // borda do assento
     x.fillStyle='#e8b8e3';x.fillRect(62,176,67,2);
     x.fillStyle='rgba(60,25,90,.13)';x.beginPath();x.ellipse(q.x+1,198,20,2.5,0,0,7);x.fill();
     x.save();x.globalAlpha *= visual ? visual.sit : 1;

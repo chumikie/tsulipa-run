@@ -1171,7 +1171,7 @@
   // Contato no mesmo plano dos pés; ao saltar, a sombra fica no piso e se suaviza.
   function sombraPasseante(x,y,sc,bob){
     var altura=Math.max(0,-bob),proximidade=1-Math.min(1,altura/(18*sc));
-    ctx.save();ctx.fillStyle='rgba(43,27,70,'+(.10+.08*proximidade)+')';
+    ctx.save();ctx.fillStyle='rgba(43,27,70,'+(.06+.06*proximidade)+')';ctx.beginPath();ctx.ellipse(x+2*sc,y,12*sc,3.2*sc,0,0,7);ctx.fill();ctx.fillStyle='rgba(43,27,70,'+(.07+.07*proximidade)+')';
     ctx.beginPath();ctx.ellipse(x+1.2*sc,y, (9.2+2*(1-proximidade))*sc,2.25*sc,0,0,7);ctx.fill();
     ctx.fillStyle='rgba(43,27,70,'+(.14*proximidade)+')';
     ctx.beginPath();ctx.ellipse(x,y,6.2*sc,1.35*sc,0,0,7);ctx.fill();ctx.restore();

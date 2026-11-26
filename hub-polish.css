@@ -736,3 +736,13 @@ html[data-theme="dark"] .tw-piloto-vitrine span{color:#f3d6f0}
   html:not([data-theme="light"]) .tw-piloto-vitrine{background:#38263f;border-color:#b68bc6}
   html:not([data-theme="light"]) .tw-piloto-vitrine span{color:#f3d6f0}
 }
+
+/* A captura real do perfil escuro mostrou a legenda violeta escura sobre azul.
+   Mantém a vitrine e o botão existentes, com contraste de leitura. */
+:root[data-theme="dark"] #perfCorpo .twp-vazia p{color:#e6d6ff}
+:root[data-theme="dark"] #perfCorpo .twp-vazia [data-twp="vitrine-editar"]{color:#f0e1ff;background:#443066;border:1px solid #b39ad8}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #perfCorpo .twp-vazia p{color:#e6d6ff}
+  :root:not([data-theme="light"]) #perfCorpo .twp-vazia [data-twp="vitrine-editar"]{color:#f0e1ff;background:#443066;border:1px solid #b39ad8}
+}
+#perfCorpo .twp-vazia [data-twp="vitrine-editar"]{min-height:44px;white-space:normal;overflow-wrap:anywhere}

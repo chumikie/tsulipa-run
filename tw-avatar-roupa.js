@@ -69,6 +69,10 @@
       g.fillStyle = k.linha; g.fillRect(x + 14.6, y + 35, .8, 5);           // costura do meio
       if(k.barra){ g.fillStyle = corBarra; g.fillRect(x + 6.5, y + 39, 17, 1); }
       luz(g, x, y, function(){ g.rect(x + 6.5, y + 32, 17, 8); }, true);
+      // Cintura e duas dobras curtas: volume sem mudar a silhueta nem o comprimento.
+      g.save(); g.strokeStyle='rgba(255,255,255,.16)'; g.lineWidth=.45; g.lineCap='round';
+      g.beginPath(); g.moveTo(x+7.4,y+33.4); g.lineTo(x+22.6,y+33.4); g.stroke();
+      [10,20].forEach(function(px){g.beginPath();g.moveTo(x+px,y+34.2);g.quadraticCurveTo(x+px+(px<15?-.55:.55),y+35.5,x+px,y+36.7);g.stroke();});g.restore();
       return true;
     }
     g.fillStyle = k.cor; T(g, [x + 6, y + 32, x + 24, y + 32, x + 27, y + 40, x + 3, y + 40]);
@@ -76,6 +80,10 @@
     [9, 12.5, 16, 19.5].forEach(function(px){ var d = (px - 15) * .12; T(g, [x + px, y + 34, x + px + .7, y + 34, x + px + .7 + d, y + 40, x + px + d, y + 40]); });   // pregas
     if(k.barra){ g.fillStyle = corBarra; T(g, [x + 3.4, y + 39, x + 26.6, y + 39, x + 27, y + 40, x + 3, y + 40]); }
     luz(g, x, y, function(){ g.moveTo(x + 6, y + 32); g.lineTo(x + 24, y + 32); g.lineTo(x + 27, y + 40); g.lineTo(x + 3, y + 40); g.closePath(); }, true);
+    // Luz nas cristas das pregas e cintura; todas as linhas ficam dentro do tecido.
+    g.save();g.lineCap='round';g.lineWidth=.48;g.strokeStyle='rgba(255,255,255,.20)';
+    [10.2,14,17.8,21.6].forEach(function(px){var d=(px-15)*.12;g.beginPath();g.moveTo(x+px,y+34.1);g.quadraticCurveTo(x+px+d*.35,y+36.5,x+px+d,y+38.7);g.stroke();});
+    g.strokeStyle='rgba(40,10,70,.18)';g.beginPath();g.moveTo(x+6.3,y+33.1);g.lineTo(x+23.7,y+33.1);g.stroke();g.restore();
     return true;
   }
 
@@ -180,6 +188,11 @@
     if(b === 'longo'){ g.quadraticCurveTo(x + 34, y + 34, x + 27, y + 41); g.quadraticCurveTo(x + 21, y + 43, x + 16, y + 40); g.quadraticCurveTo(x + 9, y + 43, x + 3, y + 41); g.quadraticCurveTo(x - 4, y + 34, x + 3, y + 8); }
     else { g.quadraticCurveTo(x + 30.5, y + 21, x + 26.5, y + 25); g.quadraticCurveTo(x + 15, y + 27, x + 3.5, y + 25); g.quadraticCurveTo(x - .5, y + 21, x + 3, y + 8); }   // chanel: corte reto logo abaixo do queixo (antes descia até o meio do tronco e parecia cabelo comprido)
     g.fill();
+    // Mechas nas costas seguem a curvatura do corte, recortadas na silhueta.
+    g.save();g.clip();g.lineCap='round';g.lineWidth=.65;g.strokeStyle='rgba(255,255,255,.15)';
+    var fim=b==='longo'?39:24;
+    g.beginPath();g.moveTo(x+6,y+5);g.quadraticCurveTo(x+1.8,y+17,x+5.8,y+fim);g.stroke();
+    g.strokeStyle='rgba(40,10,70,.15)';g.beginPath();g.moveTo(x+24,y+7);g.quadraticCurveTo(x+29,y+18,x+24.2,y+fim);g.stroke();g.restore();
   }
   // Sombra de 1px da franja, só na pele: fora do topo e das costeletas (que têm o mesmo degradê).
   // Abre um save() próprio e devolve true: o drawChar desenha a franja uma vez aqui (só para gerar a sombra),

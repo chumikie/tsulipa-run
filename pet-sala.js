@@ -58,6 +58,14 @@ function petLifeSofa(x, frente, visual){
     x.fillStyle='#c68bd0';x.beginPath();x.roundRect(40,147,110,46,13);x.fill();
     x.fillStyle='#f4c9e8';x.beginPath();x.roundRect(46,151,98,30,11);x.fill();
     x.fillStyle='#e6b5e4';x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
+    // Encosto capitonê: costuras e botões permanecem atrás dos ombros.
+    for(var botao = 59; botao <= 131; botao += 24){
+      x.strokeStyle = '#dfaad5'; x.lineWidth = 1;
+      x.beginPath(); x.moveTo(botao-8,153); x.lineTo(botao,159);
+      x.lineTo(botao+8,153); x.stroke();
+      x.fillStyle = '#cb92c4'; x.beginPath(); x.ellipse(botao,159,2,1.7,0,0,7); x.fill();
+      x.fillStyle = '#fff1f8'; x.fillRect(botao-1,157.8,1.6,1);
+    }
     var apoio=petLifeSofaApoio(visual);
     if(apoio){
       // Sombra e dobra curtas na almofada, atrás do avatar, sem alterar o quadril.
@@ -68,7 +76,8 @@ function petLifeSofa(x, frente, visual){
       x.quadraticCurveTo(apoio.x,174+apoio.afunda,apoio.x+25,170+apoio.afunda);x.stroke();
       x.restore();
     }
-    x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=2;x.strokeRect(60,163,70,14);
+    x.strokeStyle='#ffe6f5'; x.lineWidth=1.4;
+    x.beginPath(); x.roundRect(52,162,86,18,7); x.stroke();
   }else if(!visual || visual.sit <= .001){
     // Em pé: a frente do sofá é desenhada ANTES do Idol, que fica de pé no chão, à frente.
     x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,181,97,13,6);x.fill();
@@ -84,18 +93,20 @@ function petLifeSofa(x, frente, visual){
     x.fillStyle='rgba(60,25,90,.13)';x.beginPath();x.ellipse(q.x+1,198,20,2.5,0,0,7);x.fill();
     x.save();x.globalAlpha *= visual ? visual.sit : 1;
     [-8.4, 10.8].forEach(function(o){
-      var px = q.x + o;
+      // A inclinação interpolada também guia os joelhos durante a troca de pose.
+      var px = q.x + o + (o < 0 ? 18 : -4) * visual.rot;
       // Mesmo desenho das pernas do avatar (drawChar): retângulos 5×8 escuros, sem pé
       // separado. Só a altura encurta, porque a coxa vem para frente.
       var bal = petLifeMovimentoReduzido() ? 0 : Math.sin(petT * .05 + (o > 0 ? 1.6 : 0)) * (petLifePose === 'sentar' ? 1.2 : 0);
       x.fillStyle=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || '')) ? CH[sel].legcol : '#1c1c30';
-      var base=PET_FLOOR+bal,altura=Math.max(8,base-(q.y+6));
+      var recolhimento = Math.max(0, -visual.rot) * (o < 0 ? 42 : 17);
+      var altura = Math.max(8, PET_FLOOR + bal - recolhimento - (q.y+6));
       // A canela termina no plano do piso, inclusive na pose inclinada.
-      x.beginPath();x.roundRect(px-6,q.y+6,12,altura,[1,1,2.5,2.5]);x.fill();
+      x.fillRect(px-6,q.y+6,12,altura);
       x.fillStyle='rgba(255,255,255,.12)';x.fillRect(px-4.5,q.y+8,2,Math.max(0,altura-5));
       petLifeCanelaRoupa(x, px, q.y+6+altura); // preserva as polainas do figurino
       if(!roupa){ x.fillStyle=petLifeCorColo;
-        x.beginPath();x.roundRect(px-7,q.y-3,14,10,[2,2,3,3]);x.fill();
+        x.fillRect(px-7,q.y-3,14,10);
         x.fillStyle='rgba(40,10,70,.13)';x.fillRect(px-5,q.y+5,10,1.5);
       }
     });
@@ -110,8 +121,24 @@ function petLifeSofa(x, frente, visual){
     }
     if(petLifePose === 'descansar'){   // mantinha no colo na cor do Oshi
       var ac = { tsu:'#c58cf0', lirika:'#8fdca7', pati:'#9dbcf5' }[OSHI] || '#ffb3d6';
-      x.fillStyle=ac;x.beginPath();x.roundRect(q.x-22,q.y-2,46,20,[5,5,9,9]);x.fill();
-      x.fillStyle='rgba(255,255,255,.45)';for(var m=q.x-18;m<q.x+22;m+=9)x.fillRect(m,q.y-2,4,20);
+      // A manta acompanha os dois joelhos e cai mais pela borda livre.
+      x.save(); x.beginPath(); x.moveTo(q.x-22,q.y);
+      x.quadraticCurveTo(q.x-10,q.y-5,q.x+2,q.y-1);
+      x.quadraticCurveTo(q.x+15,q.y-3,q.x+22,q.y+2);
+      x.lineTo(q.x+25,q.y+20); x.quadraticCurveTo(q.x+16,q.y+24,q.x+5,q.y+17);
+      x.quadraticCurveTo(q.x-8,q.y+13,q.x-22,q.y+16); x.closePath();
+      x.fillStyle=ac; x.fill(); x.clip();
+      x.strokeStyle='rgba(255,255,255,.48)'; x.lineWidth=2;
+      for(var m=-17; m<24; m+=9){
+        x.beginPath(); x.moveTo(q.x+m,q.y-4);
+        x.lineTo(q.x+m+4,q.y+22); x.stroke();
+      }
+      x.strokeStyle='rgba(99,54,110,.19)'; x.lineWidth=1.5;
+      for(var faixa=5; faixa<=17; faixa+=6){
+        x.beginPath(); x.moveTo(q.x-23,q.y+faixa);
+        x.quadraticCurveTo(q.x+1,q.y+faixa-6,q.x+25,q.y+faixa+2); x.stroke();
+      }
+      x.restore();
       x.fillStyle='rgba(255,255,255,.7)';x.font='9px sans-serif';x.textAlign='center';x.fillText('♥',q.x+1,q.y+12);
     }
     x.restore();
@@ -446,7 +473,11 @@ function petMakeBg(){
   // Penteadeira + espelho de camarim (moldura e vidro; as lâmpadas piscam no loop)
   x.fillStyle = '#f7d9ea'; RR(18, 140, 132, 30, 6); x.fill();
   x.fillStyle = '#e9b8d3'; x.fillRect(18, 152, 132, 3);
-  x.fillStyle = '#ffe9a8'; RR(30, 40, 108, 96, 10); x.fill();
+  x.fillStyle = 'rgba(104,64,111,.18)'; RR(31,43,109,96,11); x.fill();
+  var moldura = x.createLinearGradient(30,40,137,133);
+  moldura.addColorStop(0,'#fff5ca'); moldura.addColorStop(.55,'#f6d19a'); moldura.addColorStop(1,'#db9fb5');
+  x.fillStyle = moldura; RR(30,40,108,96,10); x.fill();
+  x.strokeStyle = '#fff1cf'; x.lineWidth = 1.4; RR(33,43,102,90,8); x.stroke();
   var mg = x.createLinearGradient(40, 50, 128, 126); mg.addColorStop(0, '#dff3ff'); mg.addColorStop(.55, '#bfe3ff'); mg.addColorStop(1, '#e9dcff');
   x.fillStyle = mg; RR(40, 50, 88, 76, 6); x.fill();
   x.fillStyle = 'rgba(255,255,255,.6)'; x.beginPath(); x.moveTo(52, 56); x.lineTo(66, 56); x.lineTo(48, 92); x.lineTo(46, 80); x.closePath(); x.fill();
@@ -459,6 +490,13 @@ function petMakeBg(){
   x.fillStyle = fg; x.fillRect(0, 170, 360, 50);
   x.strokeStyle = 'rgba(255,255,255,.35)'; x.lineWidth = 1;
   for(var py = 182; py < 220; py += 12){ x.beginPath(); x.moveTo(0, py); x.lineTo(360, py); x.stroke(); }
+  // Juntas alternadas nas tábuas; entram no fundo em cache junto com o rodapé.
+  x.fillStyle = 'rgba(139,76,112,.17)';
+  for(var fileira=0; fileira<5; fileira++){
+    for(var junta=18+(fileira%2)*53; junta<360; junta+=106)
+      x.fillRect(junta,171+fileira*12,.9,11);
+  }
+  x.fillStyle = '#edc4db'; x.fillRect(0,166,360,4);
   x.fillStyle = 'rgba(123,63,240,.18)'; x.fillRect(0, 170, 360, 2);
   // Meu Camarim⭐Life! ML1: objetos estáticos no mesmo fundo em cache.
   // Celular na mesinha lateral, sem cobrir o personagem nem os controles do pet.

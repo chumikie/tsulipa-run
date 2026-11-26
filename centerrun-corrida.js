@@ -1977,10 +1977,16 @@ function s2ObsNovo(o){
   if(o.warn && o.x > P.x){
     var calmo=typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var pulse = calmo ? .85 : 0.55 + 0.45 * Math.sin(frame * 0.25);
-    g.fillStyle = 'rgba(239,68,68,' + pulse + ')';
-    g.font = '800 12px "M PLUS Rounded 1c",sans-serif';
-    g.textAlign = 'center';
-    g.fillText('◀', o.x - 10, o.y + o.h / 2 + 4);
+    // A silhueta permanece legível contra o palco claro ou escuro.
+    var avisoX = o.x - 11, avisoY = o.y + o.h / 2;
+    g.fillStyle = '#482342';
+    g.beginPath(); g.roundRect(avisoX-7,avisoY-7,14,14,4); g.fill();
+    g.strokeStyle = '#fff0ca'; g.lineWidth = 1; g.stroke();
+    g.fillStyle = '#ffe6a2'; g.beginPath();
+    g.moveTo(avisoX-4,avisoY); g.lineTo(avisoX+3,avisoY-4);
+    g.lineTo(avisoX+3,avisoY+4); g.closePath(); g.fill();
+    g.fillStyle = 'rgba(255,175,121,' + pulse + ')';
+    g.fillRect(avisoX+9,avisoY-3,2,6);
   }
 
   if(o.k === 'cable'){

@@ -65,6 +65,11 @@
     if(!tem(roupa)) return false;
     var k = BAIXO[roupa], tipo = qual(c, roupa), corBarra = (c && c.outcol) || '#ff8fc8';
     if(tipo === 'bermuda'){
+      // Bermuda com abertura central e cantos do tecido curvos.
+      g.save();g.beginPath();g.moveTo(x+6.5,y+32);g.lineTo(x+23.5,y+32);
+      g.quadraticCurveTo(x+24,y+36,x+23.2,y+39.7);g.quadraticCurveTo(x+20,y+40.3,x+15.6,y+39.7);
+      g.lineTo(x+15,y+36.7);g.lineTo(x+14.4,y+39.7);g.quadraticCurveTo(x+10,y+40.3,x+6.8,y+39.7);
+      g.quadraticCurveTo(x+6,y+36,x+6.5,y+32);g.closePath();g.clip();
       g.fillStyle = k.cor; g.fillRect(x + 6.5, y + 32, 17, 8);
       g.fillStyle = k.linha; g.fillRect(x + 14.6, y + 35, .8, 5);           // costura do meio
       if(k.barra){ g.fillStyle = corBarra; g.fillRect(x + 6.5, y + 39, 17, 1); }
@@ -72,9 +77,13 @@
       // Cintura e duas dobras curtas: volume sem mudar a silhueta nem o comprimento.
       g.save(); g.strokeStyle='rgba(255,255,255,.16)'; g.lineWidth=.45; g.lineCap='round';
       g.beginPath(); g.moveTo(x+7.4,y+33.4); g.lineTo(x+22.6,y+33.4); g.stroke();
-      [10,20].forEach(function(px){g.beginPath();g.moveTo(x+px,y+34.2);g.quadraticCurveTo(x+px+(px<15?-.55:.55),y+35.5,x+px,y+36.7);g.stroke();});g.restore();
+      [10,20].forEach(function(px){g.beginPath();g.moveTo(x+px,y+34.2);g.quadraticCurveTo(x+px+(px<15?-.55:.55),y+35.5,x+px,y+36.7);g.stroke();});g.restore();g.restore();
       return true;
     }
+    // Saia com caimento curvo na mesma largura histórica.
+    g.save();g.beginPath();g.moveTo(x+6,y+32);g.lineTo(x+24,y+32);
+    g.quadraticCurveTo(x+24.5,y+36,x+27,y+39.5);g.quadraticCurveTo(x+15,y+40.5,x+3,y+39.5);
+    g.quadraticCurveTo(x+5.5,y+36,x+6,y+32);g.closePath();g.clip();
     g.fillStyle = k.cor; T(g, [x + 6, y + 32, x + 24, y + 32, x + 27, y + 40, x + 3, y + 40]);
     g.fillStyle = k.linha;
     [9, 12.5, 16, 19.5].forEach(function(px){ var d = (px - 15) * .12;
@@ -86,7 +95,7 @@
     // Luz nas cristas das pregas e cintura; todas as linhas ficam dentro do tecido.
     g.save();g.lineCap='round';g.lineWidth=.48;g.strokeStyle='rgba(255,255,255,.20)';
     [10.2,14,17.8,21.6].forEach(function(px){var d=(px-15)*.12;g.beginPath();g.moveTo(x+px,y+34.1);g.quadraticCurveTo(x+px+d*.35,y+36.5,x+px+d,y+38.7);g.stroke();});
-    g.strokeStyle='rgba(40,10,70,.18)';g.beginPath();g.moveTo(x+6.3,y+33.1);g.lineTo(x+23.7,y+33.1);g.stroke();g.restore();
+    g.strokeStyle='rgba(40,10,70,.18)';g.beginPath();g.moveTo(x+6.3,y+33.1);g.lineTo(x+23.7,y+33.1);g.stroke();g.restore();g.restore();
     return true;
   }
 
@@ -168,9 +177,30 @@
     v.addColorStop(0, 'rgba(40,10,70,0)'); v.addColorStop(1, 'rgba(40,10,70,.14)');
     g.fillStyle = v; g.fillRect(X0 - 1, base, X1 - X0 + 2, Y1 - base);
   }
+  // Contorno comum, ombro largo e mão curva. Mantém a régua 30×44.
+  function formaBracos(g,x,y){
+    [1,-1].forEach(function(k){
+      var a=k===1?x:x+30;function X(v){return a+k*v;}
+      g.moveTo(X(1),y+24);g.quadraticCurveTo(X(1),y+26.8,X(1.6),y+29);
+      g.quadraticCurveTo(X(1),y+30.5,X(1.35),y+32);
+      g.quadraticCurveTo(X(3),y+34,X(4.65),y+32);
+      g.quadraticCurveTo(X(5),y+30.5,X(4.4),y+29);
+      g.quadraticCurveTo(X(5),y+26.8,X(5),y+24);g.closePath();
+    });
+  }
+  function bracosBase(g,x,y){g.beginPath();formaBracos(g,x,y);g.fill();}
+  function pernas(g,x,y,up){
+    [9,17].forEach(function(dx,i){
+      var X=x+dx,Y=y+36+((i===0?!up:up)?-2:0),B=y+44;
+      g.beginPath();g.moveTo(X,Y);g.lineTo(X+5,Y);
+      g.quadraticCurveTo(X+5,B-3,X+4.5,B-1);g.lineTo(X+4.5,B);
+      g.lineTo(X+.5,B);g.lineTo(X+.5,B-1);
+      g.quadraticCurveTo(X,B-3,X,Y);g.closePath();g.fill();
+    });
+  }
   function bracos(g, x, y){   // braços parados
-    g.save(); g.beginPath(); g.rect(x + 1, y + 24, 4, 9); g.rect(x + 25, y + 24, 4, 9); g.clip();
-    luzPele(g, x + 1, x + 29, y + 24, y + 33, true, y + 28); g.restore();
+    g.save();g.beginPath();formaBracos(g,x,y);g.clip();
+    [1,25].forEach(function(dx){g.save();g.beginPath();g.rect(x+dx,y+24,4,9);g.clip();luzPele(g,x+dx,x+dx+4,y+24,y+33,true,y+28);g.restore();});g.restore();
     // Volume do antebraço e pulso, dentro dos pontos de encaixe.
     g.save();g.fillStyle='rgba(255,255,255,.13)';
     [2.1,26.1].forEach(function(a){g.beginPath();g.moveTo(x+a,y+25.1);g.quadraticCurveTo(x+a-.4,y+28.5,x+a+.3,y+30);g.quadraticCurveTo(x+a+.65,y+28.1,x+a+.65,y+25.1);g.closePath();g.fill();});g.restore();
@@ -260,7 +290,7 @@
   }
 
   var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
-              bracos:bracos, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, gravata:gravata,
+              bracos:bracos, bracosBase:bracosBase, pernas:pernas, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, gravata:gravata,
               cr:cr, crLook:crLook, CR_COR:CR_COR };
   root.TWAvatarRoupa = api;
   if(typeof module !== 'undefined' && module.exports) module.exports = api;

@@ -421,7 +421,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   else if(b==='cacheado'){[[15,3,8],[4,8,8],[26,8,8],[1.5,16,7.5],[28.5,16,7.5],[3.5,23,5.8],[26.5,23,5.8]].forEach(function(p){E(x+p[0],y+p[1]+6,p[2],p[2])})}   // cachos menores embaixo: não viram capa sobre os braços
   if(OF===3){g.fillStyle='#b01e3a';T([x+5,y+22,x-8+sw,y+42,x+9,y+40])}
   if(OF===5){g.fillStyle='rgba(255,252,235,.95)';E(x-4,y+27,5,13,-.5+sw*.04);E(x+34,y+27,5,13,.5-sw*.04);g.fillStyle='rgba(255,226,140,.8)';E(x-2,y+30,3,9,-.5+sw*.04);E(x+32,y+30,3,9,.5-sw*.04)}
-  g.fillStyle=(typeof c.legcol==='string'&&/^#[0-9a-f]{6}$/i.test(c.legcol))?c.legcol:'#1c1c30';g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto)TWAvatarRosto.pes(g,c,x,y);
+  g.fillStyle=(typeof c.legcol==='string'&&/^#[0-9a-f]{6}$/i.test(c.legcol))?c.legcol:'#1c1c30';if(typeof TWAvatarRoupa!=='undefined'&&TWAvatarRoupa.pernas){TWAvatarRoupa.pernas(g,x,y,up);}else{g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));}if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto)TWAvatarRosto.pes(g,c,x,y);
   var TWR=typeof TWAvatarRoupa!=='undefined'?TWAvatarRoupa:null,twRoupa=(OF>0||ALV)?'-':(c.out||'');   // folha E: saia ou bermuda, ombro e luz contínua
   if(!(TWR&&TWR.baixo(g,c,x,y,twRoupa))){g.fillStyle=OUT[1];g.fillRect(x+7,y+32,16,6);}
   
@@ -532,7 +532,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   // Efeitos de Fever/Ímã e Pele
   if(PX&&(PX.k==='fever'||PX.k==='ima')){g.fillStyle=PX.k==='fever'?'#ffe14d':'#fff';g.fillRect(x+9,y+27,3,3);g.fillRect(x+10,y+26,1,5);g.fillRect(x+8,y+28,5,1)}
   g.fillStyle=c.skin;
-  if(!charPose){ g.fillRect(x+1,y+24,4,7);g.fillRect(x+25,y+24,4,7);E(x+3,y+31,2,2);E(x+27,y+31,2,2); }   // com pose, os braços vêm depois das roupas (V2.1.2)
+  if(!charPose&&TWR&&TWR.bracosBase){TWR.bracosBase(g,x,y);}else if(!charPose){ g.fillRect(x+1,y+24,4,7);g.fillRect(x+25,y+24,4,7);E(x+3,y+31,2,2);E(x+27,y+31,2,2); }   // com pose, os braços vêm depois das roupas (V2.1.2)
   if(!charPose&&TWR){TWR.bracos(g,x,y);g.fillStyle=c.skin;}   // V3.1: luz contínua na pele
 
   // Mangas bufantes por cima dos braços

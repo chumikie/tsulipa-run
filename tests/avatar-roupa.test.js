@@ -91,3 +91,11 @@ for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
   for(const k of ['TWR.bracos(g,x,y)','TWR.rosto(g,x,y)','TWAvatarRoupa.cabelo(g,H,HD,y,b,0)','TWAvatarRoupa.costas(g,x,y,b)','TWR.sombraFranja(','TWR.bagunca(g,x,y)','TWR.gravata(g,x,y)'])assert(s.includes(k),f+' usa '+k);
 }
 
+
+// Remaster: contornos compartilhados, mantendo a grade original.
+for(const nome of ['centerrun.js','karaoke-time.html','sora-jump.html']){
+ const src=ler(nome);assert(src.includes('TWAvatarRoupa.pernas(g,x,y,up)'));assert(src.includes('TWR.bracosBase(g,x,y)'));
+}
+{const pts=[];const gg=Object.assign(fake(),{moveTo:(...a)=>pts.push(a),lineTo:(...a)=>pts.push(a),quadraticCurveTo:(...a)=>pts.push(a)});
+ for(const up of [true,false]){pts.length=0;R.pernas(gg,0,0,up);assert(pts.length>=8);assert(pts.every(a=>a.every(Number.isFinite)));assert(pts.every(a=>a.filter((_,i)=>i%2).every(y=>y>=34&&y<=44)));}
+ pts.length=0;R.bracosBase(gg,0,0);assert(pts.length>=8);assert(pts.every(a=>a.every(Number.isFinite)));}

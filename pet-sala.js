@@ -97,6 +97,7 @@ function petLifeSofa(x, frente, visual){
     [-8.4, 10.8].forEach(function(o){
       // A inclinação interpolada também guia os joelhos durante a troca de pose.
       var px = q.x + o + (o < 0 ? 18 : -4) * visual.rot;
+      px += Math.min(0,visual.rot)*5*(o<0?1:-1);
       // Mesmo desenho das pernas do avatar (drawChar): retângulos 5×8 escuros, sem pé
       // separado. Só a altura encurta, porque a coxa vem para frente.
       var bal = petLifeMovimentoReduzido() ? 0 : Math.sin(petT * .05 + (o > 0 ? 1.6 : 0)) * (petLifePose === 'sentar' ? 1.2 : 0);
@@ -114,12 +115,20 @@ function petLifeSofa(x, frente, visual){
       x.fillStyle='rgba(255,255,255,.12)';x.beginPath();x.ellipse(px-1.4,q.y+8.2,3.5,1.35,0,0,7);x.fill();
       x.fillStyle='rgba(40,10,70,.12)';x.beginPath();x.ellipse(px,q.y+6+altura-1.5,4.8,.9,0,0,7);x.fill();
       petLifeCanelaRoupa(x, px, q.y+6+altura); // preserva as polainas do figurino
+      // Sapatos na ponta das canelas, paleta igual à do avatar em pé.
+      var hex=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || ''))?CH[sel].legcol:'#1c1c30';
+      var rgb=parseInt(hex.slice(1),16), claro=((rgb>>16&255)*.299+(rgb>>8&255)*.587+(rgb&255)*.114)/255<.5;
+      var fimPe=q.y+6+altura, esqPe=px-6.7;
+      x.fillStyle=claro?'#f6f1ff':'#3a2a4a';x.beginPath();x.roundRect(esqPe,fimPe-5.5,13.4,5.5,[2.2,2.2,1.1,1.1]);x.fill();
+      x.fillStyle=claro?'#bfb1e3':'#1f1528';x.fillRect(esqPe+.8,fimPe-1.1,11.8,1.1);
+      x.fillStyle=claro?'#ff8fc8':'rgba(255,255,255,.35)';x.fillRect(px-3,fimPe-4,6,.8);
       if(!roupa){ x.fillStyle=petLifeCorColo;
+        var coxaEsq=px-7;x.save();x.beginPath();x.roundRect(coxaEsq,q.y-3,14,10,[2,2,3,3]);x.clip();
         x.fillRect(px-7,q.y-3,14,10);
         var coxa=x.createLinearGradient(0,q.y-3,0,q.y+7);coxa.addColorStop(0,'rgba(40,10,70,.12)');
         coxa.addColorStop(.48,'rgba(255,255,255,.13)');coxa.addColorStop(1,'rgba(40,10,70,.18)');
         x.fillStyle=coxa;x.fillRect(px-6.8,q.y-3,13.6,10);
-        x.fillStyle='rgba(40,10,70,.13)';x.fillRect(px-5,q.y+5,10,1.5);
+        x.fillStyle='rgba(40,10,70,.13)';x.fillRect(px-5,q.y+5,10,1.5);x.restore();
       }
     });
     if(roupa){ // mesma silhueta trapezoidal do figurino; tecido repousa sobre as coxas
@@ -1917,7 +1926,8 @@ function petDrawRoom(){
     g = x; g.save();
     var quadril = pose ? petLifeQuadril(pose) : null;
     if(petLifePose === 'descansar'){   // almofadinha onde a cabeça encosta
-      g.fillStyle = '#ffd3ea'; g.beginPath(); g.roundRect(42, 128, 26, 20, 8); g.fill();
+      var almofada=g.createLinearGradient(42,128,68,148);almofada.addColorStop(0,'#fff0f8');almofada.addColorStop(1,'#e1a4d0');
+      g.fillStyle = almofada; g.beginPath(); g.roundRect(42, 128, 26, 20, 8); g.fill();
       g.fillStyle = '#ffffff'; g.globalAlpha = .55; g.beginPath(); g.roundRect(46, 131, 10, 5, 3); g.fill(); g.globalAlpha = 1;
     }
     if(pose){ // o recorte acompanha o sentar; saias mantêm a barra em vez de virar bermuda

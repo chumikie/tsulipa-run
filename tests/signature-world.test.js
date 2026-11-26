@@ -31,7 +31,7 @@ test('Signature World: shared geometry and separate photo prop/hand mirror',()=>
   for(const p of ['centerrun.js','karaoke-time.html','sora-jump.html'])assert.ok(read(p).includes('TWAvatarRoupa.pernas(g,x,y,up,c)'));
   const s=read('studio.js');assert.match(s,/x.restore\(\); \/\/ o arranjo permanece na ordem escolhida/);
   assert.match(s,/if\(espelhoMao\)x.scale\(-1,1\);\n    \/\/ Dedos/);
-  assert.match(read('.github/workflows/validate-games.yml'),/ref: 5dd9a1e6ffa776a35fbb778bd5a410695b4b7655/);
+  assert.match(read('.github/workflows/validate-games.yml'),/ref: 538973afc73c99ae9a98c9011220f2965f3e7003/);
 });
 
 test('Signature 5.10: official identity survives local normalization and clone, never serialized names',()=>{
@@ -71,7 +71,15 @@ test('Signature 5.11–12: side silhouette follows front choice and uses shared 
     }
     assert.notEqual(shapes[0],shapes[1],out+' respects bottom choice in profile');
   }
-  for(const p of ['pet.js','karaoke-time.html'])assert.match(read(p),/quadraticCurveTo\(x\+31.8,y\+24.8,x\+34,y\+15.5\)/);
+  for(const p of ['pet.js','karaoke-time.html']) assert.ok(read(p).includes("TWAvatarRoupa.membro(g,c,x,y,charPose,'R')"));
+  for(const pose of ['v','tchau','coracao','banzai','mic','luz']){
+    const limbs=['Tsu','Lirika','Pati','Idol'].map(n=>R.articulacao({n},pose,'R'));
+    assert.equal(new Set(limbs.map(a=>a[2])).size,4);
+    for(const [sx,sy,ex,ey,wx,wy] of limbs){
+      assert.deepEqual([sx,sy,wx,wy],R.BRACOS[pose].R);
+      assert.ok(Math.abs((ex-sx)*(wy-sy)-(ey-sy)*(wx-sx))>1,'cotovelo fora da reta ombro–punho');
+    }
+  }
 });
 test('Signature 5.13: all four architectural SVGs are derived from generator, with one static group each',()=>{
   const py=read('tools/mapa/rua.py'),map=read('tw-mapa.js');

@@ -168,18 +168,20 @@ function petLifeSofa(x, frente, visual){
     });
     if(roupa){ // mesma silhueta trapezoidal do figurino; tecido repousa sobre as coxas
       var largura = roupa === 'sweet' ? 31 : roupa === 'zipper' ? 27 : 23;
+      // Tecido sobra sobre a coxa que recebe o peso. A cintura continua no quadril.
+      var deslocamento = visual.rot * 20;
       x.fillStyle=petLifeCorSaia;
       x.beginPath();x.moveTo(q.x-17,q.y-3);x.lineTo(q.x+17,q.y-3);
-      x.quadraticCurveTo(q.x+largura-4,q.y+5,q.x+largura,q.y+11);
+      x.quadraticCurveTo(q.x+largura-4,q.y+5,q.x+largura+deslocamento,q.y+11-deslocamento*.45);
       // A barra acompanha cada coxa, em vez de uma única linha horizontal.
-      x.quadraticCurveTo(q.x+largura*.52,q.y+13.6,q.x+4,q.y+11.7);
-      x.quadraticCurveTo(q.x-largura*.42,q.y+14,q.x-largura,q.y+11);
+      x.quadraticCurveTo(q.x+largura*.52,q.y+13.6,q.x+4+deslocamento,q.y+10.5);
+      x.quadraticCurveTo(q.x-largura*.42,q.y+14,q.x-largura+deslocamento,q.y+11+deslocamento*.45);
       x.quadraticCurveTo(q.x-largura+4,q.y+5,q.x-17,q.y-3);x.closePath();x.fill();
       x.save();x.clip();var caimento=x.createLinearGradient(0,q.y-3,0,q.y+13);
       caimento.addColorStop(0,'rgba(40,10,70,.12)');caimento.addColorStop(.42,'rgba(255,255,255,.12)');caimento.addColorStop(1,'rgba(40,10,70,.17)');
       x.fillStyle=caimento;x.fillRect(q.x-largura,q.y-3,largura*2,16);
       x.strokeStyle='rgba(255,255,255,.19)';x.lineWidth=1;
-      [-10,-3,5,12].forEach(function(d){var dx=d*largura/23;
+      [-10,-3,5,12].forEach(function(d){var dx=d*largura/23+deslocamento;
         x.fillStyle='rgba(65,35,90,.10)';x.beginPath();x.moveTo(q.x+d*.65,q.y-2);
         x.quadraticCurveTo(q.x+dx*.85,q.y+4,q.x+dx,q.y+12);
         x.lineTo(q.x+dx+1.6,q.y+12);x.quadraticCurveTo(q.x+dx*.85+1,q.y+4,q.x+d*.65,q.y-2);
@@ -2021,7 +2023,11 @@ function petDrawRoom(){
       g.translate(36,81.6); g.rotate((atitude+respira)*pose.sit); g.translate(-36,-81.6);
     }
     g.scale(2.4, 2.4);
-    drawChar(CH[sel], 0, 0, 0, expr);
+    var poseAnterior = charPose;
+    try{
+      if(pose) charPose = pose;
+      drawChar(CH[sel], 0, 0, 0, expr);
+    }finally{ charPose = poseAnterior; }
     g.restore();
     if(pose) petLifeLerCorColo(x, quadril);
   } finally { g = og; }

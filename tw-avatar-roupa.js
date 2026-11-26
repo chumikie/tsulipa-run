@@ -20,9 +20,9 @@
   // Assinaturas dos personagens oficiais, nunca gravadas no avatar ou atribuídas por gênero.
   // Os pés, punhos e ombros conservam as âncoras usadas nas poses e nas colisões.
   var PERFIS=Object.freeze({
-    Tsu:Object.freeze({cintura:7.1,ombro:4.1,perna:0.25,joelho:.7,assim:.45}),
-    Lirika:Object.freeze({cintura:8.2,ombro:4.8,perna:-.25,joelho:.4,assim:0}),
-    Pati:Object.freeze({cintura:6.4,ombro:3.9,perna:.45,joelho:.25,assim:-.25})
+    Tsu:Object.freeze({cintura:6.7,ombro:3.6,perna:0.25,joelho:.7,assim:.45}),
+    Lirika:Object.freeze({cintura:8.6,ombro:5.3,perna:-.25,joelho:.4,assim:0}),
+    Pati:Object.freeze({cintura:6.1,ombro:4.4,perna:.45,joelho:.25,assim:-.25})
   });
   var NEUTRO=Object.freeze({cintura:7.2,ombro:4.2,perna:0,joelho:0,assim:0});
   function assinatura(c){
@@ -86,13 +86,17 @@
     var k = BAIXO[roupa], tipo = qual(c, roupa), corBarra = (c && c.outcol) || '#ff8fc8';
     if(tipo === 'bermuda'){
       // Bermuda com abertura central e cantos do tecido curvos.
-      g.save();g.beginPath();g.moveTo(x+6.5,y+32);g.lineTo(x+23.5,y+32);
-      g.quadraticCurveTo(x+24,y+36,x+23.2,y+39.7);g.quadraticCurveTo(x+20,y+40.3,x+15.6,y+39.7);
-      g.quadraticCurveTo(x+15.4,y+37.8,x+15,y+36.4);g.quadraticCurveTo(x+14.6,y+37.9,x+14.4,y+39.7);g.quadraticCurveTo(x+10,y+40.3,x+6.8,y+39.7);
-      g.quadraticCurveTo(x+6,y+36,x+6.5,y+32);g.closePath();g.clip();
-      g.fillStyle = k.cor; g.fillRect(x + 6.5, y + 32, 17, 8);
+      var cintura = assinatura(c).cintura;
+      g.save(); g.beginPath(); g.moveTo(x+cintura,y+32);
+      g.quadraticCurveTo(x+15,y+33,x+30-cintura,y+32);
+      g.quadraticCurveTo(x+25,y+34.5,x+24.5,y+39.1);
+      g.quadraticCurveTo(x+21,y+40.6,x+16,y+39.9);
+      g.lineTo(x+15,y+36.7); g.lineTo(x+14,y+39.9);
+      g.quadraticCurveTo(x+9,y+40.6,x+5.5,y+39.1);
+      g.quadraticCurveTo(x+5,y+34.5,x+cintura,y+32); g.closePath();
+      g.clip(); g.fillStyle = k.cor; g.fillRect(x+5,y+32,20,9);
       g.fillStyle = k.linha; g.fillRect(x + 14.6, y + 35, .8, 5);           // costura do meio
-      if(k.barra){ g.fillStyle = corBarra; g.fillRect(x + 6.5, y + 39, 17, 1); }
+      if(k.barra){ g.fillStyle = corBarra; g.fillRect(x + 5, y + 39, 20, 1); }
       luz(g, x, y, function(){ g.rect(x + 6.5, y + 32, 17, 8); }, true);
       // Cintura e duas dobras curtas: volume sem mudar a silhueta nem o comprimento.
       g.save(); g.strokeStyle='rgba(255,255,255,.16)'; g.lineWidth=.45; g.lineCap='round';
@@ -123,13 +127,53 @@
   var BRACOS = {
     v:{ R:[27, 25.5, 34, 15.5] }, tchau:{ R:[27, 25.5, 34, 15.5] }, luz:{ R:[27, 25.5, 33, 16.5] },
     banzai:{ L:[3, 25.5, -3.5, 13.5], R:[27, 25.5, 33.5, 13.5] },
-    coracao:{}, mic:{}, nyan:{}   // braços dobrados para dentro: a manga fica no ombro e o braço passa por cima
+    coracao:{L:[3,25.5,10.3,28.5],R:[27,25.5,20,28.5]}, mic:{R:[27,25.5,22.5,23.2]}, nyan:{}   // braços dobrados para dentro: a manga fica no ombro e o braço passa por cima
   };
+  // Régua frontal 30 × 44. Os punhos das fotos continuam sob os dedos e os objetos.
+  // Cada segmento tem uma largura própria. O eixo da manga termina no cotovelo.
+  function articulacao(c, pose, lado){
+    var dir = lado === 'L' ? -1 : 1, ombro = 15 + dir * 12;
+    var estilo = assinatura(c), abertura = estilo.assim * 2.6 + estilo.perna;
+    var ex, ey, wx, wy;
+    if(typeof pose === 'object' && pose && Number.isFinite(pose.sit)){
+      var senta = pose.sit, repouso = Math.max(0, -pose.rot / .17);
+      var visita = Math.max(0, pose.rot / .13);
+      ex = ombro + dir * (1 + abertura + visita * 1.6) * senta;
+      ey = 29 + senta * (2.6 - repouso);
+      wx = ombro - dir * (5.3 - abertura) * senta;
+      wy = 32 + 1.4 * senta;
+      if(lado === 'L'){ wx -= 4 * repouso; wy -= 11 * repouso; }
+      else { wx += 12 * visita; wy -= 5 * visita; }
+    }else{
+      var alvo = BRACOS[pose] && BRACOS[pose][lado];
+      if(!alvo) return null;
+      wx = alvo[2]; wy = alvo[3];
+      var sobe = wy < 20;
+      ex = ombro + dir * (sobe ? 4.6 : 1.5) + dir * abertura;
+      ey = sobe ? (pose === 'banzai' ? 19.5 : 22.4) : 31.4;
+    }
+    return [ombro, 25.5, ex, ey, wx, wy];
+  }
+  function membro(g, c, x, y, pose, lado){
+    var a = articulacao(c, pose, lado);
+    if(!a) return;
+    g.save(); g.lineCap = 'round'; g.strokeStyle = c.skin;
+    for(var i = 0; i <= 2; i += 2){
+      g.lineWidth = i === 0 ? 4.15 : 3.35;
+      g.beginPath(); g.moveTo(x+a[i], y+a[i+1]);
+      g.lineTo(x+a[i+2], y+a[i+3]); g.stroke();
+    }
+    if(typeof pose === 'object' || pose === 'coracao'){
+      g.fillStyle = c.skin; g.beginPath();
+      g.ellipse(x+a[4], y+a[5], 2.25, 1.6, Math.atan2(a[5]-a[3],a[4]-a[2]), 0, 2*Math.PI); g.fill();
+    }
+    g.restore();
+  }
   // Ombro ligado à roupa. Braço parado: manguinha no ombro. Braço em pose: a manga gira junto com o braço,
   // saindo do ombro na direção da mão, e o braço continua de dentro dela.
   function ombro(g, c, x, y, roupa, pose){
     if(!tem(roupa)) return;
-    var cor = (c && c.outcol) || '#ffffff', mov = !pose ? {} : (BRACOS[pose] || BRACOS.v),
+    var cor = (c && c.outcol) || '#ffffff', mov = {L:articulacao(c,pose,'L'), R:articulacao(c,pose,'R')},
         blazer = roupa === 'y2k' || roupa === 'citypop';   // nesses dois looks, a manga substitui o painel lateral antigo
     var formas = [];
     // A costura acompanha o braço (x=3/27); o blazer recua meio pixel para manter o tecido unido.
@@ -347,11 +391,11 @@
     return true;
   }
   function bagunca(g, x, y){   // franja da Tsu: três mechas curvas
-    g.beginPath();g.moveTo(x+3,y+8);g.quadraticCurveTo(x+2.7,y+12.7,x+5,y+16.2);
-    g.quadraticCurveTo(x+6.5,y+18.4,x+8.2,y+19.5);
+    g.beginPath();g.moveTo(x+3,y+8);g.quadraticCurveTo(x+1.1,y+12.2,x+4.1,y+16.1);
+    g.quadraticCurveTo(x+6.9,y+17.7,x+7.1,y+19.5);
     g.quadraticCurveTo(x+7.7,y+15.3,x+12,y+10.8);
-    g.quadraticCurveTo(x+12.1,y+14.7,x+16.3,y+18.2);
-    g.quadraticCurveTo(x+17.1,y+14,x+20.1,y+10.1);
+    g.quadraticCurveTo(x+11.6,y+14.8,x+13.2,y+18.6);
+    g.quadraticCurveTo(x+18.4,y+15,x+20.1,y+10.1);
     g.quadraticCurveTo(x+21.1,y+13.9,x+24.2,y+16.6);
     g.quadraticCurveTo(x+24.6,y+13,x+27,y+10.2);
     g.lineTo(x+27,y+8);g.quadraticCurveTo(x+15,y+4.8,x+3,y+8);g.closePath();g.fill();
@@ -405,7 +449,7 @@
     return true;
   }
 
-  var api = { assinatura:assinatura, tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
+  var api = { assinatura:assinatura, articulacao:articulacao, membro:membro, tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
               bracos:bracos, bracosBase:bracosBase, pernas:pernas, camisa:camisa, pescoco:pescoco, coques:coques, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, reta:reta, gravata:gravata,
               cr:cr, crLook:crLook, CR_COR:CR_COR };
   root.TWAvatarRoupa = api;

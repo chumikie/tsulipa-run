@@ -93,3 +93,15 @@ Testes de identidade local/normalização, escolha dos figurinos, traçado later
 ### Revisão corretiva 5.15
 
 Base 5dd9a1e: CI 45885973874, 8/9 jobs e 130/132 verificações; comparação 15150570568 contém 86 PNGs por revisão e manifesto main/anterior/PR com saída 0. Revisão das capturas confirma a continuidade das fachadas e das telas; o sofá e a saia sentada ainda parecem planos. Corrigido o carregamento declarativo do Perfil por inicialização preguiçosa do WeakMap, sem modificar o teste index-modules; versão do celular no teste de cache atualizada para 80, preservando as demais verificações. Encosto em duas peças e braços do sofá redesenhados com superfícies próprias e mesma oclusão; barra e pregas da saia sentada acompanham os joelhos; tronco lateral recebe a assinatura corporal frontal sem deslocar manga/gola. Novos comparativos usam 5dd9a1e como anterior. A aprovação visual da nova geometria e o iPhone físico continuam pendentes. Nenhum dado persistido ou regra alterados.
+
+## Living Canvas 6.0 · pilotos do Camarim e Photo Studio
+
+Base da rodada: 538973a, CI 45888241919 aprovado. O manifesto de 15150538137 identifica main, 5dd9a1e e 538973a. A amostra das posturas e das fotos mostrou braços pendentes no sofá e pouco espaço entre o antebraço e a manga no coração.
+
+| Etapa | Implementado | Como conferir |
+| --- | --- | --- |
+| 6.1 | [Prancha de construção do trio](living-canvas-modelos.svg) em quatro vistas, com articulações, nuca e volumes do cabelo. Ombros e cinturas individuais na camisa compartilhada, correção do contorno da franja bagunçada. | Comparar o trio sem cor. Três quartos e costas são vistas de estudo. O piloto usa os renderizadores frontal e lateral existentes. |
+| 6.2 | Um traçado por segmentos liga ombro, cotovelo e punho. No sofá, a mão esquerda sobe no descanso e a direita se estende em direção ao Pet no convívio. A interpolação usa a posição visual corrente, inclusive ao levantar. Nas seis poses fotográficas, o punho mantém a âncora anterior. | Comparar o cotovelo no coração, as mãos em repouso e em convívio e a continuidade das transições em movimento reduzido. |
+| 6.3 | Eixo de manga e punho do tecido seguem o braço superior. A bermuda ganha aberturas separadas e largura de quadril própria. A barra e as pregas da saia sentada acompanham o lado de apoio. | Conferir os três enquadramentos e os figurinos em pé, de perfil e no sofá. Roupas especiais ainda usam cortes próprios. |
+
+A suíte local executa os testes de geometria, âncoras e integração. O CI produz o novo comparativo com 538973a como revisão anterior. A aprovação artística e a verificação física no iPhone permanecem abertas. Cidade, interiores, composição fotográfica e interface (6.4–6.7) continuam no planejamento.

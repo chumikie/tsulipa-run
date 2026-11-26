@@ -501,7 +501,7 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera, comFlor){
     var aceno = av.pose === 'tchau' || av.pose === 'v';
     // A mão baixa chega a y=33, e o punho do objeto continua até y≈34.
     // No retrato com objeto, reserve a mesma margem para flor, microfone e lightstick.
-    var faixa = camera === 'rosto' ? [-7, comFlor ? 34 : 27] : camera === 'meio' ? [-7, 39] : [-7, 49];
+    var faixa = camera === 'rosto' ? [-7, comFlor ? (av.pose === 'coracao' ? 32 : 34) : 27] : camera === 'meio' ? [-7, 39] : [-7, 49];
     var largura = camera === 'rosto' ? (comFlor ? (aceno ? 44 : 34) : 30) : camera === 'meio' ? (aceno ? 44 : 36) : (pet ? 76 : 44);
     if(camera !== 'inteiro') pet = null; // no close o Pet fica de fora, para o Idol não encolher
     sc = Math.min(H2 * .92 / (faixa[1] - faixa[0]), W2 * .96 / largura);

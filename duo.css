@@ -81,7 +81,7 @@
 #duoTabC .duocard{min-height:64px;box-shadow:none}
 #duoTabC .duocard i{font-size:22px}
 .duo-menu summary:focus-visible,.duo-mais-cenas summary:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
-@media(max-width:520px){#duoTabC .duogrid:not(.thumbs){grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:520px){#duoTabC .duogrid:not(.thumbs){grid-template-columns:repeat(auto-fit,minmax(94px,1fr))}}
 @media(prefers-reduced-motion:reduce){#duoTabC .duocard{transition:none}}
 
 /* Cenas bloqueadas: o selo de preço fica abaixo do rótulo e não cobre o ícone. */

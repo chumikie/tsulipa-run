@@ -153,6 +153,8 @@ body.tw-cel.tw-cel-classico .twc-tela{display:none}
 .twc-rapidos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 .twc-rapidos .twc-rapido{min-height:44px;padding:5px 8px;gap:5px;font-size:.84rem;line-height:1.15;overflow-wrap:anywhere}
 .twc-rapido svg{flex:none}
+.twc-ini-portas .twc-rapidos{margin-block-end:8px}
+.twc-ini-portas .twc-rapido{box-shadow:none}
 .twc-rapidos > :only-child,.twc-estreia [data-a="karaokeEnsaio"]{grid-column:1 / -1}
 .twc-busca-atalhos{display:grid;gap:8px}
 .twc-busca-atalhos:empty{display:none}

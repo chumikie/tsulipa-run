@@ -143,13 +143,16 @@ async function rodar(browser,base,nome,opcoes){
       if(visualOnly && nome==='iphone' && v==='studio') await conferirFotos(p);
       if(visualOnly && nome==='compacto' && v==='mapa'){
         await p.evaluate(()=>window.TW_BAIRRO?.pularGuia());
-        await p.locator('[data-tw-bairro="praca"]').click();
-        await p.locator('#twMapa[data-cena="praca"]').waitFor();
-        await p.waitForFunction(()=>performance.getEntriesByType('resource').some(r=>r.name.includes('mapa-rua-praca.svg') && r.responseEnd>0));
         const rua=p.locator('#twMapa .tw-mapa-rolo');
-        await rua.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
-        await p.waitForTimeout(400);
-        await rua.screenshot({path:path.join(out,'compacto-praca.png')});
+        for(const bairro of ['praca','palco','arena','ceu']){
+          await p.locator('[data-tw-bairro="'+bairro+'"]').click();
+          await p.locator('#twMapa[data-cena="'+bairro+'"]').waitFor();
+          await p.waitForFunction(id=>performance.getEntriesByType('resource').some(r=>r.name.includes('mapa-rua-'+id+'.svg') && r.responseEnd>0),bairro);
+          await rua.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+          await p.waitForTimeout(400);
+          await rua.screenshot({path:path.join(out,'compacto-'+bairro+'.png')});
+          await p.locator('#twMapa .tw-mapa-voltar').click();
+        }
       }
       if(v==='loja'){
         // O cenário só desenha quando aberto. Confere também a saudação da atendente,

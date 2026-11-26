@@ -151,8 +151,8 @@ button.perfcora:not([aria-pressed="true"]){animation:perfbate 1.6s ease-in-out i
 .perfdiario-hoje li{font-size:12px;line-height:1.3;overflow-wrap:anywhere}
 /* Perfil em telas estreitas: foto em cima, dados centralizados; abas em uma linha */
 @media (max-width:380px){
-  .perfhero{flex-direction:column;text-align:center;gap:10px;padding:16px 14px 14px}
-  .perfid{align-items:center}
+  .perfhero{flex-direction:row;text-align:start;gap:12px;padding:14px}
+  .perfid{align-items:flex-start;min-width:0}
   .perfnm{max-width:100%}
   .perfbr.b4{left:24px}
   .perftabs{flex-wrap:nowrap}

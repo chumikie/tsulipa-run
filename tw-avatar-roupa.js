@@ -178,12 +178,44 @@
     g.fillStyle = v; g.fillRect(X0 - 1, base, X1 - X0 + 2, Y1 - base);
   }
   // Contorno comum, ombro largo e mão curva. Mantém a régua 30×44.
+  function camisa(g,x,y,c){
+    g.save();g.beginPath();g.moveTo(x+11,y+21.6);
+    g.quadraticCurveTo(x+6,y+21.8,x+4,y+24);
+    g.quadraticCurveTo(x+6.2,y+28,x+5.8,y+33.8);
+    g.quadraticCurveTo(x+15,y+35.2,x+24.2,y+33.8);
+    g.quadraticCurveTo(x+23.8,y+28,x+26,y+24);
+    g.quadraticCurveTo(x+24,y+21.8,x+19,y+21.6);
+    g.closePath();g.clip();g.fillRect(x+4,y+21,22,15);
+    tronco(g,x,y,'',c);
+    g.strokeStyle='rgba(54,40,85,.18)';g.lineWidth=.45;
+    g.beginPath();g.moveTo(x+7,y+33);g.quadraticCurveTo(x+15,y+34.1,x+23,y+33);g.stroke();
+    g.restore();
+  }
+  function pescoco(g,x,y){
+    g.beginPath();g.moveTo(x+12,y+18);g.lineTo(x+18,y+18);
+    g.quadraticCurveTo(x+17,y+21.5,x+19,y+22.4);
+    g.quadraticCurveTo(x+15,y+25.4,x+11,y+22.4);
+    g.quadraticCurveTo(x+13,y+21.5,x+12,y+18);g.fill();
+  }
+  function coques(g,x,y,cor){
+    g.save();
+    for(var lado=-1;lado<=1;lado+=2){
+      var cx=x+15+11*lado,cy=y+2.5;
+      g.fillStyle=cor;g.beginPath();g.ellipse(cx,cy,5.8,6.6,lado*.36,0,7);g.fill();
+      g.strokeStyle='rgba(178,164,200,.38)';g.lineWidth=.68;
+      g.beginPath();g.moveTo(cx-3.4,cy+1.8);g.bezierCurveTo(cx-3.5,cy-4.5,cx+3.8,cy-4,cx+2.2,cy-.5);g.stroke();
+      g.fillStyle='#4362b3';g.beginPath();g.ellipse(cx-lado,cy+4.6,3.8,1.3,-lado*.45,0,7);g.fill();
+    }
+    g.restore();
+  }
   function formaBracos(g,x,y){
     [1,-1].forEach(function(k){
       var a=k===1?x:x+30;function X(v){return a+k*v;}
       g.moveTo(X(1),y+24);g.quadraticCurveTo(X(1),y+26.8,X(1.6),y+29);
       g.quadraticCurveTo(X(1),y+30.5,X(1.35),y+32);
-      g.quadraticCurveTo(X(3),y+34,X(4.65),y+32);
+      g.quadraticCurveTo(X(1.8),y+33.8,X(3.6),y+33.2);
+      g.quadraticCurveTo(X(4.7),y+33.1,X(4.65),y+32);
+      g.quadraticCurveTo(X(6.1),y+31.7,X(4.7),y+30.1);
       g.quadraticCurveTo(X(5),y+30.5,X(4.4),y+29);
       g.quadraticCurveTo(X(5),y+26.8,X(5),y+24);g.closePath();
     });
@@ -221,7 +253,11 @@
   }
   function costas(g, x, y, b){   // contorno: sai da cabeça (centro y+8 antes do translate) e desce pelas laterais
     g.beginPath(); g.moveTo(x + 3, y + 8); g.arc(x + 15, y + 8, 12, Math.PI, 0);
-    if(b === 'longo'){ g.quadraticCurveTo(x + 34, y + 34, x + 27, y + 41); g.quadraticCurveTo(x + 21, y + 43, x + 16, y + 40); g.quadraticCurveTo(x + 9, y + 43, x + 3, y + 41); g.quadraticCurveTo(x - 4, y + 34, x + 3, y + 8); }
+    if(b === 'longo'){ g.quadraticCurveTo(x + 34, y + 34, x + 27, y + 41); g.quadraticCurveTo(x + 25, y + 40, x + 24, y + 37);
+      g.quadraticCurveTo(x + 22, y + 42, x + 17, y + 42);
+      g.lineTo(x + 15, y + 39);
+      g.quadraticCurveTo(x + 11, y + 43, x + 7, y + 40);
+      g.lineTo(x + 6, y + 37); g.lineTo(x + 3, y + 41); g.quadraticCurveTo(x - 4, y + 34, x + 3, y + 8); }
     else { g.quadraticCurveTo(x + 30.5, y + 21, x + 26.5, y + 25); g.quadraticCurveTo(x + 15, y + 27, x + 3.5, y + 25); g.quadraticCurveTo(x - .5, y + 21, x + 3, y + 8); }   // chanel: corte reto logo abaixo do queixo (antes descia até o meio do tronco e parecia cabelo comprido)
     g.fill();
     // Mechas nas costas seguem a curvatura do corte, recortadas na silhueta.
@@ -248,6 +284,13 @@
     g.quadraticCurveTo(x + 24.9, y + 12.5, x + 27, y + 10.5); g.lineTo(x + 27, y + 8); g.closePath(); g.fill();
   }
   function gravata(g, x, y){   // Trainee: nó, lâmina com ponta e brilho do lado da luz
+    // As pontas da gola acompanham o nó da gravata.
+    g.fillStyle = 'rgba(60,42,92,.23)';
+    T(g,[x+9,y+22,x+15,y+23,x+12,y+26.5]);
+    T(g,[x+21,y+22,x+15,y+23,x+18,y+26.5]);
+    g.fillStyle = '#fff8f4';
+    T(g,[x+9,y+21.8,x+15,y+22.6,x+12,y+25.5]);
+    T(g,[x+21,y+21.8,x+15,y+22.6,x+18,y+25.5]);
     g.fillStyle = '#1b2a5e'; T(g, [x + 14.4, y + 24.2, x + 16.6, y + 24.2, x + 17.5, y + 30.6, x + 15.5, y + 32.6, x + 13.5, y + 30.6]);
     g.fillStyle = 'rgba(255,255,255,.16)'; T(g, [x + 14.4, y + 24.2, x + 15.5, y + 24.2, x + 15.5, y + 32.6, x + 13.5, y + 30.6]);
     g.fillStyle = '#14204a'; T(g, [x + 13.7, y + 22, x + 17.3, y + 22, x + 16.7, y + 24.4, x + 14.3, y + 24.4]);
@@ -290,7 +333,7 @@
   }
 
   var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
-              bracos:bracos, bracosBase:bracosBase, pernas:pernas, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, gravata:gravata,
+              bracos:bracos, bracosBase:bracosBase, pernas:pernas, camisa:camisa, pescoco:pescoco, coques:coques, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, gravata:gravata,
               cr:cr, crLook:crLook, CR_COR:CR_COR };
   root.TWAvatarRoupa = api;
   if(typeof module !== 'undefined' && module.exports) module.exports = api;

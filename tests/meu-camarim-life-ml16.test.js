@@ -84,7 +84,7 @@ test('ML1.6: Look do dia muda por dia, usa a cor da roupa e guarda a polaroid no
 });
 
 test('ML1.6: cor das meias mantém os quadradinhos e o padrão escuro', () => {
-  assert.match(cr, /g\.fillStyle=\(typeof c\.legcol==='string'&&\/\^#\[0-9a-f\]\{6\}\$\/i\.test\(c\.legcol\)\)\?c\.legcol:'#1c1c30';g\.fillRect\(x\+9,y\+36/);
+  assert.match(cr, /g\.fillStyle=\(typeof c\.legcol==='string'&&\/\^#\[0-9a-f\]\{6\}\$\/i\.test\(c\.legcol\)\)\?c\.legcol:'#1c1c30';if\(typeof TWAvatarRoupa!=='undefined'&&TWAvatarRoupa\.pernas\)\{TWAvatarRoupa\.pernas\(g,x,y,up\);\}else\{g\.fillRect\(x\+9,y\+36/);
   assert.match(html, /'outcol', 'legcol', 'baixo', 'hat', 'olho', 'boca', 'bochecha', 'sobrancelha'(, 'lado2')?\]/);
   assert.match(perfil, /\(hair\|hair2\|(lado2\|)?skin\|eye\|outcol\|legcol\)/);
   assert.match(perfil, /data-m="legcol"/);

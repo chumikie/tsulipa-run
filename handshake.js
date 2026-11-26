@@ -560,7 +560,7 @@ function hsDesenhar(){
   // o fã da vez (à esquerda), entrando
   var f = hsFaAtual();
   if(f){
-    var dt = hsT - (hs ? hs.t0 : 0), entra = Math.min(1, dt / 14), fx = -W2 * .25 + entra * W2 * (hs.fase === 'fila' ? .37 : .27);
+    var dt = hsT - (hs ? hs.t0 : 0), entra = Math.min(1, dt / 14), fx = -W2 * .25 + (1-Math.pow(1-entra,3)) * W2 * (hs.fase === 'fila' ? .37 : .27);
     var visita = hsVisitaAtual(f), reencontro = hsSuperfaGesto(f, dt, hs.fase);
     try{ x.save(); x.translate(fx + (reencontro ? reencontro.dx : 0), H2 * .06 + (reencontro ? reencontro.dy : 0)); perfDesenharIdol(x, W2 * .44, H2 * .9, { c:visita ? visita.avatar : f.c, pose:visita ? 'tchau' : reencontro ? reencontro.pose : f.pose, expr:visita ? 3 : reencontro ? reencontro.expr : f.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
     if(reencontro){ x.save(); x.globalAlpha = reencontro.alfa * .85; x.fillStyle = reencontro.cor;

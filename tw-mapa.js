@@ -1368,7 +1368,21 @@
     [300,800,1300].forEach(function(px){
       ctx.fillStyle='rgba(73,43,97,.11)';ctx.beginPath();ctx.ellipse(px,576,91,6,0,0,7);ctx.fill();
     });
+    if(cena !== 'mundo'){
+      // Juntas convergem para o fundo da rua; ficam abaixo das entradas.
+      ctx.beginPath();
+      for(var junta=0;junta<=1600;junta+=160){
+        ctx.moveTo(junta,572);ctx.lineTo(junta+(junta-800)*.08,625);
+      }
+      ctx.stroke();
+    }
     if(bairro==='praca'){
+      // Bancos baixos ladeiam a fonte e deixam a passagem central livre.
+      [540,1020].forEach(function(bx){
+        ctx.fillStyle='#91716d';ctx.fillRect(bx+3,567,4,10);ctx.fillRect(bx+32,567,4,10);
+        ctx.fillStyle='#dba183';rr(bx,562,40,6,2);ctx.fill();
+        ctx.fillStyle='#ffe0af';ctx.fillRect(bx+1,563,38,1.5);
+      });
       // Volume da cuba da fonte: mantém água e jatos livres.
       var pedra=ctx.createLinearGradient(0,565,0,608);pedra.addColorStop(0,'rgba(159,124,217,0)');pedra.addColorStop(.6,'rgba(119,91,180,.22)');pedra.addColorStop(1,'rgba(112,76,174,.32)');
       ctx.fillStyle=pedra;ctx.beginPath();ctx.moveTo(626,565);ctx.bezierCurveTo(650,618,950,618,974,565);ctx.quadraticCurveTo(800,640,626,565);ctx.closePath();ctx.fill();
@@ -1376,12 +1390,23 @@
       ctx.beginPath();ctx.ellipse(800,565,172,39,0,.18,Math.PI-.18);ctx.stroke();
     }else if(bairro==='ceu'){
       ctx.fillStyle='rgba(103,115,175,.11)';ctx.beginPath();ctx.ellipse(300,571,116,7,0,0,7);ctx.fill();
+      // Folhagens baixas em torno do acesso ao jardim.
+      [196,216,363,385].forEach(function(px,i){
+        ctx.fillStyle=i%2?'#97bbab':'#b2c8ae';
+        ctx.beginPath();ctx.ellipse(px,562,15,8,-.15,0,7);ctx.fill();
+        ctx.fillStyle='#ffe4ee';ctx.beginPath();ctx.arc(px-5,558,2.4,0,7);ctx.arc(px+4,560,2,0,7);ctx.fill();
+      });
       // Studio: pilastra da fachada no sistema de coordenadas de rua.py.
       ctx.save();ctx.translate(1300,558);ctx.scale(1.28,1.28);ctx.translate(-1300,-558);
       var pilastra=ctx.createLinearGradient(1440,0,1458,0);pilastra.addColorStop(0,'#f4eaff');pilastra.addColorStop(1,'#bca8dc');
       ctx.fillStyle=pilastra;rr(1440,455,18,94,5);ctx.fill();ctx.fillStyle='rgba(255,255,255,.56)';ctx.fillRect(1442,459,4,86);ctx.fillStyle='#bba2d3';rr(1436,543,25,6,2);ctx.fill();ctx.restore();
     }else if(bairro==='palco'){
       [300,800,1300].forEach(function(px){ctx.fillStyle='rgba(244,197,255,.20)';ctx.beginPath();ctx.ellipse(px,597,75,8,0,0,7);ctx.fill();});
+      // Luzes de ribalta embutidas na borda do palco.
+      for(var lamp=468;lamp<=1132;lamp+=48){
+        ctx.fillStyle='#9e718a';rr(lamp,553,12,6,2);ctx.fill();
+        ctx.fillStyle='#fff0ba';ctx.fillRect(lamp+2,554,8,2);
+      }
       // Rebordo do tablado central, ancorado na base 566 da rua.
       var palco=ctx.createLinearGradient(0,545,0,565);palco.addColorStop(0,'rgba(255,219,188,.20)');palco.addColorStop(1,'rgba(103,43,96,.27)');
       ctx.fillStyle=palco;rr(420,545,760,20,5);ctx.fill();ctx.fillStyle='rgba(255,235,190,.5)';ctx.fillRect(432,546,736,2);
@@ -1429,6 +1454,14 @@
       ctx.fillStyle='#662f9c';ctx.beginPath();ctx.moveTo(681,410);ctx.quadraticCurveTo(800,338,919,410);
       ctx.lineTo(949,536);ctx.quadraticCurveTo(800,509,651,536);ctx.closePath();ctx.fill();
       ctx.strokeStyle='#fff1b9';ctx.lineWidth=5;ctx.stroke();
+      // Vidraças inclinadas acompanham a cobertura da arena.
+      ctx.fillStyle='#41326f';ctx.beginPath();ctx.moveTo(704,423);ctx.quadraticCurveTo(800,374,896,423);
+      ctx.lineTo(904,461);ctx.quadraticCurveTo(800,432,696,461);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#acbadf';ctx.lineWidth=3;
+      [720,760,800,840,880].forEach(function(px){
+        var dist=Math.abs(px-800);ctx.beginPath();ctx.moveTo(px,401+dist*.21);
+        ctx.lineTo(px+(px-800)*.08,446+dist*.12);ctx.stroke();
+      });
       for(var i=0;i<3;i++){
         var degrau=122+i*37,dy=489+i*17;
         var piso=ctx.createLinearGradient(0,dy,0,dy+11);piso.addColorStop(0,'#b989e3');piso.addColorStop(.45,'#a067d5');piso.addColorStop(1,'#7846b1');

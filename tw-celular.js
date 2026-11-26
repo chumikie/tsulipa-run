@@ -1962,6 +1962,12 @@
     if(a === 'menuMais'){ folhaMais(); return; }
     if(a === 'comecar'){
       if(typeof hubComecar === 'function')hubComecar();
+      // O primeiro quadro já contém os atalhos restaurados, inclusive em telas de baixa frequência.
+      if(cel && redesenhoRaf){
+        cancelAnimationFrame(redesenhoRaf);
+        redesenhoRaf = 0;
+        try{ desenhar(); }catch(e){ falhaInicializacao(e); }
+      }
       requestAnimationFrame(function(){if(cel&&!$id('hub').hidden&&folha.hidden&&!janelas().length)focarTitulo();});
       return;
     }

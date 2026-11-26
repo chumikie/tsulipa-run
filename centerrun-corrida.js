@@ -833,11 +833,13 @@ function drawCity(arr,w,off,base,col,win,widthLimit){
       g.fillStyle=col;
       g.fillRect(x,base-b.h,b.w,b.h);
       if(win){
+        g.fillStyle='rgba(38,28,74,.16)';
+        g.fillRect(x+b.w*.81,base-b.h,b.w*.19,b.h);
         g.fillStyle=win;
         var seed=(bi*37+Math.floor(b.s*100))|0;
         for(var r=0,yy=base-b.h+10;yy<base-10;yy+=14,r++){
           for(var c=0,xx=x+7;xx<x+b.w-9;xx+=12,c++){
-            if(((c*7+r*13+seed)%7)<2) g.fillRect(xx,yy,4,5);
+            if(((c*5+r*13+seed)%7)<2) g.fillRect(xx,yy,4,5);
           }
         }
       }

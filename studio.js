@@ -349,6 +349,7 @@
   function clicar(){
     if(referenciaCarregando)return;
     var sess = sessao, dono = donoFoto();
+    tempoDaPrevia = null;
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
     if(pilotoStudio && esc_.fundo === pilotoStudio.fundo) TW_PILOTO_BAIRRO.iniciar('studio',pilotoStudio);
     if(window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('studio', false);
@@ -360,7 +361,7 @@
       if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ if(sessaoAtiva(sess,dono) && foto === capturada) twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
       else if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
       foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), dia:hojeBR(), legenda:pauta ? t('t_' + pauta.detalhe.tipo) : '', dono:dono, verificada:false, premio:0};
-      foto.retrato = retratoSeguro({v:1,avatar:foto.avatar,tempo:foto.t0 / 1000});
+      foto.retrato = retratoSeguro({v:1,avatar:foto.avatar,tempo:tempoDaPrevia === null ? foto.t0 / 1000 : tempoDaPrevia});
       // PNG local conserva o avatar original; somente o retrato público é filtrado.
       var capturada = foto;
       try{ capturarCena(capturada); }catch(e){ foto = null; fase = 'monta'; ocupado = false; msg = t('erro'); ui(); return; }
@@ -392,7 +393,7 @@
     var original = document.createElement('canvas');
     original.width = cv.width * escala; original.height = cv.height * escala;
     var pincel = original.getContext('2d'); pincel.scale(escala, escala);
-    cena(pincel, cv.width, cv.height, f.escolhas, f.t0 / 1000, f.avatar);
+    cena(pincel, cv.width, cv.height, f.escolhas, f.retrato ? f.retrato.tempo : f.t0 / 1000, f.avatar);
     cv.getContext('2d').drawImage(original, 0, 0, cv.width, cv.height);
     f.original = original;
     f.cena = cv;
@@ -646,6 +647,7 @@
       pose === 'v' || pose === 'tchau' ? [3,31,-.35] : [27,31,.30];
     var arranjo=arranjoFlores(item), flor = item.indexOf('flor_') === 0 || arranjo.length>0, angulo = mao[2];
     // Em retratos próximos, incline a haste para dentro sem mover a mão da pose.
+    if(flor && pose === 'coracao') angulo = .78;
     if(flor && quadro !== 'inteiro' && pose !== 'coracao'){
       angulo = mao[0] < 15 ? .46 : -.46;
     }
@@ -718,7 +720,7 @@
   }
   function cena(x, W, H, e, tm, avOutro){
     fundo(x, W, H, e.fundo, tm);
-    var av = JSON.parse(JSON.stringify(avOutro || meuAv() || {})); av.pose = e.pose === 'normal' ? '' : e.pose; av.fundo = '';
+    var av = Object.assign({}, avOutro || meuAv() || {}); av.pose = e.pose === 'normal' ? '' : e.pose; av.fundo = '';
     if(e.objeto === 'balao') baloes(x, W, H, tm);
     var corpo;
     var quadro = e.quadro || 'inteiro', comObjeto = !!e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao';
@@ -731,6 +733,7 @@
     luz(x, W, H, e.luz);
   }
   // Foto perfeita: estrelinhas que piscam em volta da polaroid (paradas com "reduzir movimento").
+  var tempoDaPrevia = null;
   var calmo = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   function brilhos(x, W, H, s){
     var P = [[.1,.08],[.88,.12],[.06,.6],[.93,.52],[.18,.9],[.82,.86],[.5,.04]];
@@ -757,6 +760,7 @@
     } else {
       x.fillStyle = '#fff'; x.fillRect(0,0,W,H);
       x.save(); x.beginPath(); x.rect(24,24,W-48,(W-48)*1.25); x.clip(); x.translate(24,24);
+      tempoDaPrevia = tm;
       cena(x, W-48, (W-48)*1.25, esc_, tm); x.restore();
       x.strokeStyle = 'rgba(255,255,255,.38)'; x.lineWidth = 1;
       var fw = W-48, fh = fw*1.25;

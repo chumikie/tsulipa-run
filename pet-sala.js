@@ -94,9 +94,12 @@ function petLifeSofa(x, frente, visual){
     x.fillStyle='#e8b8e3';x.fillRect(62,176,67,2);
     x.fillStyle='rgba(60,25,90,.13)';x.beginPath();x.ellipse(q.x+1,198,20,2.5,0,0,7);x.fill();
     x.save();x.globalAlpha *= visual ? visual.sit : 1;
+    // O quadril continua apoiado enquanto cada Idol escolhe onde firmar os pés.
+    var abertura = sel === 0 ? 2.2 : sel === 1 ? -2 : sel === 2 ? .8 : 0;
     [-8.4, 10.8].forEach(function(o){
       // A inclinação interpolada também guia os joelhos durante a troca de pose.
       var px = q.x + o + (o < 0 ? 18 : -4) * visual.rot;
+      px += (o < 0 ? -1 : 1) * abertura * visual.sit;
       px += Math.min(0,visual.rot)*5*(o<0?1:-1);
       // Mesmo desenho das pernas do avatar (drawChar): retângulos 5×8 escuros, sem pé
       // separado. Só a altura encurta, porque a coxa vem para frente.
@@ -1947,6 +1950,11 @@ function petDrawRoom(){
     }
     if(idolBrincando) g.rotate(idolBrincando.inclina);
     if(olharLembranca) g.rotate(olharLembranca);
+    if(pose){
+      // Inclinação a partir do quadril para manter o contato com a almofada.
+      var atitude = sel === 0 ? .045 : sel === 1 ? -.035 : sel === 2 ? .02 : 0;
+      g.translate(36,81.6); g.rotate(atitude * pose.sit); g.translate(-36,-81.6);
+    }
     g.scale(2.4, 2.4);
     drawChar(CH[sel], 0, 0, 0, expr);
     g.restore();
@@ -2011,7 +2019,7 @@ function petDrawRoom(){
     var inclinacao = companhia ? companhia.inclina : 0;
     if(petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar){
       var aOlhar=petT-petLifePoseInicio, tipoOlhar=petRecepcaoJeito(petData.ativo,p.cfg);
-      if(!petLifeMovimentoReduzido() && aOlhar >= 30 && aOlhar < 100) inclinacao += Math.sin((aOlhar-30)/70*Math.PI)*(tipoOlhar === 'pati' ? -.04 : tipoOlhar === 'lirika' ? .012 : -.025);
+      if(!petLifeMovimentoReduzido() && aOlhar >= 30 && aOlhar < 100) inclinacao += Math.pow(Math.sin((aOlhar-30)/70*Math.PI),2)*(tipoOlhar === 'pati' ? -.04 : tipoOlhar === 'lirika' ? .012 : -.025);
     }
     if(atencaoLembranca) inclinacao -= olharLembranca * atencaoLembranca.inclina;
     x.rotate(inclinacao);
@@ -2819,7 +2827,10 @@ function petDrawDecor(x){
     else if(st === 'quadro'){ x.fillStyle = '#f4c96b'; x.fillRect(-w / 2 - 3, -h / 2 - 3, w + 6, h + 6); }
     else { x.fillStyle = '#fff'; x.fillRect(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2); }
     x.shadowColor = 'transparent';
-    if(st === 'quadro'){ x.fillStyle = '#c8963e'; x.fillRect(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2); }
+    if(st === 'quadro'){
+      x.fillStyle='#ffe2a8';x.fillRect(-w/2-2.5,-h/2-2.5,w+5,1);
+      x.fillStyle='#b57d54';x.fillRect(-w/2-2.5,h/2+1.5,w+5,1);
+      x.fillStyle = '#c8963e'; x.fillRect(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2); }
     x.drawImage(im, -w / 2, -h / 2, w, h);
     if(st === 'poster'){   // fitas nos cantos
       x.fillStyle = 'rgba(255,111,181,.55)';

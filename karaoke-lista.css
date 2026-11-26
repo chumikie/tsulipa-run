@@ -56,3 +56,9 @@ html.kt-lista[data-theme="dark"] .ktl-capa small{color:#ffda83}
 @media(max-width:360px){.ktl-grade{gap:6px;padding-inline:3px}.ktl{padding-inline:9px}.ktl-detalhe{grid-template-columns:68px minmax(0,1fr)}.ktl-arte-g{width:68px}.ktl-acoes{gap:6px}.ktl-ouvir{font-size:13px!important}}
 
 @media(prefers-color-scheme:dark){html.kt-lista:not([data-theme="light"]) .ktl{background:#2a1d4a;border-color:#3d2a6b;color:#f3e8ff;box-shadow:0 6px 18px rgba(0,0,0,.35)}html.kt-lista:not([data-theme="light"]) :is(.ktl-capa,.ktl-ouvir){background:#21153e;border-color:#3d2a6b;color:#f3e8ff}html.kt-lista:not([data-theme="light"]) .ktl-info h3{color:#e6d6ff}html.kt-lista:not([data-theme="light"]) .ktl-info p{color:#c9b6f0}html.kt-lista:not([data-theme="light"]) .ktl-capa small{color:#ffda83}}
+
+@media(max-width:520px){
+  .ktl-info{min-width:0}
+  .ktl-acoes{flex-wrap:wrap;row-gap:8px}
+  .ktl-ouvir{min-height:44px}
+}

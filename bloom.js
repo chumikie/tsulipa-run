@@ -555,6 +555,8 @@
       folha(x, cx, by - 8 * e, -1, 9 * e, .5); folha(x, cx, by - 8 * e, 1, 9 * e, .5); return;
     }
     var teto = {sakura:78, tulipa:82, girassol:108, lunar:88}[k] || 80, alt = (20 + prog * teto) * e, sway = Math.sin(tm * 1.6 + cx * .02) * 3.2 * prog * e;
+    x.fillStyle='rgba(75,57,49,.16)';x.beginPath();
+    x.ellipse(cx+4*e,by+e,(8+prog*7)*e,3*e,-.08,0,7);x.fill();
     var tx = cx + sway, ty = by - alt;
     x.strokeStyle = '#3f9d68'; x.lineWidth = (k === 'girassol' ? 6.5 : 5) * e; x.lineCap = 'round'; x.beginPath(); x.moveTo(cx, by); x.quadraticCurveTo(cx + sway * .3, by - alt * .55, tx, ty); x.stroke();
     if(k === 'tulipa'){

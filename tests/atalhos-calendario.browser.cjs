@@ -78,6 +78,7 @@ async function main(){
     await page.keyboard.press('Enter');
     assert.equal(await page.locator('[data-pin][aria-pressed="true"]').count(),2);
 
+    assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('tw_cel_atalhos_v1'))), ['cafe','cal']);
     await page.reload();
     await page.evaluate(() => {
       contaRpc = () => Promise.resolve([]);

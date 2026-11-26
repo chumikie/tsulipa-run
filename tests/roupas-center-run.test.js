@@ -57,5 +57,5 @@ assert.match(lado, /if\(OFL === 5\)\{   \/\/ asas da Kami-Oshi/, 'asas da Kami-O
 assert.match(lado, /\/\/ auréola/, 'auréola de lado');
 assert.match(lado, /if\(ALV\)\{   \/\/ anteninhas de alien/, 'anteninhas da abdução de lado');
 assert.match(lado, /var Q = 3, w = 44 \* Q, h = 67 \* Q;/, 'quadro de lado com espaço para a auréola');
-assert.match(html, /tw-lado\.js\?v=7/); assert.match(html, /centerrun\.js\?v=47/); assert.match(html, /tw-avatar-roupa\.js\?v=\d+/);
+assert.match(html, /tw-lado\.js\?v=7/); assert.ok(Number(html.match(/centerrun\.js\?v=(\d+)/)?.[1]) >= 48, 'carrega a revisão com pernas compartilhadas'); assert.match(html, /tw-avatar-roupa\.js\?v=\d+/);
 console.log('✓ roupas do Center⭐Run!: menu, admin, banco, frente e lado');

@@ -113,7 +113,7 @@ async function rodar(browser,base,nome,opcoes){
   await conferir('inicio');await p.screenshot({path:path.join(out,nome+'-inicio.png')});
   for(const [t,v,alvo] of TELAS.concat(visualOnly?[['ir','studio','#studioOv #studioCv'],['ir','cafe','#cfOv #cfCv'],['ir','handshake','#hsOv #hsCv']]:[])){
     try{
-      await abrirInicio(CONTA.has(v) || visualOnly && v==='studio');
+      await abrirInicio(CONTA.has(v) || visualOnly && ['studio','mapa'].includes(v));
       const sel='[data-'+t+'="'+v+'"]:visible';
       const achar=()=>p.locator('#twcTela '+sel+',#twcNav '+sel+',#twcFolha '+sel).first();
       let e=achar();
@@ -145,7 +145,11 @@ async function rodar(browser,base,nome,opcoes){
         await p.evaluate(()=>window.TW_BAIRRO?.pularGuia());
         await p.locator('[data-tw-bairro="praca"]').click();
         await p.locator('#twMapa[data-cena="praca"]').waitFor();
-        await p.screenshot({path:path.join(out,'compacto-praca.png')});
+        await p.waitForFunction(()=>performance.getEntriesByType('resource').some(r=>r.name.includes('mapa-rua-praca.svg') && r.responseEnd>0));
+        const rua=p.locator('#twMapa .tw-mapa-rolo');
+        await rua.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+        await p.waitForTimeout(400);
+        await rua.screenshot({path:path.join(out,'compacto-praca.png')});
       }
       if(v==='loja'){
         // O cenário só desenha quando aberto. Confere também a saudação da atendente,

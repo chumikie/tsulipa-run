@@ -227,7 +227,11 @@
       r.scrollLeft=0;r.scrollTop=0;centrado=true;return;
     }
     var k=cv.getBoundingClientRect().width/MW;
-    var px=cena==='mundo'?800:800,py=cena==='mundo'?610:450;
+    var px=800,py=cena==='mundo'?610:450;
+    if(cena==='praca' && window.matchMedia && window.matchMedia('(max-width:760px)').matches){
+      var dono=ultimos.find(function(p){return p.dono;});
+      if(dono){px=dono.x;py=dono.y-50;}
+    }
     r.scrollLeft=Math.max(0,(px-OX)*k-r.clientWidth/2);
     r.scrollTop=Math.max(0,(py-OY)*k-r.clientHeight/2);centrado=true;
   }

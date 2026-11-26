@@ -655,9 +655,13 @@
     x.rotate(angulo);
     x.lineCap = 'round';
     // Mão: palma arredondada na largura do braço; a haste passa entre a palma e os dedos (desenhados depois).
-    var palma=x.createLinearGradient(-2.35,0,2.35,0);palma.addColorStop(0,corpo.skin);palma.addColorStop(.65,corpo.skin);palma.addColorStop(1,'rgba(105,65,85,.65)');x.fillStyle=palma;x.beginPath();
-    if(x.roundRect)x.roundRect(-2.35,-2.3,4.7,5,1.7);else x.rect(-2.35,-2.3,4.7,5);
-    x.fill();
+    x.fillStyle=corpo.skin;x.beginPath();
+    x.moveTo(-1.7,-2.45);x.quadraticCurveTo(-2.4,-1.3,-2.25,.45);
+    x.quadraticCurveTo(-2.2,2.5,-.35,2.6);x.quadraticCurveTo(1.8,2.7,2.15,.75);
+    x.quadraticCurveTo(2.45,-1.35,1.65,-2.35);x.closePath();x.fill();
+    x.save();x.clip();var palma=x.createLinearGradient(-2.35,0,2.35,0);
+    palma.addColorStop(0,'rgba(255,255,255,.10)');palma.addColorStop(.58,'rgba(255,255,255,0)');palma.addColorStop(1,'rgba(70,35,65,.19)');
+    x.fillStyle=palma;x.fillRect(-2.5,-2.5,5,5.3);x.restore();
     if(arranjo.length && typeof window.bloomDesenharFlor === 'function'){
       var pos = arranjo.length===2 ? [[-2.8,-8],[2.5,-9]] : [[-3.4,-8],[0,-11],[3.4,-8.6]];
       arranjo.forEach(function(k,i){
@@ -703,7 +707,13 @@
     x.quadraticCurveTo(-2,1.2,-1.9,-.65);x.closePath();x.fill();
     x.lineCap='round';x.strokeStyle='rgba(105,56,50,.17)';x.lineWidth=.45;
     x.beginPath();x.moveTo(-1.4,.35);x.quadraticCurveTo(-.1,.6,1.25,.35);x.stroke();
-    x.strokeStyle=corpo.skin;x.lineWidth=1.45;x.beginPath();x.moveTo(1.4,1.2);x.quadraticCurveTo(.2,-.2,-.7,-1.7);x.stroke();
+    // O polegar envolve a haste, conectado à base da palma, sem contorno solto.
+    x.fillStyle=corpo.skin;x.beginPath();x.moveTo(1.8,1.3);
+    x.quadraticCurveTo(1.05,.8,.05,-.65);x.quadraticCurveTo(-.55,-1.55,-1.05,-.95);
+    x.quadraticCurveTo(-1.45,-.4,-.7,.55);x.quadraticCurveTo(.15,1.75,1.2,2);
+    x.quadraticCurveTo(1.85,1.95,1.8,1.3);x.closePath();x.fill();
+    x.strokeStyle='rgba(105,56,50,.20)';x.lineWidth=.35;x.beginPath();
+    x.moveTo(-.65,.45);x.quadraticCurveTo(.1,1.3,.85,1.55);x.stroke();
     x.restore();
   }
   function cena(x, W, H, e, tm, avOutro){

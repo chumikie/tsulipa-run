@@ -761,9 +761,4 @@ html[data-theme="dark"] .tw-piloto-vitrine span{color:#f3d6f0}
 @media(max-width:360px){
   .stgrupo .stchip{padding-inline:5px;gap:3px}
 }
-@media(prefers-reduced-motion:no-preference){
-  .stgrupo .stchip{transition:background-color .16s ease,border-color .16s ease,box-shadow .12s ease}
-}
-@media(prefers-reduced-motion:reduce){
-  .stgrupo .stchip{transition:none}
-}
+/* A resposta é imediata, sem acrescentar transições ao lote do mapa. */

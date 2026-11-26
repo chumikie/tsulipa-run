@@ -138,10 +138,14 @@ function perfRot(o){ return o[1] + ' ' + tr(o[2]); }
 function perfRgba(hex, a){ var c = parseInt(String(hex).replace('#', ''), 16) || 0; return 'rgba(' + (c >> 16) + ',' + ((c >> 8) & 255) + ',' + (c & 255) + ',' + a + ')'; }
 // Signature 5.10: somente referências locais ao elenco oficial podem carregar sua assinatura.
  // WeakMap não viaja no JSON, não modifica avatares recebidos e não cria campos de save.
-var PERF_IDENTIDADE_LOCAL = new WeakMap();
+var PERF_IDENTIDADE_LOCAL = null; // só aloca no primeiro retrato oficial, nunca durante o carregamento do módulo
+function perfMarcarIdentidadeLocal(c,n){
+  if(!PERF_IDENTIDADE_LOCAL)PERF_IDENTIDADE_LOCAL=new WeakMap();
+  PERF_IDENTIDADE_LOCAL.set(c,n);
+}
 function perfIdentidadeOficial(src){
   if(!src || typeof src!=='object')return '';
-  var n=PERF_IDENTIDADE_LOCAL.get(src);
+  var n=PERF_IDENTIDADE_LOCAL&&PERF_IDENTIDADE_LOCAL.get(src);
   if(n)return n;
   if(typeof CH!=='undefined'&&Array.isArray(CH)){
     var idx=CH.indexOf(src);if(idx>=0&&idx<3)return ['Tsu','Lirika','Pati'][idx];
@@ -154,7 +158,7 @@ function perfIdentidadeOficial(src){
 }
 function perfCopiarCharOficial(src){
   var c=JSON.parse(JSON.stringify(src||{})),n=perfIdentidadeOficial(src);
-  if(n)PERF_IDENTIDADE_LOCAL.set(c,n);
+  if(n)perfMarcarIdentidadeLocal(c,n);
   return c;
 }
 function perfChar(av){
@@ -168,7 +172,7 @@ function perfChar(av){
     else if(typeof v === 'string' && v.length <= 16) c[f] = v;
   });
   var oficial=typeof perfIdentidadeOficial==='function'?perfIdentidadeOficial(src):'';
-  if(oficial){c.n=oficial;PERF_IDENTIDADE_LOCAL.set(c,oficial);}
+  if(oficial){c.n=oficial;perfMarcarIdentidadeLocal(c,oficial);}
   c.img = c.hair;
   return c;
 }

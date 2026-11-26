@@ -31,7 +31,7 @@ test('Signature World: shared geometry and separate photo prop/hand mirror',()=>
   for(const p of ['centerrun.js','karaoke-time.html','sora-jump.html'])assert.ok(read(p).includes('TWAvatarRoupa.pernas(g,x,y,up,c)'));
   const s=read('studio.js');assert.match(s,/x.restore\(\); \/\/ o arranjo permanece na ordem escolhida/);
   assert.match(s,/if\(espelhoMao\)x.scale\(-1,1\);\n    \/\/ Dedos/);
-  assert.match(read('.github/workflows/validate-games.yml'),/ref: e58256f66d6cc1cd17c167545ea45a7ecdca7882/);
+  assert.match(read('.github/workflows/validate-games.yml'),/ref: 5dd9a1e6ffa776a35fbb778bd5a410695b4b7655/);
 });
 
 test('Signature 5.10: official identity survives local normalization and clone, never serialized names',()=>{
@@ -40,6 +40,9 @@ test('Signature 5.10: official identity survives local normalization and clone, 
   scope.HUB_TRIO=[[0],[1],[2]];
   scope.HUB_TRIO_DRAW_CHARS=scope.CH.slice(0,3).map(c=>({...c}));
   vm.runInNewContext(html.match(/var PERF_BASE = .*?;/)[0]+'\n'+html.match(/var PERF_CAMPOS = .*?;/)[0]+'\n'+s.slice(s.indexOf('var PERF_IDENTIDADE_LOCAL'),s.indexOf('function perfAvAtual(')),scope);
+  assert.equal(scope.PERF_IDENTIDADE_LOCAL,null,'no WeakMap on load');
+  assert.equal(scope.perfChar({c:{n:'Tsu'}}).n,'Idol');
+  assert.equal(scope.PERF_IDENTIDADE_LOCAL,null,'custom avatar does not allocate official registry');
   for(let i=0;i<3;i++){
     const c=scope.HUB_TRIO_DRAW_CHARS[i],copy=scope.perfCopiarCharOficial(c),before=JSON.stringify(c);
     assert.equal(scope.perfChar({c}).n,scope.CH[i].n);

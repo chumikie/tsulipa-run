@@ -59,8 +59,17 @@ function petLifeSofa(x, frente, visual){
     x.fillStyle='#a96ab7';x.beginPath();x.moveTo(40,160);x.quadraticCurveTo(37,153,45,148);
     x.lineTo(147,148);x.quadraticCurveTo(155,151,155,162);x.lineTo(155,187);
     x.quadraticCurveTo(151,196,140,196);x.lineTo(49,196);x.quadraticCurveTo(40,194,40,186);x.closePath();x.fill();
-    x.fillStyle='#c68bd0';x.beginPath();x.roundRect(40,147,110,46,13);x.fill();
-    x.fillStyle='#f4c9e8';x.beginPath();x.roundRect(46,151,98,30,11);x.fill();
+    // Encosto em duas peças estofadas, com topo arredondado e base dentro da carcaça.
+    x.fillStyle='#c68bd0';x.beginPath();x.moveTo(40,171);x.lineTo(40,160);
+    x.quadraticCurveTo(40,147,54,147);x.lineTo(136,147);x.quadraticCurveTo(150,147,150,161);
+    x.lineTo(150,185);x.quadraticCurveTo(146,193,136,193);x.lineTo(54,193);
+    x.quadraticCurveTo(40,193,40,181);x.closePath();x.fill();
+    [46,95].forEach(function(l){
+      x.fillStyle='#f4c9e8';x.beginPath();x.moveTo(l+3,176);x.quadraticCurveTo(l,170,l,161);
+      x.quadraticCurveTo(l,151,l+10,151);x.lineTo(l+38,151);
+      x.quadraticCurveTo(l+47,151,l+47,162);x.lineTo(l+44,176);
+      x.quadraticCurveTo(l+23,179,l+3,176);x.closePath();x.fill();
+    });
     var tecido=x.createLinearGradient(0,161,0,183);tecido.addColorStop(0,'#f2cbe9');tecido.addColorStop(.55,'#e6b5e4');tecido.addColorStop(1,'#cb94d0');x.fillStyle=tecido;x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
     // Encosto capitonê: costuras e botões permanecem atrás dos ombros.
     for(var botao = 59; botao <= 131; botao += 24){
@@ -162,13 +171,24 @@ function petLifeSofa(x, frente, visual){
       x.fillStyle=petLifeCorSaia;
       x.beginPath();x.moveTo(q.x-17,q.y-3);x.lineTo(q.x+17,q.y-3);
       x.quadraticCurveTo(q.x+largura-4,q.y+5,q.x+largura,q.y+11);
-      x.quadraticCurveTo(q.x,q.y+14,q.x-largura,q.y+11);
+      // A barra acompanha cada coxa, em vez de uma única linha horizontal.
+      x.quadraticCurveTo(q.x+largura*.52,q.y+13.6,q.x+4,q.y+11.7);
+      x.quadraticCurveTo(q.x-largura*.42,q.y+14,q.x-largura,q.y+11);
       x.quadraticCurveTo(q.x-largura+4,q.y+5,q.x-17,q.y-3);x.closePath();x.fill();
       x.save();x.clip();var caimento=x.createLinearGradient(0,q.y-3,0,q.y+13);
       caimento.addColorStop(0,'rgba(40,10,70,.12)');caimento.addColorStop(.42,'rgba(255,255,255,.12)');caimento.addColorStop(1,'rgba(40,10,70,.17)');
       x.fillStyle=caimento;x.fillRect(q.x-largura,q.y-3,largura*2,16);
       x.strokeStyle='rgba(255,255,255,.19)';x.lineWidth=1;
-      [-9,9].forEach(function(d){x.beginPath();x.moveTo(q.x+d,q.y);x.quadraticCurveTo(q.x+d*1.2,q.y+5,q.x+d*1.5,q.y+10);x.stroke();});x.restore();
+      [-10,-3,5,12].forEach(function(d){var dx=d*largura/23;
+        x.fillStyle='rgba(65,35,90,.10)';x.beginPath();x.moveTo(q.x+d*.65,q.y-2);
+        x.quadraticCurveTo(q.x+dx*.85,q.y+4,q.x+dx,q.y+12);
+        x.lineTo(q.x+dx+1.6,q.y+12);x.quadraticCurveTo(q.x+dx*.85+1,q.y+4,q.x+d*.65,q.y-2);
+        x.closePath();x.fill();
+      });
+      if(roupa==='sweet'){x.fillStyle='rgba(255,255,255,.72)';
+        for(var fr=-largura+3;fr<largura;fr+=6){x.beginPath();x.ellipse(q.x+fr,q.y+11.4,3.2,1.8,0,0,7);x.fill();}
+      }
+      x.restore();
     }
     if(petLifePose === 'descansar'){   // mantinha no colo na cor do Oshi
       var ac = { tsu:'#c58cf0', lirika:'#8fdca7', pati:'#9dbcf5' }[OSHI] || '#ffb3d6';
@@ -200,11 +220,20 @@ function petLifeSofa(x, frente, visual){
 //←petLifeSofaBracos
 function petLifeSofaBracos(x){
   var tecido=x.createLinearGradient(0,166,0,195);tecido.addColorStop(0,'#e3addc');tecido.addColorStop(.45,'#cd94d1');tecido.addColorStop(1,'#b87dc1');
-  x.fillStyle=tecido;x.beginPath();x.roundRect(38,166,18,29,8);x.fill();
-  x.beginPath();x.roundRect(136,166,18,29,8);x.fill();
-  var topo=x.createLinearGradient(0,167,0,182);topo.addColorStop(0,'#fce0f1');topo.addColorStop(.48,'#f4c6e5');topo.addColorStop(1,'#d9a1d2');
-  x.fillStyle=topo;x.beginPath();x.roundRect(42,167,12,15,6);x.fill();
-  x.beginPath();x.roundRect(138,167,12,15,6);x.fill();
+  // Braços com superfície superior recuada e frente arredondada; mantêm a mesma extensão e oclusão.
+  [1,-1].forEach(function(k){
+    var a=k===1?38:154;function X(v){return a+k*v;}
+    x.fillStyle='#b87dc1';x.beginPath();x.moveTo(X(0),177);x.quadraticCurveTo(X(0),166,X(7),166);
+    x.lineTo(X(13),166);x.quadraticCurveTo(X(18),167,X(18),175);x.lineTo(X(18),188);
+    x.quadraticCurveTo(X(18),195,X(10),195);x.quadraticCurveTo(X(0),195,X(0),187);x.closePath();x.fill();
+    x.fillStyle=tecido;x.beginPath();x.moveTo(X(1),177);x.quadraticCurveTo(X(2),171,X(9),171);
+    x.quadraticCurveTo(X(16),171,X(17),178);x.lineTo(X(17),187);
+    x.quadraticCurveTo(X(16),194,X(9),194);x.quadraticCurveTo(X(1),194,X(1),187);x.closePath();x.fill();
+    x.fillStyle='#f4c6e5';x.beginPath();x.moveTo(X(2),176);x.quadraticCurveTo(X(3),168,X(9),167);
+    x.quadraticCurveTo(X(15),168,X(16),175);x.quadraticCurveTo(X(10),172,X(2),176);x.closePath();x.fill();
+    x.strokeStyle='#d29bd0';x.lineWidth=.75;x.beginPath();x.moveTo(X(3),178);
+    x.quadraticCurveTo(X(9),174,X(15),178);x.stroke();
+  });
 }
 //←petLifeMovimentoReduzido
 function petLifeMovimentoReduzido(){

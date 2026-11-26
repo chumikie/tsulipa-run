@@ -88,3 +88,8 @@ Base e58256f66d6cc1cd17c167545ea45a7ecdca7882: CI 45881694854, 9/9 jobs e 132/13
 - 5.15: cabeçalhos de controles do Studio alinhados, abas da loja com menos efeitos, controles compactos e área de foto preservada.
 
 Testes de identidade local/normalização, escolha dos figurinos, traçado lateral, SVG e Camarim; o CI agora compara main, e58256f e HEAD. Capturas e validação física no iPhone ainda pendentes; não implica reconstrução integral de todos os figurinos, fachadas ou poses. Sem nova PR, merge, publicação manual, force push, SQL, Supabase, economia ou novas mecânicas.
+
+
+### Revisão corretiva 5.15
+
+Base 5dd9a1e: CI 45885973874, 8/9 jobs e 130/132 verificações; comparação 15150570568 contém 86 PNGs por revisão e manifesto main/anterior/PR com saída 0. Revisão das capturas confirma a continuidade das fachadas e das telas; o sofá e a saia sentada ainda parecem planos. Corrigido o carregamento declarativo do Perfil por inicialização preguiçosa do WeakMap, sem modificar o teste index-modules; versão do celular no teste de cache atualizada para 80, preservando as demais verificações. Encosto em duas peças e braços do sofá redesenhados com superfícies próprias e mesma oclusão; barra e pregas da saia sentada acompanham os joelhos; tronco lateral recebe a assinatura corporal frontal sem deslocar manga/gola. Novos comparativos usam 5dd9a1e como anterior. A aprovação visual da nova geometria e o iPhone físico continuam pendentes. Nenhum dado persistido ou regra alterados.

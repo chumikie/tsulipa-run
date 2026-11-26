@@ -149,8 +149,14 @@
     // a mesma cor da frente: corDaRoupa = outcol ou branco (o Trainee também usa a cor escolhida); Zipper tem top branco
     var corCam = RP === 'zipper' ? '#ffffff' : RP === 'estrelado' ? az : CAM_U[RP] ? (UC && RP !== 'espacial' ? UC[0] : CAM_U[RP]) : KF ? KF[0] : corR;
     var cam = g.createLinearGradient(0, y + 21, 0, y + 34); cam.addColorStop(0, corCam); cam.addColorStop(1, corCam === '#ffffff' ? '#e3e7f3' : escuro(corCam, 34));
+    // A lateral usa a assinatura do mesmo tronco frontal; os ombros e a gola ficam na régua original.
+    var ass=typeof TWAvatarRoupa!=='undefined'&&TWAvatarRoupa.assinatura?TWAvatarRoupa.assinatura(c):null;
+    var cintura=ass?(ass.cintura-7.2)*.52:0, assim=ass?ass.assim:0;
     g.fillStyle = cam; g.beginPath(); g.moveTo(x + 9.4, y + 23); g.quadraticCurveTo(x + 9.4, y + 21, x + 11.6, y + 21); g.lineTo(x + 19.8, y + 21); g.quadraticCurveTo(x + 22.2, y + 21, x + 22.4, y + 24);
-    g.lineTo(x + 23.2, y + 34); g.lineTo(x + 7.6, y + 34); g.closePath(); g.fill();
+    g.quadraticCurveTo(x+23.7,y+27,x+22.1-cintura,y+30);
+    g.quadraticCurveTo(x+22.3-cintura,y+32,x+23.2,y+33.6-assim);
+    g.quadraticCurveTo(x+15.4,y+34.5,x+7.6,y+33.6+assim);
+    g.quadraticCurveTo(x+9.3+cintura,y+30,x+9.4,y+23);g.closePath();g.fill();
     g.fillStyle = 'rgba(120,130,170,.18)'; g.beginPath(); g.moveTo(x + 9.4, y + 23); g.lineTo(x + 11.6, y + 23); g.lineTo(x + 10.2, y + 34); g.lineTo(x + 7.6, y + 34); g.closePath(); g.fill();   // costas na sombra
     if(RP === ''){ g.fillStyle = '#1b2a5e'; T([x + 20.8, y + 24, x + 22.4, y + 24, x + 22.9, y + 30.4, x + 21.7, y + 31.8, x + 20.6, y + 30.4]);
     g.fillStyle = '#14204a'; T([x + 20.2, y + 21.6, x + 22.6, y + 21.6, x + 22.5, y + 24.2, x + 20.5, y + 24.2]); }

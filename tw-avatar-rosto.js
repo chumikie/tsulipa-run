@@ -1,7 +1,7 @@
 /* TsuLiPa⭐World — rosto, sapatos e partes de baixo especiais do avatar 2D (14/11/2026).
    Usado pelas três cópias do drawChar (centerrun.js, karaoke-time.html e sora-jump.html),
    na MESMA grade de 30×44 de sempre: nenhum ponto de encaixe muda (chapéus, poses, objetos, fotos).
-   - Rosto à escolha (o padrão '' é sempre o desenho de antes):
+   - Rosto à escolha (o padrão '' conserva os traços clássicos):
      c.olho = '' | 'redondo' | 'brilhante' | 'pontinho' | 'gatinho' | 'sereno'
      c.boca = '' | 'sorriso' | 'gato' | 'aberta' | 'dentinho'
      c.bochecha = '' | 'sem' | 'forte' | 'sardas' | 'estrelinha'
@@ -12,7 +12,7 @@
    Coordenadas do rosto já com o translate(0,-4) do drawChar: olhos em x+10..13 / x+18..21, y+17..22; boca em y+24. */
 (function(root){
   'use strict';
-  // Peças do rosto à escolha. '' = o desenho de sempre (o mais simpático, padrão de todo mundo).
+  // Peças do rosto à escolha. '' = o desenho clássico, com curvas suaves.
   var OLHOS = ['', 'redondo', 'brilhante', 'pontinho', 'gatinho', 'sereno', 'estrela', 'cilios', 'gotinha'];
   var BOCAS = ['', 'sorriso', 'gato', 'aberta', 'dentinho', 'lingua', 'triangulo', 'biquinho'];
   var ENFEITES = ['tiara'];   // laço e flor já existiam como Item (Laço azul, Hibisco, Flor de cerejeira)
@@ -30,11 +30,11 @@
   // Um olho aberto, sem traços (só formas cheias): x0 = x+10 (esquerdo) ou x+18 (direito).
   function olho(g, c, x0, y, lado){
     var f = forma(c), cor = hex(c && c.eye, '#5a3b2e');
-    if(f === ''){   // o de sempre, pixel por pixel
-      g.fillStyle = TINTA; g.fillRect(x0, y + 17, 3, 1);
-      g.fillStyle = cor; g.fillRect(x0, y + 18, 3, 4);
-      g.fillStyle = PUPILA; g.fillRect(x0 + 1, y + 19, 2, 2);
-      g.fillStyle = '#fff'; g.fillRect(x0, y + 18, 1, 2); g.fillRect(x0 + 2, y + 21, 1, 1);
+    if(f === ''){   // olhar clássico, com cantos suaves na mesma área de 3×5
+      g.fillStyle = cor; RR(g,x0,y+18,3,4,[.8,.8,1.1,1.1]);
+      g.fillStyle = PUPILA; E(g,x0+1.75,y+20,.95,1.18);
+      g.fillStyle = TINTA; RR(g,x0-.1,y+17,3.2,1.15,.55);
+      g.fillStyle = '#fff'; E(g,x0+.65,y+18.9,.55,.8); E(g,x0+2.35,y+21.3,.33,.33);
       return;
     }
     if(f === 'pontinho'){   // olhinho de ponto, bem chibi
@@ -65,8 +65,8 @@
   }
   function olhoFechado(g, x, y, esq){   // o ^ de sempre
     var a = esq ? 9 : 18;
-    g.strokeStyle = TINTA; g.lineWidth = 1.5; g.beginPath();
-    g.moveTo(x + a, y + 20); g.quadraticCurveTo(x + a + 2, y + 17, x + a + 4, y + 20); g.stroke();
+    g.save();g.strokeStyle = TINTA; g.lineWidth = 1.25;g.lineCap='round'; g.beginPath();
+    g.moveTo(x + a, y + 19.9); g.quadraticCurveTo(x + a + 2, y + 17.3, x + a + 4, y + 19.9); g.stroke();g.restore();
   }
   // Boca: 'feliz' = sorriso de olhos fechados ou piscadinha.
   function boca(g, c, x, y, feliz){
@@ -98,11 +98,13 @@
     }
     if(feliz || b === 'aberta'){
       var r = feliz ? 2.5 : 1.7;
-      g.beginPath(); g.arc(x + 15, y + 23, r, 0, Math.PI); g.fill();
+      g.beginPath();g.moveTo(x+15-r,y+23);g.quadraticCurveTo(x+15,y+23+.32,x+15+r,y+23);
+      g.quadraticCurveTo(x+15+r*.74,y+23+r,x+15,y+23+r);
+      g.quadraticCurveTo(x+15-r*.74,y+23+r,x+15-r,y+23);g.closePath();g.fill();
       if(b === 'aberta' || b === 'sorriso'){ g.fillStyle = '#ff8fb0'; E(g, x + 15, y + 23 + r * .62, r * .5, r * .28); }
     } else if(b === 'sorriso' || b === 'dentinho'){
       g.lineWidth = 1; g.beginPath(); g.moveTo(x + 13.4, y + 23.6); g.quadraticCurveTo(x + 15, y + 25.3, x + 16.6, y + 23.6); g.stroke();
-    } else g.fillRect(x + 14, y + 24, 3, 1);                                             // o tracinho de sempre
+    } else {g.lineWidth=.9;g.beginPath();g.moveTo(x+14,y+24);g.quadraticCurveTo(x+15.5,y+24.55,x+17,y+23.9);g.stroke();} // sorriso neutro discreto
     if(b === 'dentinho'){ g.fillStyle = '#fff'; g.beginPath(); g.moveTo(x + 15.6, y + 23.9); g.lineTo(x + 16.6, y + 24); g.lineTo(x + 16.1, y + 25.2); g.closePath(); g.fill(); }
   }
   // Devolve true quando desenhou a expressão (0 neutra, 2 sorriso, 3 piscadinha). As outras ficam como estavam.

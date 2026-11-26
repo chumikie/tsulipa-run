@@ -1359,9 +1359,23 @@
   }
   // Sinais das três entradas, ancorados na arte e desenhados também em movimento reduzido.
   function marcosDaRua(tm,bairro){
-    if(bairro!=='fofo'&&bairro!=='harajuku'&&bairro!=='arena')return;
+    if(!CORES_BAIRROS[bairro])return;
     ctx.save();
-    if(bairro==='fofo'){
+    // Rodapé da calçada (rua.py: base y=560); juntas em perspectiva abaixo das fachadas.
+    ctx.fillStyle='rgba(83,55,105,.09)';ctx.fillRect(0,567,1600,5);
+    ctx.strokeStyle='rgba(123,88,123,.12)';ctx.lineWidth=1.3;
+    [588,625].forEach(function(py){ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(1600,py);ctx.stroke();});
+    [300,800,1300].forEach(function(px){
+      ctx.fillStyle='rgba(73,43,97,.11)';ctx.beginPath();ctx.ellipse(px,576,91,6,0,0,7);ctx.fill();
+    });
+    if(bairro==='praca'){
+      ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.ellipse(800,565,172,39,0,.18,Math.PI-.18);ctx.stroke();
+    }else if(bairro==='ceu'){
+      ctx.fillStyle='rgba(103,115,175,.11)';ctx.beginPath();ctx.ellipse(300,571,116,7,0,0,7);ctx.fill();
+    }else if(bairro==='palco'){
+      [300,800,1300].forEach(function(px){ctx.fillStyle='rgba(244,197,255,.20)';ctx.beginPath();ctx.ellipse(px,597,75,8,0,0,7);ctx.fill();});
+    }else if(bairro==='fofo'){
       [1208,1300,1392].forEach(function(x,i){
         ctx.save();ctx.translate(x,491);
         ctx.fillStyle='rgba(48,72,64,.16)';ctx.beginPath();ctx.ellipse(1,1,14,3.2,0,0,7);ctx.fill();
@@ -1394,7 +1408,7 @@
       ctx.globalAlpha=.20+.04*Math.sin(tm*1.4);
       ctx.fillStyle='#fffaf0';ctx.beginPath();ctx.moveTo(296,376);ctx.lineTo(319,376);ctx.lineTo(293,422);ctx.closePath();ctx.fill();
       ctx.globalAlpha=.12;ctx.beginPath();ctx.moveTo(374,376);ctx.lineTo(383,376);ctx.lineTo(354,425);ctx.lineTo(346,425);ctx.closePath();ctx.fill();
-    }else{
+    }else if(bairro==='arena'){
       ctx.fillStyle='#662f9c';ctx.beginPath();ctx.moveTo(681,410);ctx.quadraticCurveTo(800,338,919,410);
       ctx.lineTo(949,536);ctx.quadraticCurveTo(800,509,651,536);ctx.closePath();ctx.fill();
       ctx.strokeStyle='#fff1b9';ctx.lineWidth=5;ctx.stroke();

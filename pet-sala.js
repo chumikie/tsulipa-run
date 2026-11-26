@@ -78,6 +78,8 @@ function petLifeSofa(x, frente, visual){
     }
     x.strokeStyle='#ffe6f5'; x.lineWidth=1.4;
     x.beginPath(); x.roundRect(52,162,86,18,7); x.stroke();
+    x.strokeStyle='rgba(130,75,150,.23)';x.lineWidth=.8;
+    x.beginPath();x.moveTo(54,174);x.quadraticCurveTo(95,181,136,174);x.stroke();
   }else if(!visual || visual.sit <= .001){
     // Em pé: a frente do sofá é desenhada ANTES do Idol, que fica de pé no chão, à frente.
     x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,181,97,13,6);x.fill();
@@ -109,6 +111,8 @@ function petLifeSofa(x, frente, visual){
       perna.addColorStop(.56,'rgba(255,255,255,0)');perna.addColorStop(1,'rgba(40,10,70,.22)');
       x.fillStyle=perna;x.fillRect(px-5.9,q.y+6,11.8,altura);
       x.fillStyle='rgba(40,10,70,.14)';x.fillRect(px-5.5,q.y+6+altura-2,11,2);
+      x.fillStyle='rgba(255,255,255,.12)';x.beginPath();x.ellipse(px-1.4,q.y+8.2,3.5,1.35,0,0,7);x.fill();
+      x.fillStyle='rgba(40,10,70,.12)';x.beginPath();x.ellipse(px,q.y+6+altura-1.5,4.8,.9,0,0,7);x.fill();
       petLifeCanelaRoupa(x, px, q.y+6+altura); // preserva as polainas do figurino
       if(!roupa){ x.fillStyle=petLifeCorColo;
         x.fillRect(px-7,q.y-3,14,10);
@@ -177,7 +181,7 @@ function petLifePoseDesenho(t){
   var alvo = PET_LIFE_POSES[petLifePose] || PET_LIFE_EM_PE;
   var ate = {x:alvo.x, y:alvo.y, rot:alvo.rot, sit:petLifePose ? 1 : 0};
   if(!petLifePoseOrigem || petLifeMovimentoReduzido()) return ate;
-  var p = Math.max(0,Math.min(1,(t-petLifePoseInicio)/24));p=p*p*(3-2*p);
+  var p = Math.max(0,Math.min(1,(t-petLifePoseInicio)/24));p=p*p*p*(p*(p*6-15)+10); // aceleração suave nas duas extremidades; mesma duração
   var de = petLifePoseOrigem;
   return {x:de.x+(ate.x-de.x)*p,y:de.y+(ate.y-de.y)*p,
     rot:de.rot+(ate.rot-de.rot)*p,sit:de.sit+(ate.sit-de.sit)*p};

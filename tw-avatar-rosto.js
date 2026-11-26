@@ -30,11 +30,11 @@
   // Um olho aberto, sem traços (só formas cheias): x0 = x+10 (esquerdo) ou x+18 (direito).
   function olho(g, c, x0, y, lado){
     var f = forma(c), cor = hex(c && c.eye, '#5a3b2e');
-    if(f === ''){   // olhar clássico, com cantos suaves na mesma área de 3×5
-      g.fillStyle = cor; RR(g,x0,y+18,3,4,[.8,.8,1.1,1.1]);
-      g.fillStyle = PUPILA; E(g,x0+1.75,y+20,.95,1.18);
-      g.fillStyle = TINTA; RR(g,x0-.1,y+17,3.2,1.15,.55);
-      g.fillStyle = '#fff'; E(g,x0+.65,y+18.9,.55,.8); E(g,x0+2.35,y+21.3,.33,.33);
+    if(f === ''){   // clássico: contrato pixel a pixel, inclusive para saves antigos
+      g.fillStyle = TINTA; g.fillRect(x0, y + 17, 3, 1);
+      g.fillStyle = cor; g.fillRect(x0, y + 18, 3, 4);
+      g.fillStyle = PUPILA; g.fillRect(x0 + 1, y + 19, 2, 2);
+      g.fillStyle = '#fff'; g.fillRect(x0, y + 18, 1, 2); g.fillRect(x0 + 2, y + 21, 1, 1);
       return;
     }
     if(f === 'pontinho'){   // olhinho de ponto, bem chibi
@@ -44,7 +44,8 @@
     }
     var big = f === 'brilhante', w = big ? 3.4 : f === 'gotinha' ? 2.5 : 3, h = big ? 4.6 : f === 'gotinha' ? 4.9 : 4, X = x0 + 1.5 - w / 2, Y = y + 22 - h;
     if(f === 'sereno'){ Y = y + 19.4; h = 2.6; }
-    g.fillStyle = cor; RR(g, X, Y, w, h, [1.1, 1.1, 1.5, 1.5]);
+    var iris=g.createLinearGradient(0,Y,0,Y+h);iris.addColorStop(0,escurecer(cor,30));iris.addColorStop(.58,cor);iris.addColorStop(1,cor);
+    g.fillStyle = iris; RR(g, X, Y, w, h, [1.1, 1.1, 1.5, 1.5]);
     g.fillStyle = PUPILA; E(g, x0 + 1.6, Y + h * .58, w * .32, h * .27);
     g.fillStyle = TINTA; RR(g, X - .25, Y - 1, w + .5, 1.25, .6);                     // pálpebra cheia, sem linha solta
     if(f === 'gatinho'){ g.beginPath(); var ox = lado < 0 ? X - .25 : X + w + .25; g.moveTo(ox, Y - 1); g.lineTo(ox + lado * 1.6, Y - 1.9); g.lineTo(ox, Y + .25); g.closePath(); g.fill(); }
@@ -104,7 +105,7 @@
       if(b === 'aberta' || b === 'sorriso'){ g.fillStyle = '#ff8fb0'; E(g, x + 15, y + 23 + r * .62, r * .5, r * .28); }
     } else if(b === 'sorriso' || b === 'dentinho'){
       g.lineWidth = 1; g.beginPath(); g.moveTo(x + 13.4, y + 23.6); g.quadraticCurveTo(x + 15, y + 25.3, x + 16.6, y + 23.6); g.stroke();
-    } else {g.lineWidth=.9;g.beginPath();g.moveTo(x+14,y+24);g.quadraticCurveTo(x+15.5,y+24.55,x+17,y+23.9);g.stroke();} // sorriso neutro discreto
+    } else g.fillRect(x + 14, y + 24, 3, 1); // boca clássica neutra
     if(b === 'dentinho'){ g.fillStyle = '#fff'; g.beginPath(); g.moveTo(x + 15.6, y + 23.9); g.lineTo(x + 16.6, y + 24); g.lineTo(x + 16.1, y + 25.2); g.closePath(); g.fill(); }
   }
   // Devolve true quando desenhou a expressão (0 neutra, 2 sorriso, 3 piscadinha). As outras ficam como estavam.
@@ -177,6 +178,8 @@
       g.fill();
       g.fillStyle = sola; g.fillRect(sx + .3, y + 43.6, 5.6, .7);
       g.fillStyle = claro ? '#ff8fc8' : 'rgba(255,255,255,.35)'; g.fillRect(sx + 1.3, y + 42, 3.4, .55);   // cadarço / brilho
+      g.fillStyle=claro?'rgba(105,72,153,.16)':'rgba(255,255,255,.17)';
+      E(g,sx+3.1,y+41.85,1.7,.38); // abertura e peito do pé na mesma altura
     });
   }
 

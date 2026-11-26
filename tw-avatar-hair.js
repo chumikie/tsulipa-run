@@ -200,6 +200,19 @@ window.TWAvatarHair={
  frente:function(g,c,x,y,b){
   var f=c.front||'',H=c.hair||'#ff7eb6',HD=escurecer(H,60),pele=c.skin||'#f1c9a5';
   function grad(){var hg=g.createLinearGradient(0,y+5,0,y+24);hg.addColorStop(0,H);hg.addColorStop(1,HD);return hg;}
+  // Mechas curvas, contidas no topo; a divisão bicolor e a franja arco-íris permanecem intactas.
+  if(b!=='onduladom2' && f!=='espetada' && f!=='arcoiris'){
+   g.save();cabeca(g,x,y);g.clip();
+   var ond=b==='onduladom'||b==='onduladof'||b==='cacheado'||b==='princesa';
+   g.fillStyle='rgba(255,255,255,.14)';
+   if(ond){
+    [[8,4,6,5.5,6.5,9],[16,2,13,4.5,14,7.5],[24,4,21,5.5,23,8.5]].forEach(function(a){fio(g,x+a[0],y+a[1],x+a[2],y+a[3],x+a[4],y+a[5],1.7,0);});
+   }else{
+    fio(g,x+13,y+1.8,x+8,y+3.4,x+5.8,y+9,2.3,0);
+    fio(g,x+17,y+1.8,x+21,y+3.7,x+24.1,y+9,1.65,0);
+   }
+   g.restore();
+  }
   if(f==='cortina'||f==='curta'){
    g.save();cabeca(g,x,y);g.clip();
    if(f==='cortina'){   // risca no meio: a testa aparece num arco e as abas abrem para os lados

@@ -762,3 +762,12 @@ html[data-theme="dark"] .tw-piloto-vitrine span{color:#f3d6f0}
   .stgrupo .stchip{padding-inline:5px;gap:3px}
 }
 /* A resposta é imediata, sem acrescentar transições ao lote do mapa. */
+
+/* Remaster 3.0: hierarquia de edição e leitura sem novos controles. */
+html body .studiop .stgrupo>b{color:var(--ink,#432675);letter-spacing:.01em;margin:8px 0 4px}
+#studioVisor[data-fase="monta"],#studioVisor[data-fase="contagem"]{padding:4px 8px}
+#studioPauta>summary{min-height:44px;display:flex;align-items:center;justify-content:center}
+.stcategorias .stabab{min-height:44px}
+#perfCorpo .twp-vazia{color:var(--ink,#432675)}
+#twMapa .tw-mapa-vitrine{box-shadow:none}
+@media(max-width:360px){.stcategorias .stabab{padding-inline:6px}}

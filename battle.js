@@ -935,6 +935,9 @@ function fundoPalco(x,cor,t){
  x.save();x.globalAlpha=.18;x.fillStyle=cor;
  [[380,40],[430,18]].forEach(function(f){x.beginPath();x.moveTo(f[0],0);x.lineTo(f[0]+f[1],0);x.lineTo(f[0]+f[1]-200,SH);x.lineTo(f[0]-200,SH);x.closePath();x.fill();});
  x.restore();
+ // O salão tem dois pilares e um friso, atrás do telão e dos competidores.
+ x.save();[26,SW-46].forEach(function(px){x.fillStyle='#b6a2db';x.fillRect(px,60,20,240);x.fillStyle='#ece3fa';x.fillRect(px+2,60,12,240);x.fillStyle='#c5afd9';x.fillRect(px-4,58,28,9);x.fillRect(px-4,291,28,9);});
+ x.fillStyle='#cab7e9';x.fillRect(0,93,SW,5);x.restore();
  // telão com arco-íris de giz e estrelinhas
  rrect(x,70,118,420,170,16);x.fillStyle='#d8b98c';x.fill();
  rrect(x,78,126,404,154,10);var tg=x.createLinearGradient(0,126,0,280);tg.addColorStop(0,'#2d1b5e');tg.addColorStop(1,'#3e2a7c');x.fillStyle=tg;x.fill();

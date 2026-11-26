@@ -1351,3 +1351,13 @@ body.tw-cel .twc .twc-jogos .twc-jogo-txt b{line-height:1.35;overflow-wrap:anywh
 body.tw-cel .twc .twc-jogos .twc-jogo:focus-visible{outline:3px solid currentColor;outline-offset:2px}
 @media(max-width:359px){body.tw-cel .twc .twc-jogos .twc-jogo{gap:8px;padding-inline:6px 10px}
 body.tw-cel .twc .twc-pag{padding-inline:10px}}
+
+/* Identity & Soul: nomes e ações continuam inteiros mesmo com traduções longas. */
+body.tw-cel .twc .twc-jogos .twc-jogo{gap:9px;padding-inline:8px 10px}
+body.tw-cel .twc .twc-jogo-txt{min-width:0;overflow-wrap:anywhere}
+body.tw-cel .twc .twc-atalhos .twc-atalho{min-width:0;max-width:100%}
+body.tw-cel .twc .twc-atalhos .twc-atalho span{overflow-wrap:anywhere}
+@media(max-width:340px){
+  body.tw-cel .twc .twc-jogos .twc-jogo{gap:7px}
+  body.tw-cel .twc .twc-jogo-ico{width:40px;height:40px}
+}

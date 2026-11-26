@@ -103,9 +103,10 @@ function petLifeSofa(x, frente, visual){
       px += Math.min(0,visual.rot)*5*(o<0?1:-1);
       // Mesmo desenho das pernas do avatar (drawChar): retângulos 5×8 escuros, sem pé
       // separado. Só a altura encurta, porque a coxa vem para frente.
-      var bal = petLifeMovimentoReduzido() ? 0 : Math.sin(petT * .05 + (o > 0 ? 1.6 : 0)) * (petLifePose === 'sentar' ? 1.2 : 0);
+      // Os pés permanecem plantados: a respiração passa ao tronco em torno do quadril.
+      var bal = 0;
       x.fillStyle=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || '')) ? CH[sel].legcol : '#1c1c30';
-      var recolhimento = Math.max(0, -visual.rot) * (o < 0 ? 42 : 17);
+      var recolhimento = Math.max(0, -visual.rot) * (o < 0 ? 20 : 0);
       var altura = Math.max(8, PET_FLOOR + bal - recolhimento - (q.y+6));
       // A canela termina no plano do piso, inclusive na pose inclinada.
       x.fillRect(px-6,q.y+6,12,altura);
@@ -1939,7 +1940,7 @@ function petDrawRoom(){
       g.beginPath();g.rect(0,0,360,limite);g.clip();
     }
     else { g.fillStyle = 'rgba(60,25,90,.18)'; g.beginPath(); g.ellipse(114, PET_FLOOR + 1, 21, 3.5, 0, 0, 7); g.fill(); }
-    var bobIdol=petLifeMovimentoReduzido()?0:Math.sin(petT * (petLifePose === 'descansar' ? .018 : .05)) * (pose ? .55 : 1.5);
+    var bobIdol=petLifeMovimentoReduzido()||pose?0:Math.sin(petT*.05)*1.5;
     g.translate(poseDesenho.x,poseDesenho.y+bobIdol-(pose||petLifeMovimentoReduzido()?0:chop));
     if(pose && pose.rot) g.rotate(pose.rot);
     // Olhar sugerido pelo corpo, sem editar olhos/pupilas ou a função drawChar compartilhada.
@@ -1952,8 +1953,9 @@ function petDrawRoom(){
     if(olharLembranca) g.rotate(olharLembranca);
     if(pose){
       // Inclinação a partir do quadril para manter o contato com a almofada.
-      var atitude = sel === 0 ? .045 : sel === 1 ? -.035 : sel === 2 ? .02 : 0;
-      g.translate(36,81.6); g.rotate(atitude * pose.sit); g.translate(-36,-81.6);
+      var atitude = sel === 0 ? .065 : sel === 1 ? -.055 : sel === 2 ? .025 : 0;
+      var respira=petLifeMovimentoReduzido()?0:Math.sin(petT*(sel===1?.022:.034))*.012;
+      g.translate(36,81.6); g.rotate((atitude+respira)*pose.sit); g.translate(-36,-81.6);
     }
     g.scale(2.4, 2.4);
     drawChar(CH[sel], 0, 0, 0, expr);

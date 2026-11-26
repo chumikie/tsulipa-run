@@ -785,3 +785,15 @@ html body .studiop .stgrupo>b{color:var(--ink,#432675);letter-spacing:.01em;marg
 #studioVisor[data-fase="monta"]{border-radius:12px}
 #studioAcao .stclique{box-shadow:0 2px 0 rgba(43,27,88,.22)}
 @media(max-width:359px){#shopAbas [data-shop-aba]{padding-inline:8px;flex:1 1 0}.shopprov{padding:6px}}
+
+/* Identity & Soul: grupos de decisão em vez de pílulas visualmente soltas. */
+.stgrupo{min-width:0}
+.stgrupo .stchip{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.stgrupo .stchip span{min-width:0;overflow-wrap:anywhere}
+.stgrupo .stchip[aria-pressed="true"]{border-width:2px}
+.stcategorias{gap:6px;flex-wrap:wrap}
+.stcategorias .stabab{min-width:0;white-space:normal;overflow-wrap:anywhere}
+@media(max-width:360px){
+  .stcategorias .stabab{flex:1 1 30%;max-width:100%}
+  .stgrupo .stchip{padding-inline:7px}
+}

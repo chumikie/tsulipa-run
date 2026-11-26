@@ -22,7 +22,16 @@ function duoFundoDesenhar(x, W2, H2, f, t, corOshi){
     [W2 * .3, W2 * .5].forEach(function(lx, j){ x.strokeStyle = '#8a6a7a'; x.lineWidth = 1.5 * u; x.beginPath(); x.moveTo(lx, 0); x.lineTo(lx, H2 * .14); x.stroke(); x.fillStyle = j ? '#ffe14d' : '#ff9ccd'; x.beginPath(); x.arc(lx, H2 * .16, 9 * u, Math.PI, 0); x.fill();
       var lg = x.createRadialGradient(lx, H2 * .18, 2, lx, H2 * .18, 50 * u); lg.addColorStop(0, 'rgba(255,240,180,.45)'); lg.addColorStop(1, 'rgba(255,240,180,0)'); x.fillStyle = lg; x.fillRect(lx - 50 * u, H2 * .16, 100 * u, 80 * u); });
     x.fillStyle = '#f3d3b8'; x.fillRect(0, H2 * .72, W2, H2 * .28);
-    x.fillStyle = 'rgba(201,139,85,.25)'; for(i = 0; i < 16; i++) for(var j = 0; j < 4; j++) if((i + j) % 2) x.fillRect(i * 20 * u, H2 * .72 + j * 20 * u, 20 * u, 20 * u);
+    // Ladrilhos em perspectiva: os intervalos crescem na direção dos dois Idols.
+    x.save();x.fillStyle='rgba(201,139,85,.25)';
+    var corte=H2*.72;for(var linha=0;linha<4;linha++){
+      var a=linha/4,b=(linha+1)/4,ya=corte+(H2-corte)*a*a,yb=corte+(H2-corte)*b*b;
+      var wa=W2*(.64+.36*a),wb=W2*(.64+.36*b);
+      for(var j=-12;j<12;j++){if((j+linha)%2===0)continue;
+        x.beginPath();x.moveTo(W2/2+j*wa/12,ya);x.lineTo(W2/2+(j+1)*wa/12,ya);
+        x.lineTo(W2/2+(j+1)*wb/12,yb);x.lineTo(W2/2+j*wb/12,yb);x.closePath();x.fill();
+      }
+    }x.restore();
     perfEnfeites(x, W2, H2 * .7, ['#ff9ccd', '#ffd36b', '#c4a5ff'], 10, 7, t, .6);
     return;
   }

@@ -502,7 +502,7 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera, comFlor){
     // A mão baixa chega a y=33, e o punho do objeto continua até y≈34.
     // No retrato com objeto, reserve a mesma margem para flor, microfone e lightstick.
     var faixa = camera === 'rosto' ? [-7, comFlor ? (av.pose === 'coracao' ? 32 : 34) : 27] : camera === 'meio' ? [-7, 39] : [-7, 49];
-    var largura = camera === 'rosto' ? (comFlor ? (aceno ? 44 : 34) : 30) : camera === 'meio' ? (aceno ? 44 : 36) : (pet ? 76 : 44);
+    var largura = camera === 'rosto' ? (comFlor ? (aceno ? 44 : 34) : 30) : camera === 'meio' ? (aceno ? 48 : 38) : (pet ? 76 : 44);
     if(camera !== 'inteiro') pet = null; // no close o Pet fica de fora, para o Idol não encolher
     sc = Math.min(H2 * .92 / (faixa[1] - faixa[0]), W2 * .96 / largura);
     tx = W2 / 2 - (pet ? 25 : aceno && (camera !== 'rosto' || comFlor) ? 18.5 : 15) * sc;
@@ -512,7 +512,8 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera, comFlor){
     if(camera !== 'inteiro') ty = H2 - (faixa[1] + 2) * sc;
     chao = ty + 44 * sc;
   }
-  var bob = t ? Math.sin(t * .06) * 1.1 * sc : 0;
+  // A câmera não desloca o corpo para fora dos limites definidos pelo enquadramento.
+  var bob = t ? Math.sin(t * .06) * (camera ? .45 : 1.1) * sc : 0;
   var cx = tx + 15 * sc, cy = ty + 22 * sc + bob, i, gira = t * .012, pulso = t ? 1 + .05 * Math.sin(t * .08) : 1;
   // sombra no chão
   x.fillStyle = 'rgba(30,10,60,.25)'; x.beginPath(); x.ellipse(cx, chao, 15 * sc * (1 - bob / sc * .04), 2.6 * sc, 0, 0, 7); x.fill();

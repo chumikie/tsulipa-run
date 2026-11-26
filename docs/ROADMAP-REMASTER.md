@@ -12,3 +12,22 @@ A meta artística é reconhecer o trio, o bairro e a atividade numa captura sem 
 | 3.7 · Qualidade e desempenho | URLs de módulos e estilos atualizadas para o cache do service worker, dois gradientes fixos reaproveitados no Karaoke e cópia superficial das opções visuais no desenho do Studio. O teste de idiomas inclui indonésio nos dois tamanhos. | Testar visitante, troca de conta, recarga, movimento reduzido e falha de rede. Comparar sessões longas no Safari em iPhone físico para avaliar memória e fluidez no aparelho. |
 
 A aprovação artística final depende da leitura das capturas pelo dono. A bateria automatizada cobre navegação e persistência com contas de teste. Medições de memória no Safari e compartilhamento pela folha nativa exigem aparelho físico.
+
+
+## Identity & Soul · 3.8–4.4 (26/11/2026)
+
+Referência: HEAD `a483dd2`, CI anterior aprovado, artefato 15126653397 (86 pares PNG e dois vídeos). Foram examinadas as folhas de contato, os quadros amostrados dos vídeos e detalhes do mapa.
+
+| Etapa | Implementado no código desta rodada | Validação pendente |
+| --- | --- | --- |
+| 3.8 · Idol Art Direction | Silhuetas de franja, coques e Chanel redesenhadas com curvas, mãos com polegar e dedos mais definidos, cintura e ombro mais naturais. Renderizador compartilhado mantido. | Conferir o trio e o vestuário personalizado em todas as superfícies. |
+| 3.9 · Figurinos | Contorno da camisa, pinças, mangas curvas nos braços erguidos, recorte do entrepernas e caimento. | Conferir poses e sobreposição dos acessórios. |
+| 4.0 · Living World | Proscênio do Star Stage, pavimento da Praça Central, estrutura da cobertura da Star Arena, floreiras do Jardim das Nuvens. | Conferir profundidade, entradas e sobreposição com os passantes. |
+| 4.1 · Cozy Camarim | Apoio dos pés sentados, menor recolhimento do pé, respiração por rotação no quadril em vez de flutuação vertical. | Conferir contato com assento e transições nos vídeos, pet e decoração preservados. |
+| 4.2 · Photo Studio | Distância realmente distinta no retrato/meio-corpo com objeto e aceno; oscilação da câmera reduzida; mão esquerda espelhada anatomicamente e dedos diferenciados. Caminho de salvamento preservado. | Comparar pixels renderizados e fotografia guardada. |
+| 4.3 · Clean UI | Quebra de texto e acomodação dos botões do Studio e dos jogos no celular; versões de cache atualizadas. | Conferir seis idiomas, claro/escuro, teclado e acessibilidade. |
+| 4.4 · Game Feel | Cornijas e faces laterais no Center Run e Sora; painéis da sala do Karaoke e Café; piso do Handshake; topografia do Bloom; postura do Pet; pilares da Battle; piso em perspectiva do Moon Duo. Memórias Eternas recebe apenas o refinamento compartilhado dos avatares onde estes são redesenhados, sem alterar fotos já gravadas. | Revisão artística das dez atividades; novas animações e revisão específica das Memórias ainda incompletas. |
+
+Verificação disponível antes do commit: análise sintática dos módulos JS alterados; quatro casos geométricos do enquadramento (normal, V, aceno e coração), com relação estrita retrato > meio-corpo > inteiro e punho dentro do retrato. Teste de regressão do Studio reforçado. Não houve clone local devido à indisponibilidade de DNS para GitHub no ambiente executor; testes completos em Chromium/WebKit, persistência e isolamento e novas capturas dependem da execução do CI existente sobre este commit. Não declarar aprovação artística ou conclusão integral antes dessas evidências. O comparativo padrão do CI usa a base da PR; o artefato da revisão anterior permite a comparação adicional entre rodadas.
+
+Sem mudanças de mecânicas, economia, recompensas, dados salvos, banco, SQL ou Supabase. Sem publicação, merge ou nova PR.

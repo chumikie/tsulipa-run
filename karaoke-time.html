@@ -2,7 +2,7 @@
 <script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=4"></script>
-<script src="./tw-avatar-hair.js?v=16"></script><script src="./tw-avatar-roupa.js?v=18"></script><script src="./tw-avatar-rosto.js?v=8"></script><script src="./karaoke-music-preview.js?v=3"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=2"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=16"></script><script src="./tw-avatar-roupa.js?v=19"></script><script src="./tw-avatar-rosto.js?v=8"></script><script src="./karaoke-music-preview.js?v=3"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=2"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -1852,7 +1852,14 @@ function krDesenharDecoracaoSala(x,t,W,H,paleta){
   var wallCanvas=document.createElement('canvas');wallCanvas.width=W;wallCanvas.height=KR_ROOM_PISO_Y;
   var bg=wallCanvas.getContext('2d');
   krParedeEstofada(bg,W,KR_ROOM_PISO_Y);var wall=bg.createLinearGradient(0,0,0,KR_ROOM_PISO_Y-10);wall.addColorStop(0,'rgba(12,3,18,.58)');wall.addColorStop(.6,'rgba(30,8,36,.22)');wall.addColorStop(1,'rgba(12,3,18,.04)');bg.fillStyle=wall;bg.fillRect(0,0,W,KR_ROOM_PISO_Y);
-  bg.fillStyle='rgba(16,4,23,.60)';bg.fillRect(0,KR_ROOM_PISO_Y-4,W,4);
+  // Painéis do revestimento: friso, montantes e rodapé no cache estático da sala.
+bg.fillStyle='#37243d';bg.fillRect(0,KR_ROOM_PISO_Y-13,W,13);
+bg.fillStyle='#72546d';bg.fillRect(0,KR_ROOM_PISO_Y-14,W,2);
+for(var panelX=24;panelX<W;panelX+=96){
+  bg.fillStyle='rgba(24,13,31,.22)';bg.fillRect(panelX,0,2,KR_ROOM_PISO_Y-14);
+  bg.fillStyle='rgba(255,220,230,.08)';bg.fillRect(panelX+2,0,1,KR_ROOM_PISO_Y-14);
+}
+bg.fillStyle='rgba(16,4,23,.60)';bg.fillRect(0,KR_ROOM_PISO_Y-4,W,4);
   krDecorWallCache=wallCanvas;
  }
  x.drawImage(krDecorWallCache,0,0);

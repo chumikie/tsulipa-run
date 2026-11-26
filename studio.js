@@ -655,6 +655,8 @@
     x.translate(corpo.x + mao[0] * corpo.scale, corpo.y + mao[1] * corpo.scale);
     x.scale(corpo.scale, corpo.scale);
     x.rotate(angulo);
+    // A palma e o polegar acompanham o lado anatômico da mão que segura o objeto.
+    if(mao[0]<15)x.scale(-1,1);
     x.lineCap = 'round';
     // Mão: palma arredondada na largura do braço; a haste passa entre a palma e os dedos (desenhados depois).
     x.fillStyle=corpo.skin;x.beginPath();
@@ -708,7 +710,9 @@
     x.quadraticCurveTo(2.15,1.35,1.05,1.7);x.lineTo(-.95,1.45);
     x.quadraticCurveTo(-2,1.2,-1.9,-.65);x.closePath();x.fill();
     x.lineCap='round';x.strokeStyle='rgba(105,56,50,.17)';x.lineWidth=.45;
-    x.beginPath();x.moveTo(-1.4,.35);x.quadraticCurveTo(-.1,.6,1.25,.35);x.stroke();
+    [-.45,.35,1.02].forEach(function(d){
+      x.beginPath();x.moveTo(-1.42,d);x.quadraticCurveTo(-.1,d+.24,1.1,d);x.stroke();
+    });
     // O polegar envolve a haste, conectado à base da palma, sem contorno solto.
     x.fillStyle=corpo.skin;x.beginPath();x.moveTo(1.8,1.3);
     x.quadraticCurveTo(1.05,.8,.05,-.65);x.quadraticCurveTo(-.55,-1.55,-1.05,-.95);

@@ -833,6 +833,11 @@ function drawCity(arr,w,off,base,col,win,widthLimit){
       g.fillStyle=col;
       g.fillRect(x,base-b.h,b.w,b.h);
       if(win){
+        // Cornija e face lateral dos edifícios do plano próximo, sem mudar a velocidade ou colisões.
+        g.fillStyle='rgba(27,19,64,.21)';g.beginPath();
+        g.moveTo(x+b.w*.81,base-b.h);g.lineTo(x+b.w,base-b.h);
+        g.lineTo(x+b.w,base);g.lineTo(x+b.w*.81,base);g.closePath();g.fill();
+        g.fillStyle=col;g.fillRect(x-1,base-b.h,Math.max(2,b.w+2),2.5);
         g.fillStyle='rgba(38,28,74,.16)';
         g.fillRect(x+b.w*.81,base-b.h,b.w*.19,b.h);
         g.fillStyle=win;
@@ -1729,11 +1734,12 @@ function crLuzesPalco(){
   var agoraB = performance.now(), batMs = (typeof crPassoMs === 'number' ? crPassoMs : 190) * 2, bat;
   if(typeof crBatidaT === 'number' && crBatidaT && agoraB - crBatidaT < batMs * 3) bat = Math.min(1, (agoraB - crBatidaT) / batMs);
   else bat = (frame % 30) / 30;
-  var pulso = Math.pow(1 - bat, 3), fever = !!(pw && pw.k === 'fever');
+  var calmo=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var pulso = calmo ? 0 : Math.pow(1 - bat, 3), fever = !!(pw && pw.k === 'fever');
   var base = (fever ? .2 : .1) + pulso * (fever ? .2 : .1), cores = fever ? ['255,111,181', '255,111,181'] : ['155,48,217', '65,105,225'];
   g.save(); g.globalCompositeOperation = 'lighter';
   for(var i = 0; i < 2; i++){
-    var ox = i ? W * .82 : W * .18, ang = Math.sin(frame * .012 + i * 2.1) * .55 + (i ? -.35 : .35), len = GY + 40;
+    var ox = i ? W * .82 : W * .18, ang = (calmo ? 0 : Math.sin(frame * .012 + i * 2.1) * .55) + (i ? -.35 : .35), len = GY + 40;
     var tx = ox + Math.sin(ang) * len, ty = GY + 10, larg = 70 + pulso * 26;
     var gr = g.createLinearGradient(ox, -10, tx, ty); gr.addColorStop(0, 'rgba(' + cores[i] + ',' + (base * 1.6).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(' + cores[i] + ',0)');
     g.fillStyle = gr; g.beginPath(); g.moveTo(ox - 6, -10); g.lineTo(ox + 6, -10); g.lineTo(tx + larg, ty); g.lineTo(tx - larg, ty); g.closePath(); g.fill();

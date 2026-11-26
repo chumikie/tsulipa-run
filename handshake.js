@@ -499,6 +499,10 @@ function hsDesenhar(){
   x.save(); x.globalAlpha = .18 + .06 * Math.sin(t / 20); x.fillStyle = '#fff6b0';
   [[.3, -1], [.75, 1]].forEach(function(h){ x.beginPath(); x.moveTo(W2 * h[0], 0); x.lineTo(W2 * h[0] + h[1] * W2 * .2 - W2 * .12, H2); x.lineTo(W2 * h[0] + h[1] * W2 * .2 + W2 * .12, H2); x.closePath(); x.fill(); });
   x.restore();
+  // Piso da fila em perspectiva: divisões atrás dos fãs, sem trocar as posições de atendimento.
+  x.save();x.strokeStyle='rgba(209,196,255,.26)';x.lineWidth=1;
+  x.beginPath();for(var junta=-3;junta<=3;junta++){x.moveTo(W2*.46+junta*W2*.05,H2*.57);x.lineTo(W2*.46+junta*W2*.2,H2);}
+  [.66,.79,.93].forEach(function(h){x.moveTo(0,H2*h);x.lineTo(W2,H2*h);});x.stroke();x.restore();
   // fila de verdade: os próximos fãs (mesmo visual sorteado), pequenos e esperando a vez, com plaquinha de nº
   if(hs && hs.fase === 'fila'){
     var prox = hs.fila.slice(hs.vi + 1, hs.vi + 5);

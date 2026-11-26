@@ -654,6 +654,12 @@ function cfDesenhar(){
   x.fillStyle = '#fff'; x.font = '900 16px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.fillText('☕ Happy⭐Cafe!', W2 * .78, 62);
   x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffe2f1'; x.fillText('Shakes · Frappés · Lattes', W2 * .78, 82); x.fillStyle = '#c8e3fb'; x.fillText('Cookies · Brownies · Waffles', W2 * .78, 100);
   x.fillStyle = '#ffe47c'; x.fillText('ハッピー・カフェ', W2 * .78, 120); x.restore();
+  // Lambris baixos com painel de madeira: plano físico atrás dos clientes.
+  x.save();x.fillStyle='#edd0dc';x.fillRect(0,H2*.57,W2,H2*.17);
+  x.fillStyle='#d5a5bc';x.fillRect(0,H2*.57,W2,3);
+  x.strokeStyle='#dbb4c6';x.lineWidth=1.5;
+  for(var painel=0;painel<6;painel++){x.strokeRect(painel*W2/6+5,H2*.59,W2/6-10,H2*.13);}
+  x.restore();
   // cliente no balcão
   var c = cf && !cf.duplo && cf.cli;
   if(cf && cf.duplo && typeof cfDuploClientes === 'function') cfDuploClientes(x, W2, H2, t);   // modo Dois no balcão (cafe-duplo.js)

@@ -20,7 +20,7 @@
 <script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=4"></script>
-<script src="./tw-avatar-hair.js?v=16"></script><script src="./tw-avatar-roupa.js?v=18"></script><script src="./tw-avatar-rosto.js?v=8"></script>
+<script src="./tw-avatar-hair.js?v=16"></script><script src="./tw-avatar-roupa.js?v=19"></script><script src="./tw-avatar-rosto.js?v=8"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time!, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -3736,6 +3736,12 @@ function soraDraw(){
       var by = SH - bh + bOff;
       x.fillStyle = b % 2 ? '#1e1b4b' : '#31105f';
       x.fillRect(b * 54 - 6, by, 48, bh + 120);
+        // O prédio tem cobertura, beiral e uma face lateral; a colisão não usa esta arte.
+        x.save();
+        x.fillStyle='rgba(45,35,76,.18)';x.fillRect(b*54+32,by+4,10,bh+116);
+        x.fillStyle='rgba(255,255,255,.25)';x.fillRect(b*54-8,by-3,52,4);
+        x.fillStyle='rgba(43,35,70,.22)';x.fillRect(b*54+5,by-10,17,7);
+        x.restore();
       x.fillStyle = 'rgba(255,225,130,.35)';
       for(var wy = by + 12; wy < SH; wy += 18){
         x.fillRect(b * 54 + 6, wy, 8, 8);

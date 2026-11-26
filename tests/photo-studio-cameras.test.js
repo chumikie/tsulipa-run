@@ -40,7 +40,7 @@ test('Photo Studio: rosto, meio and inteiro have genuinely different crops', () 
       assert.ok(close.x+40*close.scale<=432,'dedos da pose dentro do retrato');
       assert.ok(close.x-3*close.scale>=0,'mão esquerda não corta');
     }
-    assert.ok(close.scale>=meio.scale,'retrato não fica menor que meio corpo');
+    assert.ok(close.scale>meio.scale,'retrato deve ser maior que meio corpo, mesmo com aceno/objeto');
   }
 });
 

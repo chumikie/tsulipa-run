@@ -68,7 +68,7 @@
       // Bermuda com abertura central e cantos do tecido curvos.
       g.save();g.beginPath();g.moveTo(x+6.5,y+32);g.lineTo(x+23.5,y+32);
       g.quadraticCurveTo(x+24,y+36,x+23.2,y+39.7);g.quadraticCurveTo(x+20,y+40.3,x+15.6,y+39.7);
-      g.lineTo(x+15,y+36.7);g.lineTo(x+14.4,y+39.7);g.quadraticCurveTo(x+10,y+40.3,x+6.8,y+39.7);
+      g.quadraticCurveTo(x+15.4,y+37.8,x+15,y+36.4);g.quadraticCurveTo(x+14.6,y+37.9,x+14.4,y+39.7);g.quadraticCurveTo(x+10,y+40.3,x+6.8,y+39.7);
       g.quadraticCurveTo(x+6,y+36,x+6.5,y+32);g.closePath();g.clip();
       g.fillStyle = k.cor; g.fillRect(x + 6.5, y + 32, 17, 8);
       g.fillStyle = k.linha; g.fillRect(x + 14.6, y + 35, .8, 5);           // costura do meio
@@ -123,7 +123,10 @@
             ux = dx / n, uy = dy / n, raio = blazer ? 3.4 : 2.7, alcance = blazer ? 6 : 4,
             px = -uy * raio, py = ux * raio;
         var ax = x + b[0], ay = y + b[1], bx = ax + ux * alcance, by = ay + uy * alcance;
-        g.moveTo(ax + px, ay + py); g.lineTo(bx + px, by + py); g.lineTo(bx - px, by - py); g.lineTo(ax - px, ay - py); g.closePath();
+        g.moveTo(ax + px, ay + py);
+        g.quadraticCurveTo(ax+ux*alcance*.55+px*1.13,ay+uy*alcance*.55+py*1.13,bx+px*.91,by+py*.91);
+        g.quadraticCurveTo(bx+ux*.45,by+uy*.45,bx-px*.91,by-py*.91);
+        g.quadraticCurveTo(ax+ux*alcance*.55-px*1.13,ay+uy*alcance*.55-py*1.13,ax-px,ay-py);g.closePath();
         g.moveTo(ax + raio, ay); g.arc(ax, ay, raio, 0, Math.PI * 2, true); // mesma orientação do polígono: não recorta uma fresta no ombro
       };
     }
@@ -180,15 +183,22 @@
   // Contorno comum, ombro largo e mão curva. Mantém a régua 30×44.
   function camisa(g,x,y,c){
     g.save();g.beginPath();g.moveTo(x+11,y+21.6);
-    g.quadraticCurveTo(x+6,y+21.8,x+4,y+24);
-    g.quadraticCurveTo(x+6.2,y+28,x+5.8,y+33.8);
-    g.quadraticCurveTo(x+15,y+35.2,x+24.2,y+33.8);
-    g.quadraticCurveTo(x+23.8,y+28,x+26,y+24);
-    g.quadraticCurveTo(x+24,y+21.8,x+19,y+21.6);
+    g.quadraticCurveTo(x+6.8,y+21.2,x+4.2,y+24);
+    g.quadraticCurveTo(x+5.9,y+26.6,x+6.8,y+29.4);
+    g.quadraticCurveTo(x+7.2,y+31.5,x+6.1,y+33.6);
+    g.quadraticCurveTo(x+10.3,y+34.7,x+15,y+34.4);
+    g.quadraticCurveTo(x+19.7,y+34.7,x+23.9,y+33.6);
+    g.quadraticCurveTo(x+22.8,y+31.5,x+23.2,y+29.4);
+    g.quadraticCurveTo(x+24.1,y+26.6,x+25.8,y+24);
+    g.quadraticCurveTo(x+23.2,y+21.2,x+19,y+21.6);
     g.closePath();g.clip();g.fillRect(x+4,y+21,22,15);
     tronco(g,x,y,'',c);
     g.strokeStyle='rgba(54,40,85,.18)';g.lineWidth=.45;
     g.beginPath();g.moveTo(x+7,y+33);g.quadraticCurveTo(x+15,y+34.1,x+23,y+33);g.stroke();
+    // Pinças laterais da camisa: partem da axila e convergem para a cintura.
+    [1,-1].forEach(function(k){var a=k===1?x:x+30;g.beginPath();
+      g.moveTo(a+k*6.1,y+25.5);g.quadraticCurveTo(a+k*9.2,y+28.3,a+k*7.8,y+31.6);g.stroke();
+    });
     g.restore();
   }
   function pescoco(g,x,y){
@@ -201,9 +211,15 @@
     g.save();
     for(var lado=-1;lado<=1;lado+=2){
       var cx=x+15+11*lado,cy=y+2.5;
-      g.fillStyle=cor;g.beginPath();g.ellipse(cx,cy,5.8,6.6,lado*.36,0,7);g.fill();
-      g.strokeStyle='rgba(178,164,200,.38)';g.lineWidth=.68;
-      g.beginPath();g.moveTo(cx-3.4,cy+1.8);g.bezierCurveTo(cx-3.5,cy-4.5,cx+3.8,cy-4,cx+2.2,cy-.5);g.stroke();
+      // Dois volumes de cabelo entrelaçados; as pontas se recolhem junto ao elástico.
+      g.fillStyle=cor;g.beginPath();g.moveTo(cx-lado*3.5,cy+5);
+      g.bezierCurveTo(cx-lado*8,cy+1,cx-lado*5.8,cy-5.2,cx,cy-6.3);
+      g.bezierCurveTo(cx+lado*6.4,cy-7.1,cx+lado*7,cy+.9,cx+lado*3.8,cy+4);
+      g.quadraticCurveTo(cx+lado*1.2,cy+6,cx-lado*3.5,cy+5);g.closePath();g.fill();
+      g.strokeStyle='rgba(178,164,200,.38)';g.lineWidth=.68;g.lineCap='round';
+      g.beginPath();g.moveTo(cx-lado*3.4,cy+2.1);g.bezierCurveTo(cx-lado*5.5,cy-3.5,cx+lado*2.8,cy-5.7,cx+lado*3.5,cy-1.6);
+      g.quadraticCurveTo(cx+lado*4,cy+1.3,cx,cy+3.8);g.stroke();
+      g.beginPath();g.moveTo(cx-lado*1.8,cy+2);g.quadraticCurveTo(cx-lado*3,cy-1.5,cx+lado*.8,cy-2.5);g.stroke();
       g.fillStyle='#4362b3';g.beginPath();g.ellipse(cx-lado,cy+4.6,3.8,1.3,-lado*.45,0,7);g.fill();
     }
     g.restore();
@@ -211,13 +227,15 @@
   function formaBracos(g,x,y){
     [1,-1].forEach(function(k){
       var a=k===1?x:x+30;function X(v){return a+k*v;}
-      g.moveTo(X(1),y+24);g.quadraticCurveTo(X(1),y+26.8,X(1.6),y+29);
-      g.quadraticCurveTo(X(1),y+30.5,X(1.35),y+32);
-      g.quadraticCurveTo(X(1.8),y+33.8,X(3.6),y+33.2);
-      g.quadraticCurveTo(X(4.7),y+33.1,X(4.65),y+32);
-      g.quadraticCurveTo(X(6.1),y+31.7,X(4.7),y+30.1);
-      g.quadraticCurveTo(X(5),y+30.5,X(4.4),y+29);
-      g.quadraticCurveTo(X(5),y+26.8,X(5),y+24);g.closePath();
+      g.moveTo(X(.9),y+24);g.quadraticCurveTo(X(.65),y+26.9,X(1.55),y+28.65);
+      g.quadraticCurveTo(X(1.95),y+29.3,X(1.6),y+30);
+      g.quadraticCurveTo(X(.9),y+31.4,X(1.5),y+32.5);
+      g.quadraticCurveTo(X(2.2),y+33.6,X(3.55),y+33.3);
+      g.quadraticCurveTo(X(4.8),y+33.15,X(4.8),y+31.9);
+      g.quadraticCurveTo(X(5.9),y+32.05,X(5.65),y+31.15);
+      g.quadraticCurveTo(X(5.4),y+30.45,X(4.45),y+29.7);
+      g.quadraticCurveTo(X(4.15),y+28.9,X(4.8),y+27.5);
+      g.quadraticCurveTo(X(5.25),y+25.6,X(5),y+24);g.closePath();
     });
   }
   function bracosBase(g,x,y){g.beginPath();formaBracos(g,x,y);g.fill();}
@@ -258,7 +276,14 @@
       g.lineTo(x + 15, y + 39);
       g.quadraticCurveTo(x + 11, y + 43, x + 7, y + 40);
       g.lineTo(x + 6, y + 37); g.lineTo(x + 3, y + 41); g.quadraticCurveTo(x - 4, y + 34, x + 3, y + 8); }
-    else { g.quadraticCurveTo(x + 30.5, y + 21, x + 26.5, y + 25); g.quadraticCurveTo(x + 15, y + 27, x + 3.5, y + 25); g.quadraticCurveTo(x - .5, y + 21, x + 3, y + 8); }   // chanel: corte reto logo abaixo do queixo (antes descia até o meio do tronco e parecia cabelo comprido)
+    else { // Chanel: volume na nuca, pontas dirigidas ao maxilar e contorno levemente assimétrico.
+      g.quadraticCurveTo(x+29.8,y+14,x+28.1,y+20.8);
+      g.quadraticCurveTo(x+27.5,y+24.4,x+25.3,y+25.2);
+      g.quadraticCurveTo(x+20,y+26.6,x+15.7,y+25.7);
+      g.quadraticCurveTo(x+10.3,y+27.2,x+5,y+25.7);
+      g.quadraticCurveTo(x+.9,y+24.6,x+1.8,y+18);
+      g.quadraticCurveTo(x+1.4,y+12,x+3,y+8);
+    }   // chanel: corte reto logo abaixo do queixo (antes descia até o meio do tronco e parecia cabelo comprido)
     g.fill();
     // Mechas nas costas seguem a curvatura do corte, recortadas na silhueta.
     g.save();g.clip();g.lineCap='round';g.lineWidth=.65;g.strokeStyle='rgba(255,255,255,.15)';
@@ -278,10 +303,14 @@
     return true;
   }
   function bagunca(g, x, y){   // franja da Tsu: três mechas curvas
-    g.beginPath(); g.moveTo(x + 3, y + 8); g.lineTo(x + 3, y + 12); g.quadraticCurveTo(x + 4.5, y + 17, x + 8, y + 19.5);
-    g.quadraticCurveTo(x + 8.6, y + 14, x + 11.5, y + 10.5); g.quadraticCurveTo(x + 12.6, y + 15.5, x + 16, y + 18);
-    g.quadraticCurveTo(x + 16.8, y + 13, x + 19.8, y + 9.5); g.quadraticCurveTo(x + 21.4, y + 14, x + 24.5, y + 16.5);
-    g.quadraticCurveTo(x + 24.9, y + 12.5, x + 27, y + 10.5); g.lineTo(x + 27, y + 8); g.closePath(); g.fill();
+    g.beginPath();g.moveTo(x+3,y+8);g.quadraticCurveTo(x+2.7,y+12.7,x+5,y+16.2);
+    g.quadraticCurveTo(x+6.5,y+18.4,x+8.2,y+19.5);
+    g.quadraticCurveTo(x+7.7,y+15.3,x+12,y+10.8);
+    g.quadraticCurveTo(x+12.1,y+14.7,x+16.3,y+18.2);
+    g.quadraticCurveTo(x+17.1,y+14,x+20.1,y+10.1);
+    g.quadraticCurveTo(x+21.1,y+13.9,x+24.2,y+16.6);
+    g.quadraticCurveTo(x+24.6,y+13,x+27,y+10.2);
+    g.lineTo(x+27,y+8);g.quadraticCurveTo(x+15,y+4.8,x+3,y+8);g.closePath();g.fill();
   }
   function gravata(g, x, y){   // Trainee: nó, lâmina com ponta e brilho do lado da luz
     // As pontas da gola acompanham o nó da gravata.

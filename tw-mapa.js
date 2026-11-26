@@ -1377,6 +1377,14 @@
       ctx.stroke();
     }
     if(bairro==='praca'){
+      // A fonte ocupa uma praça de pedra clara, com um anel de pavimento e canteiros laterais.
+      // A geometria fica abaixo da cuba e acima da zona de passeio; as portas e placas não mudam.
+      ctx.save();ctx.fillStyle='#e8d4bd';ctx.beginPath();
+      ctx.moveTo(598,577);ctx.lineTo(1002,577);ctx.lineTo(1031,608);ctx.lineTo(569,608);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#fff1da';ctx.beginPath();ctx.moveTo(598,577);ctx.lineTo(1002,577);ctx.lineTo(1009,584);ctx.lineTo(591,584);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#c8af9c';ctx.lineWidth=1.2;
+      for(var j=0;j<9;j++){var xx=600+j*50;ctx.beginPath();ctx.moveTo(xx,584);ctx.lineTo(xx+(xx-800)*.12,608);ctx.stroke();}
+      ctx.restore();
       // Bancos baixos ladeiam a fonte e deixam a passagem central livre.
       [540,1020].forEach(function(bx){
         ctx.fillStyle='#91716d';ctx.fillRect(bx+3,567,4,10);ctx.fillRect(bx+32,567,4,10);
@@ -1390,6 +1398,12 @@
       ctx.beginPath();ctx.ellipse(800,565,172,39,0,.18,Math.PI-.18);ctx.stroke();
     }else if(bairro==='ceu'){
       ctx.fillStyle='rgba(103,115,175,.11)';ctx.beginPath();ctx.ellipse(300,571,116,7,0,0,7);ctx.fill();
+      // Jardineiras com espessura: o bordo recebe as folhas, em vez de deixá-las flutuar na entrada.
+      [196,363].forEach(function(px){
+        ctx.fillStyle='#9f9cc4';rr(px-16,554,61,17,5);ctx.fill();
+        ctx.fillStyle='#e5deee';rr(px-18,551,65,7,3);ctx.fill();
+        ctx.fillStyle='#766f91';rr(px-13,553,55,3,2);ctx.fill();
+      });
       // Folhagens baixas em torno do acesso ao jardim.
       [196,216,363,385].forEach(function(px,i){
         ctx.fillStyle=i%2?'#97bbab':'#b2c8ae';
@@ -1402,6 +1416,16 @@
       ctx.fillStyle=pilastra;rr(1440,455,18,94,5);ctx.fill();ctx.fillStyle='rgba(255,255,255,.56)';ctx.fillRect(1442,459,4,86);ctx.fillStyle='#bba2d3';rr(1436,543,25,6,2);ctx.fill();ctx.restore();
     }else if(bairro==='palco'){
       [300,800,1300].forEach(function(px){ctx.fillStyle='rgba(244,197,255,.20)';ctx.beginPath();ctx.ellipse(px,597,75,8,0,0,7);ctx.fill();});
+      // Proscênio: moldura de teatro em dois planos e bases ligadas ao tablado.
+      // Lateral da cortina, sem interferir no microfone, estrela ou acessos.
+      [1,-1].forEach(function(lado){
+        var a=lado===1?448:1152;function X(v){return a+lado*v;}
+        ctx.fillStyle='#ac598d';ctx.beginPath();ctx.moveTo(X(0),275);ctx.lineTo(X(17),291);ctx.lineTo(X(17),542);ctx.lineTo(X(0),551);ctx.closePath();ctx.fill();
+        ctx.fillStyle='#efb3b9';ctx.fillRect(Math.min(X(0),X(-12)),275,12,276);
+        ctx.fillStyle='#ffe0ad';ctx.fillRect(Math.min(X(0),X(-12)),275,12,7);
+        ctx.fillStyle='#c48788';ctx.fillRect(Math.min(X(20),X(-17)),544,37,10);
+        ctx.fillStyle='#ffe0ad';ctx.fillRect(Math.min(X(20),X(-17)),544,37,3);
+      });
       // Luzes de ribalta embutidas na borda do palco.
       for(var lamp=468;lamp<=1132;lamp+=48){
         ctx.fillStyle='#9e718a';rr(lamp,553,12,6,2);ctx.fill();
@@ -1454,6 +1478,10 @@
       ctx.fillStyle='#662f9c';ctx.beginPath();ctx.moveTo(681,410);ctx.quadraticCurveTo(800,338,919,410);
       ctx.lineTo(949,536);ctx.quadraticCurveTo(800,509,651,536);ctx.closePath();ctx.fill();
       ctx.strokeStyle='#fff1b9';ctx.lineWidth=5;ctx.stroke();
+      // A cobertura tem uma face inferior e duas longarinas, que explicam o balanço da marquise.
+      ctx.fillStyle='#4c286f';ctx.beginPath();ctx.moveTo(681,410);ctx.quadraticCurveTo(800,360,919,410);
+      ctx.lineTo(924,426);ctx.quadraticCurveTo(800,383,676,426);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#eac6f3';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(679,413);ctx.quadraticCurveTo(800,364,921,413);ctx.stroke();
       // Vidraças inclinadas acompanham a cobertura da arena.
       ctx.fillStyle='#41326f';ctx.beginPath();ctx.moveTo(704,423);ctx.quadraticCurveTo(800,374,896,423);
       ctx.lineTo(904,461);ctx.quadraticCurveTo(800,432,696,461);ctx.closePath();ctx.fill();

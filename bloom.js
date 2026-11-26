@@ -363,6 +363,12 @@
     // gramado
     var gg = x.createLinearGradient(0, hz, 0, H); gg.addColorStop(0, noite ? '#5c9c8c' : '#a9e4b5'); gg.addColorStop(1, noite ? '#4a8778' : '#8fd6a2');
     x.fillStyle = gg; x.fillRect(0, hz, W, H - hz);
+    // Pequenos taludes atrás dos canteiros, desenhados no plano do solo e não sobre a cerca.
+    x.save();x.fillStyle=noite?'#478b77':'#8ec9a0';
+    x.beginPath();x.moveTo(0,hz+8);x.quadraticCurveTo(W*.23,hz-5,W*.42,hz+10);
+    x.quadraticCurveTo(W*.15,hz+22,0,hz+29);x.closePath();x.fill();
+    x.beginPath();x.moveTo(W,hz+8);x.quadraticCurveTo(W*.77,hz-5,W*.58,hz+10);
+    x.quadraticCurveTo(W*.85,hz+22,W,hz+29);x.closePath();x.fill();x.restore();
     x.strokeStyle = noite ? 'rgba(40,90,80,.5)' : 'rgba(92,180,120,.55)'; x.lineWidth = 2.4; x.lineCap = 'round';
     for(i = 0; i < 26; i++){ var tx = (i * 97 + 23) % W, ty = hz + 26 + (i * 53) % (H - hz - 36); x.beginPath(); x.moveTo(tx - 5, ty); x.lineTo(tx - 7, ty - 8); x.moveTo(tx, ty); x.lineTo(tx, ty - 10); x.moveTo(tx + 5, ty); x.lineTo(tx + 7, ty - 8); x.stroke(); }
     enfeites(x, W, H, hz, tm, noite);

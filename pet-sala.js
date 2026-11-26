@@ -95,12 +95,14 @@ function petLifeSofa(x, frente, visual){
     x.fillStyle='rgba(60,25,90,.13)';x.beginPath();x.ellipse(q.x+1,198,20,2.5,0,0,7);x.fill();
     x.save();x.globalAlpha *= visual ? visual.sit : 1;
     // O quadril continua apoiado enquanto cada Idol escolhe onde firmar os pés.
-    var abertura = sel === 0 ? 2.2 : sel === 1 ? -2 : sel === 2 ? .8 : 0;
+    var abertura = sel === 0 ? 2.8 : sel === 1 ? -2.8 : sel === 2 ? .8 : 0;
+    // O descanso recolhe a perna de dentro; Conviver transfere o peso para o lado do Pet.
+    var apoioLateral=petLifePose==='conviver'?1.3:petLifePose==='descansar'?-1.5:0;
     [-8.4, 10.8].forEach(function(o){
       // A inclinação interpolada também guia os joelhos durante a troca de pose.
       var px = q.x + o + (o < 0 ? 18 : -4) * visual.rot;
       px += (o < 0 ? -1 : 1) * abertura * visual.sit;
-      px += Math.min(0,visual.rot)*5*(o<0?1:-1);
+      px += Math.min(0,visual.rot)*5*(o<0?1:-1)+apoioLateral*visual.sit;
       // Mesmo desenho das pernas do avatar (drawChar): retângulos 5×8 escuros, sem pé
       // separado. Só a altura encurta, porque a coxa vem para frente.
       // Os pés permanecem plantados: a respiração passa ao tronco em torno do quadril.
@@ -109,7 +111,13 @@ function petLifeSofa(x, frente, visual){
       var recolhimento = Math.max(0, -visual.rot) * (o < 0 ? 20 : 0);
       var altura = Math.max(8, PET_FLOOR + bal - recolhimento - (q.y+6));
       // A canela termina no plano do piso, inclusive na pose inclinada.
+      x.save();x.beginPath();x.moveTo(px-6,q.y+6);
+      x.quadraticCurveTo(px-6.5,q.y+6+altura*.45,px-5.3,q.y+6+altura);
+      x.lineTo(px+5.3,q.y+6+altura);
+      x.quadraticCurveTo(px+6.2,q.y+6+altura*.42,px+6,q.y+6);
+      x.closePath();x.clip();
       x.fillRect(px-6,q.y+6,12,altura);
+      x.restore();
       // A canela continua com a régua de 12 px; a luz arredonda o volume sem deslocar os pés.
       var perna=x.createLinearGradient(px-6,0,px+6,0);
       perna.addColorStop(0,'rgba(40,10,70,.14)');perna.addColorStop(.26,'rgba(255,255,255,.13)');
@@ -127,8 +135,13 @@ function petLifeSofa(x, frente, visual){
       x.fillStyle=claro?'#bfb1e3':'#1f1528';x.fillRect(esqPe+.8,fimPe-1.1,11.8,1.1);
       x.fillStyle=claro?'#ff8fc8':'rgba(255,255,255,.35)';x.fillRect(px-3,fimPe-4,6,.8);
       if(!roupa){ x.fillStyle=petLifeCorColo;
-        var coxaEsq=px-7;x.save();x.beginPath();x.roundRect(coxaEsq,q.y-3,14,10,[2,2,3,3]);x.clip();
-        x.fillRect(px-7,q.y-3,14,10);
+        // A coxa liga o quadril ao joelho deslocado, em vez de dois blocos paralelos.
+        var raiz=q.x+o*.7,coxaEsq=px-7;x.save();x.beginPath();
+        x.moveTo(raiz-6,q.y-3);x.quadraticCurveTo(px-7,q.y-1,px-7,q.y+5);
+        x.quadraticCurveTo(px,q.y+9,px+7,q.y+5);
+        x.quadraticCurveTo(px+7,q.y,raiz+6,q.y-3);
+        x.closePath();x.clip();
+        x.fillRect(Math.min(px-7,raiz-6),q.y-3,Math.max(px+7,raiz+6)-Math.min(px-7,raiz-6),10);
         var coxa=x.createLinearGradient(0,q.y-3,0,q.y+7);coxa.addColorStop(0,'rgba(40,10,70,.12)');
         coxa.addColorStop(.48,'rgba(255,255,255,.13)');coxa.addColorStop(1,'rgba(40,10,70,.18)');
         x.fillStyle=coxa;x.fillRect(px-6.8,q.y-3,13.6,10);
@@ -938,6 +951,7 @@ function petPhoneMomentosRender(){
   var imagemQuadro = $('petPhoneQuadroImagem'), quadro = petVidaQuadroLer();
   if(imagemQuadro && quadro && quadro.url) imagemQuadro.src = quadro.url;
   petPhoneMomentos.forEach(function(f){
+    if(f.dono !== petPhoneFotoChave())return; // defesa também na pintura, após troca de conta
     var img = corpo.querySelector('[data-momento-id="' + f.id + '"]');
     var dl = corpo.querySelector('[data-momento-baixar="' + f.id + '"]');
     if(img) img.src = f.miniUrl || f.url;
@@ -1853,7 +1867,10 @@ function petVidaLembrancaCenario(x){
     }else if(a.tipo==='foto'){
       x.rotate(-.04);
       x.fillStyle='rgba(67,40,84,.22)';x.fillRect(-11,-2,23,3);
+      // Moldura com cavalete e passe-partout; a foto original permanece intacta.
+      x.fillStyle='#815e93';x.beginPath();x.moveTo(3,-3);x.lineTo(10,0);x.lineTo(6,-14);x.closePath();x.fill();
       x.fillStyle='#633c72';x.fillRect(-10.5,-25,21,24);
+      x.fillStyle='#b98fc7';x.fillRect(-10.5,-25,21,2);x.fillRect(-10.5,-23,1.5,20);
       x.fillStyle='#ffe9bf';x.fillRect(-9,-24,18,21);
       x.fillStyle='#eee1fa';x.fillRect(-7.5,-22,15,16);
       if(fotoReal){
@@ -1953,8 +1970,11 @@ function petDrawRoom(){
     if(olharLembranca) g.rotate(olharLembranca);
     if(pose){
       // Inclinação a partir do quadril para manter o contato com a almofada.
-      var atitude = sel === 0 ? .065 : sel === 1 ? -.055 : sel === 2 ? .025 : 0;
-      var respira=petLifeMovimentoReduzido()?0:Math.sin(petT*(sel===1?.022:.034))*.012;
+      // Três assinaturas corporais, sem inferir personalidade do Idol personalizado.
+      var atitude = sel === 0 ? .085 : sel === 1 ? -.06 : sel === 2 ? .035 : 0;
+      if(petLifePose==='descansar')atitude-=.045;
+      if(petLifePose==='conviver')atitude+=sel===1?.025:.055;
+      var respira=petLifeMovimentoReduzido()?0:Math.sin(petT*(sel===1?.022:sel===2?.028:.034))*.012;
       g.translate(36,81.6); g.rotate((atitude+respira)*pose.sit); g.translate(-36,-81.6);
     }
     g.scale(2.4, 2.4);

@@ -501,9 +501,11 @@
     if(!av || !av.c) return;
     var parado = performance.now() - idolPulo > 2600;
     if(parado){ var falta = pendentes(true).concat(pendentes(false)); idolAlvo = falta.length ? 100 + falta[0] * 173 : 360 + Math.sin(tm * .25) * 150; }
-    var d = idolAlvo - idolX; idolX += Math.abs(d) < 1.2 ? d : d * .06;
-    var anda = Math.abs(d) > 3, pulo = !parado ? -Math.abs(Math.sin((performance.now() - idolPulo) / 130)) * 7 * Math.max(0, 1 - (performance.now() - idolPulo) / 1400) : 0;
-    var bob = anda ? -Math.abs(Math.sin(tm * 9)) * 2.2 : 0;
+    var d = idolAlvo - idolX;
+    var reduzJardim=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    idolX += reduzJardim||Math.abs(d)<1.2 ? d : d*.06;
+    var anda = !reduzJardim&&Math.abs(d)>3, pulo = !reduzJardim&&!parado ? -Math.abs(Math.sin((performance.now()-idolPulo)/130))*7*Math.max(0,1-(performance.now()-idolPulo)/1400) : 0;
+    var bob=anda?-Math.abs(Math.sin(tm*9))*Math.min(2.2,Math.abs(d)*.09):0;
     x.save();
     x.fillStyle = 'rgba(30,60,40,.2)'; x.beginPath(); x.ellipse(idolX, chao, 10 * sc, 2.2 * sc, 0, 0, 7); x.fill();
     try{
@@ -560,7 +562,9 @@
       x.strokeStyle = '#3f9d68'; x.lineWidth = 2.6 * e; x.lineCap = 'round'; x.beginPath(); x.moveTo(cx, by); x.lineTo(cx, by - 9 * e); x.stroke();
       folha(x, cx, by - 8 * e, -1, 9 * e, .5); folha(x, cx, by - 8 * e, 1, 9 * e, .5); return;
     }
-    var teto = {sakura:78, tulipa:82, girassol:108, lunar:88}[k] || 80, alt = (20 + prog * teto) * e, sway = Math.sin(tm * 1.6 + cx * .02) * 3.2 * prog * e;
+    var teto = {sakura:78, tulipa:82, girassol:108, lunar:88}[k] || 80, alt = (20 + prog * teto) * e;
+    var reduzFlor=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var sway=reduzFlor?0:Math.sin(tm*(k==='girassol'?1.1:k==='tulipa'?1.8:1.5)+cx*.02)*(k==='girassol'?1.6:3.2)*prog*e;
     x.fillStyle='rgba(75,57,49,.16)';x.beginPath();
     x.ellipse(cx+4*e,by+e,(8+prog*7)*e,3*e,-.08,0,7);x.fill();
     var tx = cx + sway, ty = by - alt;
@@ -578,7 +582,7 @@
       x.fillStyle = '#4fb06a'; x.beginPath(); x.moveTo(tx - b * .8, ty + b * .1); x.quadraticCurveTo(tx, ty + b * 1.2, tx + b * .8, ty + b * .1); x.quadraticCurveTo(tx, ty + b * .6, tx - b * .8, ty + b * .1); x.fill();
       return;
     }
-    cabeca(x, k, tx, ty, r + Math.sin(tm * 2.2 + cx) * .8 * e, tm, hora() >= 19 || hora() < 6);
+    cabeca(x, k, tx, ty, r + (reduzFlor?0:Math.sin(tm * 2.2 + cx) * .8 * e), reduzFlor?0:tm, hora() >= 19 || hora() < 6);
   }
   function rr(x, a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
   function laco(){ cancelAnimationFrame(anim); anim=0; (function f(ms){ anim=0;if(!ov || ov.hidden || document.hidden) return; var reduz = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; if(reduz){festa=[];chuva=[];cresce={};} if(!window.TWMotionLifecycle||TWMotionLifecycle.render30Due(ov,ms)||reduz)desenhar(); if(!reduz)anim=requestAnimationFrame(f); })(); }

@@ -797,3 +797,9 @@ html body .studiop .stgrupo>b{color:var(--ink,#432675);letter-spacing:.01em;marg
   .stcategorias .stabab{flex:1 1 30%;max-width:100%}
   .stgrupo .stchip{padding-inline:7px}
 }
+
+/* Studio: controles secundários agrupados, espaço reservado à fotografia e textos longos. */
+#studioVisor[data-fase="monta"] .stclique{min-height:44px;line-height:1.3}
+.stgrupo .stchip{flex:0 1 auto}
+.stgrupo .stchip[aria-pressed="true"]{outline:1px solid currentColor;outline-offset:-3px}
+@media(max-width:360px){.stgrupo{margin-block:6px}.stcategorias .stabab{min-height:44px;line-height:1.25}}

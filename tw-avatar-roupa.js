@@ -201,6 +201,16 @@
     });
     g.restore();
   }
+  // Franja reta: mechas largas sobrepostas em vez de uma única barra.
+  // A régua da testa e as escolhas de franja continuam as mesmas.
+  function reta(g,x,y){
+    g.beginPath();g.moveTo(x+3,y+8);g.quadraticCurveTo(x+15,y+6.8,x+27,y+8);
+    g.lineTo(x+27,y+13.1);
+    for(var i=5;i>=0;i--){var a=x+3+i*4;
+      g.quadraticCurveTo(a+3.1,y+14.6+(i%2)*.3,a,y+13.4);
+    }
+    g.closePath();g.fill();
+  }
   function pescoco(g,x,y){
     g.beginPath();g.moveTo(x+12,y+18);g.lineTo(x+18,y+18);
     g.quadraticCurveTo(x+17,y+21.5,x+19,y+22.4);
@@ -362,7 +372,7 @@
   }
 
   var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
-              bracos:bracos, bracosBase:bracosBase, pernas:pernas, camisa:camisa, pescoco:pescoco, coques:coques, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, gravata:gravata,
+              bracos:bracos, bracosBase:bracosBase, pernas:pernas, camisa:camisa, pescoco:pescoco, coques:coques, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, reta:reta, gravata:gravata,
               cr:cr, crLook:crLook, CR_COR:CR_COR };
   root.TWAvatarRoupa = api;
   if(typeof module !== 'undefined' && module.exports) module.exports = api;

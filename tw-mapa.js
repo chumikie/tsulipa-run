@@ -1385,11 +1385,13 @@
       ctx.strokeStyle='#c8af9c';ctx.lineWidth=1.2;
       for(var j=0;j<9;j++){var xx=600+j*50;ctx.beginPath();ctx.moveTo(xx,584);ctx.lineTo(xx+(xx-800)*.12,608);ctx.stroke();}
       ctx.restore();
-      // Bancos baixos ladeiam a fonte e deixam a passagem central livre.
+      // Bancos de praça, com encosto e assento em dois planos.
       [540,1020].forEach(function(bx){
-        ctx.fillStyle='#91716d';ctx.fillRect(bx+3,567,4,10);ctx.fillRect(bx+32,567,4,10);
-        ctx.fillStyle='#dba183';rr(bx,562,40,6,2);ctx.fill();
-        ctx.fillStyle='#ffe0af';ctx.fillRect(bx+1,563,38,1.5);
+        ctx.fillStyle='#91716d';ctx.fillRect(bx+3,554,4,23);ctx.fillRect(bx+32,554,4,23);
+        ctx.fillStyle='#bf876c';rr(bx,550,40,9,2);ctx.fill();
+        ctx.fillStyle='#e7b494';ctx.fillRect(bx+1,551,38,2);
+        ctx.fillStyle='#dba183';ctx.beginPath();ctx.moveTo(bx,562);ctx.lineTo(bx+40,562);ctx.lineTo(bx+43,568);ctx.lineTo(bx-3,568);ctx.closePath();ctx.fill();
+        ctx.fillStyle='#ad785e';ctx.fillRect(bx-3,568,46,3);
       });
       // Volume da cuba da fonte: mantém água e jatos livres.
       var pedra=ctx.createLinearGradient(0,565,0,608);pedra.addColorStop(0,'rgba(159,124,217,0)');pedra.addColorStop(.6,'rgba(119,91,180,.22)');pedra.addColorStop(1,'rgba(112,76,174,.32)');
@@ -1425,6 +1427,12 @@
         ctx.fillStyle='#ffe0ad';ctx.fillRect(Math.min(X(0),X(-12)),275,12,7);
         ctx.fillStyle='#c48788';ctx.fillRect(Math.min(X(20),X(-17)),544,37,10);
         ctx.fillStyle='#ffe0ad';ctx.fillRect(Math.min(X(20),X(-17)),544,37,3);
+      });
+      // As cortinas assentam no tablado; pregas verticais fazem a moldura parecer tecido.
+      [1,-1].forEach(function(lado){var a=lado===1?470:1130;
+        ctx.fillStyle='rgba(112,38,92,.24)';ctx.beginPath();ctx.moveTo(a,295);
+        ctx.quadraticCurveTo(a+lado*26,418,a+lado*8,539);ctx.lineTo(a+lado*19,539);
+        ctx.quadraticCurveTo(a+lado*39,418,a+lado*12,295);ctx.closePath();ctx.fill();
       });
       // Luzes de ribalta embutidas na borda do palco.
       for(var lamp=468;lamp<=1132;lamp+=48){

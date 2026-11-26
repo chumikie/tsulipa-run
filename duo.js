@@ -38,7 +38,7 @@ function duoMao(x, y, c, ang){
   g.beginPath();g.ellipse(0,0,2.65,2.25,0,0,Math.PI*2);g.ellipse(-1.35,-1.6,1.15,1.45,-.4,0,Math.PI*2);g.fill();
   g.restore();
 }
-function duoGeo(av, t){ var big = av && av.visual === 'mega', sc = DUO_OH / (big ? 68 : 82), ch = DUO_OH * (big ? .95 : .9); return { sc:sc, ch:ch, tx:DUO_OW / 2 - 15 * sc, ty:ch - 44 * sc, bob:t ? Math.sin(t * .06) * 1.1 * sc : 0 }; }
+function duoGeo(av, t){ var big = av && av.visual === 'mega', sc = DUO_OH / (big ? 68 : 82), ch = DUO_OH * (big ? .95 : .9); return { sc:sc, ch:ch, tx:DUO_OW / 2 - 15 * sc, ty:ch - 44 * sc, bob:t && !(typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches) ? Math.sin(t * .06) * .85 * sc : 0 }; }
 function duoIdolEm(x, av, sx, chao, pose, expr, t, espelho){
   // duoOffS: a câmera (tw-camera.js) desenha a foto em 2×/3×; o rascunho de cada Idol acompanha para não borrar
   var S = duoOffS || 1;
@@ -77,7 +77,8 @@ function duoAlvoToque(px,py,chao,q,escEu,escGu){
   return alvos.length?alvos[0].k:'';
 }
 function duoRender(x, W2, H2, comFundo, comUI){
-  var t = duoT || 1, inf = duoInfo(), eu = duoMeuAv(), gu = duoGuAv();
+  var reduzDuo=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t = reduzDuo?1:(duoT || 1), inf = duoInfo(), eu = duoMeuAv(), gu = duoGuAv();
   var G = duoGeo(eu, t), U = G.sc, chao = H2 * .9, q=duoQuadroGeo(W2,H2,U,inf), sxE=q.eu, sxG=q.gu, i;
   var poseE = inf[3], poseG = inf[4], exE = duoExEu === '' ? inf[6] : +duoExEu, exG = duoExGu === '' ? inf[6] : +duoExGu;
   if(inf[0] === 'danca'){ poseE = poseG = DUO_DANCA[Math.floor(t / 46) % DUO_DANCA.length]; }
@@ -90,9 +91,13 @@ function duoRender(x, W2, H2, comFundo, comUI){
   if(inf[0] === 'luzes' || inf[0] === 'neon'){ for(i = 0; i < 26; i++){ var cc = ['#ff6fb5', '#4dd8ff', '#b6ff3b', '#9b30d9', '#ffe14d'][i % 5]; x.globalAlpha = .35 + .3 * Math.sin(t * .08 + i); x.fillStyle = cc; x.beginPath(); x.arc((cenaHash(i) * W2), H2 * .55 + cenaHash(i + 40) * H2 * .3, 5 + (i % 3) * 2, 0, 7); x.fill(); } x.globalAlpha = 1; }
   if(inf[0] === 'neon'){ x.save(); x.lineWidth = 6; x.shadowBlur = 18; ['#ff6fb5', '#4dd8ff', '#b6ff3b'].forEach(function(cc, j){ x.strokeStyle = cc; x.shadowColor = cc; x.globalAlpha = .55 + .35 * Math.sin(t * .1 + j * 2); x.beginPath(); x.moveTo(0, H2 * (.18 + j * .09)); x.lineTo(W2, H2 * (.3 + j * .09) + Math.sin(t * .05 + j) * 20); x.stroke(); }); x.restore(); }
   // os dois Idols (com pulinho ao tocar e passinho na dança)
-  function pulo(quem){ if(!duoPulo || duoPulo.quem !== quem) return 0; var p = (t - duoPulo.t0) / 22; if(p < 0 || p >= 1) return 0; return -Math.sin(p * Math.PI) * 34; }
-  var dz = inf[0] === 'danca' ? -Math.abs(Math.sin(t * .136)) * 14 : 0;
-  var chE = chao + pulo('eu') + dz, chG = chao + pulo('gu') + dz;
+  function pulo(quem){ if(reduzDuo||!duoPulo || duoPulo.quem !== quem) return 0; var p = (t - duoPulo.t0) / 22; if(p < 0 || p >= 1) return 0; return -Math.sin(p * Math.PI) * 34; }
+  // A dupla divide a batida, com resposta ligeiramente atrasada do convidado.
+  // As âncoras das mãos e adereços recebem exatamente a mesma altura.
+  var danca=inf[0]==='danca'&&!reduzDuo;
+  var dz=danca?-Math.pow(Math.max(0,Math.sin(t*.136)),2)*12:0;
+  var dzGu=danca?-Math.pow(Math.max(0,Math.sin((t-3)*.136)),2)*12:0;
+  var chE = chao + pulo('eu') + dz, chG = chao + pulo('gu') + dzGu;
   if(inf[0] === 'guarda') duoGuardaChuva(x, eu, sxE, chE, t, duoInvertido);
   duoIdolEm(x, eu, sxE, chE, poseE, exE, t, duoInvertido);
   duoIdolEm(x, gu, sxG, chG, poseG, exG, t + 37, !duoInvertido);

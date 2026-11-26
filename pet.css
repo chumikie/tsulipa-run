@@ -268,3 +268,14 @@ body.tw-cel:has(#petov:not([hidden])) .twc-moldura-topo{visibility:hidden}
 .petrank{flex-wrap:wrap}
 .petrank .petsemana{flex-basis:100%;white-space:normal;font-size:10.5px;color:var(--sub)}
 .petrank .petsemana em{font-style:normal;font-weight:800;color:var(--b1)}
+
+/* Memórias Eternas: passe-partout e foto inteira, sem refazer os PNGs históricos. */
+.petphone-momentos-grid{gap:10px}
+.petphone-momento{border-width:1px;padding:6px;box-shadow:none}
+.petphone-momento-print{display:grid;place-items:center;aspect-ratio:4/5;padding:5px 5px 11px;border-bottom:4px solid var(--momento-cor)}
+.petphone-momento img{height:100%;max-height:100%;object-fit:contain;min-height:0}
+.petphone-momento b{font-size:11px;line-height:1.4}
+.petphone-momento-polaroid{padding:8px 8px 14px;border-width:1px;border-bottom:5px solid var(--momento-cor)}
+.petphone-momento-revisao .petphone-momento-polaroid img{max-height:min(46dvh,320px);object-fit:contain}
+.petphone-momento-revisao :is(a,button):focus-visible{outline:3px solid var(--petphone-oshi);outline-offset:2px}
+@media(max-width:340px){.petphone-momentos-grid{gap:6px}.petphone-momento{padding:4px}}

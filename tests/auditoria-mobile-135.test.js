@@ -135,7 +135,7 @@ test('Studio: enquadramento de objeto inclui microfone e lightstick',()=>{
  const s=read('studio.js');assert.match(s,/comObjeto = !!e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao'/);assert.match(s,/tm \* 60, quadro, comObjeto\)/);
 });
 test('Camarim: respiração e balanço das pernas respeitam movimento reduzido',()=>{
- const s=read('pet-sala.js');assert.match(s,/var bal = petLifeMovimentoReduzido\(\) \? 0/);assert.match(s,/var bobIdol=petLifeMovimentoReduzido\(\)\?0/);
+ const s=read('pet-sala.js');assert.match(s,/var bal = 0;/);assert.match(s,/var bobIdol=petLifeMovimentoReduzido\(\)\|\|pose\?0/);assert.match(s,/var respira=petLifeMovimentoReduzido\(\)\?0/);
 });
 
 test('Polish: apoio visual do Sora não altera a coordenada da colisão',()=>{
@@ -173,7 +173,7 @@ test('Polish: pernas e polainas acompanham o apoio nas três posturas',()=>{
    ctx.petLifeSofa(x,true,{sit:1,rot});
    assert.equal(pes.length,2);
    assert.deepEqual(bases,pes);
-   if(pose==='descansar')assert.ok(pes[0]<pes[1]&&pes[1]<196);
+   if(pose==='descansar'){assert.ok(pes[0]<pes[1]);assert.equal(pes[1],196,'pé de apoio permanece no chão');}
    else assert.deepEqual(pes,[196,196]);
  }
 });

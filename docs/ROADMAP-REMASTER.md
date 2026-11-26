@@ -31,3 +31,18 @@ Referência: HEAD `a483dd2`, CI anterior aprovado, artefato 15126653397 (86 pare
 Verificação disponível antes do commit: análise sintática dos módulos JS alterados; quatro casos geométricos do enquadramento (normal, V, aceno e coração), com relação estrita retrato > meio-corpo > inteiro e punho dentro do retrato. Teste de regressão do Studio reforçado. Não houve clone local devido à indisponibilidade de DNS para GitHub no ambiente executor; testes completos em Chromium/WebKit, persistência e isolamento e novas capturas dependem da execução do CI existente sobre este commit. Não declarar aprovação artística ou conclusão integral antes dessas evidências. O comparativo padrão do CI usa a base da PR; o artefato da revisão anterior permite a comparação adicional entre rodadas.
 
 Sem mudanças de mecânicas, economia, recompensas, dados salvos, banco, SQL ou Supabase. Sem publicação, merge ou nova PR.
+
+
+### Continuação — revisão de 7f8f0c0 (26/11/2026)
+
+CI anterior: execução 45855779885, Chromium, WebKit, comparação visual e PostgreSQL isolado aprovados; 127/130 verificações rápidas, com três falhas. Artefato 15136142616 baixado: 86 pares de PNGs, dois vídeos. As capturas do trio e quadros do vídeo mostram que o apoio e a silhueta sentada ainda precisavam ser diferenciados.
+
+- 3.8–3.9: franja reta com seis mechas curvas no renderizador compartilhado, preservando o bicolor, e ritmos visuais individuais nos Idols oficiais; correção do teste de mangas para registrar os pontos finais das curvas, sem retirar as verificações de encaixe.
+- 4.0: banco da praça com encosto, assento e espessura; pregas do proscênio, preservando coordenadas e acessos. Jardim e Arena mantêm a reconstrução da rodada anterior.
+- 4.1: pernas afuniladas e coxas ligadas ao quadril, inclinação e respiração individuais por postura; apoio unilateral no descanso, teste de apoio e de contorno da saia adaptado à geometria curva.
+- 4.2: cortinas com volume, amarração e pregas; fase congelada do retrato quando movimento reduzido está ativo. O salvamento continua usando a captura limpa e não o flash/visor.
+- 4.3: chips e foco do Studio, escala e passe-partout das Memórias em tela estreita, versões de cache incrementadas.
+- 4.4: cadências de corrida, alongamento na subida e compressão na descida do Sora, piscadas fora de fase do trio no Karaoke, passos e desaceleração em Café/Handshake, animação por espécie no Bloom, apoio do Pet/Camarim, reação finita na Battle, resposta ligeiramente defasada no Duo; galeria e quadro de Memórias agora têm tratamento próprio e defesa de conta no desenho. Nenhum registro histórico regravado.
+- Testes: as três falhas anteriores foram tratadas no código/testes, sem suprimir os casos; novos testes verificam mechas, âncoras do Duo, isolamento da galeria e fase da fotografia. A validação integral do novo commit e as capturas em 320×640, 390×844 e desktop dependem do CI, não do resultado anterior. Clone local indisponível (DNS). Aprovação visual final continua pendente, especialmente em iPhone físico.
+
+Sem novos textos de interface, mecânicas, mudanças de recompensas, economia, SQL, Supabase, merge, deploy manual ou PR adicional.

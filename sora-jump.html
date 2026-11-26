@@ -20,7 +20,7 @@
 <script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=4"></script>
-<script src="./tw-avatar-hair.js?v=16"></script><script src="./tw-avatar-roupa.js?v=19"></script><script src="./tw-avatar-rosto.js?v=8"></script>
+<script src="./tw-avatar-hair.js?v=16"></script><script src="./tw-avatar-roupa.js?v=20"></script><script src="./tw-avatar-rosto.js?v=8"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time!, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -885,7 +885,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   g.fillStyle=hg;
   if(!TWAvatarHair.fringe(g,x,y,b,f,T)){
     if(f==='bagunca'){if(TWR)TWR.bagunca(g,x,y);else T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);}
-    else if(f==='reta')g.fillRect(x+3,y+8,24,6);
+    else if(f==='reta'){if(TWR&&TWR.reta&&b!=='onduladom2')TWR.reta(g,x,y);else g.fillRect(x+3,y+8,24,6);}
     else if(f==='lateral')T([x+3,y+12,x+7,y+8,x+27,y+8,x+27,y+19,x+17,y+11]);
     else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
     else if(f==='arcoiris'&&typeof TWAvatarRosto!=='undefined')TWAvatarRosto.arcoiris(g,x,y);
@@ -4154,7 +4154,10 @@ function soraDraw(){
     }
     var expr = soraP.slipping ? 1 : (soraP.vy < -6 ? 2 : 0);
     x.save();
-    var alongamento = 1 + Math.min(.045, Math.abs(soraP.vy) * .002);
+    // Impulso alonga; aproximação do topo recupera a forma; descida contrai levemente.
+    // Só o desenho é transformado, a partir do ponto dos pés.
+    var reduzSalto=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var alongamento = reduzSalto?1:1+Math.max(-.035,Math.min(.065,-soraP.vy*.004));
     x.translate(soraP.x+15,soraP.y+44);x.scale(1/alongamento,alongamento);
     x.translate(-soraP.x-15,-soraP.y-44);
     drawChar(soraGetActiveCharacter(), soraP.x, soraP.y, soraP.vy < 0 ? 1 : 0, expr);

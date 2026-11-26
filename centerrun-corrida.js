@@ -1286,7 +1286,7 @@ if(window.activePetFly){
 
   var playExpr = (shake > 0 || (inv > 0 && !abducted)) ? 1 : 0; 
   if(typeof exprCorrida === 'function') playExpr = exprCorrida(playExpr);   // V2.1.3
-  var runAnim = state==='play' ? (!P.air ? Math.sin(frame*.5) : (pw && pw.k==='alien' ? Math.sin(frame*.25) : 0)) : 0;
+  var runAnim = state==='play' ? (!P.air ? Math.sin(frame*(sel===1?.43:sel===2?.47:.5)) : (pw && pw.k==='alien' ? Math.sin(frame*.25) : 0)) : 0;
 
 g.save();
   var isGiant = (pw && pw.k === 'gigante');
@@ -1315,7 +1315,7 @@ g.save();
   if(!blink || (s2HitEmotion>0 && state==='play')){
     g.save();
     var reaction=s2HitEmotion>0 && state==='play';
-    if(reaction)g.translate(Math.sin(frame*.8)*(s2HitEmotion>36?2.2:.9),0);
+    if(reaction&&!(typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches))g.translate(Math.sin(frame*.8)*(s2HitEmotion>36?2.2:.9),0);
     s2DrawingRunChar=true;
     try{drawChar(CH[sel],P.x,P.y,runAnim,reaction?(s2HitEmotion>36?4:5):playExpr);}
     finally{s2DrawingRunChar=false;g.restore();}
@@ -1457,7 +1457,7 @@ function makeCard(){
   var exprFoto = petPhExprVal((inv>0 && !isGiant && !isAlien) ? 1 : 2);
   
   // Captura o balanço da perna e pulo do exato milissegundo do jogo
-  var runAnim = state==='play' ? (!P.air ? Math.sin(frame*.5) : (isAlien ? Math.sin(frame*.25) : 0)) : 0;
+  var runAnim = state==='play' ? (!P.air ? Math.sin(frame*(sel===1?.43:sel===2?.47:.5)) : (isAlien ? Math.sin(frame*.25) : 0)) : 0;
 
 // Captura os halos na polaroid
   if (pw && pw.k === 'fever') {

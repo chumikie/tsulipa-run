@@ -664,10 +664,13 @@ function cfDesenhar(){
   var c = cf && !cf.duplo && cf.cli;
   if(cf && cf.duplo && typeof cfDuploClientes === 'function') cfDuploClientes(x, W2, H2, t);   // modo Dois no balcão (cafe-duplo.js)
   if(c){
-    var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.min(1, dt / 14) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
+    var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.max(0,Math.min(1, dt / 14)) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
+    var reduzCliente=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var passoCliente=reduzCliente?0:Math.sin(entra*Math.PI*3)*Math.sin(entra*Math.PI)*2.4;
+    entra=reduzCliente?1:1-Math.pow(1-entra,3);
     var visita = cf.visitaAlvo === c && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono ? cf.visitaComunidade : null;
     var gesto = visita ? null : cfClienteReencontro(c, dt, cf.fase) || cfClienteImpaciente(c, dt, cfPaciencia(), cf.fase) || cfClienteGesto(c, dt, cf.fase);
-    try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5 + (gesto ? gesto.dx : 0), H2 * .26 + (gesto ? gesto.dy : 0)); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:visita ? visita.avatar : c.c, pose:visita ? 'tchau' : cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : gesto ? gesto.pose : c.pose, expr:visita ? 3 : cf.fase === 'reacao' && !cf.ok ? 0 : gesto && gesto.expr != null ? gesto.expr : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
+    try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5 + (gesto&&!reduzCliente ? gesto.dx : 0), H2 * .26 + passoCliente + (gesto&&!reduzCliente ? gesto.dy : 0)); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:visita ? visita.avatar : c.c, pose:visita ? 'tchau' : cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : gesto ? gesto.pose : c.pose, expr:visita ? 3 : cf.fase === 'reacao' && !cf.ok ? 0 : gesto && gesto.expr != null ? gesto.expr : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
     if(gesto){ x.save(); x.globalAlpha = gesto.alfa * .86;
       x.font = '23px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#cf5b9d';
       if(gesto.reencontro){

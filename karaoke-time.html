@@ -2,7 +2,7 @@
 <script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=4"></script>
-<script src="./tw-avatar-hair.js?v=16"></script><script src="./tw-avatar-roupa.js?v=19"></script><script src="./tw-avatar-rosto.js?v=8"></script><script src="./karaoke-music-preview.js?v=3"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=2"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
+<script src="./tw-avatar-hair.js?v=16"></script><script src="./tw-avatar-roupa.js?v=20"></script><script src="./tw-avatar-rosto.js?v=8"></script><script src="./karaoke-music-preview.js?v=3"></script><script src="./karaoke-musicas-modos.js?v=1"></script><script src="./karaoke-online.js?v=3"></script><title>Karaoke⭐Time! — jogo solo offline</title><link rel="stylesheet" href="./kt-fonts.css?v=2"><link rel="stylesheet" href="./karaoke-time-base.css?v=5"><script id="ktTemaDaPagina">
 /* Segue Oshi e tema do hub; standalone usa preferências locais. */
 (function(){
  var root=document.documentElement,q=new URLSearchParams(location.search);
@@ -473,7 +473,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   g.fillStyle=hg;
   if(TWAvatarHair.fringe(g,x,y,b,f,T)){}
   else if(f==='bagunca'){if(TWR)TWR.bagunca(g,x,y);else T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);}
-  else if(f==='reta')g.fillRect(x+3,y+8,24,6);
+  else if(f==='reta'){if(TWR&&TWR.reta&&b!=='onduladom2')TWR.reta(g,x,y);else g.fillRect(x+3,y+8,24,6);}
   else if(f==='lateral')T([x+3,y+12,x+7,y+8,x+27,y+8,x+27,y+19,x+17,y+11]);
   else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
   else if(f==='arcoiris'&&typeof TWAvatarRosto!=='undefined')TWAvatarRosto.arcoiris(g,x,y);
@@ -1028,9 +1028,12 @@ function resolveChar(c){if(!c||typeof c!=='object')c=EMPTY_CHAR;var record=charD
 function draw(ctx,c,px,py,sc,pose,expr,t,mirror,options){
  var record=resolveChar(c);c=record.value;
  var p=pose||'v',tick=Math.floor((t||0)/12)%8,ex=Number.isFinite(expr)?expr:0;
+ // Uma fase de expressão por Idol oficial; não altera a pose nem o microfone.
+ var piscar=c.n==='Tsu'?0:c.n==='Lirika'?2:c.n==='Pati'?4:0;
+ var reduz=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
  // Piscar sem manter todos os olhos fechados durante toda a apresentação.
  if(ex===4||ex===5)ex=2;   /* surpresa/chorinho ficam neutralizados; boca aberta (1) é a expressão de canto/fala. */
- if(ex===2&&tick<6)ex=0;
+ if(ex===2&&!reduz&&(tick+piscar)%8<6)ex=0;
  var key=record.signature+'|'+p+'|'+ex+'|'+tick,cv=cache.get(key);
  if(!cv){cv=document.createElement('canvas');cv.width=UW*S;cv.height=UH*S;var cg=cv.getContext('2d');g=cg;frame=tick*12;charPose=p;perfAntena='';accSel=c._avatarA||'';var vis=c._avatarVisual||'';state=vis?'play':'menu';rankI=PERF_RANKVIS[vis]||0;pw=['fever','ima','alien'].indexOf(vis)>=0?{k:vis}:null;sash=rankI>=7;cg.scale(S,S);cg.translate(-UX,-UY);drawChar(c,0,0,0,ex,false);cache.set(key,cv);if(cache.size>64)cache.delete(cache.keys().next().value);}
  ctx.save();ctx.translate(px,py);if(mirror)ctx.scale(-1,1);ctx.scale(sc,sc);ctx.translate(-15,-44);ctx.drawImage(cv,UX,UY,UW,UH);ctx.restore();

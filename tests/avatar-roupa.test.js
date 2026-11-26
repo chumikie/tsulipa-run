@@ -43,7 +43,7 @@ assert(perfil.includes('data-m="baixo"')&&perfil.includes("if(v === 'saia' || v 
 assert(index.includes("'outcol', 'legcol', 'baixo', 'hat'")&&index.includes("item.baixo === 'saia' || item.baixo === 'bermuda'"),'campo salvo no avatar e no save dos personagens');
 assert(ler('centerrun.js').includes("baixo: c.baixo||''"),'saveCu guarda a parte de baixo de cada personagem');
 // Braço levantado: a manga gira com o braço (não fica um bloco parado no ombro).
-{ const pts=[];const gg=Object.assign(fake(),{moveTo:(a,b)=>pts.push([a,b]),lineTo:(a,b)=>pts.push([a,b]),arc(){}});
+{ const pts=[];const gg=Object.assign(fake(),{moveTo:(a,b)=>pts.push([a,b]),lineTo:(a,b)=>pts.push([a,b]),quadraticCurveTo:(cx,cy,a,b)=>pts.push([a,b]),arc(){}});
   R.ombro(gg,{outcol:'#ffb3d6'},0,0,'','banzai');
   assert(pts.some(p=>p[1]<21.5&&p[0]>24),'manga direita sobe junto com o braço no banzai');
   assert(pts.some(p=>p[1]<21.5&&p[0]<6),'manga esquerda sobe junto com o braço no banzai'); }
@@ -57,7 +57,7 @@ for(const [vw,vh] of [[320,640],[390,844]]){
     }
     assert(!gg.shapes.some(r=>r[2]===6),'não existe manga externa fixa sob a manga móvel');
     assert(altura*escala<vh,'geometria permanece proporcional no visor móvel');
-    const pts=[],ombros=[];const raised=Object.assign(fake(),{moveTo:(x,y)=>pts.push([x,y]),lineTo:(x,y)=>pts.push([x,y]),arc:(x,y,r,inicio,fim,anti)=>ombros.push([x,y,r,anti])});
+    const pts=[],ombros=[];const raised=Object.assign(fake(),{moveTo:(x,y)=>pts.push([x,y]),lineTo:(x,y)=>pts.push([x,y]),quadraticCurveTo:(cx,cy,x,y)=>pts.push([x,y]),arc:(x,y,r,inicio,fim,anti)=>ombros.push([x,y,r,anti])});
     R.ombro(raised,{outcol:'#b3d6ff'},0,0,look,'v');
     assert(pts.some(p=>p[0]>26)&&pts.some(p=>p[1]<22),'manga direita acompanha o braço em V em '+vw+'×'+vh);
     assert.equal(ombros.length,2,'a mesma manga participa das passagens de cor e sombra');

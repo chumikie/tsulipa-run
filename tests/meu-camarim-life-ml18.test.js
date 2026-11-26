@@ -136,7 +136,10 @@ test('ML1.8-A: levantar mantém canelas e saia até completar a transição em 3
           lineTo(){},closePath(){},fill(){},stroke(){},strokeRect(){},fillText(){}};
         const visual=ctx.petLifePoseDesenho(t);
         ctx.petLifeSofa(x,true,visual);
-        return {visual,canela:retangulos.filter(r=>r[2]===12),saia:poligonos.length};
+        const q=ctx.petLifeQuadril(visual);
+        // Somente o contorno da saia, não os novos contornos curvos de canelas/coxa.
+        const saia=poligonos.filter(([x,y])=>Math.abs(x-(q.x-17))<1e-6&&Math.abs(y-(q.y-3))<1e-6).length;
+        return {visual,canela:retangulos.filter(r=>r[2]===12),saia};
       }
       const inicio=desenho(100),meio=desenho(112),fim=desenho(124);
       assert.equal(inicio.canela.length,2,`${largura}px: ${out} mantém canelas ao levantar`);

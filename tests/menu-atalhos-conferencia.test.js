@@ -90,5 +90,5 @@ test('Camarim VIP sem o diamantinho do humor; o Mapa continua com ele', () => {
 
 test('versões de cache subiram junto', () => {
   const index = ler('index.html');
-  for (const v of ['tw-celular.css?v=64', 'tw-celular.js?v=79', 'tw-bairro.js?v=9', 'tw-comunidade.js?v=6', 'tw-pessoal.js?v=8']) assert.ok(index.includes(v), v);
+  for (const v of ['tw-celular.css?v=65', 'tw-celular.js?v=79', 'tw-bairro.js?v=9', 'tw-comunidade.js?v=6', 'tw-pessoal.js?v=8']) assert.ok(index.includes(v), v);
 });

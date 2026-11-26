@@ -1051,7 +1051,14 @@ function desenharPalco(t){
  var mx=170-(1-e)*220,rx=400+(1-e)*220;
  x.fillStyle='rgba(255,244,213,.17)';
  [mx,rx].forEach(function(cx){x.beginPath();x.ellipse(cx,372,54,9,0,0,7);x.fill();});
- var pulo=function(ganhou){return veredito?(ganhou?-Math.abs(Math.sin((u-1.3)*9))*10:0):-Math.abs(Math.sin(tt*7))*3;};
+ var reduzPalco=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+ // A reação do vencedor assenta depois de dois passos, não repete indefinidamente.
+ var pulo=function(ganhou){
+   if(reduzPalco)return 0;
+   if(!veredito)return -Math.abs(Math.sin(tt*7))*3;
+   var idade=Math.max(0,u-1.3),queda=Math.max(0,1-idade/1.1);
+   return ganhou?-Math.abs(Math.sin(idade*9))*10*queda:0;
+ };
  desenharIdol(x,r.meu||unit[i],true,mx,372,2.8,tt,{bob:pulo(r.ganhou),apagado:veredito&&!r.ganhou,expr:veredito&&r.ganhou?3:null,semPose:!veredito});
  desenharIdol(x,r.rival,false,rx,372,2.8,tt,{bob:pulo(!r.ganhou),apagado:veredito&&r.ganhou,vira:true,expr:veredito&&!r.ganhou?3:null,semPose:!veredito});
  x.font=fonte(14);contorno(x,nomeCurto(r.meu||unit[i]),mx,392);contorno(x,nomeCurto(r.rival),rx,392,'#d9f3ff');

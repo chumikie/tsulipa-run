@@ -564,9 +564,13 @@ function hsDesenhar(){
   // o fã da vez (à esquerda), entrando
   var f = hsFaAtual();
   if(f){
-    var dt = hsT - (hs ? hs.t0 : 0), entra = Math.min(1, dt / 14), fx = -W2 * .25 + (1-Math.pow(1-entra,3)) * W2 * (hs.fase === 'fila' ? .37 : .27);
+    var dt = hsT - (hs ? hs.t0 : 0), entra = Math.max(0,Math.min(1, dt / 14));
+    var reduzFa=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var passoFa=reduzFa?0:Math.sin(entra*Math.PI*3)*Math.sin(entra*Math.PI)*2.2;
+    if(reduzFa)entra=1;
+    var fx = -W2 * .25 + (1-Math.pow(1-entra,3)) * W2 * (hs.fase === 'fila' ? .37 : .27);
     var visita = hsVisitaAtual(f), reencontro = hsSuperfaGesto(f, dt, hs.fase);
-    try{ x.save(); x.translate(fx + (reencontro ? reencontro.dx : 0), H2 * .06 + (reencontro ? reencontro.dy : 0)); perfDesenharIdol(x, W2 * .44, H2 * .9, { c:visita ? visita.avatar : f.c, pose:visita ? 'tchau' : reencontro ? reencontro.pose : f.pose, expr:visita ? 3 : reencontro ? reencontro.expr : f.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
+    try{ x.save(); x.translate(fx + (reencontro&&!reduzFa ? reencontro.dx : 0), H2 * .06 + passoFa + (reencontro&&!reduzFa ? reencontro.dy : 0)); perfDesenharIdol(x, W2 * .44, H2 * .9, { c:visita ? visita.avatar : f.c, pose:visita ? 'tchau' : reencontro ? reencontro.pose : f.pose, expr:visita ? 3 : reencontro ? reencontro.expr : f.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
     if(reencontro){ x.save(); x.globalAlpha = reencontro.alfa * .85; x.fillStyle = reencontro.cor;
       x.font = '22px sans-serif'; x.textAlign = 'center';
       x.fillText(reencontro.sinal, W2 * .33, H2 * .45 - reencontro.alfa * 9);

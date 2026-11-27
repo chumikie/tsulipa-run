@@ -2,10 +2,10 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const read=p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8');
 const R=require('../tw-avatar-roupa.js');
-test('Identity & Soul: straight bangs use real locks and retain legacy two-tone fallback',()=>{
+test('Identity & Soul: straight bangs use a continuous rounded mass and retain legacy two-tone fallback',()=>{
   const points=[];const g={beginPath(){},moveTo(...p){points.push(p)},lineTo(...p){points.push(p)},quadraticCurveTo(...p){points.push(p)},closePath(){},fill(){}};
   R.reta(g,0,0);
-  assert.equal(points.filter(p=>p.length===4).length,7);
+  assert.deepEqual(points,[[3,8],[15,7.5,27,8],[27,14],[15,14.35,3,14]]);
   assert.ok(points.every(p=>p.every(Number.isFinite)));
   for(const p of ['centerrun.js','karaoke-time.html','sora-jump.html']){
     assert.ok(read(p).includes("TWR.reta&&b!=='onduladom2'"));

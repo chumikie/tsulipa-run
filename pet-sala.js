@@ -113,15 +113,15 @@ function petLifeSofa(x, frente, visual){
     x.fillStyle='rgba(60,25,90,.13)';x.beginPath();x.ellipse(q.x+1,198,20,2.5,0,0,7);x.fill();
     x.save();x.globalAlpha *= visual ? visual.sit : 1;
     // O quadril continua apoiado enquanto cada Idol escolhe onde firmar os pés.
-    var abertura = sel === 0 ? 2.8 : sel === 1 ? -2.8 : sel === 2 ? .8 : 0;
+    var abertura = sel === 0 ? 1.4 : sel === 1 ? -1.4 : sel === 2 ? .4 : 0;
     // O descanso recolhe a perna de dentro; Conviver transfere o peso para o lado do Pet.
     var tecido = CH[sel] || {}, look = tecido.out || '';
     [-8.4, 10.8].forEach(function(o){
       var lado = o < 0 ? -1 : 1;
       var raiz = q.x + o * .7;
-      var joelho = q.x + o + lado * abertura * visual.sit + visual.rot * 14;
-      var topo = q.y + 6 + visual.sit * (6.5 + lado * visual.rot * 12);
-      var px = joelho - lado * (sel===1 ? 4 : 2.5) * visual.sit + visual.rot * 19;
+      var joelho = q.x + o + lado * abertura * visual.sit + visual.rot * 8;
+      var topo = q.y + 6 + visual.sit * (8 + lado * visual.rot * 7);
+      var px = joelho - lado * (sel===1 ? 2 : 1.2) * visual.sit + visual.rot * 10;
       var sola = PET_FLOOR - Math.max(0,-visual.rot) * (o<0 ? 24 : 0);
       var altura = Math.max(8,sola-topo);
       // Cisalhamento ao redor do tornozelo: o joelho avança e a sola fica horizontal.

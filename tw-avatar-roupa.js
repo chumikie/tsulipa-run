@@ -20,11 +20,11 @@
   // Assinaturas dos personagens oficiais, nunca gravadas no avatar ou atribuídas por gênero.
   // Os pés, punhos e ombros conservam as âncoras usadas nas poses e nas colisões.
   var PERFIS=Object.freeze({
-    Tsu:Object.freeze({cintura:6.7,ombro:3.6,perna:0.25,joelho:.7,assim:.45}),
-    Lirika:Object.freeze({cintura:8.6,ombro:5.3,perna:-.25,joelho:.4,assim:0}),
-    Pati:Object.freeze({cintura:6.1,ombro:4.4,perna:.45,joelho:.25,assim:-.25})
+    Tsu:Object.freeze({cintura:5.8,ombro:3.9,perna:.20,joelho:.25,assim:.15}),
+    Lirika:Object.freeze({cintura:6.5,ombro:4.3,perna:.15,joelho:.15,assim:0}),
+    Pati:Object.freeze({cintura:6.1,ombro:4.1,perna:.30,joelho:.20,assim:-.12})
   });
-  var NEUTRO=Object.freeze({cintura:7.2,ombro:4.2,perna:0,joelho:0,assim:0});
+  var NEUTRO=Object.freeze({cintura:6.3,ombro:4.2,perna:0,joelho:0,assim:0});
   function assinatura(c){
     return c&&Object.prototype.hasOwnProperty.call(PERFIS,c.n)?PERFIS[c.n]:NEUTRO;
   }
@@ -101,7 +101,7 @@
       // Cintura e duas dobras curtas: volume sem mudar a silhueta nem o comprimento.
       g.save(); g.strokeStyle='rgba(255,255,255,.16)'; g.lineWidth=.45; g.lineCap='round';
       g.beginPath(); g.moveTo(x+7.4,y+33.4); g.lineTo(x+22.6,y+33.4); g.stroke();
-      [10,20].forEach(function(px){g.beginPath();g.moveTo(x+px,y+34.2);g.quadraticCurveTo(x+px+(px<15?-.55:.55),y+35.5,x+px,y+36.7);g.stroke();});g.restore();g.restore();
+      g.restore();g.restore();
       return true;
     }
     // Saia com caimento curvo na mesma largura histórica.
@@ -158,11 +158,12 @@
     var a = articulacao(c, pose, lado);
     if(!a) return;
     g.save(); g.lineCap = 'round'; g.strokeStyle = c.skin;
-    for(var i = 0; i <= 2; i += 2){
-      g.lineWidth = i === 0 ? 4.15 : 3.35;
-      g.beginPath(); g.moveTo(x+a[i], y+a[i+1]);
-      g.lineTo(x+a[i+2], y+a[i+3]); g.stroke();
-    }
+    // One soft silhouette rather than two visibly tapered sticks.
+    g.lineWidth = 4.1; g.lineJoin = 'round';
+    g.beginPath(); g.moveTo(x+a[0],y+a[1]);
+    g.lineTo(x+(a[0]+a[2])*.5,y+(a[1]+a[3])*.5);
+    g.quadraticCurveTo(x+a[2],y+a[3],x+(a[2]+a[4])*.5,y+(a[3]+a[5])*.5);
+    g.lineTo(x+a[4],y+a[5]); g.stroke();
     if(typeof pose === 'object' || pose === 'coracao'){
       g.fillStyle = c.skin; g.beginPath();
       g.ellipse(x+a[4], y+a[5], 2.25, 1.6, Math.atan2(a[5]-a[3],a[4]-a[2]), 0, 2*Math.PI); g.fill();
@@ -271,57 +272,33 @@
     tronco(g,x,y,'',c);
     g.strokeStyle='rgba(54,40,85,.18)';g.lineWidth=.45;
     g.beginPath();g.moveTo(x+7,y+33);g.quadraticCurveTo(x+15,y+34.1,x+23,y+33);g.stroke();
-    // Pinças laterais da camisa: partem da axila e convergem para a cintura.
-    [1,-1].forEach(function(k){var a=k===1?x:x+30;g.beginPath();
-      g.moveTo(a+k*6.1,y+25.5);g.quadraticCurveTo(a+k*9.2,y+28.3,a+k*7.8,y+31.6);g.stroke();
-    });
+    // Apenas a barra: sem pinças anatômicas no pequeno uniforme.
     g.restore();
   }
-  // Franja reta: mechas largas sobrepostas em vez de uma única barra.
-  // A régua da testa e as escolhas de franja continuam as mesmas.
+  // Franja reta clássica: uma massa contínua, sem serrilhado de mechas.
   function reta(g,x,y){
-    g.beginPath();g.moveTo(x+3,y+8);g.quadraticCurveTo(x+15,y+6.8,x+27,y+8);
-    g.lineTo(x+27,y+14.5);
-    for(var i=5;i>=0;i--){var a=x+3+i*4;
-      g.quadraticCurveTo(a+3.1,y+14.6+(i%2)*.3,a,y+13.4);
-    }
+    g.beginPath();g.moveTo(x+3,y+8);g.quadraticCurveTo(x+15,y+7.5,x+27,y+8);
+    g.lineTo(x+27,y+14);g.quadraticCurveTo(x+15,y+14.35,x+3,y+14);
     g.closePath();g.fill();
   }
   function pescoco(g,x,y){
-    g.beginPath();g.moveTo(x+12,y+18);g.lineTo(x+18,y+18);
-    g.quadraticCurveTo(x+17,y+21.5,x+19,y+22.4);
-    g.quadraticCurveTo(x+15,y+25.4,x+11,y+22.4);
-    g.quadraticCurveTo(x+13,y+21.5,x+12,y+18);g.fill();
+    // Pescoço discreto, sob o queixo e a gola, na régua original.
+    g.fillRect(x+12,y+18,6,6);
   }
   function coques(g,x,y,cor){
-    g.save();
-    for(var lado=-1;lado<=1;lado+=2){
-      var cx=x+15+12.1*lado,cy=y+1.7;
-      // Dois volumes de cabelo entrelaçados; as pontas se recolhem junto ao elástico.
-      g.fillStyle=cor;g.beginPath();g.moveTo(cx-lado*3.5,cy+5);
-      g.bezierCurveTo(cx-lado*8,cy+1,cx-lado*5.8,cy-5.2,cx,cy-6.3);
-      g.bezierCurveTo(cx+lado*6.4,cy-7.1,cx+lado*7,cy+.9,cx+lado*3.8,cy+4);
-      g.quadraticCurveTo(cx+lado*1.2,cy+6,cx-lado*3.5,cy+5);g.closePath();g.fill();
-      g.strokeStyle='rgba(178,164,200,.38)';g.lineWidth=.68;g.lineCap='round';
-      g.beginPath();g.moveTo(cx-lado*3.4,cy+2.1);g.bezierCurveTo(cx-lado*5.5,cy-3.5,cx+lado*2.8,cy-5.7,cx+lado*3.5,cy-1.6);
-      g.quadraticCurveTo(cx+lado*4,cy+1.3,cx,cy+3.8);g.stroke();
-      g.beginPath();g.moveTo(cx-lado*1.8,cy+2);g.quadraticCurveTo(cx-lado*3,cy-1.5,cx+lado*.8,cy-2.5);g.stroke();
-      g.fillStyle='#4362b3';g.beginPath();g.ellipse(cx-lado,cy+4.6,3.8,1.3,-lado*.45,0,7);g.fill();
-    }
-    g.restore();
+    // Volumes originais, unidos à calota e com os elásticos clássicos.
+    g.fillStyle=cor;
+    [4,26].forEach(function(cx){g.beginPath();g.ellipse(x+cx,y+3,6,6,0,0,7);g.fill();});
+    g.fillStyle='#2a5bd7';g.fillRect(x+1,y+6,7,3);g.fillRect(x+22,y+6,7,3);
   }
   function formaBracos(g,x,y){
     [1,-1].forEach(function(k){
       var a=k===1?x:x+30;function X(v){return a+k*v;}
-      g.moveTo(X(.9),y+24);g.quadraticCurveTo(X(.65),y+26.9,X(1.55),y+28.65);
-      g.quadraticCurveTo(X(1.95),y+29.3,X(1.6),y+30);
-      g.quadraticCurveTo(X(.9),y+31.4,X(1.5),y+32.5);
-      g.quadraticCurveTo(X(2.2),y+33.6,X(3.55),y+33.3);
-      g.quadraticCurveTo(X(4.8),y+33.15,X(4.8),y+31.9);
-      g.quadraticCurveTo(X(5.9),y+32.05,X(5.65),y+31.15);
-      g.quadraticCurveTo(X(5.4),y+30.45,X(4.45),y+29.7);
-      g.quadraticCurveTo(X(4.15),y+28.9,X(4.8),y+27.5);
-      g.quadraticCurveTo(X(5.25),y+25.6,X(5),y+24);g.closePath();
+      g.moveTo(X(1),y+24);g.quadraticCurveTo(X(.7),y+27.5,X(1),y+30.8);
+      g.quadraticCurveTo(X(1),y+33.2,X(3),y+33.2);
+      g.quadraticCurveTo(X(5.2),y+33.2,X(5.2),y+30.8);
+      g.quadraticCurveTo(X(5.1),y+27.4,X(5),y+24);
+      g.quadraticCurveTo(X(3),y+23.5,X(1),y+24);g.closePath();
     });
   }
   function bracosBase(g,x,y){g.beginPath();formaBracos(g,x,y);g.fill();}
@@ -331,20 +308,14 @@
       var X=x+dx,Y=y+36+((i===0?!up:up)?-2:0),B=y+44;
       var k=i===0?-a.joelho:a.joelho;
       g.beginPath();g.moveTo(X-a.perna,Y);g.lineTo(X+5+a.perna,Y);
-      g.quadraticCurveTo(X+5+a.perna+k,B-4,X+4.5,B-1);g.lineTo(X+4.5,B);
+      g.quadraticCurveTo(X+5.1+a.perna+k,B-4,X+4.5,B-1);g.lineTo(X+4.5,B);
       g.lineTo(X+.5,B);g.lineTo(X+.5,B-1);
-      g.quadraticCurveTo(X-a.perna+k,B-4,X-a.perna,Y);g.closePath();g.fill();
+      g.quadraticCurveTo(X-.1-a.perna+k,B-4,X-a.perna,Y);g.closePath();g.fill();
     });
   }
   function bracos(g, x, y){   // braços parados
     g.save();g.beginPath();formaBracos(g,x,y);g.clip();
     [1,25].forEach(function(dx){g.save();g.beginPath();g.rect(x+dx,y+24,4,9);g.clip();luzPele(g,x+dx,x+dx+4,y+24,y+33,true,y+28);g.restore();});g.restore();
-    // Volume do antebraço e pulso, dentro dos pontos de encaixe.
-    g.save();g.fillStyle='rgba(255,255,255,.13)';
-    [2.1,26.1].forEach(function(a){g.beginPath();g.moveTo(x+a,y+25.1);g.quadraticCurveTo(x+a-.4,y+28.5,x+a+.3,y+30);g.quadraticCurveTo(x+a+.65,y+28.1,x+a+.65,y+25.1);g.closePath();g.fill();});g.restore();
-    // Dobras pequenas da palma, legíveis no retrato.
-    g.save();g.strokeStyle='rgba(65,28,45,.22)';g.lineWidth=.45;g.lineCap='round';
-    [[x+2.1,x+3.5],[x+26.5,x+27.9]].forEach(function(p){g.beginPath();g.moveTo(p[0],y+30.4);g.quadraticCurveTo((p[0]+p[1])/2,y+29.9,p[1],y+30.5);g.stroke();});g.restore();
   }
   function rosto(g, x, y){
     g.save(); g.beginPath(); g.ellipse(x + 15, y + 17, 11, 11, 0, 0, 7); g.clip();
@@ -354,41 +325,20 @@
   function cabelo(g, H, HD, y, b, topo){
     if(b !== 'chanel' && b !== 'longo') return null;
     var L = b === 'longo' ? 41 : 25, d = topo ? 4 : 0, gr = g.createLinearGradient(0, y + 1 + d, 0, y + L + d);
-    gr.addColorStop(0, H); gr.addColorStop(.22, H); gr.addColorStop(19 / (L - 1), HD); gr.addColorStop(1, escuro(H, 55));
+    gr.addColorStop(0, H); gr.addColorStop(19 / (L - 1), HD); gr.addColorStop(1, escuro(H, 82));
     return gr;
   }
-  // Nuca curta com duas massas assimétricas, abaixo das orelhas do acessório.
+  // Nuca clássica: os três volumes originais da frente, compartilhados.
   function pixie(g,x,y){
-    g.beginPath(); g.moveTo(x+5,y+5);
-    g.quadraticCurveTo(x-1,y+9,x+1.2,y+16);
-    g.lineTo(x-.7,y+18); g.quadraticCurveTo(x+1.1,y+20,x+4.3,y+19.7);
-    g.lineTo(x+3.5,y+23); g.quadraticCurveTo(x+9,y+21.5,x+12,y+18);
-    g.quadraticCurveTo(x+14,y+21,x+16.5,y+23.8);
-    g.quadraticCurveTo(x+21,y+22,x+23.8,y+18.4);
-    g.lineTo(x+27,y+20); g.lineTo(x+26,y+17.4); g.lineTo(x+30,y+18.6);
-    g.quadraticCurveTo(x+30,y+10,x+25,y+6); g.closePath(); g.fill();
+    T(g,[x+4,y+10,x+0,y+17,x+3,y+19,x+2,y+24,x+8,y+21,x+9,y+14]);
+    T(g,[x+26,y+10,x+30,y+17,x+27,y+19,x+28,y+24,x+22,y+21,x+21,y+14]);
+    T(g,[x+9,y+22,x+15,y+28,x+21,y+22]);
   }
   function costas(g, x, y, b){   // contorno: sai da cabeça (centro y+8 antes do translate) e desce pelas laterais
     g.beginPath(); g.moveTo(x + 3, y + 8); g.arc(x + 15, y + 8, 12, Math.PI, 0);
-    if(b === 'longo'){ g.quadraticCurveTo(x + 34, y + 34, x + 27, y + 41); g.quadraticCurveTo(x + 25, y + 40, x + 24, y + 37);
-      g.quadraticCurveTo(x + 22, y + 42, x + 17, y + 42);
-      g.lineTo(x + 15, y + 39);
-      g.quadraticCurveTo(x + 11, y + 43, x + 7, y + 40);
-      g.lineTo(x + 6, y + 37); g.lineTo(x + 3, y + 41); g.quadraticCurveTo(x - 4, y + 34, x + 3, y + 8); }
-    else { // Chanel: volume na nuca, pontas dirigidas ao maxilar e contorno levemente assimétrico.
-      g.quadraticCurveTo(x+31.1,y+14,x+29,y+20.8);
-      g.quadraticCurveTo(x+27.5,y+24.4,x+25.3,y+25.2);
-      g.quadraticCurveTo(x+20,y+26.6,x+15.7,y+25.7);
-      g.quadraticCurveTo(x+10.3,y+27.2,x+5,y+25.7);
-      g.quadraticCurveTo(x-.5,y+24.1,x+.7,y+17.4);
-      g.quadraticCurveTo(x+1.4,y+12,x+3,y+8);
-    }   // chanel: corte reto logo abaixo do queixo (antes descia até o meio do tronco e parecia cabelo comprido)
+    if(b === 'longo'){ g.quadraticCurveTo(x + 34, y + 34, x + 27, y + 41); g.lineTo(x + 3, y + 41); g.quadraticCurveTo(x - 4, y + 34, x + 3, y + 8); }
+    else { g.quadraticCurveTo(x + 30.5, y + 21, x + 26.5, y + 25); g.lineTo(x + 3.5, y + 25); g.quadraticCurveTo(x - .5, y + 21, x + 3, y + 8); }   // chanel: corte reto logo abaixo do queixo (antes descia até o meio do tronco e parecia cabelo comprido)
     g.fill();
-    // Mechas nas costas seguem a curvatura do corte, recortadas na silhueta.
-    g.save();g.clip();g.lineCap='round';g.lineWidth=.65;g.strokeStyle='rgba(255,255,255,.15)';
-    var fim=b==='longo'?39:24;
-    g.beginPath();g.moveTo(x+6,y+5);g.quadraticCurveTo(x+1.8,y+17,x+5.8,y+fim);g.stroke();
-    g.strokeStyle='rgba(40,10,70,.15)';g.beginPath();g.moveTo(x+24,y+7);g.quadraticCurveTo(x+29,y+18,x+24.2,y+fim);g.stroke();g.restore();
   }
   // Sombra de 1px da franja, só na pele: fora do topo e das costeletas (que têm o mesmo degradê).
   // Abre um save() próprio e devolve true: o drawChar desenha a franja uma vez aqui (só para gerar a sombra),
@@ -402,14 +352,10 @@
     return true;
   }
   function bagunca(g, x, y){   // franja da Tsu: três mechas curvas
-    g.beginPath();g.moveTo(x+3,y+8);g.quadraticCurveTo(x+1.1,y+12.2,x+4.1,y+16.1);
-    g.quadraticCurveTo(x+6.9,y+17.7,x+7.1,y+19.5);
-    g.quadraticCurveTo(x+7.7,y+15.3,x+12,y+10.8);
-    g.quadraticCurveTo(x+11.6,y+14.8,x+13.2,y+18.6);
-    g.quadraticCurveTo(x+18.4,y+15,x+20.1,y+10.1);
-    g.quadraticCurveTo(x+21.1,y+13.9,x+24.2,y+16.6);
-    g.quadraticCurveTo(x+24.6,y+13,x+27,y+10.2);
-    g.lineTo(x+27,y+8);g.quadraticCurveTo(x+15,y+4.8,x+3,y+8);g.closePath();g.fill();
+    g.beginPath(); g.moveTo(x + 3, y + 8); g.lineTo(x + 3, y + 12); g.quadraticCurveTo(x + 4.5, y + 17, x + 8, y + 19.5);
+    g.quadraticCurveTo(x + 8.6, y + 14, x + 11.5, y + 10.5); g.quadraticCurveTo(x + 12.6, y + 15.5, x + 16, y + 18);
+    g.quadraticCurveTo(x + 16.8, y + 13, x + 19.8, y + 9.5); g.quadraticCurveTo(x + 21.4, y + 14, x + 24.5, y + 16.5);
+    g.quadraticCurveTo(x + 24.9, y + 12.5, x + 27, y + 10.5); g.lineTo(x + 27, y + 8); g.closePath(); g.fill();
   }
   function gravata(g, x, y){   // Trainee: nó, lâmina com ponta e brilho do lado da luz
     // As pontas da gola acompanham o nó da gravata.

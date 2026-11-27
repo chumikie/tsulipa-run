@@ -19,9 +19,13 @@ test('Signature Idols: distinct waist and knees, fixed ankle anchors, neutral cu
   assert.equal(R.assinatura({n:'Idol'}),R.assinatura({n:'__proto__'}));
   assert.equal(R.assinatura({}),R.assinatura(null));
 });
-test('Signature Idols: official eyes differ, player-selected shape is not overridden',()=>{
-  const shapes=['Tsu','Lirika','Pati'].map(n=>{const {g,pts}=recorder();F.rosto(g,{n,eye:'#123456'},0,0,0);return JSON.stringify(pts);});
-  assert.equal(new Set(shapes).size,3);
+test('Restore the Soul: classic eyes retain the original pixel highlights for all Idols; explicit choices are preserved',()=>{
+  const expected=[[0,17,3,1],[0,18,3,4],[1,19,2,2],[0,18,1,2],[2,21,1,1]];
+  for(const n of ['Tsu','Lirika','Pati','Idol']){
+    const {g,pts}=recorder();
+    F.olho(g,{n,eye:'#123456'},0,0,-1);
+    assert.deepEqual(pts.filter(p=>p[0]==='fillRect').map(p=>p.slice(1)),expected);
+  }
   const a=recorder(),b=recorder();
   F.rosto(a.g,{n:'Tsu',eye:'#123456',olho:'pontinho'},0,0,0);
   F.rosto(b.g,{n:'Idol',eye:'#123456',olho:'pontinho'},0,0,0);
@@ -31,7 +35,7 @@ test('Signature World: shared geometry and separate photo prop/hand mirror',()=>
   for(const p of ['centerrun.js','karaoke-time.html','sora-jump.html'])assert.ok(read(p).includes('TWAvatarRoupa.pernas(g,x,y,up,c)'));
   const s=read('studio.js');assert.match(s,/x.restore\(\); \/\/ o arranjo permanece na ordem escolhida/);
   assert.match(s,/if\(espelhoMao\)x.scale\(-1,1\);\n    \/\/ Dedos/);
-  assert.match(read('.github/workflows/validate-games.yml'),/ref: 3bddff46b9b195de929ac2396c43d142710a82f1/);
+  assert.match(read('.github/workflows/validate-games.yml'),/ref: cc22799235fa65be5f71ef03d3ba952b3b65f505/);
 });
 
 test('Signature 5.10: official identity survives local normalization and clone, never serialized names',()=>{

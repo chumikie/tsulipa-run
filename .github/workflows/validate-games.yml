@@ -236,7 +236,7 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
-          ref: 3bddff46b9b195de929ac2396c43d142710a82f1
+          ref: cc22799235fa65be5f71ef03d3ba952b3b65f505
           path: .visual-signature-base
           persist-credentials: false
       - uses: actions/setup-node@v4

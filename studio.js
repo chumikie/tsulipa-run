@@ -387,13 +387,18 @@
       }).catch(function(){ if(sess === sessao && dono === donoFoto()) msg = t('erro'); }).then(function(){ if(sess !== sessao) return; if(dono !== donoFoto()){ foto = null; fase = 'monta'; } else fase = 'foto'; ocupado = false; ui(); });
     }, 1900);
   }
+  // O Mural armazena as escolhas, sem versão da lente. As fotos publicáveis
+  // mantêm a projeção histórica em todas as etapas, da prévia à capa.
+  function lenteDeEnsaio(){
+    return !!(lookTemporario || pilotoStudio || !logado() || !servidor || arranjoFlores(esc_.objeto).length);
+  }
   function capturarCena(f){
     var cv = document.createElement('canvas'); cv.width = 432; cv.height = 540;
     var escala = Math.min(3, Math.max(2, Math.round(window.devicePixelRatio || 1)));
     var original = document.createElement('canvas');
     original.width = cv.width * escala; original.height = cv.height * escala;
     var pincel = original.getContext('2d'); pincel.scale(escala, escala);
-    cena(pincel, cv.width, cv.height, f.escolhas, f.retrato ? f.retrato.tempo : f.t0 / 1000, f.avatar);
+    cena(pincel, cv.width, cv.height, f.escolhas, f.retrato ? f.retrato.tempo : f.t0 / 1000, f.avatar, lenteDaPrevia);
     cv.getContext('2d').drawImage(original, 0, 0, cv.width, cv.height);
     f.original = original;
     f.cena = cv;
@@ -750,10 +755,17 @@
     x.moveTo(-.65,.45);x.quadraticCurveTo(.1,1.3,.85,1.55);x.stroke();
     x.restore();
   }
-  function cena(x, W, H, e, tm, avOutro){
+  function cena(x, W, H, e, tm, avOutro, ensaio){
+    // A câmera aproxima também o cenário e os balões, em torno da linha dos olhos.
+    // As reconstruções do Mural conservam a projeção com que foram publicadas.
+    var lente = !ensaio ? 1 : e.quadro === 'rosto' ? 1.58 : e.quadro === 'meio' ? 1.22 : 1;
+    x.save();
+    x.translate(W*.5*(1-lente), H*.29*(1-lente));
+    x.scale(lente,lente);
     fundo(x, W, H, e.fundo, tm);
-    var av = Object.assign({}, avOutro || meuAv() || {}); av.pose = e.pose === 'normal' ? '' : e.pose; av.fundo = '';
     if(e.objeto === 'balao') baloes(x, W, H, tm);
+    x.restore();
+    var av = Object.assign({}, avOutro || meuAv() || {}); av.pose = e.pose === 'normal' ? '' : e.pose; av.fundo = '';
     var corpo;
     var quadro = e.quadro || 'inteiro', comObjeto = !!e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao';
     if(typeof perfDesenharIdol === 'function'){
@@ -765,7 +777,7 @@
     luz(x, W, H, e.luz);
   }
   // Foto perfeita: estrelinhas que piscam em volta da polaroid (paradas com "reduzir movimento").
-  var tempoDaPrevia = null;
+  var tempoDaPrevia = null, lenteDaPrevia = false;
   var calmo = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   function brilhos(x, W, H, s){
     var P = [[.1,.08],[.88,.12],[.06,.6],[.93,.52],[.18,.9],[.82,.86],[.5,.04]];
@@ -793,7 +805,8 @@
       x.fillStyle = '#fff'; x.fillRect(0,0,W,H);
       x.save(); x.beginPath(); x.rect(24,24,W-48,(W-48)*1.25); x.clip(); x.translate(24,24);
       tempoDaPrevia = calmo?0:tm;
-      cena(x, W-48, (W-48)*1.25, esc_, tempoDaPrevia); x.restore();
+      lenteDaPrevia = lenteDeEnsaio();
+      cena(x, W-48, (W-48)*1.25, esc_, tempoDaPrevia, null, lenteDaPrevia); x.restore();
       x.strokeStyle = 'rgba(255,255,255,.38)'; x.lineWidth = 1;
       var fw = W-48, fh = fw*1.25;
       x.beginPath();

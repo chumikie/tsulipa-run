@@ -151,6 +151,11 @@ async function rodar(browser,base,nome,opcoes){
           await rua.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
           await p.waitForTimeout(400);
           await rua.screenshot({path:path.join(out,'compacto-'+bairro+'.png')});
+          if(bairro==='praca'){
+            await rua.evaluate(el=>{el.scrollLeft=el.scrollWidth-el.clientWidth;});
+            await p.waitForTimeout(350);
+            await rua.screenshot({path:path.join(out,'compacto-praca-banca.png')});
+          }
           await p.locator('#twMapa .tw-mapa-voltar').click();
         }
       }

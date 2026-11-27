@@ -280,6 +280,13 @@ function shopDesenhar(){
   // fachada: toldo listrado nas cores do TsuLiPa e letreiro
   x.fillStyle = '#fff'; x.fillRect(bx - 170, 62, 340, chao - 62);
   x.fillStyle = '#ffe3f2'; x.fillRect(bx - 160, 108, 320, chao - 170);
+  // Laterais e piso da loja recuam para a parede atrás da arara e do caixa.
+  x.fillStyle='#d1b6d4'; x.beginPath(); x.moveTo(bx-160,100);
+  x.lineTo(bx-133,116); x.lineTo(bx-133,chao-20); x.lineTo(bx-160,chao); x.closePath(); x.fill();
+  x.fillStyle='#eed6de'; x.beginPath(); x.moveTo(bx+160,100);
+  x.lineTo(bx+133,116); x.lineTo(bx+133,chao-20); x.lineTo(bx+160,chao); x.closePath(); x.fill();
+  x.fillStyle='#e3c9bc'; x.beginPath(); x.moveTo(bx-133,chao-20);
+  x.lineTo(bx+133,chao-20); x.lineTo(bx+160,chao); x.lineTo(bx-160,chao); x.closePath(); x.fill();
   for(i = 0; i < 8; i++){ x.fillStyle = ['#9b30d9', '#ffffff', '#5cc72c', '#ffffff', '#4169e1', '#ffffff', '#ff6fb5', '#ffffff'][i]; x.beginPath(); x.moveTo(bx - 172 + i * 43, 70); x.lineTo(bx - 129 + i * 43, 70); x.lineTo(bx - 129 + i * 43, 104); x.quadraticCurveTo(bx - 150 + i * 43, 116, bx - 172 + i * 43, 104); x.fill(); }
   x.fillStyle = '#ff6fb5'; x.fillRect(bx - 178, 44, 356, 28);
   x.fillStyle = '#fff'; x.font = '900 17px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('ZIPPER ⭐ SHOP!', bx, 59);
@@ -305,6 +312,9 @@ function shopDesenhar(){
     perfCharContorno(x, ax - 15 * sc, chao - 70 - 34 * sc + bob, sc, function(){ charPose = 'v'; drawChar(CH[a[1]], 0, 0, 0, t - shopFala.t0 < 150 && t > shopFala.t0 ? 3 : 2, false); });
     charPose = ''; perfAntena = '';
     x.fillStyle = '#c98b55'; x.fillRect(bx + 10, chao - 70, 150, 70); x.fillStyle = '#a0673a'; x.fillRect(bx + 10, chao - 70, 150, 8);   // balcão
+    x.fillStyle='#efd2ac'; x.beginPath(); x.moveTo(bx+4,chao-70);
+    x.lineTo(bx+17,chao-81); x.lineTo(bx+149,chao-81); x.lineTo(bx+162,chao-70); x.closePath(); x.fill();
+    x.fillStyle='#e4ac84'; x.fillRect(bx+20,chao-54,130,42);
     x.font = '22px sans-serif'; x.fillText('🛍️', bx + 50, chao - 84); x.fillText('🎀', bx + 128, chao - 82);
     // o seu Idol entra pela esquerda (com a roupa que estiver provando)
     var c = Object.assign({}, CU); if(perfProva) c.out = perfProva;   // na loja é sempre o seu Idol (o que você monta aqui)

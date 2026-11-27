@@ -25,7 +25,7 @@
 <script src="./tw-avatar-items.js?v=4"></script>
 <script src="./tw-avatar-hair.js?v=16"></script>
 <script src="./tw-lado.js?v=10"></script>
-<script src="./tw-avatar-roupa.js?v=22"></script><script src="./tw-avatar-rosto.js?v=9"></script>
+<script src="./tw-avatar-roupa.js?v=22"></script><script src="./tw-avatar-rosto.js?v=10"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, cante no Karaoke⭐Time!, cuide do seu pet, plante flores no Bloom⭐Garden!, monte a foto do dia no Photo⭐Studio! e dispute o Idol⭐Battle! Um jogo de fã do TsuLiPa (BRS48), grátis e sem anúncios.">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -174,7 +174,7 @@ body.modo-teste .stage{outline:3px dashed var(--pink);outline-offset:4px}
 <link rel="stylesheet" href="./karaoke-popup.css?v=4">
 <link rel="stylesheet" href="./tw-windows.css?v=3">
 <link rel="stylesheet" href="./atualizacao2.css?v=8">
-<link rel="stylesheet" href="./hub-polish.css?v=63">
+<link rel="stylesheet" href="./hub-polish.css?v=64">
 <link rel="stylesheet" href="./vida-cidade.css?v=3">
 <link rel="stylesheet" href="./tw-tema-cards.css?v=3">
 <script>if(/[?&]demo=1\b/.test(location.search)&&!/tsulipa-world\.vercel\.app$/.test(location.hostname))document.write('<script src="./demo.js?v=8"><'+'/script>');</script>
@@ -423,7 +423,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 <script defer src="./karaoke-room-views.js?v=1"></script>
 <script src="./centerrun.js?v=52"></script>
 <script defer src="./center-recovery.js?v=1"></script>
-<script src="./pet.js?v=168"></script>
+<script src="./pet.js?v=169"></script>
 <script src="./perfil.js?v=53"></script>
 <script src="./gacha.js?v=9"></script>
 <script src="./album-fotos.js?v=9"></script>
@@ -457,7 +457,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
 /* Handshake⭐Event! e Happy⭐Cafe! sob demanda (≈120 KB): o jogo baixa no primeiro toque, como o Battle e o Studio.
    A base (jogos-base.js) já traz o que o Hub, o pet e o jornal leem. A ordem importa: o Café usa peças do Handshake,
    as extensões do Café envolvem funções dele e as flores (flores.js) envolvem os dois. */
-(function(){var p=null,ARQ=['./handshake.js?v=26','./cafe.js?v=37','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=15','./flores.js?v=2'];
+(function(){var p=null,ARQ=['./handshake.js?v=26','./cafe.js?v=38','./cafe-gorjeta.js?v=1','./cafe-vip.js?v=1','./cafe-duplo.js?v=15','./flores.js?v=2'];
   function um(u){return new Promise(function(ok,er){var e=document.createElement('script');e.src=u;e.async=false;e.onload=ok;e.onerror=function(){e.remove();er(new Error(u));};document.head.appendChild(e);});}
   var proximo = 0;
   async function restantes(){
@@ -496,7 +496,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   function carregar(){
     if(!pedido){
       var textos=window.TW_MAPA_TEXTOS?Promise.resolve():carregarArquivo('./mapa-textos.js?v=3');
-      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=91');})
+      pedido=textos.then(function(){return carregarArquivo('./tw-mapa.js?v=92');})
         .catch(function(e){pedido=null;throw e;});
     }
     return pedido;
@@ -516,7 +516,7 @@ if((window.TW_I18N.idiomasSeparados||[]).indexOf(l)>=0)document.write('<script s
   });
 })();</script>
 <script src="./bloom.js?v=22"></script>
-<script src="./shop.js?v=16"></script>
+<script src="./shop.js?v=17"></script>
 <script src="./tw-piloto-bairro.js?v=9"></script>
 <script>
 /* O jornal completo e as cenas do telão carregam ao abrir o Jornal, Calendário ou galeria do Pet. */
@@ -561,7 +561,7 @@ var jornalCarregar=(function(){
 <script>
 /* Photo⭐Studio! sob demanda (≈37 KB): baixa no primeiro toque, como o Idol⭐Battle!.
    A capa do Studio no Idol⭐News! também puxa o arquivo quando o jornal abre. */
-(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=49';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
+(function(){var p=null;function carregar(){if(!p)p=new Promise(function(ok,er){var e=document.createElement('script');e.src='./studio.js?v=50';e.onload=ok;e.onerror=function(){p=null;er();};document.head.appendChild(e);});return p;}
   function atalho(){var a=arguments;TW_CARGA.abrir('Photo⭐Studio!', carregar, function(){window.studioAbrir.apply(window,a);});}
   window.TW_STUDIO_ON=true;window.TW_STUDIO_SOB_DEMANDA=true;window.studioAbrir=atalho;
   window.studioCarregar=carregar;})();

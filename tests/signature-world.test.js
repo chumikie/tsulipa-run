@@ -31,7 +31,7 @@ test('Signature World: shared geometry and separate photo prop/hand mirror',()=>
   for(const p of ['centerrun.js','karaoke-time.html','sora-jump.html'])assert.ok(read(p).includes('TWAvatarRoupa.pernas(g,x,y,up,c)'));
   const s=read('studio.js');assert.match(s,/x.restore\(\); \/\/ o arranjo permanece na ordem escolhida/);
   assert.match(s,/if\(espelhoMao\)x.scale\(-1,1\);\n    \/\/ Dedos/);
-  assert.match(read('.github/workflows/validate-games.yml'),/ref: 538973afc73c99ae9a98c9011220f2965f3e7003/);
+  assert.match(read('.github/workflows/validate-games.yml'),/ref: b47c798107dd44bd6df70f32588bac509f320d05/);
 });
 
 test('Signature 5.10: official identity survives local normalization and clone, never serialized names',()=>{
@@ -86,9 +86,9 @@ test('Signature 5.13: all four architectural SVGs are derived from generator, wi
   for(const id of ['praca','palco','arena','ceu']){
     const s=read('mapa-rua-'+id+'.svg'),marker='id="signature-'+id+'"';
     assert.equal(s.split(marker).length,2);
-    const group=s.slice(s.indexOf('<g '+marker),s.indexOf('<g transform="translate(30,26)">',s.indexOf(marker)));assert.ok(group.startsWith('<g '+marker));assert.ok(py.includes(group),'generator preserves exact integrated group '+id);
+    const group=s.slice(s.indexOf('<g '+marker),s.indexOf('<g transform="translate(30,26)">',s.indexOf(marker)));assert.ok(group.startsWith('<g '+marker));assert.ok(py.includes(group.replace(/ \/>/g,'/>')),'generator preserves exact integrated group '+id);
     assert.equal((s.match(/<g(?:\s|>)/g)||[]).length,(s.match(/<\/g>/g)||[]).length);
   }
-  assert.ok(map.includes("img.src='./'+arquivo+'?v=6';"),'versioned SVG URL');
+  assert.ok(map.includes("img.src='./'+arquivo+'?v=7';"),'versioned SVG URL');
   assert.doesNotMatch(map,/Pavilhão lunar, reconstruído/);
 });

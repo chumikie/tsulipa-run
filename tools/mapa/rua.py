@@ -111,8 +111,14 @@ else:
         G['cloud'](bx, by, sc, 1)
 # calçada (piso de ladrilhos) e rua de pedrinha
 A(f"<rect x='0' y='560' width='{W}' height='90' fill='#fff1d8'/>")
-for i in range(0, W, 64):
-    A(f"<path d='M{i},560 v90' stroke='#f0dcb4' stroke-width='3'/>")
+if bairro == 'praca':
+    for i in range(-128, W + 128, 84):
+        A(f"<path d='M{800+(i-800)*.78:.1f},560 L{i},650' stroke='#dfc9a9' stroke-width='2'/>")
+    for linha in (575, 600, 635):
+        A(f"<path d='M0,{linha}H1600' stroke='#dfc9a9' stroke-width='2'/>")
+else:
+    for i in range(0, W, 64):
+        A(f"<path d='M{i},560 v90' stroke='#f0dcb4' stroke-width='3'/>")
 A(f"<rect x='0' y='560' width='{W}' height='8' fill='#ffffff' opacity='.7'/>")
 A(f"<rect x='0' y='650' width='{W}' height='{H-650}' fill='#efe3cf'/>")
 for i in range(140):
@@ -146,6 +152,38 @@ def sora_ilha(cx):
 for indice, (cab, cx) in enumerate(zip(lugares, (300, 800, 1300))):
     if cab and 'Sora' in cab:
         sora_ilha(cx)
+    elif bairro == 'praca' and cab:
+        # A caixa e a banca conservam placas e acessos. Os planos laterais
+        # das duas construções recuam em direção ao centro da praça.
+        A(f"<g transform='translate({cx},566) scale(2.05)'>")
+        if indice == 0:
+            A("""<g id="varanda-correio">
+              <path d="M-82 0H78L96 -12H-61Z" fill="#d4b6a6"/>
+              <path d="M-79 -7H76V0H-79Z" fill="#c99989"/>
+              <path d="M-79 -7L-61 -19H94L76 -7Z" fill="#f6ddc6"/>
+              <path d="M-69 -19V-108H80V-19Z" fill="#f2ceb9"/>
+              <path d="M-69 -19L-78 -8V-104L-69 -108Z" fill="#cda995"/>
+              <path d="M-55 -21V-67Q-55 -90 -34 -90Q-13 -90 -13 -67V-21Z" fill="#bb8e92"/>
+              <path d="M-48 -21V-66Q-48 -83 -32 -83Q-18 -83 -18 -65V-21Z" fill="#785d79"/>
+              <path d="M18 -81H69V-41H18Z" fill="#b08786"/>
+              <path d="M22 -78H65V-46H22Z" fill="#b8d7df"/>
+              <path d="M43 -78V-44M22 -65H65" stroke="#fff0d3" stroke-width="3"/>
+              <path d="M-81 -103L-60 -119H96L76 -103Z" fill="#dc9fa9"/>
+              <path d="M76 -103L96 -119V-111L76 -96Z" fill="#986979"/>
+              <path d="M-81 -103H76V-96H-81Z" fill="#f7c3bf"/>
+              <path d="M-76 -96H-70V-8H-76ZM66 -96H72V-8H66Z" fill="#fff0d3"/>
+            </g>""")
+        else:
+            A("""<g id="lateral-banca">
+              <path d="M-46 -70L-70 -83V-13L-46 0Z" fill="#a7bacc"/>
+              <path d="M-51 -59L-64 -66V-32L-51 -25Z" fill="#657d98"/>
+              <path d="M-53 -57L-62 -62V-47L-53 -42Z" fill="#f9d397"/>
+              <path d="M-58 -92L-79 -105H32L58 -92Z" fill="#b8b5e5"/>
+              <path d="M-58 -92L-79 -105V-97L-58 -80Z" fill="#8682b9"/>
+              <path d="M-52 -22L-69 -31V-14L-52 1Z" fill="#b28567"/>
+            </g>""")
+        bloco(cab, 0, 0)
+        A('</g>')
     elif cab:
         predio(cab, cx)
     elif bairro == 'praca' and indice == 1:

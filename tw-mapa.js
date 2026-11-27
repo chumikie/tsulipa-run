@@ -368,7 +368,7 @@
           tentar.hidden=false;
         }
         if(window.TW_MAPA_DEBUG)console.warn('Arte do mapa indisponível:',arquivo);};
-      img.src='./'+arquivo+'?v=6';
+      img.src='./'+arquivo+'?v=7';
     }
     arte=imagens[destino];if(arte.complete&&arte.naturalWidth){desenhar();centralizar();}
     textos();atualizarVitrine();recadoRosa();

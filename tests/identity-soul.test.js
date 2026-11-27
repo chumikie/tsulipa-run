@@ -36,6 +36,7 @@ test('Memórias: gallery never paints a photograph belonging to a different acco
 });
 test('Studio: preview and capture preserve the frozen reduced-motion phase',()=>{
   const s=read('studio.js');assert.match(s,/tempoDaPrevia = calmo\?0:tm/);
-  assert.match(s,/cena\(x, W-48, \(W-48\)\*1\.25, esc_, tempoDaPrevia\)/);
+  assert.match(s,/cena\(x, W-48, \(W-48\)\*1\.25, esc_, tempoDaPrevia, null, lenteDaPrevia\)/);
+  assert.ok(s.includes('f.t0 / 1000, f.avatar, lenteDaPrevia)'));
   assert.match(s,/tempo:tempoDaPrevia === null \? \(calmo\?0:foto\.t0 \/ 1000\) : tempoDaPrevia/);
 });

@@ -822,3 +822,42 @@ html body .studiop .stgrupo>b{text-align:start;font-size:12px;font-weight:800;ma
 #shopAbas [aria-pressed="true"]{outline-offset:-2px}
 #perfCorpo .twp-vazia{border-radius:10px}
 @media(max-width:390px){.studiop .stgrupo .stchip{flex:1 1 auto;min-width:0}.shopprov .shop-comparar{gap:6px}}
+
+/* Bancada do Studio. A foto e o disparador formam uma superfície contínua. */
+.studiop #studioVisor:is([data-fase="monta"],[data-fase="contagem"]){
+  border:0;
+  border-bottom:1px solid var(--tw-modal-edge,#eadcff);
+  border-radius:0;
+}
+.studiop .stcategorias{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,6.3em),1fr));
+  align-items:stretch;
+  gap:0;
+  margin:8px 0 0;
+}
+.studiop .stcategorias .stabab{
+  border:0;
+  border-bottom:2px solid transparent;
+  border-radius:0;
+  background:transparent;
+  color:var(--ink,currentColor);
+  box-shadow:none;
+  line-height:1.25;
+}
+.studiop .stcategorias [aria-pressed="true"]{
+  outline:0;
+  border-bottom-color:currentColor;
+}
+.studiop .stcategorias button:focus-visible{
+  outline:2px solid currentColor;
+  outline-offset:-3px;
+}
+.studiop #studioCorpo .stgrupo{
+  border:0;
+  padding:0;
+  margin:10px 0;
+}
+@media(min-width:850px){
+  .studiop .stbancada{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px}
+}

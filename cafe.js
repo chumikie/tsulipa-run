@@ -639,6 +639,15 @@ function cfDesenhar(){
   x.strokeStyle = '#d9b3ff'; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 18); x.quadraticCurveTo(W2 / 2, 44, W2, 18); x.stroke();
   for(var l = 0; l < 14; l++){ var lx = l * W2 / 13, ly = 18 + Math.sin(l / 13 * Math.PI) * 13; x.fillStyle = ['#ff6fb5', '#ffd23f', '#7b3ff0', '#3fc1ff'][l % 4]; x.globalAlpha = .6 + .4 * Math.sin(t / 12 + l); x.beginPath(); x.arc(lx, ly + 6, 5, 0, 7); x.fill(); }
   x.globalAlpha = 1;
+  // Janela de atendimento recuada no vão lateral, com soleira voltada ao balcão.
+  x.save(); x.translate(W2*.075,H2*.16); x.scale(W2*.42,H2*.38);
+  x.fillStyle='#c5a0ad'; x.fillRect(0,0,1,1);
+  x.fillStyle='#9c859b'; x.fillRect(.035,.045,.925,.9);
+  x.fillStyle='#b9d5df'; x.fillRect(.09,.095,.86,.795);
+  x.fillStyle='#dec1ca'; x.beginPath(); x.moveTo(.035,.945); x.lineTo(.09,.89);
+  x.lineTo(.95,.89); x.lineTo(.96,.945); x.closePath(); x.fill();
+  x.fillStyle='#fff1df'; x.fillRect(.51,.095,.018,.80); x.fillRect(.09,.38,.86,.027);
+  x.fillStyle='#c59384'; x.fillRect(-.025,.96,1.05,.075); x.restore();
   // Quadro com moldura de madeira, borda interna e brilho discreto (mantém o mesmo menu).
   x.save(); var mx = W2 * .6, my = 40, mw = W2 * .36, mh = 96;
   x.shadowColor = 'rgba(53,20,76,.28)'; x.shadowBlur = 10; x.shadowOffsetY = 5;

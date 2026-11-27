@@ -574,13 +574,18 @@ function petMakeBg(){
   var fg = x.createLinearGradient(0, 170, 0, 220); fg.addColorStop(0, '#f5c9dd'); fg.addColorStop(1, '#e4a9c6');
   x.fillStyle = fg; x.fillRect(0, 170, 360, 50);
   x.strokeStyle = 'rgba(255,255,255,.35)'; x.lineWidth = 1;
-  for(var py = 182; py < 220; py += 12){ x.beginPath(); x.moveTo(0, py); x.lineTo(360, py); x.stroke(); }
-  // Juntas alternadas nas tábuas; entram no fundo em cache junto com o rodapé.
-  x.fillStyle = 'rgba(139,76,112,.17)';
-  for(var fileira=0; fileira<5; fileira++){
-    for(var junta=18+(fileira%2)*53; junta<360; junta+=106)
-      x.fillRect(junta,171+fileira*12,.9,11);
+  // As juntas das tábuas convergem sob o espelho.
+  var limites = [170, 176, 186, 200, 220];
+  x.beginPath();
+  for(var fila=1; fila<limites.length; fila++){
+    var tras=limites[fila-1], frente=limites[fila];
+    x.moveTo(0,frente); x.lineTo(360,frente);
+    for(var tabua=-140+(fila%2)*55; tabua<520; tabua+=110){
+      x.moveTo(126+(tabua-126)*(tras-92)/128,tras);
+      x.lineTo(126+(tabua-126)*(frente-92)/128,frente);
+    }
   }
+  x.stroke();
   x.fillStyle = '#edc4db'; x.fillRect(0,166,360,4);
   x.fillStyle = 'rgba(123,63,240,.18)'; x.fillRect(0, 170, 360, 2);
   // Meu Camarim⭐Life! ML1: objetos estáticos no mesmo fundo em cache.

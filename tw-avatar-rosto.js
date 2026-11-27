@@ -198,17 +198,19 @@
   // Sem escolha (c.baixo vazio) cada look continua exatamente como era.
   function baixoEspecial(g, c, x, y, roupa, cor, T){
     var b = c && c.baixo;
-    if(roupa === 'zipper' && b === 'bermuda'){
-      g.fillStyle = cor; g.fillRect(x + 6, y + 31, 18, 8);
-      g.fillStyle = 'rgba(40,10,70,.22)'; g.fillRect(x + 14.6, y + 33, .8, 6);
-      g.fillStyle = '#fff'; g.fillRect(x + 6, y + 38.2, 18, .9);
-      return true;
-    }
-    if(roupa === 'sweet' && b === 'bermuda'){
-      g.fillStyle = cor; g.fillRect(x + 5.5, y + 33, 19, 7.5);
-      g.fillStyle = '#fff'; for(var k = 0; k < 5; k++){ g.beginPath(); g.arc(x + 7.4 + k * 3.8, y + 40.5, 1.9, 0, Math.PI); g.fill(); }
-      g.fillStyle = 'rgba(40,10,70,.2)'; g.fillRect(x + 14.6, y + 35, .8, 5.5);
-      return true;
+    if((roupa === 'zipper' || roupa === 'sweet') && b === 'bermuda'){
+      var doce = roupa === 'sweet', topo = doce ? 33 : 31, barra = doce ? 40.5 : 39;
+      g.save(); g.beginPath(); g.moveTo(x+7,y+topo); g.lineTo(x+23,y+topo);
+      g.quadraticCurveTo(x+26,y+topo+3,x+24,y+barra);
+      g.quadraticCurveTo(x+20,y+barra+1,x+16,y+barra); g.lineTo(x+15,y+barra-3.2);
+      g.lineTo(x+14,y+barra); g.quadraticCurveTo(x+10,y+barra+1,x+6,y+barra);
+      g.quadraticCurveTo(x+4,y+topo+3,x+7,y+topo); g.closePath();
+      g.fillStyle = cor; g.fill(); g.clip();
+      g.fillStyle = '#fff';
+      if(doce){
+        for(var k=0;k<5;k++){ g.beginPath(); g.arc(x+7.4+k*3.8,y+barra,1.9,Math.PI,2*Math.PI); g.fill(); }
+      }else g.fillRect(x+5,y+barra-1,20,1.3);
+      g.restore(); return true;
     }
     if(roupa === 'estrelado' && b === 'saia'){
       var az = (!cor || /^#?f{6}$/i.test(cor)) ? '#3b5bdb' : cor;

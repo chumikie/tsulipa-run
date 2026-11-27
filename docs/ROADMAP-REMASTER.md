@@ -105,3 +105,16 @@ Base da rodada: 538973a, CI 45888241919 aprovado. O manifesto de 15150538137 ide
 | 6.3 | Eixo de manga e punho do tecido seguem o braço superior. A bermuda ganha aberturas separadas e largura de quadril própria. A barra e as pregas da saia sentada acompanham o lado de apoio. | Conferir os três enquadramentos e os figurinos em pé, de perfil e no sofá. Roupas especiais ainda usam cortes próprios. |
 
 A suíte local executa os testes de geometria, âncoras e integração. O CI produz o novo comparativo com 538973a como revisão anterior. A aprovação artística e a verificação física no iPhone permanecem abertas. Cidade, interiores, composição fotográfica e interface (6.4–6.7) continuam no planejamento.
+
+### Living Canvas 6.4–6.7 · Praça Central e interiores
+
+Base b47c798, CI 45891407621 aprovado em nove jobs, 132 verificações locais. O comparativo 15152406139 mostra a caixa de correio isolada, a arara e o balcão vistos de frente, a parede listrada do Café e categorias de edição que disputam atenção com a prévia do Studio.
+
+| Etapa | Alteração | Evidência a conferir no comparativo |
+| --- | --- | --- |
+| 6.4 | Varanda do correio e lateral da banca em torno das artes originais. Calçada com juntas que convergem em direção à fonte. A geração conservou exatamente os textos, coordenadas e transformações das placas. | Capturas compactas da Praça e da extremidade da banca. |
+| 6.5 | Camarim com tábuas projetadas sob os móveis, Café com vão de atendimento e soleira, Zipper com paredes laterais, piso recuado e tampo à frente da atendente. | Cena de cada atividade, poses do trio e decoração personalizada. |
+| 6.6 | Nos ensaios locais, a câmera aproxima cenário e balões para rosto e meio corpo. O disparo reutiliza a lente e o instante da prévia. Fotos publicáveis, Mural e capa compartilham a projeção histórica, pois o formato público armazena escolhas e fase. | Três PNGs exportados, comparados com as prévias. |
+| 6.7 | Categorias do Studio em grade com seleção sublinhada, área de captura contínua e mais largura para a foto no desktop. | Telas de 320 px, 390 px, desktop e tema escuro. |
+
+As bermudas Sweet e Zipper têm duas aberturas e barra recortada no contorno. A Praça continua sendo o piloto urbano. Aprovação artística dos figurinos em todos os ângulos, textos longos nos seis idiomas e validação em iPhone físico permanecem abertas.

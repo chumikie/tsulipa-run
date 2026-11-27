@@ -115,56 +115,45 @@ function petLifeSofa(x, frente, visual){
     // O quadril continua apoiado enquanto cada Idol escolhe onde firmar os pés.
     var abertura = sel === 0 ? 2.8 : sel === 1 ? -2.8 : sel === 2 ? .8 : 0;
     // O descanso recolhe a perna de dentro; Conviver transfere o peso para o lado do Pet.
-    var apoioLateral=petLifePose==='conviver'?1.3:petLifePose==='descansar'?-1.5:0;
+    var tecido = CH[sel] || {}, look = tecido.out || '';
     [-8.4, 10.8].forEach(function(o){
-      // A inclinação interpolada também guia os joelhos durante a troca de pose.
-      var px = q.x + o + (o < 0 ? 18 : -4) * visual.rot;
-      px += (o < 0 ? -1 : 1) * abertura * visual.sit;
-      px += Math.min(0,visual.rot)*5*(o<0?1:-1)+apoioLateral*visual.sit;
-      // Mesmo desenho das pernas do avatar (drawChar): retângulos 5×8 escuros, sem pé
-      // separado. Só a altura encurta, porque a coxa vem para frente.
-      // Os pés permanecem plantados: a respiração passa ao tronco em torno do quadril.
-      var bal = 0;
-      x.fillStyle=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || '')) ? CH[sel].legcol : '#1c1c30';
-      var recolhimento = Math.max(0, -visual.rot) * (o < 0 ? 20 : 0);
-      var altura = Math.max(8, PET_FLOOR + bal - recolhimento - (q.y+6));
-      // A canela termina no plano do piso, inclusive na pose inclinada.
-      x.save();x.beginPath();x.moveTo(px-6,q.y+6);
-      x.quadraticCurveTo(px-6.5,q.y+6+altura*.45,px-5.3,q.y+6+altura);
-      x.lineTo(px+5.3,q.y+6+altura);
-      x.quadraticCurveTo(px+6.2,q.y+6+altura*.42,px+6,q.y+6);
-      x.closePath();x.clip();
-      x.fillRect(px-6,q.y+6,12,altura);
+      var lado = o < 0 ? -1 : 1;
+      var raiz = q.x + o * .7;
+      var joelho = q.x + o + lado * abertura * visual.sit + visual.rot * 14;
+      var topo = q.y + 6 + visual.sit * (6.5 + lado * visual.rot * 12);
+      var px = joelho - lado * (sel===1 ? 4 : 2.5) * visual.sit + visual.rot * 19;
+      var sola = PET_FLOOR - Math.max(0,-visual.rot) * (o<0 ? 24 : 0);
+      var altura = Math.max(8,sola-topo);
+      // Cisalhamento ao redor do tornozelo: o joelho avança e a sola fica horizontal.
+      var inclinacao = (px-joelho)/altura;
+      x.save(); x.transform(1,0,inclinacao,1,-inclinacao*sola,0);
+      x.beginPath(); x.moveTo(px-6,topo);
+      x.quadraticCurveTo(px-6.7,topo+altura*.4,px-4.7,sola);
+      x.lineTo(px+4.8,sola); x.quadraticCurveTo(px+5.9,topo+altura*.35,px+6,topo);
+      x.closePath(); x.clip();
+      x.fillStyle = /^#[0-9a-f]{6}$/i.test(tecido.legcol || '') ? tecido.legcol : '#1c1c30';
+      x.fillRect(px-6,topo,12,altura);
+      petLifeCanelaRoupa(x, px, sola);
       x.restore();
-      // A canela continua com a régua de 12 px; a luz arredonda o volume sem deslocar os pés.
-      var perna=x.createLinearGradient(px-6,0,px+6,0);
-      perna.addColorStop(0,'rgba(40,10,70,.14)');perna.addColorStop(.26,'rgba(255,255,255,.13)');
-      perna.addColorStop(.56,'rgba(255,255,255,0)');perna.addColorStop(1,'rgba(40,10,70,.22)');
-      x.fillStyle=perna;x.fillRect(px-5.9,q.y+6,11.8,altura);
-      x.fillStyle='rgba(40,10,70,.14)';x.fillRect(px-5.5,q.y+6+altura-2,11,2);
-      x.fillStyle='rgba(255,255,255,.12)';x.beginPath();x.ellipse(px-1.4,q.y+8.2,3.5,1.35,0,0,7);x.fill();
-      x.fillStyle='rgba(40,10,70,.12)';x.beginPath();x.ellipse(px,q.y+6+altura-1.5,4.8,.9,0,0,7);x.fill();
-      petLifeCanelaRoupa(x, px, q.y+6+altura); // preserva as polainas do figurino
       // Sapatos na ponta das canelas, paleta igual à do avatar em pé.
       var hex=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || ''))?CH[sel].legcol:'#1c1c30';
       var rgb=parseInt(hex.slice(1),16), claro=((rgb>>16&255)*.299+(rgb>>8&255)*.587+(rgb&255)*.114)/255<.5;
-      var fimPe=q.y+6+altura, esqPe=px-6.7;
+      var fimPe=sola, esqPe=px-6.7;
       x.fillStyle=claro?'#f6f1ff':'#3a2a4a';x.beginPath();x.roundRect(esqPe,fimPe-5.5,13.4,5.5,[2.2,2.2,1.1,1.1]);x.fill();
       x.fillStyle=claro?'#bfb1e3':'#1f1528';x.fillRect(esqPe+.8,fimPe-1.1,11.8,1.1);
       x.fillStyle=claro?'#ff8fc8':'rgba(255,255,255,.35)';x.fillRect(px-3,fimPe-4,6,.8);
-      if(!roupa){ x.fillStyle=petLifeCorColo;
-        // A coxa liga o quadril ao joelho deslocado, em vez de dois blocos paralelos.
-        var raiz=q.x+o*.7,coxaEsq=px-7;x.save();x.beginPath();
-        x.moveTo(raiz-6,q.y-3);x.quadraticCurveTo(px-7,q.y-1,px-7,q.y+5);
-        x.quadraticCurveTo(px,q.y+9,px+7,q.y+5);
-        x.quadraticCurveTo(px+7,q.y-1,raiz+6,q.y-3);
-        x.closePath();x.clip();
-        x.fillRect(Math.min(px-7,raiz-6),q.y-3,Math.max(px+7,raiz+6)-Math.min(px-7,raiz-6),10);
-        var coxa=x.createLinearGradient(0,q.y-3,0,q.y+7);coxa.addColorStop(0,'rgba(40,10,70,.12)');
-        coxa.addColorStop(.48,'rgba(255,255,255,.13)');coxa.addColorStop(1,'rgba(40,10,70,.18)');
-        x.fillStyle=coxa;x.fillRect(px-6.8,q.y-3,13.6,10);
-        x.fillStyle='rgba(40,10,70,.13)';x.fillRect(px-5,q.y+5,10,1.5);x.restore();
-      }
+      x.fillStyle=petLifeCorColo;
+      // A coxa liga o quadril ao joelho deslocado, em vez de dois blocos paralelos.
+      if(roupa==='zipper') x.fillStyle='#fff';
+      x.save(); x.beginPath(); x.moveTo(raiz-6,q.y-3);
+      x.quadraticCurveTo(joelho-8,q.y,joelho-7,topo);
+      x.quadraticCurveTo(joelho,topo+4,joelho+7,topo-.5);
+      x.quadraticCurveTo(joelho+7,q.y+2,raiz+6,q.y-3);
+      x.closePath(); x.fill(); x.clip();
+      x.strokeStyle=look==='estrelado'?'#a5d8ff':look==='zipper'||look==='sweet'?'#fff':'rgba(40,26,66,.32)';
+      x.lineWidth=look==='estrelado'?2:1.1; x.beginPath();
+      x.moveTo(joelho-7,topo-2); x.quadraticCurveTo(joelho,topo+1.6,joelho+7,topo-2.5); x.stroke();
+      x.restore();
     });
     if(roupa){ // mesma silhueta trapezoidal do figurino; tecido repousa sobre as coxas
       var largura = roupa === 'sweet' ? 31 : roupa === 'zipper' ? 27 : 23;
@@ -187,6 +176,13 @@ function petLifeSofa(x, frente, visual){
         x.lineTo(q.x+dx+1.6,q.y+12);x.quadraticCurveTo(q.x+dx*.85+1,q.y+4,q.x+d*.65,q.y-2);
         x.closePath();x.fill();
       });
+      if(roupa==='zipper'){
+        // A abertura entre as duas abas deixa ver o short branco do look.
+        x.fillStyle='#fff'; x.beginPath(); x.moveTo(q.x-3,q.y-2);
+        x.quadraticCurveTo(q.x-7,q.y+7,q.x-17+deslocamento,q.y+14);
+        x.lineTo(q.x+17+deslocamento,q.y+14); x.quadraticCurveTo(q.x+7,q.y+7,q.x+3,q.y-2);
+        x.closePath(); x.fill();
+      }
       if(roupa==='sweet'){x.fillStyle='rgba(255,255,255,.72)';
         for(var fr=-largura+3;fr<largura;fr+=6){x.beginPath();x.ellipse(q.x+fr,q.y+11.4,3.2,1.8,0,0,7);x.fill();}
       }
@@ -285,6 +281,12 @@ function petLifeCanelaRoupa(x, px, base){
 }
 //←petLifeLerCorColo
 function petLifeLerCorColo(x, q){   // 1 pixel do quadril: as coxas usam a mesma cor da roupa
+  var tecido = CH[sel] || {}, look = tecido.out || '';
+  var catalogo = typeof TWAvatarRoupa !== 'undefined' && TWAvatarRoupa.BAIXO;
+  var corTecido = catalogo && Object.prototype.hasOwnProperty.call(catalogo,look) ? catalogo[look].cor : '';
+  if(look==='sweet' || look==='zipper') corTecido = tecido.outcol || '#ffffff';
+  if(look==='estrelado') corTecido = !tecido.outcol || /^#?f{6}$/i.test(tecido.outcol) ? '#3b5bdb' : tecido.outcol;
+  if(corTecido){ petLifeCorColo=corTecido; petLifeCorSaia=corTecido; return; }
   var saia = petLifeRoupaSaia();petLifeCorSaia = petLifeCorColo;
   try{
     var extra = saia ? Math.round(8*petDpr) : 0;

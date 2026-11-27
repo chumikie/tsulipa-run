@@ -43,6 +43,26 @@ const TELAS=[['v','jogos','.twc-jogos'],['v','trio','#twcTela [data-trioaba]'],[
 const CONTA=new Set(['album','perfil','gacha','loja']);
 
 const CH_NOMES=['tsu','lirika','pati'];
+const FIGURINOS=['zipper','sweet','estrelado'];
+async function silhuetas320(p){
+  const png=await p.evaluate(()=>{
+    const cv=document.createElement('canvas'); cv.width=320; cv.height=238;
+    const ctx=cv.getContext('2d'), anterior=g, estado=state, acessorio=accSel;
+    try{
+      g=ctx; state='menu'; accSel='';
+      CH.slice(0,3).forEach((c,i)=>{
+        ctx.save(); ctx.translate(28+i*100,22); ctx.scale(1.95,1.95);
+        drawChar(c,0,0,0,0); ctx.restore();
+        ctx.save(); ctx.translate(28+i*100,132); ctx.scale(1.95,1.95);
+        TW_LADO.partes(ctx,c,0,0,0,0,null,'',{}); ctx.restore();
+      });
+      ctx.globalCompositeOperation='source-in'; ctx.fillStyle='#382d46'; ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.globalCompositeOperation='destination-over'; ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height);
+    }finally{g=anterior;state=estado;accSel=acessorio;}
+    return cv.toDataURL();
+  });
+  fs.writeFileSync(path.join(out,'compacto-silhuetas-trio.png'),Buffer.from(png.split(',')[1],'base64'));
+}
 async function conferirFotos(p){
   const selecionar=async(tipo,valor)=>{
     await p.locator('#studioOv [data-st="categoria"][data-v="'+tipo+'"]').click();
@@ -78,6 +98,22 @@ async function conferirFotos(p){
     return cv.toDataURL();
   },pares);
   fs.writeFileSync(path.join(out,'studio-tres-enquadramentos.png'),Buffer.from(folha.split(',')[1],'base64'));
+  for(const [i,look] of FIGURINOS.entries()){
+    await p.evaluate(([i,look])=>{
+      CH[i].out=look; CH[i].baixo=i===2?'bermuda':'saia';
+      studioAbrir({dono:petPhoneFotoChave(),look:{c:CH[i],expr:2},flor:'tulipa'});
+    },[i,look]);
+    await selecionar('objeto','flor_tulipa');
+    await selecionar('pose','coracao');
+    await selecionar('quadro','inteiro');
+    await p.locator('#studioOv [data-st="clique"]').click();
+    await p.locator('#studioOv [data-st="salvar"]').click();
+    const url=await p.locator('#twCamera .twcam-salvar').getAttribute('href');
+    assert.match(url,/^data:image\/png;base64,/);
+    fs.writeFileSync(path.join(out,'figurino-'+look+'-tulipa.png'),Buffer.from(url.split(',')[1],'base64'));
+    await p.locator('#twCamera .twcam-x').click();
+    await p.locator('#studioOv [data-st="outra"]').click();
+  }
 }
 
 async function rodar(browser,base,nome,opcoes){
@@ -188,11 +224,20 @@ async function rodar(browser,base,nome,opcoes){
         await botao.click({timeout:8000});await p.waitForFunction(k=>petLifePose===k,pose);
         await p.waitForTimeout(750);await cv.screenshot({path:path.join(out,nome+'-camarim-'+pose+'.png')});
       }
+      if(nome==='compacto') await silhuetas320(p);
       if(nome==='iphone'){
+        for(const [i,look] of FIGURINOS.entries()){
+          await p.evaluate(([i,look])=>{sel=i;CH[i].out=look;CH[i].baixo=i===2?'bermuda':'saia';if(petLifePose)petLifePoseEscolher(petLifePose);},[i,look]);
+          await p.waitForFunction(()=>!petLifePose && petLifePoseDesenho(petT).sit===0);
+          await cv.screenshot({path:path.join(out,'figurino-'+look+'-em-pe.png')});
+          await p.locator('#petLifePoses [data-pose="sentar"]').click();
+          await p.waitForFunction(()=>petLifePose==='sentar' && petLifePoseDesenho(petT).sit===1);
+          await cv.screenshot({path:path.join(out,'figurino-'+look+'-sentado.png')});
+        }
         for(const [i,look] of [[0,''],[1,'sweet'],[2,'estrelado']]){
-          await p.evaluate(([i,look])=>{sel=i;CH[i].out=look;},[i,look]);
+          await p.evaluate(([i,look])=>{sel=i;CH[i].out=look;CH[i].baixo=i===1?'saia':'bermuda';},[i,look]);
           for(const pose of ['sentar','descansar','conviver']){
-            await p.locator('#petLifePoses [data-pose="'+pose+'"]').click();
+            if(await p.evaluate(()=>petLifePose)!==pose) await p.locator('#petLifePoses [data-pose="'+pose+'"]').click();
             await p.waitForTimeout(650);
             await cv.screenshot({path:path.join(out,CH_NOMES[i]+'-'+pose+'.png')});
           }

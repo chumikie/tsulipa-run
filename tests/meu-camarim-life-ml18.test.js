@@ -105,7 +105,7 @@ test('ML1.8-A: 320×640 e 390×844 preservam Canvas 360:220 e botões acessívei
 test('ML1.8-A: sofá desenha saia, vestido e bermuda sem erro nos dois visores simulados',()=>{
   for(const [largura,altura] of [[320,640],[390,844]]){
     const {ctx}=quarto(), op=[];
-    const x={globalAlpha:1,createLinearGradient(){return {addColorStop(){}}},save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},clip(){},quadraticCurveTo(){},
+    const x={globalAlpha:1,transform(){},createLinearGradient(){return {addColorStop(){}}},save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},clip(){},quadraticCurveTo(){},
       fillRect(a,b,w,h){op.push(['ret',a,b,w,h]);},moveTo(){},lineTo(){},closePath(){},
       fill(){op.push(['preenche']);},stroke(){},strokeRect(){},fillText(){}};
     for(const out of ['seifuku','sweet','zipper']){
@@ -132,7 +132,7 @@ test('ML1.8-A: levantar mantém canelas e saia até completar a transição em 3
       assert.equal(ctx.petLifePose,'');
       function desenho(t){
         const retangulos=[],poligonos=[];
-        const x={globalAlpha:1,createLinearGradient(){return {addColorStop(){}}},save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},clip(){},quadraticCurveTo(){},
+        const x={globalAlpha:1,transform(){},createLinearGradient(){return {addColorStop(){}}},save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},clip(){},quadraticCurveTo(){},
           fillRect(a,b,w,h){retangulos.push([a,b,w,h]);},moveTo(a,b){poligonos.push([a,b]);},
           lineTo(){},closePath(){},fill(){},stroke(){},strokeRect(){},fillText(){}};
         const visual=ctx.petLifePoseDesenho(t);
@@ -153,4 +153,21 @@ test('ML1.8-A: levantar mantém canelas e saia até completar a transição em 3
       assert.ok(escala>0);
     }
   }
+});
+
+test('Living Canvas: a coxa segue a peça vestida mesmo quando a camisa cobre a cintura',()=>{
+  const {ctx,calls}=quarto();
+  const canvas={getImageData(){calls.push('leitura');return {data:new Uint8ClampedArray([127,61,95,255])};}};
+  for(const [out,outcol,esperada] of [
+    ['', '#fafafa', roupa.BAIXO[''].cor], ['citypop','#123456',roupa.BAIXO.citypop.cor],
+    ['sweet','#bc54dd','#bc54dd'],['zipper','#4170cb','#4170cb'],['estrelado','#ffffff','#3b5bdb']
+  ]){
+    ctx.CH[0]={out,outcol};ctx.petLifeLerCorColo(canvas,{x:90,y:165});
+    assert.equal(ctx.petLifeCorColo,esperada);
+    assert.equal(ctx.petLifeCorSaia,esperada);
+  }
+  assert.deepEqual(calls,[]);
+  ctx.petDpr=1;ctx.CH[0]={out:'espacial'};ctx.petLifeLerCorColo(canvas,{x:90,y:165});
+  assert.deepEqual(calls,['leitura']);
+  assert.equal(ctx.petLifeCorColo,'rgb(127,61,95)');
 });

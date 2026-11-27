@@ -118,3 +118,12 @@ Base b47c798, CI 45891407621 aprovado em nove jobs, 132 verificações locais. O
 | 6.7 | Categorias do Studio em grade com seleção sublinhada, área de captura contínua e mais largura para a foto no desktop. | Telas de 320 px, 390 px, desktop e tema escuro. |
 
 As bermudas Sweet e Zipper têm duas aberturas e barra recortada no contorno. A Praça continua sendo o piloto urbano. Aprovação artística dos figurinos em todos os ângulos, textos longos nos seis idiomas e validação em iPhone físico permanecem abertas.
+
+### Estudo do trio em ação · sofá, silhuetas e figurino
+
+O CI de 3bddff4 passou nos nove jobs. No artefato 15184189253, Tsu sentado tinha canelas paralelas e pouca coxa aparente. A manta cobria parte das pernas de Lirika e a manga e o punho de Pati se sobrepunham durante o convívio.
+
+- Camarim. A coxa se projeta do quadril até um joelho próprio. A canela inclina em torno do tornozelo com sola horizontal. A inclinação interpolada da pose governa o apoio durante trocas rápidas. Cores conhecidas vêm do figurino; o caminho de amostragem permanece para os demais. Sweet conserva a renda, Zipper mostra o short sob as abas e Estrelado conserva a barra e as polainas.
+- Trio. A nuca do pixie usa curvas contínuas nos três desenhos frontais e termina mais alta no perfil. O chanel abre na altura do maxilar, com os coques mais separados da cabeça. O corte reto tem uma borda própria em frente e perfil. As alterações acompanham os cortes selecionados pelo jogador.
+- Photo Studio. Flores usam a pinça do indicador e do polegar; o cabo do microfone e o lightstick mantêm a pega cilíndrica. A cópia de um avatar oficial feita no disparo preserva sua identificação pela referência local até gerar o PNG. O registro público continua passando pelo filtro existente.
+- Comparativo. A referência anterior passa a ser 3bddff4. A suíte visual inclui silhuetas em uma imagem de 320 px e os três figurinos em pé, sentados e em PNG com tulipa. As vistas de três quartos e costas da prancha são referências de construção. Conferência em iPhone físico e aprovação artística pelo dono continuam pendentes.

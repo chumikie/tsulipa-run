@@ -29,8 +29,8 @@
     if(c.det === 'coelho'){ g.fillStyle = '#e6e2ee'; E(x + 15.6, y - 8.6, 3, 8.4, .12); }   // 22/11: orelha de coelho de lá
     // ---------- cabelo de trás (atrás da cabeça, do lado da nuca) ----------
     g.fillStyle = hg;
-    if(c.back === 'chanel'){ g.beginPath(); g.moveTo(x + 8, y - 2); g.quadraticCurveTo(x - .8, y + 4, x + 1.2, y + 18); g.lineTo(x + 1.6, y + 24.4); g.lineTo(x + 13, y + 24.4); g.lineTo(x + 13, y + 8); g.closePath(); g.fill(); }   // chanel curto, reto
-    else if(c.back === 'pixie'){ g.beginPath();g.moveTo(x+5,y+2);g.quadraticCurveTo(x+.2,y+6,x+1,y+12);g.lineTo(x+3.6,y+13);g.quadraticCurveTo(x+1.7+vt*.25,y+17,x+2.4+vt*.25,y+19);g.quadraticCurveTo(x+5,y+18.1,x+7.5,y+15.5);g.lineTo(x+9,y+18.5);g.lineTo(x+11,y+10);g.closePath();g.fill(); }
+    if(c.back === 'chanel'){ g.beginPath(); g.moveTo(x + 8, y - 2); g.quadraticCurveTo(x - .8, y + 4, x + 1.2, y + 18); g.quadraticCurveTo(x-.8,y+23.4,x+3.6,y+25); g.quadraticCurveTo(x+9.4,y+25.7,x+13,y+23.8); g.lineTo(x + 13, y + 8); g.closePath(); g.fill(); }   // chanel curto, reto
+    else if(c.back === 'pixie'){ g.beginPath();g.moveTo(x+5,y+2);g.quadraticCurveTo(x+.2,y+6,x+1,y+12);g.lineTo(x+3.6,y+13);g.quadraticCurveTo(x+1.7+vt*.25,y+17,x+2.4+vt*.25,y+19);g.quadraticCurveTo(x+5,y+18.1,x+7.5,y+15.5);g.quadraticCurveTo(x+7.8,y+17.4,x+9.7,y+17);g.lineTo(x+11,y+10);g.closePath();g.fill(); }
     else if(c.back === 'longo'){ g.beginPath(); g.moveTo(x + 7, y - 1); g.quadraticCurveTo(x + .5, y + 5, x + 1, y + 18); g.quadraticCurveTo(x + .4 + vt * .5, y + 30, x + 2.4 + vt, y + 37); g.quadraticCurveTo(x + 6.4 + vt, y + 39.2, x + 10.5, y + 37); g.lineTo(x + 12, y + 9); g.closePath(); g.fill(); }
     else if(c.back === 'onduladof'){ g.beginPath(); g.moveTo(x + 7, y - 1); g.quadraticCurveTo(x + .5, y + 5, x + 1.4, y + 14); g.quadraticCurveTo(x - 1.2 + vt * .3, y + 19, x + 1.2 + vt * .5, y + 23); g.quadraticCurveTo(x - 1 + vt * .7, y + 28, x + 2 + vt, y + 33);
       g.quadraticCurveTo(x + 6 + vt, y + 35.6, x + 10, y + 32); g.lineTo(x + 12, y + 9); g.closePath(); g.fill(); }
@@ -266,7 +266,7 @@
     // ---------- cabelo de cima: a mesma calota (centro 15,8 raio 12) recortada pela franja ----------
     g.fillStyle = hg; g.beginPath(); g.moveTo(x + 26.4, y + 10);
     g.arc(x + 14.6, y + 8, 12, -.17, Math.PI, true);   // da testa, por cima, até a nuca
-    var nuca = Math.max(7.5 + sl, c.back === 'chanel' ? 24.4 : 20.5);
+    var nuca = c.back === 'pixie' ? 16.8 : Math.max(7.5 + sl, c.back === 'chanel' ? 24.4 : 20.5);
     g.lineTo(x + 2.6, y + nuca - 2); g.quadraticCurveTo(x + 3, y + nuca, x + 6, y + nuca); g.lineTo(x + 10.4, y + nuca); g.lineTo(x + 13.4, y + 7.5 + sl); g.quadraticCurveTo(x + 12.4, y + 11.5, x + 13.6, y + 9.6);
     if(c.front === 'bagunca'){   // mechas da Tsu caindo na testa
       g.quadraticCurveTo(x + 13.4, y + 13.8, x + 15.6, y + 15.4); g.quadraticCurveTo(x + 16.4, y + 11, x + 18.8, y + 8.6); g.quadraticCurveTo(x + 20.4, y + 12.6, x + 23.6, y + 13.4); g.quadraticCurveTo(x + 23.8, y + 10.2, x + 26.4, y + 10);
@@ -277,6 +277,7 @@
       var fp = c.front === 'pontas' ? 13 : 12; g.lineTo(x + 15.6, y + fp); g.lineTo(x + 17.6, y + 10); g.lineTo(x + 19.8, y + fp); g.lineTo(x + 21.8, y + 10.2); g.lineTo(x + 24, y + fp - .4); g.lineTo(x + 26.4, y + 10); }
     else if(c.front === 'cortina'){ g.quadraticCurveTo(x + 15.4, y + 14.6, x + 18, y + 13.4); g.quadraticCurveTo(x + 20.6, y + 9, x + 26.4, y + 7.6); }   // aberta no meio: cai do lado e sobe na testa
     else if(c.front === 'curta' || c.front === 'espetada'){ g.quadraticCurveTo(x + 14.6, y + 8.4, x + 16.4, y + 8); for(var fb = 0; fb < 3; fb++) g.quadraticCurveTo(x + 17.8 + fb * 3, y + 9.6, x + 19.4 + fb * 3, y + 7.8); g.lineTo(x + 26.4, y + 7.6); }
+    else if(c.front==='reta'){ g.quadraticCurveTo(x+18.2,y+11.4,x+20.8,y+10.8); g.lineTo(x+21.3,y+10); g.quadraticCurveTo(x+24,y+11.2,x+26.4,y+10); }
     else g.lineTo(x + 26.4, y + 10);   // franja reta, na mesma altura da frente
     g.closePath(); g.fill();
     if(c.front === 'espetada'){ g.fillStyle = hg; T([x + 15, y - 1, x + 18.4, y - 9.6, x + 20.4, y - 1.4]); T([x + 19.4, y - 1, x + 25.4, y - 7.4, x + 24.6, y + 1.6]); T([x + 10.6, y - 2.4, x + 12.4, y - 9, x + 15.6, y - 2.2]); }   // espetos para cima

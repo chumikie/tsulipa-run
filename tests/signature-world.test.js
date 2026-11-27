@@ -31,7 +31,7 @@ test('Signature World: shared geometry and separate photo prop/hand mirror',()=>
   for(const p of ['centerrun.js','karaoke-time.html','sora-jump.html'])assert.ok(read(p).includes('TWAvatarRoupa.pernas(g,x,y,up,c)'));
   const s=read('studio.js');assert.match(s,/x.restore\(\); \/\/ o arranjo permanece na ordem escolhida/);
   assert.match(s,/if\(espelhoMao\)x.scale\(-1,1\);\n    \/\/ Dedos/);
-  assert.match(read('.github/workflows/validate-games.yml'),/ref: b47c798107dd44bd6df70f32588bac509f320d05/);
+  assert.match(read('.github/workflows/validate-games.yml'),/ref: 3bddff46b9b195de929ac2396c43d142710a82f1/);
 });
 
 test('Signature 5.10: official identity survives local normalization and clone, never serialized names',()=>{

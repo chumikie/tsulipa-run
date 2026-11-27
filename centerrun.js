@@ -416,6 +416,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   else if(b==='marias'){E(x+1,y+8,4,4);E(x+29,y+8,4,4);E(x-2,y+18,4.6,10.5,.18+sw*.03);E(x-1.5,y+26,3.2,7,.25+sw*.03);E(x+32,y+18,4.6,10.5,-.18-sw*.03);E(x+31.5,y+26,3.2,7,-.25-sw*.03);g.fillStyle='#e0457b';E(x+.5,y+9.5,2.2,1.6,.5);E(x+29.5,y+9.5,2.2,1.6,-.5)}
   else if(b==='rabo'){var rs=sw*.5;g.beginPath();g.moveTo(x+24,y+4);g.quadraticCurveTo(x+37,y+7+rs,x+33.5,y+20+rs);g.quadraticCurveTo(x+31.5,y+28+rs,x+27,y+33+rs);g.quadraticCurveTo(x+29.5,y+21+rs,x+24.5,y+12);g.closePath();g.fill();g.fillStyle='#e0457b';E(x+27,y+6,2.4,1.8,.7)}
     else if(b===''){g.beginPath();g.arc(x+15,y+12,13.2,Math.PI,0);g.lineTo(x+28.2,y+20);g.lineTo(x+25,y+22);g.lineTo(x+5,y+22);g.lineTo(x+1.8,y+20);g.closePath();g.fill()}   // Curto: reforço ao redor do cabelo
+  else if(b==='pixie' && typeof TWAvatarRoupa!=='undefined' && TWAvatarRoupa.pixie){TWAvatarRoupa.pixie(g,x,y);}
   else if(b==='pixie'){T([x+4,y+10,x+0,y+17,x+3,y+19,x+2,y+24,x+8,y+21,x+9,y+14]);T([x+26,y+10,x+30,y+17,x+27,y+19,x+28,y+24,x+22,y+21,x+21,y+14]);T([x+9,y+22,x+15,y+28,x+21,y+22])}   // Pixie: pontas repicadas  
   else if(TWAvatarHair.back(g,c,x,y,b,E,T)){}
   else if(b==='cacheado'){[[15,3,8],[4,8,8],[26,8,8],[1.5,16,7.5],[28.5,16,7.5],[3.5,23,5.8],[26.5,23,5.8]].forEach(function(p){E(x+p[0],y+p[1]+6,p[2],p[2])})}   // cachos menores embaixo: não viram capa sobre os braços

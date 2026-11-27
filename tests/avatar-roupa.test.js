@@ -76,7 +76,7 @@ assert(R.luzPropria('estrelado')&&R.luzPropria('zipper')&&R.luzPropria('sweet')&
 { const gg=fake();R.parte(gg,0,0,'sweet-tronco');assert(gg.log.includes('clip'),'luz da Sweet recortada no vestido'); }
 // Sentado no sofá do Camarim, a canela repete as polainas da Nagareboshi (Estrelado) em vez de virar meia preta.
 const pet=require('./pet-fonte.js')();   // pet.js + pet-sala.js na ordem original
-assert(pet.includes('petLifeCanelaRoupa(x, px, q.y+6+altura);')&&/function petLifeCanelaRoupa[\s\S]{0,200}c\.out !== 'estrelado'[\s\S]{0,300}#ff9ccd[\s\S]{0,120}#ffe14d[\s\S]{0,120}#4dd8ff/.test(pet),'polainas listradas também sentado');
+assert(pet.includes('petLifeCanelaRoupa(x, px, sola);')&&/function petLifeCanelaRoupa[\s\S]{0,200}c\.out !== 'estrelado'[\s\S]{0,300}#ff9ccd[\s\S]{0,120}#ffe14d[\s\S]{0,120}#4dd8ff/.test(pet),'polainas listradas também sentado');
 console.log('avatar-roupa: ok');
 
 // V3.1 (06/11/2026): pele com a luz contínua, costas do chanel/longo emendadas, sombra da franja, franja da Tsu e gravata.

@@ -135,7 +135,10 @@ test('Studio: enquadramento de objeto inclui microfone e lightstick',()=>{
  const s=read('studio.js');assert.match(s,/comObjeto = !!e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao'/);assert.match(s,/tm \* 60, quadro, comObjeto\)/);
 });
 test('Camarim: respiração e balanço das pernas respeitam movimento reduzido',()=>{
- const s=read('pet-sala.js');assert.match(s,/var bal = 0;/);assert.match(s,/var bobIdol=petLifeMovimentoReduzido\(\)\|\|pose\?0/);assert.match(s,/var respira=petLifeMovimentoReduzido\(\)\?0/);
+ const s=read('pet-sala.js');const pernas=s.slice(s.indexOf('var raiz = q.x'),s.indexOf('// Sapatos na ponta'));
+ assert.ok(pernas.includes('var sola = PET_FLOOR - Math.max(0,-visual.rot)'));
+ assert.doesNotMatch(pernas,/petT|Math\.sin|respira/);
+ assert.ok(pernas.includes('x.transform(1,0,inclinacao,1,-inclinacao*sola,0)'));assert.match(s,/var bobIdol=petLifeMovimentoReduzido\(\)\|\|pose\?0/);assert.match(s,/var respira=petLifeMovimentoReduzido\(\)\?0/);
 });
 
 test('Polish: apoio visual do Sora não altera a coordenada da colisão',()=>{

@@ -360,7 +360,13 @@
       var ac = acertos(), n = Math.max(1, ac.filter(Boolean).length);
       if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ if(sessaoAtiva(sess,dono) && foto === capturada) twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
       else if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
-      foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), dia:hojeBR(), legenda:pauta ? t('t_' + pauta.detalhe.tipo) : '', dono:dono, verificada:false, premio:0};
+      var originalAv = meuAv() || {};
+      var avatarFoto = JSON.parse(JSON.stringify(originalAv));
+      if(originalAv.c && typeof perfIdentidadeOficial==='function'){
+        var oficial = perfIdentidadeOficial(originalAv.c);
+        if(oficial) perfMarcarIdentidadeLocal(avatarFoto.c,oficial);
+      }
+      foto = {avatar:avatarFoto,estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), dia:hojeBR(), legenda:pauta ? t('t_' + pauta.detalhe.tipo) : '', dono:dono, verificada:false, premio:0};
       foto.retrato = retratoSeguro({v:1,avatar:foto.avatar,tempo:tempoDaPrevia === null ? (calmo?0:foto.t0 / 1000) : tempoDaPrevia});
       // PNG local conserva o avatar original; somente o retrato público é filtrado.
       var capturada = foto;
@@ -736,6 +742,14 @@
     }
     if(espelhoMao)x.scale(-1,1);
     // Dedos fechados por cima do cabo, com polegar arredondado.
+    if(flor){
+      x.fillStyle=corpo.skin; x.beginPath(); x.moveTo(-1.9,.45);
+      x.quadraticCurveTo(-1.8,-1.4,-.3,-1.75); x.quadraticCurveTo(.6,-1.95,.8,-1.2);
+      x.quadraticCurveTo(.9,-.65,-.15,-.3); x.lineTo(-.55,.25);
+      x.quadraticCurveTo(1.25,-.55,1.65,.2); x.quadraticCurveTo(1.9,.95,.65,1.5);
+      x.quadraticCurveTo(-1.2,2.2,-1.9,.45); x.closePath(); x.fill();
+      x.restore(); return;
+    }
     // Duas curvas suaves dão volume sem separar a mão do braço.
     x.fillStyle=corpo.skin;x.beginPath();
     x.moveTo(-1.9,-.65);x.quadraticCurveTo(-1.9,-1.45,-.8,-1.45);

@@ -281,7 +281,7 @@
   // A régua da testa e as escolhas de franja continuam as mesmas.
   function reta(g,x,y){
     g.beginPath();g.moveTo(x+3,y+8);g.quadraticCurveTo(x+15,y+6.8,x+27,y+8);
-    g.lineTo(x+27,y+13.1);
+    g.lineTo(x+27,y+14.5);
     for(var i=5;i>=0;i--){var a=x+3+i*4;
       g.quadraticCurveTo(a+3.1,y+14.6+(i%2)*.3,a,y+13.4);
     }
@@ -296,7 +296,7 @@
   function coques(g,x,y,cor){
     g.save();
     for(var lado=-1;lado<=1;lado+=2){
-      var cx=x+15+11*lado,cy=y+2.5;
+      var cx=x+15+12.1*lado,cy=y+1.7;
       // Dois volumes de cabelo entrelaçados; as pontas se recolhem junto ao elástico.
       g.fillStyle=cor;g.beginPath();g.moveTo(cx-lado*3.5,cy+5);
       g.bezierCurveTo(cx-lado*8,cy+1,cx-lado*5.8,cy-5.2,cx,cy-6.3);
@@ -357,6 +357,17 @@
     gr.addColorStop(0, H); gr.addColorStop(.22, H); gr.addColorStop(19 / (L - 1), HD); gr.addColorStop(1, escuro(H, 55));
     return gr;
   }
+  // Nuca curta com duas massas assimétricas, abaixo das orelhas do acessório.
+  function pixie(g,x,y){
+    g.beginPath(); g.moveTo(x+5,y+5);
+    g.quadraticCurveTo(x-1,y+9,x+1.2,y+16);
+    g.lineTo(x-.7,y+18); g.quadraticCurveTo(x+1.1,y+20,x+4.3,y+19.7);
+    g.lineTo(x+3.5,y+23); g.quadraticCurveTo(x+9,y+21.5,x+12,y+18);
+    g.quadraticCurveTo(x+14,y+21,x+16.5,y+23.8);
+    g.quadraticCurveTo(x+21,y+22,x+23.8,y+18.4);
+    g.lineTo(x+27,y+20); g.lineTo(x+26,y+17.4); g.lineTo(x+30,y+18.6);
+    g.quadraticCurveTo(x+30,y+10,x+25,y+6); g.closePath(); g.fill();
+  }
   function costas(g, x, y, b){   // contorno: sai da cabeça (centro y+8 antes do translate) e desce pelas laterais
     g.beginPath(); g.moveTo(x + 3, y + 8); g.arc(x + 15, y + 8, 12, Math.PI, 0);
     if(b === 'longo'){ g.quadraticCurveTo(x + 34, y + 34, x + 27, y + 41); g.quadraticCurveTo(x + 25, y + 40, x + 24, y + 37);
@@ -365,11 +376,11 @@
       g.quadraticCurveTo(x + 11, y + 43, x + 7, y + 40);
       g.lineTo(x + 6, y + 37); g.lineTo(x + 3, y + 41); g.quadraticCurveTo(x - 4, y + 34, x + 3, y + 8); }
     else { // Chanel: volume na nuca, pontas dirigidas ao maxilar e contorno levemente assimétrico.
-      g.quadraticCurveTo(x+29.8,y+14,x+28.1,y+20.8);
+      g.quadraticCurveTo(x+31.1,y+14,x+29,y+20.8);
       g.quadraticCurveTo(x+27.5,y+24.4,x+25.3,y+25.2);
       g.quadraticCurveTo(x+20,y+26.6,x+15.7,y+25.7);
       g.quadraticCurveTo(x+10.3,y+27.2,x+5,y+25.7);
-      g.quadraticCurveTo(x+.9,y+24.6,x+1.8,y+18);
+      g.quadraticCurveTo(x-.5,y+24.1,x+.7,y+17.4);
       g.quadraticCurveTo(x+1.4,y+12,x+3,y+8);
     }   // chanel: corte reto logo abaixo do queixo (antes descia até o meio do tronco e parecia cabelo comprido)
     g.fill();
@@ -449,7 +460,7 @@
     return true;
   }
 
-  var api = { assinatura:assinatura, articulacao:articulacao, membro:membro, tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
+  var api = { pixie:pixie, assinatura:assinatura, articulacao:articulacao, membro:membro, tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
               bracos:bracos, bracosBase:bracosBase, pernas:pernas, camisa:camisa, pescoco:pescoco, coques:coques, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, reta:reta, gravata:gravata,
               cr:cr, crLook:crLook, CR_COR:CR_COR };
   root.TWAvatarRoupa = api;

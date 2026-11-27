@@ -283,6 +283,13 @@
     g.lineTo(x+27,y+14);g.quadraticCurveTo(x+15,y+14.35,x+3,y+14);
     g.closePath();g.fill();
   }
+  // Identity Restoration (27/11/2026): anel de brilho do cabelo no lugar do oval branco; acompanha a calota e afina nas pontas.
+  function anel(g,x,y){
+    var a0=Math.PI*1.14,a1=Math.PI*1.74,a2=Math.PI*1.7;
+    g.save();g.fillStyle='rgba(255,255,255,.27)';g.beginPath();g.arc(x+15,y+12.4,9.9,a0,a1);
+    g.quadraticCurveTo(x+15+9.9*Math.cos(a1)-.4,y+12.4+9.9*Math.sin(a1)+.9,x+15+8.7*Math.cos(a2),y+12.4+8.7*Math.sin(a2));
+    g.arc(x+15,y+12.4,8.7,a2,Math.PI*1.2,true);g.closePath();g.fill();g.restore();
+  }
   function pescoco(g,x,y){
     // Pescoço discreto, sob o queixo e a gola, na régua original.
     g.fillRect(x+12,y+18,6,6);
@@ -416,7 +423,7 @@
   }
 
   var api = { pixie:pixie, assinatura:assinatura, articulacao:articulacao, membro:membro, tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
-              bracos:bracos, bracosBase:bracosBase, pernas:pernas, camisa:camisa, pescoco:pescoco, coques:coques, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, reta:reta, gravata:gravata,
+              bracos:bracos, bracosBase:bracosBase, anel:anel, pernas:pernas, camisa:camisa, pescoco:pescoco, coques:coques, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, reta:reta, gravata:gravata,
               cr:cr, crLook:crLook, CR_COR:CR_COR };
   root.TWAvatarRoupa = api;
   if(typeof module !== 'undefined' && module.exports) module.exports = api;

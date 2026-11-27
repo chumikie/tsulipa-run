@@ -239,6 +239,7 @@
       else { g.moveTo(x0 - .4, y + 16.6); g.quadraticCurveTo(x0 + 1.6, y + (e === 5 ? 18.2 : 13.6), x0 + 3.6, y + 16.6); }
       g.stroke(); if(e === 5){ g.fillStyle = 'rgba(120,190,255,.85)'; E(x0 + 2.6, y + 18.6, .8, 1.2); } }
     else if(e === 6){ g.fillStyle = '#ff4f9a'; g.beginPath(); g.moveTo(x0 + 1.5, y + 18); g.bezierCurveTo(x0 - 1.6, y + 15.6, x0 - .4, y + 12.6, x0 + 1.5, y + 14.4); g.bezierCurveTo(x0 + 3.4, y + 12.6, x0 + 4.6, y + 15.6, x0 + 1.5, y + 18); g.fill(); }
+    else if((e === 0 || e === 3 || e === 4) && typeof TWAvatarRosto !== 'undefined' && TWAvatarRosto.olhoLado && TWAvatarRosto.olhoLado(g, c, x0, y)){}   // 27/11: olhar vivo do trio também de lado
     else if(c.olho && typeof TWAvatarRosto !== 'undefined' && TWAvatarRosto.forma && TWAvatarRosto.forma(c)) TWAvatarRosto.olho(g, c, x0, y - 4, -1);   // 22/11: forma do olho do editor (a peça da frente, cílio para trás)
     else { g.fillStyle = TINTA; g.fillRect(x0, y + 13, 3, 1); g.fillStyle = c.eye || '#5a3b2e'; g.fillRect(x0, y + 14, 3, 4); g.fillStyle = PUPILA; g.fillRect(x0 + 1, y + 15, 2, 2);
       g.fillStyle = '#fff'; g.fillRect(x0, y + 14, 1, 2); g.fillRect(x0 + 2, y + 17, 1, 1); }
@@ -261,6 +262,7 @@
       if(bc === 'dentinho'){ g.fillStyle = '#fff'; T([mx + .4, my + .8, mx + 1.3, my + .9, mx + .9, my + 2]); } }
     else if(e === 2 || e === 3 || e === 1 || e === 6){ g.beginPath(); g.moveTo(x + 21, y + 19.6); g.arc(x + 22.2, y + 19.6, 1.8, 0, Math.PI * .85); g.closePath(); g.fill(); }
     else if(e === 4){ E(x + 22.6, y + 20.4, .9, 1.1); }
+    else if(e === 0 && typeof TWAvatarRosto !== 'undefined' && TWAvatarRosto.vivo && TWAvatarRosto.vivo(c)){ g.lineWidth = .7; g.lineCap = 'round'; g.beginPath(); g.moveTo(x + 21.2, y + 20.1); g.quadraticCurveTo(x + 22.4, y + 21.2, x + 23.6, y + 20); g.stroke(); }   // 27/11: o sorrisinho do trio
     else g.fillRect(x + 21.4, y + 20.2, 2.4, 1);
     if(c.det === 'coelho'){ g.save(); g.translate(x + 10.4, y - 2); g.rotate(-.3); g.fillStyle = '#ffffff'; E(0, -6, 3.3, 9, 0); g.fillStyle = 'rgba(255,150,190,.9)'; E(.4, -5.2, 1.5, 6.4, 0); g.restore(); }   // e a de cá
     // ---------- cabelo de cima: a mesma calota (centro 15,8 raio 12) recortada pela franja ----------

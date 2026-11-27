@@ -157,3 +157,15 @@ Base: HEAD c037fdf (6.8), CI 45977099318 aprovado (9/9 jobs). O artefato do CI n
 **Resultado:** 132/132 verificações locais. Pranchas main × 6.8 × agora em `docs/qa/identity-restoration-20261127/`. Poses do Camarim, do Studio e a vista de lado não usam esses caminhos e não mudaram.
 
 **Pendente:** figurinos (mangas e punhos dos três looks de palco em todas as poses), mãos do Studio, Praça e demais bairros, interface. Aprovação artística da dona e iPhone físico continuam abertos. Sem merge, publicação, SQL, Supabase, economia ou chaves novas.
+
+### Identity Restoration — Living Eyes e anel de brilho (27/11, segunda rodada)
+
+A dona considerou a rodada anterior abaixo do esperado e enviou a biblioteca de referências (Link! Like! Love Live!, BarbieGirls, Neopets, LPS Online, The Sims; linhas Chibi Anatomy, Hair Identity, Living Eyes, Doll Fashion). Diante dela, a volta da 6.8 ao olho de pixel 3×4 e ao oval branco no cabelo não atende "olhar vivo" nem "boneca idol". Estudo aprovado pela dona com dois ajustes: Tsu e Pati menos femininas e franja reta mantida.
+
+- `tw-avatar-rosto.js`: rosto próprio de Tsu, Lirika e Pati quando olho e boca não foram escolhidos (íris em degradê, pupila, dois brilhos, pálpebra cheia, sobrancelha, boca). Tsu: canto levantado, sobrancelha reta, meio sorriso. Lirika: cílio, linha inferior, sorriso suave. Pati: olho redondo, sorriso aberto. Neutra, sorriso e piscadinha. A identidade vem de `c.n`, que não é campo de save: avatares de jogadores continuam pixel a pixel.
+- `tw-lado.js`: o mesmo olho de lado (mais estreito) e o sorrisinho na neutra.
+- `tw-avatar-roupa.js` + três cópias do `drawChar`: anel de brilho no lugar do oval branco, para todos.
+- Franja reta inalterada.
+- Versões: `tw-avatar-rosto.js?v=12`, `tw-avatar-roupa.js?v=26`, `tw-lado.js?v=13`, `centerrun.js?v=54`.
+
+Pendente: corpo (Chibi Anatomy: tronco arredondado, mãos pequenas, pernas mais curtas), olho vivo nas expressões surpresa/choro/apaixonado, figurinos, cenários e interface.

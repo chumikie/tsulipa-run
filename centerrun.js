@@ -607,7 +607,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(d==='tulipa') TWAvatarItems.tulipa(g,c,x,y);
 
  // Brilho (iluminação) do cabelo em TODOS os personagens e cortes de cabelo!
-  g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();
+  if(TWR&&TWR.anel)TWR.anel(g,x,y);else{g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();}   // 27/11: anel de brilho
   
   if(hacc==='boina'){   // boina assentada e inclinada, com sombra embaixo, brilho e o cabinho
     g.fillStyle='#b81f3a';g.beginPath();g.ellipse(x+15.6,y+5,12,2.6,-.12,0,7);g.fill();

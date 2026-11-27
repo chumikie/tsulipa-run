@@ -20,7 +20,7 @@
 <script src="./tw-audio.js?v=2"></script>
 <script src="./tw-motion-lifecycle.js?v=3"></script>
 <script src="./tw-avatar-items.js?v=4"></script>
-<script src="./tw-avatar-hair.js?v=17"></script><script src="./tw-avatar-roupa.js?v=26"></script><script src="./tw-avatar-rosto.js?v=12"></script>
+<script src="./tw-avatar-hair.js?v=17"></script><script src="./tw-avatar-roupa.js?v=27"></script><script src="./tw-avatar-rosto.js?v=12"></script>
 <meta name="description" content="TsuLiPa⭐World: Corra no Center⭐Run!, pule no Sora⭐Jump!, cante no Karaoke⭐Time!, cuide do seu pet, gire o Star⭐Gacha! e monte cenas no Moon⭐Duo! Um jogo do TsuLiPa (BRS48).">
 <meta name="theme-color" content="#0b1b3a">
 <meta property="og:type" content="website">
@@ -909,7 +909,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(d==='tulipa') TWAvatarItems.tulipa(g,c,x,y);
 
  // Brilho (iluminação) do cabelo em TODOS os personagens e cortes de cabelo!
-  if(TWR&&TWR.anel)TWR.anel(g,x,y);else{g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();}   // 27/11: anel de brilho
+  g.fillStyle='rgba(255,255,255,.22)'; g.beginPath(); g.ellipse(x+10,y+4.2,4.2,1.3,-0.35,0,7); g.fill();
 
   if(hacc==='boina'){   // boina assentada e inclinada, com sombra embaixo, brilho e o cabinho
     g.fillStyle='#b81f3a';g.beginPath();g.ellipse(x+15.6,y+5,12,2.6,-.12,0,7);g.fill();

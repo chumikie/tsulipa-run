@@ -131,3 +131,29 @@ O CI de 3bddff4 passou nos nove jobs. No artefato 15184189253, Tsu sentado tinha
 ### Living Canvas 6.8 — Restore the Soul (correção de direção artística)
 
 Referências: main d2a3cb9 e revisão cc22799. O dono rejeitou a fragmentação dos cabelos, o olhar apagado e a anatomia alongada. Recuperação seletiva: olhos clássicos com os dois brilhos pixel a pixel, massas contínuas de franja/nuca e coques originais, corpo mais compacto e cintura menos marcada, braços de contorno único com articulação suave, menos pinças e dobras decorativas, apoio sentado com menor amplitude. Mantidas as escolhas de rosto e figurino, âncoras de punhos e pés, identidade local, câmera, fotos, navegação, persistência e economia. As dimensões lógicas do avatar continuam 30×44. Os testes de traçado foram alinhados ao novo critério artístico explícito, sem remover testes funcionais. O comparativo agora confronta main, cc22799 e HEAD. Aprovação artística depende da inspeção das capturas e do dono; iPhone físico pendente. Nenhum merge, publicação manual ou SQL.
+
+## Living Canvas — Identity Restoration (rodada corretiva do Remaster 6.0)
+
+Base: HEAD c037fdf (6.8), CI 45977099318 aprovado (9/9 jobs). O artefato do CI não pôde ser baixado nesta sessão (host de armazenamento bloqueado), então a auditoria refez as capturas localmente com o mesmo `tests/visual-comparativo.cjs` (main d2a3cb9 · anterior cc22799 · PR c037fdf, 97 pares, saída 0) e com uma folha nova por revisão (`tools/avatar/folha-revisoes.cjs`) em sete pontos do histórico: d2a3cb9, 8245018, 7f8f0c0, b888ead, b47c798, cc22799 e c037fdf.
+
+**Diagnóstico pelas imagens** ([pranchas](qa/identity-restoration-20261127/))
+
+| Elemento | main d2a3cb9 | cc22799 (6.7) | c037fdf (6.8) | Decisão |
+| --- | --- | --- | --- | --- |
+| Olhos | Olho clássico de pixel com dois brilhos, legível a 1,6× | Olho de anime com pálpebra e íris oval desde b888ead (5.1); perde a leitura no celular e iguala os três | Clássico restaurado, idêntico à main | Manter o clássico. Personalidade vem da cor do olho, franja e expressão; não houve ganho visível em mexer de novo |
+| Cabelos | Massas inteiras | Coques com aro interno, costeletas da Tsu abertas para fora, franjas serrilhadas | Massas da main recuperadas; nuca e chanel de perfil coerentes | Manter 6.8 |
+| Braços em pé | Retângulos encostados no tronco, dobra da palma | Cotovelo dobrado e punho fechado na cintura (pose de boneco articulado) | Cápsulas soltas: a cintura afinada abre um vão claro entre braço e camisa; a ponta não se lê como mão | **Corrigido nesta rodada** |
+| Bermuda/saia | Bloco liso | Aberturas e pregas | Aberturas e pregas mantidas | Melhoria real: manter |
+| Camarim e Studio | Corpo em pé colado ao sofá; braços em retângulo cruzando o peito na foto | Coxa e canela no sofá, mãos no colo, pega da flor | Igual a 6.7 com menos amplitude | Melhoria funcional: manter; revisar mãos em rodada própria |
+
+**Implementado**
+
+- `camisa`: a cintura individual passa a ser só sugerida (≈4,4 Tsu, 4,7 Lirika, 4,5 Pati, antes 5,8–6,5). A camisa volta a encostar nos braços, como o bloco 4–26 da main, e os três contornos continuam distintos.
+- `formaBracos`: um só contorno encostado no tronco, punho levemente recolhido e mão arredondada, com as mesmas âncoras (ombro y+24, ponta da mão y+33,4).
+- `bracos`: volta a dobra da palma da main, que faz a ponta ser lida como mão no celular; a luz da pele cobre a nova silhueta.
+- Comparativo do CI: a revisão "anterior" passa a ser c037fdf, para julgar esta rodada contra a 6.8.
+- Versão `tw-avatar-roupa.js?v=25` nas três páginas.
+
+**Resultado:** 132/132 verificações locais. Pranchas main × 6.8 × agora em `docs/qa/identity-restoration-20261127/`. Poses do Camarim, do Studio e a vista de lado não usam esses caminhos e não mudaram.
+
+**Pendente:** figurinos (mangas e punhos dos três looks de palco em todas as poses), mãos do Studio, Praça e demais bairros, interface. Aprovação artística da dona e iPhone físico continuam abertos. Sem merge, publicação, SQL, Supabase, economia ou chaves novas.

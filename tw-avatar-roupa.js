@@ -258,7 +258,9 @@
   }
   // Contorno comum, ombro largo e mão curva. Mantém a régua 30×44.
   function camisa(g,x,y,c){
-    var a=assinatura(c),w=a.cintura,omb=a.ombro;
+    // Identity Restoration: a cintura individual fica sugerida (≈4,4–4,7) e a camisa encosta nos braços,
+    // como o bloco 4–26 da main; antes ficava um vão claro entre manga, braço e tronco.
+    var a=assinatura(c),w=4.6+(a.cintura-6.3)*.35,omb=a.ombro;
     g.save();g.beginPath();g.moveTo(x+11,y+21.6);
     g.quadraticCurveTo(x+6.8,y+21.2,x+omb,y+24);
     g.quadraticCurveTo(x+5.9,y+26.6,x+w,y+29.4);
@@ -292,13 +294,17 @@
     g.fillStyle='#2a5bd7';g.fillRect(x+1,y+6,7,3);g.fillRect(x+22,y+6,7,3);
   }
   function formaBracos(g,x,y){
+    // Identity Restoration: braço único encostado no tronco, punho levemente recolhido e mão arredondada.
+    // As âncoras de ombro (y+24) e da ponta da mão (y+33,4) são as mesmas da régua 30×44.
     [1,-1].forEach(function(k){
       var a=k===1?x:x+30;function X(v){return a+k*v;}
-      g.moveTo(X(1),y+24);g.quadraticCurveTo(X(.7),y+27.5,X(1),y+30.8);
-      g.quadraticCurveTo(X(1),y+33.2,X(3),y+33.2);
-      g.quadraticCurveTo(X(5.2),y+33.2,X(5.2),y+30.8);
-      g.quadraticCurveTo(X(5.1),y+27.4,X(5),y+24);
-      g.quadraticCurveTo(X(3),y+23.5,X(1),y+24);g.closePath();
+      g.moveTo(X(.8),y+24);g.quadraticCurveTo(X(.55),y+27,X(.95),y+29.5);
+      g.quadraticCurveTo(X(.45),y+30.9,X(.75),y+32.3);
+      g.quadraticCurveTo(X(1.3),y+33.5,X(3),y+33.4);
+      g.quadraticCurveTo(X(5),y+33.4,X(5.25),y+31.7);
+      g.quadraticCurveTo(X(5.35),y+30.3,X(4.95),y+29.5);
+      g.quadraticCurveTo(X(5.3),y+27,X(5.4),y+24);
+      g.quadraticCurveTo(X(3),y+23.4,X(.8),y+24);g.closePath();
     });
   }
   function bracosBase(g,x,y){g.beginPath();formaBracos(g,x,y);g.fill();}
@@ -315,7 +321,10 @@
   }
   function bracos(g, x, y){   // braços parados
     g.save();g.beginPath();formaBracos(g,x,y);g.clip();
-    [1,25].forEach(function(dx){g.save();g.beginPath();g.rect(x+dx,y+24,4,9);g.clip();luzPele(g,x+dx,x+dx+4,y+24,y+33,true,y+28);g.restore();});g.restore();
+    [1,25].forEach(function(dx){g.save();g.beginPath();g.rect(x+dx-.3,y+24,4.8,9.6);g.clip();luzPele(g,x+dx,x+dx+4,y+24,y+33.4,true,y+28);g.restore();});g.restore();
+    // Dobra da palma da main: é o que faz a ponta do braço ser lida como mão no celular.
+    g.save();g.strokeStyle='rgba(65,28,45,.22)';g.lineWidth=.45;g.lineCap='round';
+    [[x+2.1,x+3.5],[x+26.5,x+27.9]].forEach(function(p){g.beginPath();g.moveTo(p[0],y+31.2);g.quadraticCurveTo((p[0]+p[1])/2,y+30.7,p[1],y+31.3);g.stroke();});g.restore();
   }
   function rosto(g, x, y){
     g.save(); g.beginPath(); g.ellipse(x + 15, y + 17, 11, 11, 0, 0, 7); g.clip();

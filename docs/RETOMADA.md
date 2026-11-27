@@ -111,6 +111,7 @@ A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, 
 - Roupa como prêmio do nível 3 do bairro.
 
 **Código**
+- PR #135, Identity Restoration: aprovação artística da dona e iPhone físico; próximos passos são figurinos de palco em todas as poses, mãos do Studio, bairros e interface (ver `docs/ROADMAP-REMASTER.md`).
 - Conferir com a conta real a pasta "Mais", o Gacha em Jogos e o Esta semana no Calendário (#130).
 - `tests/atalhos-calendario.browser.cjs` falha também na main (espera os atalhos fixados `cafe` e `cal`, que a #130 tirou do Início). Fora do CI; atualizar ou aposentar o teste.
 - A #117 continua separada e conflita com a main. Revisar desfecho, calibração e versões do Jornal em separado dos arquivos de áudio, cuja revisão ficou para depois.

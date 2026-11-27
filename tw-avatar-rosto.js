@@ -1,7 +1,7 @@
 /* TsuLiPa⭐World — rosto, sapatos e partes de baixo especiais do avatar 2D (14/11/2026).
    Usado pelas três cópias do drawChar (centerrun.js, karaoke-time.html e sora-jump.html),
    na MESMA grade de 30×44 de sempre: nenhum ponto de encaixe muda (chapéus, poses, objetos, fotos).
-   - Rosto à escolha (o padrão '' conserva os traços clássicos):
+   - Rosto à escolha (o padrão '' é sempre o desenho de antes):
      c.olho = '' | 'redondo' | 'brilhante' | 'pontinho' | 'gatinho' | 'sereno'
      c.boca = '' | 'sorriso' | 'gato' | 'aberta' | 'dentinho'
      c.bochecha = '' | 'sem' | 'forte' | 'sardas' | 'estrelinha'
@@ -12,7 +12,7 @@
    Coordenadas do rosto já com o translate(0,-4) do drawChar: olhos em x+10..13 / x+18..21, y+17..22; boca em y+24. */
 (function(root){
   'use strict';
-  // Peças do rosto à escolha. '' = o desenho clássico, com curvas suaves.
+  // Peças do rosto à escolha. '' = o desenho de sempre (o mais simpático, padrão de todo mundo).
   var OLHOS = ['', 'redondo', 'brilhante', 'pontinho', 'gatinho', 'sereno', 'estrela', 'cilios', 'gotinha'];
   var BOCAS = ['', 'sorriso', 'gato', 'aberta', 'dentinho', 'lingua', 'triangulo', 'biquinho'];
   var ENFEITES = ['tiara'];   // laço e flor já existiam como Item (Laço azul, Hibisco, Flor de cerejeira)
@@ -30,8 +30,7 @@
   // Um olho aberto, sem traços (só formas cheias): x0 = x+10 (esquerdo) ou x+18 (direito).
   function olho(g, c, x0, y, lado){
     var f = forma(c), cor = hex(c && c.eye, '#5a3b2e');
-    // Restore the original high-contrast eye, also for the official trio.
-    if(f === ''){   // clássico: contrato pixel a pixel, inclusive para saves antigos
+    if(f === ''){   // o de sempre, pixel por pixel
       g.fillStyle = TINTA; g.fillRect(x0, y + 17, 3, 1);
       g.fillStyle = cor; g.fillRect(x0, y + 18, 3, 4);
       g.fillStyle = PUPILA; g.fillRect(x0 + 1, y + 19, 2, 2);
@@ -45,8 +44,7 @@
     }
     var big = f === 'brilhante', w = big ? 3.4 : f === 'gotinha' ? 2.5 : 3, h = big ? 4.6 : f === 'gotinha' ? 4.9 : 4, X = x0 + 1.5 - w / 2, Y = y + 22 - h;
     if(f === 'sereno'){ Y = y + 19.4; h = 2.6; }
-    var iris=g.createLinearGradient(0,Y,0,Y+h);iris.addColorStop(0,escurecer(cor,30));iris.addColorStop(.58,cor);iris.addColorStop(1,cor);
-    g.fillStyle = iris; RR(g, X, Y, w, h, [1.1, 1.1, 1.5, 1.5]);
+    g.fillStyle = cor; RR(g, X, Y, w, h, [1.1, 1.1, 1.5, 1.5]);
     g.fillStyle = PUPILA; E(g, x0 + 1.6, Y + h * .58, w * .32, h * .27);
     g.fillStyle = TINTA; RR(g, X - .25, Y - 1, w + .5, 1.25, .6);                     // pálpebra cheia, sem linha solta
     if(f === 'gatinho'){ g.beginPath(); var ox = lado < 0 ? X - .25 : X + w + .25; g.moveTo(ox, Y - 1); g.lineTo(ox + lado * 1.6, Y - 1.9); g.lineTo(ox, Y + .25); g.closePath(); g.fill(); }
@@ -67,8 +65,8 @@
   }
   function olhoFechado(g, x, y, esq){   // o ^ de sempre
     var a = esq ? 9 : 18;
-    g.save();g.strokeStyle = TINTA; g.lineWidth = 1.25;g.lineCap='round'; g.beginPath();
-    g.moveTo(x + a, y + 19.9); g.quadraticCurveTo(x + a + 2, y + 17.3, x + a + 4, y + 19.9); g.stroke();g.restore();
+    g.strokeStyle = TINTA; g.lineWidth = 1.5; g.beginPath();
+    g.moveTo(x + a, y + 20); g.quadraticCurveTo(x + a + 2, y + 17, x + a + 4, y + 20); g.stroke();
   }
   // Boca: 'feliz' = sorriso de olhos fechados ou piscadinha.
   function boca(g, c, x, y, feliz){
@@ -100,86 +98,16 @@
     }
     if(feliz || b === 'aberta'){
       var r = feliz ? 2.5 : 1.7;
-      g.beginPath();g.moveTo(x+15-r,y+23);g.quadraticCurveTo(x+15,y+23+.32,x+15+r,y+23);
-      g.quadraticCurveTo(x+15+r*.74,y+23+r,x+15,y+23+r);
-      g.quadraticCurveTo(x+15-r*.74,y+23+r,x+15-r,y+23);g.closePath();g.fill();
+      g.beginPath(); g.arc(x + 15, y + 23, r, 0, Math.PI); g.fill();
       if(b === 'aberta' || b === 'sorriso'){ g.fillStyle = '#ff8fb0'; E(g, x + 15, y + 23 + r * .62, r * .5, r * .28); }
     } else if(b === 'sorriso' || b === 'dentinho'){
       g.lineWidth = 1; g.beginPath(); g.moveTo(x + 13.4, y + 23.6); g.quadraticCurveTo(x + 15, y + 25.3, x + 16.6, y + 23.6); g.stroke();
-    } else g.fillRect(x + 14, y + 24, 3, 1); // boca clássica neutra
+    } else g.fillRect(x + 14, y + 24, 3, 1);                                             // o tracinho de sempre
     if(b === 'dentinho'){ g.fillStyle = '#fff'; g.beginPath(); g.moveTo(x + 15.6, y + 23.9); g.lineTo(x + 16.6, y + 24); g.lineTo(x + 16.1, y + 25.2); g.closePath(); g.fill(); }
   }
-  // Identity Restoration — Living Eyes (27/11/2026). Rosto próprio de Tsu, Lirika e Pati quando o olho e a boca
-  // não foram escolhidos. A identidade vem de c.n, que não é campo de save (perfChar usa 'Idol' para todo avatar
-  // recebido). Tsu e Pati sem cílio alongado; Lirika com cílio e olhar sereno. Ninguém mais muda.
-  var VIVOS = {
-    Tsu:   {w:4.4, h:5.0, tilt:.25, flick:0,    dx:.28,  boca:'sorriso', brow:[14.9, 14.6, .25], cilio:0, esp:.75},
-    Lirika:{w:4.4, h:5.4, tilt:.15, flick:1.75, dx:-.18, boca:'suave',   brow:[15.1, 15.1, .75], cilio:1, esp:.55},
-    Pati:  {w:4.6, h:5.3, tilt:0,   flick:0,    dx:0,    boca:'aberta',  brow:[14.8, 14.8, .35], cilio:0, esp:.75}
-  };
-  var TINTA_VIVA = '#2a1830';
-  function vivo(c){ return c && !forma(c) && !escolha(BOCAS, c.boca) && Object.prototype.hasOwnProperty.call(VIVOS, c.n) ? VIVOS[c.n] : null; }
-  function rgb(c){ c = hex(c, '#5a3b2e').slice(1); return [0, 2, 4].map(function(i){ return parseInt(c.substr(i, 2), 16); }); }
-  function mistura(a, b, t){ var x = rgb(a), z = rgb(b); return 'rgb(' + x.map(function(v, i){ return Math.round(v + (z[i] - v) * t); }).join(',') + ')'; }
-  // cx = centro do olho; y = mesma régua do rosto (base do olho em y+22,2); lado -1/1 = canto de fora à esquerda/direita
-  function olhoVivo(g, c, cx, y, lado, p, k){
-    k = k || 1;
-    var w = p.w * k, h = p.h, top = y + 22.2 - h, cy = top + h / 2, cor = hex(c.eye, '#5a3b2e'), ix = cx + p.dx * k;
-    g.fillStyle = '#fffafc'; E(g, cx, cy + .25, w / 2, h / 2);
-    var gr = g.createLinearGradient(0, top, 0, top + h);
-    gr.addColorStop(0, mistura(cor, '#120818', .55)); gr.addColorStop(.45, cor); gr.addColorStop(1, mistura(cor, '#ffffff', .42));
-    g.save(); g.beginPath(); g.ellipse(cx, cy + .25, w / 2, h / 2, 0, 0, Math.PI * 2); g.clip();
-    g.fillStyle = gr; E(g, ix, cy + .35, w * .4, h * .46);
-    g.fillStyle = mistura(cor, '#0b0410', .72); E(g, ix, cy + .1, w * .2, h * .24);
-    g.restore();
-    var o = cx + lado * w / 2, i = cx - lado * w / 2;
-    g.fillStyle = TINTA_VIVA; g.beginPath(); g.moveTo(i - lado * .15, cy + .2);
-    g.quadraticCurveTo(cx - lado * w * .1, top - 1.15, o + lado * .15, top + .9 - p.tilt);
-    if(p.flick){ g.lineTo(o + lado * (.15 + p.flick * .75), top + .1 - p.tilt - p.flick * .45); g.lineTo(o + lado * .35, top + 1.75 - p.tilt * .6); }
-    else g.lineTo(o + lado * .05, top + 1.5 - p.tilt * .6);
-    g.quadraticCurveTo(cx, top - .05, i + lado * .25, cy - .35); g.closePath(); g.fill();
-    if(p.cilio){ g.save(); g.strokeStyle = 'rgba(60,20,50,.45)'; g.lineWidth = .45; g.lineCap = 'round'; g.beginPath();
-      g.moveTo(cx + lado * w * .08, top + h + .15); g.quadraticCurveTo(cx + lado * w * .32, top + h + .05, o - lado * .05, top + h - .75); g.stroke(); g.restore(); }
-    g.fillStyle = '#fff'; E(g, ix - w * .17, top + h * .34, w * .17, h * .13, -.35); E(g, ix + w * .18, top + h * .72, w * .08, w * .08);
-    g.fillStyle = 'rgba(255,255,255,.55)'; E(g, ix + w * .2, top + h * .32, w * .05, w * .05);
-  }
-  function fechadoVivo(g, y, cx){ g.save(); g.strokeStyle = TINTA_VIVA; g.lineWidth = 1.05; g.lineCap = 'round'; g.beginPath(); g.moveTo(cx - 2.2, y + 20.3); g.quadraticCurveTo(cx, y + 17.9, cx + 2.2, y + 20.3); g.stroke(); g.restore(); }
-  function sobrancelhaViva(g, c, x, y, p, expr){
-    var cor = mistura(hex(c.hair, '#3a2230'), '#160a14', .45), sobe = expr === 2 || expr === 3 ? -.5 : 0;
-    g.save(); g.fillStyle = cor; g.globalAlpha = .9;
-    [[13.4, 9.6], [17.6, 21.4]].forEach(function(a){
-      var xi = x + a[0], xo = x + a[1], ym = y + (p.brow[0] + p.brow[1]) / 2 - p.brow[2] + sobe;
-      g.beginPath(); g.moveTo(xo, y + p.brow[1] + sobe); g.quadraticCurveTo((xi + xo) / 2, ym, xi, y + p.brow[0] + sobe); g.lineTo(xi, y + p.brow[0] + sobe + p.esp);
-      g.quadraticCurveTo((xi + xo) / 2, ym + p.esp, xo, y + p.brow[1] + sobe + p.esp * .7); g.closePath(); g.fill();
-    });
-    g.restore();
-  }
-  function bocaViva(g, x, y, p, feliz){
-    g.fillStyle = TINTA_VIVA; g.strokeStyle = TINTA_VIVA; g.lineCap = 'round';
-    if(feliz || p.boca === 'aberta'){
-      var r = feliz ? 2.3 : 1.55;
-      g.beginPath(); g.moveTo(x + 15.5 - r, y + 23.4); g.quadraticCurveTo(x + 15.5, y + 23.7, x + 15.5 + r, y + 23.4);
-      g.quadraticCurveTo(x + 15.5 + r * .7, y + 23.4 + r * 1.05, x + 15.5, y + 23.4 + r * 1.05); g.quadraticCurveTo(x + 15.5 - r * .7, y + 23.4 + r * 1.05, x + 15.5 - r, y + 23.4); g.fill();
-      g.fillStyle = '#ff8fb0'; E(g, x + 15.5, y + 23.4 + r * .72, r * .5, r * .26); return;
-    }
-    g.lineWidth = .7; g.beginPath();
-    if(p.boca === 'sorriso'){ g.moveTo(x + 14.3, y + 23.8); g.quadraticCurveTo(x + 15.7, y + 24.8, x + 17, y + 23.5); }
-    else { g.moveTo(x + 14.4, y + 23.9); g.quadraticCurveTo(x + 15.5, y + 24.7, x + 16.6, y + 23.9); }
-    g.stroke();
-  }
-  function rostoVivo(g, c, x, y, expr, p){
-    if(expr === 2){ fechadoVivo(g, y, x + 11.5); fechadoVivo(g, y, x + 19.5); }
-    else { olhoVivo(g, c, x + 11.5, y, -1, p); if(expr === 3) fechadoVivo(g, y, x + 19.5); else olhoVivo(g, c, x + 19.5, y, 1, p); }
-    bocaViva(g, x, y, p, expr !== 0);
-    if(!escolha(SOBRANCELHAS, c.sobrancelha)) sobrancelhaViva(g, c, x, y, p, expr);
-    return true;
-  }
-  // Vista de lado: um olho só, mais estreito, com o canto de fora para trás. x0 = começo do olho de lado (x+19,6).
-  function olhoLado(g, c, x0, y){ var p = vivo(c); if(!p) return false; olhoVivo(g, c, x0 + 1.7, y - 4, -1, p, .8); return true; }
   // Devolve true quando desenhou a expressão (0 neutra, 2 sorriso, 3 piscadinha). As outras ficam como estavam.
   function rosto(g, c, x, y, expr){
     expr = +expr || 0;
-    var viva = vivo(c); if(viva && (expr === 0 || expr === 2 || expr === 3)) return rostoVivo(g, c, x, y, expr, viva);
     if(expr === 0){ olho(g, c, x + 10, y, -1); olho(g, c, x + 18, y, 1); boca(g, c, x, y, false); return true; }
     if(expr === 2){ olhoFechado(g, x, y, true); olhoFechado(g, x, y, false); boca(g, c, x, y, true); return true; }
     if(expr === 3){ olho(g, c, x + 10, y, -1); olhoFechado(g, x, y, false); boca(g, c, x, y, true); return true; }
@@ -247,8 +175,6 @@
       g.fill();
       g.fillStyle = sola; g.fillRect(sx + .3, y + 43.6, 5.6, .7);
       g.fillStyle = claro ? '#ff8fc8' : 'rgba(255,255,255,.35)'; g.fillRect(sx + 1.3, y + 42, 3.4, .55);   // cadarço / brilho
-      g.fillStyle=claro?'rgba(105,72,153,.16)':'rgba(255,255,255,.17)';
-      E(g,sx+3.1,y+41.85,1.7,.38); // abertura e peito do pé na mesma altura
     });
   }
 
@@ -256,19 +182,17 @@
   // Sem escolha (c.baixo vazio) cada look continua exatamente como era.
   function baixoEspecial(g, c, x, y, roupa, cor, T){
     var b = c && c.baixo;
-    if((roupa === 'zipper' || roupa === 'sweet') && b === 'bermuda'){
-      var doce = roupa === 'sweet', topo = doce ? 33 : 31, barra = doce ? 40.5 : 39;
-      g.save(); g.beginPath(); g.moveTo(x+7,y+topo); g.lineTo(x+23,y+topo);
-      g.quadraticCurveTo(x+26,y+topo+3,x+24,y+barra);
-      g.quadraticCurveTo(x+20,y+barra+1,x+16,y+barra); g.lineTo(x+15,y+barra-3.2);
-      g.lineTo(x+14,y+barra); g.quadraticCurveTo(x+10,y+barra+1,x+6,y+barra);
-      g.quadraticCurveTo(x+4,y+topo+3,x+7,y+topo); g.closePath();
-      g.fillStyle = cor; g.fill(); g.clip();
-      g.fillStyle = '#fff';
-      if(doce){
-        for(var k=0;k<5;k++){ g.beginPath(); g.arc(x+7.4+k*3.8,y+barra,1.9,Math.PI,2*Math.PI); g.fill(); }
-      }else g.fillRect(x+5,y+barra-1,20,1.3);
-      g.restore(); return true;
+    if(roupa === 'zipper' && b === 'bermuda'){
+      g.fillStyle = cor; g.fillRect(x + 6, y + 31, 18, 8);
+      g.fillStyle = 'rgba(40,10,70,.22)'; g.fillRect(x + 14.6, y + 33, .8, 6);
+      g.fillStyle = '#fff'; g.fillRect(x + 6, y + 38.2, 18, .9);
+      return true;
+    }
+    if(roupa === 'sweet' && b === 'bermuda'){
+      g.fillStyle = cor; g.fillRect(x + 5.5, y + 33, 19, 7.5);
+      g.fillStyle = '#fff'; for(var k = 0; k < 5; k++){ g.beginPath(); g.arc(x + 7.4 + k * 3.8, y + 40.5, 1.9, 0, Math.PI); g.fill(); }
+      g.fillStyle = 'rgba(40,10,70,.2)'; g.fillRect(x + 14.6, y + 35, .8, 5.5);
+      return true;
     }
     if(roupa === 'estrelado' && b === 'saia'){
       var az = (!cor || /^#?f{6}$/i.test(cor)) ? '#3b5bdb' : cor;
@@ -301,5 +225,5 @@
     });
     g.fillStyle = pele;
   }
-  root.TWAvatarRosto = { olhos:OLHOS.slice(), bocas:BOCAS.slice(), bochechas:BOCHECHAS.slice(), sobrancelhas:SOBRANCELHAS.slice(), sobrancelha:sobrancelha, enfeites:ENFEITES.slice(), enfeite:enfeite, forma:forma, rosto:rosto, olho:olho, bochecha:bochecha, pes:pes, baixoEspecial:baixoEspecial, arcoiris:arcoiris, elfo:elfo, vivo:function(c){ return !!vivo(c); }, olhoLado:olhoLado };
+  root.TWAvatarRosto = { olhos:OLHOS.slice(), bocas:BOCAS.slice(), bochechas:BOCHECHAS.slice(), sobrancelhas:SOBRANCELHAS.slice(), sobrancelha:sobrancelha, enfeites:ENFEITES.slice(), enfeite:enfeite, forma:forma, rosto:rosto, olho:olho, bochecha:bochecha, pes:pes, baixoEspecial:baixoEspecial, arcoiris:arcoiris, elfo:elfo };
 })(typeof window !== 'undefined' ? window : this);

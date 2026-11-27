@@ -2,13 +2,11 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const read=p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8');
 const R=require('../tw-avatar-roupa.js');
-test('Identity & Soul: straight bangs use a continuous rounded mass and retain legacy two-tone fallback',()=>{
-  const points=[];const g={beginPath(){},moveTo(...p){points.push(p)},lineTo(...p){points.push(p)},quadraticCurveTo(...p){points.push(p)},closePath(){},fill(){}};
-  R.reta(g,0,0);
-  assert.deepEqual(points,[[3,8],[15,7.5,27,8],[27,14],[15,14.35,3,14]]);
-  assert.ok(points.every(p=>p.every(Number.isFinite)));
+test('Identity Restoration: straight bangs are the main rectangle again in all three drawChar copies',()=>{
+  // 27/11/2026: a dona pediu a franja reta da main (o contorno arredondado das fases de remaster foi desfeito).
+  assert.equal(R.reta,undefined);
   for(const p of ['centerrun.js','karaoke-time.html','sora-jump.html']){
-    assert.ok(read(p).includes("TWR.reta&&b!=='onduladom2'"));
+    assert.ok(read(p).includes("else if(f==='reta')g.fillRect(x+3,y+8,24,6);"));
   }
 });
 test('Moon Duo: prop and avatar anchors use the same vertical phase, including reduced motion',()=>{

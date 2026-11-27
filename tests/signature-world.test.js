@@ -7,15 +7,17 @@ function recorder(){
     get(o,k){return k in o?o[k]:(...a)=>{pts.push([k,...a]);};}
   });return {g,pts};
 }
-test('Signature Idols: distinct waist and knees, fixed ankle anchors, neutral customized avatar',()=>{
-  const names=['Tsu','Lirika','Pati'],shapes=names.map(n=>{
-    const c={n,outcol:'#fff'},before=JSON.stringify(c),{g,pts}=recorder();
-    R.camisa(g,0,0,c);const shirt=JSON.stringify(pts);pts.length=0;
-    R.pernas(g,0,0,false,c);
-    for(const x of [9.5,13.5,17.5,21.5])assert.ok(pts.some(p=>p[0]==='lineTo'&&p[1]===x&&p[2]===44));
-    assert.equal(JSON.stringify(c),before);return shirt+JSON.stringify(pts);
-  });
-  assert.equal(new Set(shapes).size,3);
+test('Identity Restoration: drawChar copies equal main; official signatures only shape the photo poses',()=>{
+  // 27/11/2026: corpo, rosto e vista de lado voltam ao da main (d2a3cb9). A assinatura de cada Idol continua
+  // só nas poses articuladas, sem gravar nada no avatar.
+  const {execFileSync}=require('node:child_process');
+  const dc=s=>{const i=s.indexOf('function drawChar(');return s.slice(i,s.indexOf('\nfunction ',i+20));};
+  for(const p of ['centerrun.js','karaoke-time.html','sora-jump.html']){
+    let main=null;try{main=execFileSync('git',['show','d2a3cb98d8:'+p],{cwd:path.join(__dirname,'..'),encoding:'utf8',stdio:['ignore','pipe','ignore']});}catch(e){}
+    if(main)assert.equal(dc(read(p)),dc(main),p+': drawChar igual ao da main');   // clone raso do CI sem a main: confere só o resto
+    assert.ok(!/TWR\.(camisa|bracosBase|pescoco|coques|reta)\b|TWAvatarRoupa\.(pernas|pixie)\b/.test(dc(read(p))),p);
+  }
+  const c={n:'Tsu',outcol:'#fff'},antes=JSON.stringify(c);R.articulacao(c,'v','R');assert.equal(JSON.stringify(c),antes);
   assert.equal(R.assinatura({n:'Idol'}),R.assinatura({n:'__proto__'}));
   assert.equal(R.assinatura({}),R.assinatura(null));
 });
@@ -32,7 +34,6 @@ test('Restore the Soul: classic eyes retain the original pixel highlights for al
   assert.deepEqual(a.pts,b.pts);
 });
 test('Signature World: shared geometry and separate photo prop/hand mirror',()=>{
-  for(const p of ['centerrun.js','karaoke-time.html','sora-jump.html'])assert.ok(read(p).includes('TWAvatarRoupa.pernas(g,x,y,up,c)'));
   const s=read('studio.js');assert.match(s,/x.restore\(\); \/\/ o arranjo permanece na ordem escolhida/);
   assert.match(s,/if\(espelhoMao\)x.scale\(-1,1\);\n    \/\/ Dedos/);
   assert.match(read('.github/workflows/validate-games.yml'),/ref: c037fdfbe89c491f1abf352d152cdebd2b129a48/);
@@ -80,7 +81,7 @@ test('Signature 5.11–12: side silhouette follows front choice and uses shared 
     const limbs=['Tsu','Lirika','Pati','Idol'].map(n=>R.articulacao({n},pose,'R'));
     assert.equal(new Set(limbs.map(a=>a[2])).size,4);
     for(const [sx,sy,ex,ey,wx,wy] of limbs){
-      assert.deepEqual([sx,sy,wx,wy],R.BRACOS[pose].R);
+      assert.deepEqual([sx,sy,wx,wy],R.BRACOS_POSE[pose].R);
       assert.ok(Math.abs((ex-sx)*(wy-sy)-(ey-sy)*(wx-sx))>1,'cotovelo fora da reta ombro–punho');
     }
   }

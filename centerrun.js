@@ -416,13 +416,12 @@ function drawChar(c,x,y,run,expr,isPartner){
   else if(b==='marias'){E(x+1,y+8,4,4);E(x+29,y+8,4,4);E(x-2,y+18,4.6,10.5,.18+sw*.03);E(x-1.5,y+26,3.2,7,.25+sw*.03);E(x+32,y+18,4.6,10.5,-.18-sw*.03);E(x+31.5,y+26,3.2,7,-.25-sw*.03);g.fillStyle='#e0457b';E(x+.5,y+9.5,2.2,1.6,.5);E(x+29.5,y+9.5,2.2,1.6,-.5)}
   else if(b==='rabo'){var rs=sw*.5;g.beginPath();g.moveTo(x+24,y+4);g.quadraticCurveTo(x+37,y+7+rs,x+33.5,y+20+rs);g.quadraticCurveTo(x+31.5,y+28+rs,x+27,y+33+rs);g.quadraticCurveTo(x+29.5,y+21+rs,x+24.5,y+12);g.closePath();g.fill();g.fillStyle='#e0457b';E(x+27,y+6,2.4,1.8,.7)}
     else if(b===''){g.beginPath();g.arc(x+15,y+12,13.2,Math.PI,0);g.lineTo(x+28.2,y+20);g.lineTo(x+25,y+22);g.lineTo(x+5,y+22);g.lineTo(x+1.8,y+20);g.closePath();g.fill()}   // Curto: reforço ao redor do cabelo
-  else if(b==='pixie' && typeof TWAvatarRoupa!=='undefined' && TWAvatarRoupa.pixie){TWAvatarRoupa.pixie(g,x,y);}
   else if(b==='pixie'){T([x+4,y+10,x+0,y+17,x+3,y+19,x+2,y+24,x+8,y+21,x+9,y+14]);T([x+26,y+10,x+30,y+17,x+27,y+19,x+28,y+24,x+22,y+21,x+21,y+14]);T([x+9,y+22,x+15,y+28,x+21,y+22])}   // Pixie: pontas repicadas  
   else if(TWAvatarHair.back(g,c,x,y,b,E,T)){}
   else if(b==='cacheado'){[[15,3,8],[4,8,8],[26,8,8],[1.5,16,7.5],[28.5,16,7.5],[3.5,23,5.8],[26.5,23,5.8]].forEach(function(p){E(x+p[0],y+p[1]+6,p[2],p[2])})}   // cachos menores embaixo: não viram capa sobre os braços
   if(OF===3){g.fillStyle='#b01e3a';T([x+5,y+22,x-8+sw,y+42,x+9,y+40])}
   if(OF===5){g.fillStyle='rgba(255,252,235,.95)';E(x-4,y+27,5,13,-.5+sw*.04);E(x+34,y+27,5,13,.5-sw*.04);g.fillStyle='rgba(255,226,140,.8)';E(x-2,y+30,3,9,-.5+sw*.04);E(x+32,y+30,3,9,.5-sw*.04)}
-  g.fillStyle=(typeof c.legcol==='string'&&/^#[0-9a-f]{6}$/i.test(c.legcol))?c.legcol:'#1c1c30';if(typeof TWAvatarRoupa!=='undefined'&&TWAvatarRoupa.pernas){TWAvatarRoupa.pernas(g,x,y,up,c);}else{g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));}if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto)TWAvatarRosto.pes(g,c,x,y);
+  g.fillStyle=(typeof c.legcol==='string'&&/^#[0-9a-f]{6}$/i.test(c.legcol))?c.legcol:'#1c1c30';g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));if(typeof TWAvatarRosto!=='undefined'&&TWAvatarRosto)TWAvatarRosto.pes(g,c,x,y);
   var TWR=typeof TWAvatarRoupa!=='undefined'?TWAvatarRoupa:null,twRoupa=(OF>0||ALV)?'-':(c.out||'');   // folha E: saia ou bermuda, ombro e luz contínua
   if(!(TWR&&TWR.baixo(g,c,x,y,twRoupa))){g.fillStyle=OUT[1];g.fillRect(x+7,y+32,16,6);}
   
@@ -526,14 +525,14 @@ function drawChar(c,x,y,run,expr,isPartner){
   }else{
 
     // Roupa Básica
-    g.fillStyle=corDaRoupa;if(twRoupa === '' && TWR && TWR.camisa){TWR.camisa(g,x,y,c);}else{g.fillRect(x+4,y+22,22,12);if(TWR)TWR.tronco(g,x,y,twRoupa,c);else{g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);}}   // V3.1: sem o cinza por baixo (vazava como listra)
+    g.fillStyle=corDaRoupa;g.fillRect(x+4,y+22,22,12);if(TWR)TWR.tronco(g,x,y,twRoupa,c);else{g.fillStyle='#4a5170';g.fillRect(x+4,y+22,3,12);g.fillRect(x+23,y+22,3,12);}   // V3.1: sem o cinza por baixo (vazava como listra)
     if(TWR)TWR.gravata(g,x,y);else{g.fillStyle='#1b2a5e';g.fillRect(x+14,y+22,3,10);}
   }
 
   // Efeitos de Fever/Ímã e Pele
   if(PX&&(PX.k==='fever'||PX.k==='ima')){g.fillStyle=PX.k==='fever'?'#ffe14d':'#fff';g.fillRect(x+9,y+27,3,3);g.fillRect(x+10,y+26,1,5);g.fillRect(x+8,y+28,5,1)}
   g.fillStyle=c.skin;
-  if(!charPose&&TWR&&TWR.bracosBase){TWR.bracosBase(g,x,y);}else if(!charPose){ g.fillRect(x+1,y+24,4,7);g.fillRect(x+25,y+24,4,7);E(x+3,y+31,2,2);E(x+27,y+31,2,2); }   // com pose, os braços vêm depois das roupas (V2.1.2)
+  if(!charPose){ g.fillRect(x+1,y+24,4,7);g.fillRect(x+25,y+24,4,7);E(x+3,y+31,2,2);E(x+27,y+31,2,2); }   // com pose, os braços vêm depois das roupas (V2.1.2)
   if(!charPose&&TWR){TWR.bracos(g,x,y);g.fillStyle=c.skin;}   // V3.1: luz contínua na pele
 
   // Mangas bufantes por cima dos braços
@@ -553,14 +552,13 @@ function drawChar(c,x,y,run,expr,isPartner){
   if(!(TWR&&TWR.luzPropria(twRoupa))) roupaSombra(x, y);   // V2.1.3: luz e sombra nas roupas (igual ao degradê do cabelo)
   if(sash&&state!=='menu'&&!isPartner&&!(PX&&PX.k==='alien')){g.strokeStyle='#ff4f9a';g.lineWidth=4;g.beginPath();g.moveTo(x+5,y+22);g.lineTo(x+24,y+34);g.stroke()}
   if(charPose){ g.fillStyle=c.skin; petPoseArms(c, x, y); } if(TWR)TWR.ombro(g,c,x,y,twRoupa,charPose);   // pose da Foto 2.0 por cima da roupa e da faixa
-  g.fillStyle=c.skin;if(TWR && TWR.pescoco) TWR.pescoco(g,x,y); else g.fillRect(x+12,y+18,6,6);g.save();g.translate(0,-4);
+  g.fillStyle=c.skin;g.fillRect(x+12,y+18,6,6);g.save();g.translate(0,-4);
   
   // As orelhas ficam por trás do cabelo; a base é mais baixa para não cobrir a franja.
   if(d==='coelho'){[[9.5,-.2],[20.5,.2]].forEach(function(p){g.save();g.translate(x+p[0],y+1);g.rotate(p[1]);g.fillStyle='#fff';g.beginPath();g.ellipse(0,-5,3.4,9,0,0,7);g.fill();g.fillStyle='rgba(255,150,190,.9)';g.beginPath();g.ellipse(0,-4,1.6,6.5,0,0,7);g.fill();g.restore();});}
   if(d==='gato'){g.fillStyle=H;T([x+3,y+9,x+6,y-4,x+13,y+4]);T([x+27,y+9,x+24,y-4,x+17,y+4]);g.fillStyle='rgba(255,150,190,.8)';T([x+6,y+6,x+7,y,x+10,y+4]);T([x+24,y+6,x+23,y,x+20,y+4])}
   if(d==='chifres'){g.fillStyle='#7a1f2b';T([x+4,y+8,x+1,y-6,x+10,y+3]);T([x+26,y+8,x+29,y-6,x+20,y+3])}
-  if(d==='coques' && TWR && TWR.coques) TWR.coques(g,x,y,H);
-  else if(d==='coques'){g.fillStyle=H;E(x+4,y+3,6,6);E(x+26,y+3,6,6);g.fillStyle='#2a5bd7';g.fillRect(x+1,y+6,7,3);g.fillRect(x+22,y+6,7,3)}
+  if(d==='coques'){g.fillStyle=H;E(x+4,y+3,6,6);E(x+26,y+3,6,6);g.fillStyle='#2a5bd7';g.fillRect(x+1,y+6,7,3);g.fillRect(x+22,y+6,7,3)}
   g.fillStyle=c.skin;E(x+15,y+17,11,11);
   if(TWR){TWR.rosto(g,x,y);g.fillStyle=c.skin;}
   if(d==='elfo'){if(typeof TWAvatarRosto!=='undefined')TWAvatarRosto.elfo(g,c,x,y);else{T([x+4,y+17,x-3,y+10,x+5,y+21]);T([x+26,y+17,x+33,y+10,x+25,y+21])}}
@@ -584,7 +582,7 @@ function drawChar(c,x,y,run,expr,isPartner){
   g.fillStyle=hg;
   if(TWAvatarHair.fringe(g,x,y,b,f,T)){}
   else if(f==='bagunca'){if(TWR)TWR.bagunca(g,x,y);else T([x+3,y+11,x+8,y+19,x+11,y+10,x+16,y+17,x+20,y+9,x+24,y+16,x+27,y+10,x+27,y+9,x+3,y+9]);}
-  else if(f==='reta'){if(TWR&&TWR.reta&&b!=='onduladom2')TWR.reta(g,x,y);else g.fillRect(x+3,y+8,24,6);}
+  else if(f==='reta')g.fillRect(x+3,y+8,24,6);
   else if(f==='lateral')T([x+3,y+12,x+7,y+8,x+27,y+8,x+27,y+19,x+17,y+11]);
   else if(f==='espetada')T([x+3,y+10,x+3,y+5,x+7,y-5,x+11,y+3,x+15,y-8,x+19,y+3,x+24,y-5,x+27,y+5,x+27,y+10]);
   else if(f==='arcoiris'&&typeof TWAvatarRosto!=='undefined')TWAvatarRosto.arcoiris(g,x,y);

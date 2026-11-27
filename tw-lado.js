@@ -70,21 +70,10 @@
       g.lineTo(px + 4.4, py); g.quadraticCurveTo(px + 7.6, py + .4, px + 7.8, py + 2.2); g.quadraticCurveTo(px + 7.8, py + 3.1, px + 6.8, py + 3.1); g.closePath(); g.fill();
       g.fillStyle = longe ? '#cfc6e4' : '#ece7f6'; g.fillRect(px + .6, py + 2.6, 7, .55);   // solado
       g.fillStyle = longe ? '#d77aa8' : '#ff6fb5'; g.beginPath(); g.ellipse(px + 3.9, py + 1.35, 2.4, .42, 0, 0, 7); g.fill(); }
-    // Coxa e canela articuladas entre quadril, joelho e tornozelo. A sola preserva a linha anterior.
-    var amplitude=c.n==='Tsu'?2.6:c.n==='Lirika'?2.4:c.n==='Pati'?2.5:2.6;
-    function pernaArticulada(hx,ax,ay,largura,cor,topo){
-      topo=topo||y+36;
-      g.save();g.beginPath();g.rect(x-8,topo,46,Math.max(0,y+45-topo));g.clip();
-      var jx=(hx+ax)*.5+(corre?(ax-hx)*.22:0),jy=(y+36+ay)*.5;
-      g.fillStyle=cor;g.beginPath();g.moveTo(hx-largura*.53,y+36);
-      g.quadraticCurveTo(jx-largura*.62,jy,ax-largura*.45,ay);
-      g.lineTo(ax+largura*.45,ay);
-      g.quadraticCurveTo(jx+largura*.52,jy,hx+largura*.53,y+36);
-      g.closePath();g.fill();g.restore();
-    }
-    var pl=corre?-passo*amplitude:0,levantou=corre?Math.max(0,-passo)*1.4:0;
-    pernaArticulada(x+17.7,x+17.7+pl,y+42.6-levantou,4.6,escuro(perna,16));
-    tenis(x+14.6+pl,y+41.4-levantou,true);
+    if(corre){   // perna de lá vai para trás quando a de cá vai para a frente
+      var pl = -passo * 2.6, sobe = Math.max(0, passo) * 1.4;
+      g.fillStyle = escuro(perna, 16); g.fillRect(x + 15.4 + pl, y + 38 - Math.max(0, -passo) * 1.4, 4.6, 4.6); tenis(x + 14.6 + pl, y + 41.4 - Math.max(0, -passo) * 1.4, true);
+    } else { g.fillStyle = escuro(perna, 16); g.fillRect(x + 15.4, y + 38 + pe, 4.6, 4.6 - pe); tenis(x + 14.6, y + 41.4, true); }
     // 22/11: cada roupa com a sua parte de baixo e as suas cores (antes todas viravam a mesma camiseta lisa e saia cinza)
     var RP = ALV ? 'espacial' : OFL ? 'of' + OFL : FXL ? 'cr_' + FXL : (c.out || ''), corR = /^#[0-9a-f]{6}$/i.test(c.outcol || '') ? c.outcol : '#ffffff', az = /^#?f{6}$/i.test(corR) ? '#3b5bdb' : corR;
     var AC1 = c.img || H, AC2 = escuro(AC1, 70), KF = FXL ? COR_FX[FXL] : null;   // macacão espacial: Tsu roxo, Lirika verde, Pati azul, Você = cor do cabelo
@@ -109,17 +98,8 @@
     else if(KF){   // Fever, Ímã e Mega: saia rodada clarinha com pregas e barra
       g.fillStyle = KF[1]; T([x + 7, y + 32, x + 23, y + 32, x + 25.8, y + 40, x + 4.4, y + 40]); g.fillStyle = 'rgba(255,255,255,.55)'; [10, 14, 18].forEach(function(px){ g.fillRect(x + px, y + 33.6, .7, 5.2); });
       g.fillStyle = FXL === 'ima' ? '#7b3ff0' : '#ffffff'; g.fillRect(x + 4.4, y + 38.8, 21.4, 1.2); }
-    else if((RP==='zipper'||RP==='sweet')&&c.baixo==='bermuda'){
-      g.fillStyle=corR;var bTop=RP==='zipper'?31:33,bEnd=RP==='zipper'?39:40.5;
-      g.beginPath();g.moveTo(x+7.4,y+bTop);g.lineTo(x+22.8,y+bTop);g.quadraticCurveTo(x+24,y+bEnd-2,x+22.8,y+bEnd);
-      g.lineTo(x+16,y+bEnd);g.lineTo(x+15,y+bEnd-2.5);g.lineTo(x+14,y+bEnd);g.lineTo(x+7,y+bEnd);
-      g.quadraticCurveTo(x+6,y+bEnd-2,x+7.4,y+bTop);g.closePath();g.fill();
-      g.fillStyle='#fff';if(RP==='sweet'){for(var cb=0;cb<5;cb++){g.beginPath();g.arc(x+8+cb*3.3,y+bEnd,1.65,0,Math.PI);g.fill();}}
-      else g.fillRect(x+7.3,y+bEnd-.8,15.4,.8);
-    }
     else if(RP === 'estrelado'){   // polainas listradas por cima da perna de cá e bermuda balonê com nuvenzinhas
-      g.fillStyle = az; var estSaia=c.baixo==='saia',estB=estSaia?40:38,estL=estSaia?3.4:6,estR=estSaia?26.6:24.6;
-      T([x+7.2,y+31,x+23,y+31,x+estR,y+estB,x+estL,y+estB]);g.fillStyle='#a5d8ff';g.fillRect(x+estL,y+estB-.8,estR-estL,1.1);
+      g.fillStyle = az; T([x + 7.2, y + 31, x + 23, y + 31, x + 24.6, y + 38, x + 6, y + 38]); g.fillStyle = '#a5d8ff'; g.fillRect(x + 6, y + 37.2, 18.6, 1.1);
       g.fillStyle = '#fff'; for(var nv = 0; nv < 4; nv++){ E(x + 8.4 + nv * 4.4, y + 35.3, 1.6, 1); E(x + 9.6 + nv * 4.4, y + 34.8, 1.2, .9); } }
     else if(RP === 'sweet'){   // saia rodada com babado de chantilly
       g.fillStyle = corR; T([x + 7, y + 33, x + 23.2, y + 33, x + 27, y + 42, x + 3.4, y + 42]);
@@ -131,17 +111,10 @@
     else {   // saia ou bermuda: o degradê e as pregas da frente, na cor da roupa (Seifuku marinho, Cheeky preto, City Pop bege)
       var bx = BX[RP] || BX[''], sg = g.createLinearGradient(0, y + 33, 0, y + 40); sg.addColorStop(0, bx[0]); sg.addColorStop(1, bx[1]); g.fillStyle = sg;
       var pr = RP === 'citypop' ? 'rgba(150,120,70,.28)' : 'rgba(255,255,255,.18)';
-      if(c.baixo === 'saia'){g.beginPath();g.moveTo(x+7.6,y+32);g.lineTo(x+22.6,y+32);
-        g.quadraticCurveTo(x+23,y+36,x+25,y+39.5);g.quadraticCurveTo(x+15,y+40.5,x+5.4,y+39.5);
-        g.quadraticCurveTo(x+7,y+36,x+7.6,y+32);g.closePath();g.fill();
-        g.fillStyle=pr;[10.4,14.2,18].forEach(function(px){g.beginPath();g.moveTo(x+px,y+34);g.quadraticCurveTo(x+px-.3,y+36,x+px+(px-15)*.14,y+39.4);g.lineTo(x+px+.8+(px-15)*.14,y+39.4);g.closePath();g.fill();}); }
-      else {g.beginPath();g.moveTo(x+7.6,y+32);g.lineTo(x+22.6,y+32);
-        g.quadraticCurveTo(x+24,y+36,x+23.4,y+39.5);g.lineTo(x+16,y+39.5);g.lineTo(x+15,y+36.4);
-        g.lineTo(x+14,y+39.5);g.lineTo(x+7.2,y+39.5);g.quadraticCurveTo(x+6.7,y+36,x+7.6,y+32);g.closePath();g.fill();
-        g.fillStyle=pr;g.fillRect(x+15,y+34.5,.8,2.3); } }
-    var pf=corre?passo*amplitude:0,pfy=corre?Math.max(0,passo)*1.4:0;
-    pernaArticulada(x+13,x+13+pf,y+42.6-pfy,4.8,perna,y+(c.baixo==='saia'?39.6:38.6)-pfy);
-    tenis(x+9.8+pf,y+41.8-pfy,false);
+      if(c.baixo === 'saia' || (!c.baixo && RP !== 'citypop')){ T([x + 7.6, y + 33, x + 22.6, y + 33, x + 25, y + 40, x + 5.4, y + 40]); g.fillStyle = pr; [10.4, 14.2, 18].forEach(function(px){ g.fillRect(x + px, y + 34, .8, 5.6); }); }
+      else { T([x + 7.6, y + 33, x + 22.6, y + 33, x + 23.4, y + 39, x + 7.2, y + 39]); g.fillStyle = pr; g.fillRect(x + 15, y + 34.5, .8, 4.2); } }
+    if(corre){ var pf = passo * 2.6, pfy = Math.max(0, passo) * 1.4; g.fillStyle = perna; g.fillRect(x + 10.6 + pf, y + (c.baixo === 'saia' ? 39.6 : 38.6) - pfy, 4.8, 4); tenis(x + 9.8 + pf, y + 41.8 - pfy, false); }
+    else { g.fillStyle = perna; g.fillRect(x + 10.6, y + (c.baixo === 'saia' ? 39.6 : 38.6) - pe, 4.8, 4 + pe); tenis(x + 9.8, y + 41.8, false); }
     if(RP === 'of2' || RP === 'of5') vestidoLongo();
     if(RP === 'estrelado' && !corre){ g.fillStyle = '#ff9ccd'; g.fillRect(x + 10.6, y + 38.4, 4.8, 3.6); g.fillStyle = '#ffe14d'; g.fillRect(x + 10.6, y + 39.4, 4.8, .8); g.fillStyle = '#4dd8ff'; g.fillRect(x + 10.6, y + 40.8, 4.8, .7); }
     // camisa: larga como a da frente, branca com sombra embaixo e nas costas; gola e gravata na beirada da frente
@@ -149,14 +122,8 @@
     // a mesma cor da frente: corDaRoupa = outcol ou branco (o Trainee também usa a cor escolhida); Zipper tem top branco
     var corCam = RP === 'zipper' ? '#ffffff' : RP === 'estrelado' ? az : CAM_U[RP] ? (UC && RP !== 'espacial' ? UC[0] : CAM_U[RP]) : KF ? KF[0] : corR;
     var cam = g.createLinearGradient(0, y + 21, 0, y + 34); cam.addColorStop(0, corCam); cam.addColorStop(1, corCam === '#ffffff' ? '#e3e7f3' : escuro(corCam, 34));
-    // A lateral usa a assinatura do mesmo tronco frontal; os ombros e a gola ficam na régua original.
-    var ass=typeof TWAvatarRoupa!=='undefined'&&TWAvatarRoupa.assinatura?TWAvatarRoupa.assinatura(c):null;
-    var cintura=ass?(ass.cintura-6.3)*.35:0, assim=ass?ass.assim:0;
     g.fillStyle = cam; g.beginPath(); g.moveTo(x + 9.4, y + 23); g.quadraticCurveTo(x + 9.4, y + 21, x + 11.6, y + 21); g.lineTo(x + 19.8, y + 21); g.quadraticCurveTo(x + 22.2, y + 21, x + 22.4, y + 24);
-    g.quadraticCurveTo(x+23.7,y+27,x+22.1-cintura,y+30);
-    g.quadraticCurveTo(x+22.3-cintura,y+32,x+23.2,y+33.6-assim);
-    g.quadraticCurveTo(x+15.4,y+34.5,x+7.6,y+33.6+assim);
-    g.quadraticCurveTo(x+9.3+cintura,y+30,x+9.4,y+23);g.closePath();g.fill();
+    g.lineTo(x + 23.2, y + 34); g.lineTo(x + 7.6, y + 34); g.closePath(); g.fill();
     g.fillStyle = 'rgba(120,130,170,.18)'; g.beginPath(); g.moveTo(x + 9.4, y + 23); g.lineTo(x + 11.6, y + 23); g.lineTo(x + 10.2, y + 34); g.lineTo(x + 7.6, y + 34); g.closePath(); g.fill();   // costas na sombra
     if(RP === ''){ g.fillStyle = '#1b2a5e'; T([x + 20.8, y + 24, x + 22.4, y + 24, x + 22.9, y + 30.4, x + 21.7, y + 31.8, x + 20.6, y + 30.4]);
     g.fillStyle = '#14204a'; T([x + 20.2, y + 21.6, x + 22.6, y + 21.6, x + 22.5, y + 24.2, x + 20.5, y + 24.2]); }
@@ -218,13 +185,7 @@
       if(RP === 'of3'){ g.fillStyle = '#e7b94e'; for(var fr = 0; fr < 4; fr++) g.fillRect(x + 12 + fr * 2, y + 22.4, .7, 1.8); } }
     var bg = g.createLinearGradient(0, y + 26, 0, y + 34); bg.addColorStop(0, S); bg.addColorStop(1, SD); g.fillStyle = bg;
     if(corre){ g.save(); g.translate(x + 15.2, y + 26); g.rotate(-passo * .55); g.translate(-(x + 15.2), -(y + 26)); }
-    // Cotovelo e punho no mesmo eixo da manga, com flexão durante a passada.
-    var dobra=corre?passo*.45:0;
-    g.beginPath();g.moveTo(x+13.4,y+26.4);g.lineTo(x+17,y+26.4);
-    g.quadraticCurveTo(x+17.7+dobra,y+29.3,x+16.8+dobra,y+30.2);
-    g.quadraticCurveTo(x+17.3+dobra,y+32.6,x+15.6+dobra,y+33.6);
-    g.quadraticCurveTo(x+13.5+dobra,y+34,x+13.5+dobra,y+31.7);
-    g.quadraticCurveTo(x+13.1+dobra,y+29.5,x+13.4,y+26.4);g.closePath();g.fill();
+    g.beginPath(); g.moveTo(x + 13.4, y + 26.4); g.lineTo(x + 17, y + 26.4); g.lineTo(x + 16.9, y + 32.6); g.quadraticCurveTo(x + 15.2, y + 34.4, x + 13.5, y + 32.6); g.closePath(); g.fill();
     if(corre) g.restore();
     // ---------- cabeça: crânio (o mesmo círculo da frente) + bochecha e queixo para a frente + narizinho ----------
     g.fillStyle = S; E(x + 14.6, y + 13, 11, 11); E(x + 18.6, y + 17.2, 7.4, 6.6);   // crânio da frente + bochecha cheia (perfil chibi, sem nariz)
@@ -239,7 +200,6 @@
       else { g.moveTo(x0 - .4, y + 16.6); g.quadraticCurveTo(x0 + 1.6, y + (e === 5 ? 18.2 : 13.6), x0 + 3.6, y + 16.6); }
       g.stroke(); if(e === 5){ g.fillStyle = 'rgba(120,190,255,.85)'; E(x0 + 2.6, y + 18.6, .8, 1.2); } }
     else if(e === 6){ g.fillStyle = '#ff4f9a'; g.beginPath(); g.moveTo(x0 + 1.5, y + 18); g.bezierCurveTo(x0 - 1.6, y + 15.6, x0 - .4, y + 12.6, x0 + 1.5, y + 14.4); g.bezierCurveTo(x0 + 3.4, y + 12.6, x0 + 4.6, y + 15.6, x0 + 1.5, y + 18); g.fill(); }
-    else if((e === 0 || e === 3 || e === 4) && typeof TWAvatarRosto !== 'undefined' && TWAvatarRosto.olhoLado && TWAvatarRosto.olhoLado(g, c, x0, y)){}   // 27/11: olhar vivo do trio também de lado
     else if(c.olho && typeof TWAvatarRosto !== 'undefined' && TWAvatarRosto.forma && TWAvatarRosto.forma(c)) TWAvatarRosto.olho(g, c, x0, y - 4, -1);   // 22/11: forma do olho do editor (a peça da frente, cílio para trás)
     else { g.fillStyle = TINTA; g.fillRect(x0, y + 13, 3, 1); g.fillStyle = c.eye || '#5a3b2e'; g.fillRect(x0, y + 14, 3, 4); g.fillStyle = PUPILA; g.fillRect(x0 + 1, y + 15, 2, 2);
       g.fillStyle = '#fff'; g.fillRect(x0, y + 14, 1, 2); g.fillRect(x0 + 2, y + 17, 1, 1); }
@@ -262,7 +222,6 @@
       if(bc === 'dentinho'){ g.fillStyle = '#fff'; T([mx + .4, my + .8, mx + 1.3, my + .9, mx + .9, my + 2]); } }
     else if(e === 2 || e === 3 || e === 1 || e === 6){ g.beginPath(); g.moveTo(x + 21, y + 19.6); g.arc(x + 22.2, y + 19.6, 1.8, 0, Math.PI * .85); g.closePath(); g.fill(); }
     else if(e === 4){ E(x + 22.6, y + 20.4, .9, 1.1); }
-    else if(e === 0 && typeof TWAvatarRosto !== 'undefined' && TWAvatarRosto.vivo && TWAvatarRosto.vivo(c)){ g.lineWidth = .7; g.lineCap = 'round'; g.beginPath(); g.moveTo(x + 21.2, y + 20.1); g.quadraticCurveTo(x + 22.4, y + 21.2, x + 23.6, y + 20); g.stroke(); }   // 27/11: o sorrisinho do trio
     else g.fillRect(x + 21.4, y + 20.2, 2.4, 1);
     if(c.det === 'coelho'){ g.save(); g.translate(x + 10.4, y - 2); g.rotate(-.3); g.fillStyle = '#ffffff'; E(0, -6, 3.3, 9, 0); g.fillStyle = 'rgba(255,150,190,.9)'; E(.4, -5.2, 1.5, 6.4, 0); g.restore(); }   // e a de cá
     // ---------- cabelo de cima: a mesma calota (centro 15,8 raio 12) recortada pela franja ----------

@@ -92,10 +92,11 @@ for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
 }
 
 
-// Remaster: contornos compartilhados, mantendo a grade original.
+// Identity Restoration (27/11/2026): a dona escolheu o desenho da main. Nas três cópias, pernas, camisa e braços
+// parados voltam aos retângulos originais e o módulo não sobrepõe mais esse desenho.
 for(const nome of ['centerrun.js','karaoke-time.html','sora-jump.html']){
- const src=ler(nome);assert(src.includes('TWAvatarRoupa.pernas(g,x,y,up,c)'));assert(src.includes('TWR.bracosBase(g,x,y)'));
+ const src=ler(nome);
+ assert(src.includes('g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));'));
+ assert(!/TWAvatarRoupa\.pernas|TWR\.bracosBase|TWR\.camisa/.test(src));
 }
-{const pts=[];const gg=Object.assign(fake(),{moveTo:(...a)=>pts.push(a),lineTo:(...a)=>pts.push(a),quadraticCurveTo:(...a)=>pts.push(a)});
- for(const up of [true,false]){pts.length=0;R.pernas(gg,0,0,up);assert(pts.length>=8);assert(pts.every(a=>a.every(Number.isFinite)));assert(pts.every(a=>a.filter((_,i)=>i%2).every(y=>y>=34&&y<=44)));}
- pts.length=0;R.bracosBase(gg,0,0);assert(pts.length>=8);assert(pts.every(a=>a.every(Number.isFinite)));}
+for(const k of ['pernas','bracosBase','camisa','pescoco','coques','pixie','reta'])assert.equal(R[k],undefined,k);

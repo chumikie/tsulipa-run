@@ -169,3 +169,25 @@ A dona considerou a rodada anterior abaixo do esperado e enviou a biblioteca de 
 - Versões: `tw-avatar-rosto.js?v=12`, `tw-avatar-roupa.js?v=27`, `tw-lado.js?v=13`, `centerrun.js?v=54`.
 
 Pendente: corpo (Chibi Anatomy: tronco arredondado, mãos pequenas, pernas mais curtas), olho vivo nas expressões surpresa/choro/apaixonado, figurinos, cenários e interface.
+
+### Identity Restoration — decisão da dona: desenho da main + arte em camadas (27/11, terceira rodada)
+
+**O que aconteceu nesta fase.** Três tentativas de melhorar o desenho por código (braços, olhar vivo com anel de brilho, contorno) e um estudo de "boneca chibi" foram mostrados à dona. O anel e o estudo foram rejeitados. Comparando o trio em dez fases do histórico (`linha-do-tempo-fases.png`), a dona concluiu que **a main está melhor** e que os estilos gerados por código, inclusive os desta fase, têm aparência de IA.
+
+**Diagnóstico.** O avatar é desenhado por formas geométricas calculadas. Para chegar ao nível de um criador de avatar como o Charat, as peças precisam ser **desenhadas à mão** e empilhadas em camadas. Código não substitui o traço do ilustrador.
+
+**Implementado nesta rodada**
+
+- **Desenho dos personagens = main.** `tw-avatar-rosto.js` e `tw-lado.js` voltaram ao da main (d2a3cb9). O `drawChar` das três cópias está **idêntico ao da main, linha a linha**. A conferência por imagem deu pixel a pixel igual para o trio de frente e de lado, figurinos, rostos, o "Você" e o tamanho do celular (`main-x-restaurado-identicos.png`). O olhar vivo, os braços e o anel desta fase saíram junto.
+- **Funcionamento preservado.** `tw-avatar-roupa.js` = arquivo da main + só o bloco das poses articuladas (`assinatura`, `articulacao`, `membro`, tabela própria `BRACOS_POSE`), que o Camarim (sentar), o Studio (flor, microfone, coração) e o Karaokê chamam. A manga continua com a tabela `BRACOS` da main.
+- **Motor de camadas** `tw-avatar-camadas.js`: empilha peças PNG/SVG de 768 × 1024 num molde comum e pinta as peças cinza com a cor escolhida (cabelo, pele, olhos, roupa, meias), sem mexer no save.
+  - Só liga com `?arte=<pacote>` na URL.
+  - Não lê nem grava localStorage, banco, saldo ou inventário.
+  - Se faltar qualquer peça, expressão, mecha bicolor, óculos ou pose de foto, aquele avatar inteiro usa o `drawChar` da main.
+  - Envolve o `drawChar` por fora, sem mudar o texto dele.
+- **Pacote de exemplo** `arte/avatar/prototipo/` (19 peças **provisórias**, formas simples): prova o encaixe, a pintura de cor e a troca de expressão. O "Você", sem a franja lateral, cai no desenho atual (`motor-camadas-prototipo.png`).
+- **Molde** `docs/arte/molde-avatar.svg` (+ `.png`) e **guia** `docs/arte/MOLDE-AVATAR.md`: folha, linhas de encaixe, regras de cinza para a cor, ordem das camadas, 7 expressões, lista completa das peças do editor e prioridade (trio no uniforme primeiro).
+- **Testes:** `tests/avatar-camadas.test.js` (7 verificações do motor). Os três testes que conferiam o desenho desfeito (`avatar-roupa`, `identity-soul`, `signature-world`) passam a conferir a volta à main. `meu-camarim-life-ml16` voltou à asserção que já tinha na main. Total local: 133/133.
+- Versões: `tw-avatar-roupa.js?v=28`, `tw-avatar-rosto.js?v=13`, `tw-lado.js?v=14`, `centerrun.js?v=56`, `tw-avatar-camadas.js?v=1`.
+
+**Pendente:** a arte de verdade (dona, ilustrador encomendado ou kit licenciado), seguindo o guia. Depois, segunda etapa do motor: folhas de pose (Studio e Camarim), vista de lado e mecha bicolor. Karaokê e Sora ainda não carregam o motor. iPhone físico continua pendente.

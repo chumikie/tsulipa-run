@@ -141,7 +141,7 @@ body.hubon #mute{visibility:hidden}
 
 /* Alvos de toque com pelo menos 28 px (WCAG 2.5.8 pede 24) — achados na revisão de 15/11 */
 #hubVolta,#contaSair,#seelb,#hojeLoc{min-height:28px;min-width:28px}
-#tulipa-link{display:inline-flex;align-items:center;justify-content:center;min-width:28px;min-height:28px}
+#tulipa-link{display:inline-flex;align-items:center;justify-content:center;min-width:40px;min-height:40px}   /* 28/11: era 28 px, pequeno para o toque */
 #hubPriv,.sitedir2 a{display:inline-flex;align-items:center;min-height:28px;padding-top:4px;padding-bottom:4px}
 .perfskins .sw{width:26px;height:26px}
 

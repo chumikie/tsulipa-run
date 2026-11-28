@@ -40,7 +40,7 @@ function shopHtml(){
     '<button type="button" class="perfx tw-window-control tw-window-close" id="shopX" aria-label="' + escHtml(tr('Fechar')) + '">✕</button>' +
     '<h2 class="tw-modal-title" id="shopTit" translate="no">🛍️ Zipper<span class="tw-modal-star">⭐</span>Shop!</h2><small class="tw-modal-jp" lang="ja">ジッパー・ショップ</small>' +
     '<p class="tw-modal-lede" id="shopLede"></p>' +
-    '<details class="shop-saudacao"><summary>'+escHtml(tr('Ver a loja'))+'</summary><canvas id="shopCv" width="640" height="380" aria-hidden="true"></canvas></details>' +
+    '<details class="shop-saudacao"><summary>'+escHtml(({pt:'Ver a loja',en:'See the shop',es:'Ver la tienda',id:'Lihat toko',th:'ดูร้าน',ja:'お店を見る'})[window.LANG]||'Ver a loja')+'</summary><canvas id="shopCv" width="640" height="380" aria-hidden="true"></canvas></details>' +
     '<p class="shopsaldo" id="shopSaldo"></p>' +
     '<div id="shopCorpo"></div></div>';
 }

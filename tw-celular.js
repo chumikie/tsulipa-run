@@ -399,6 +399,7 @@
     maisAniv1:{pt:'+1 aniversário hoje',en:'+1 more birthday today',es:'+1 cumpleaños más hoy',id:'+1 ulang tahun lagi hari ini',th:'+1 วันเกิดวันนี้',ja:'きょうの誕生日 +1'},
     maisAniv:{pt:'+{n} aniversários hoje',en:'+{n} more birthdays today',es:'+{n} cumpleaños más hoy',id:'+{n} ulang tahun lagi hari ini',th:'+{n} วันเกิดวันนี้',ja:'きょうの誕生日 +{n}'},
     verLista:{pt:'Ver lista',en:'See list',es:'Ver lista',id:'Lihat daftar',th:'ดูรายการ',ja:'リストを見る'},
+    feitos:{pt:'{f} de {t} feitos',en:'{f} of {t} done',es:'{f} de {t} hechos',id:'{f} dari {t} selesai',th:'เสร็จแล้ว {f}/{t}',ja:'{f}/{t} 完了'},   // 28/11: o "0/5" solto não dizia o que contava
     verTudo:{pt:'Ver tudo (+{n})',en:'See all (+{n})',es:'Ver todo (+{n})',id:'Lihat semua (+{n})',th:'ดูทั้งหมด (+{n})',ja:'ぜんぶ見る（+{n}）'},
     recolher:{pt:'Recolher',en:'Collapse',es:'Recoger',id:'Tutup',th:'ย่อ',ja:'とじる'},
     tudo:{pt:'Tudo feito por hoje! ✨',en:'All done for today! ✨',es:'¡Todo listo por hoy! ✨',id:'Semua beres hari ini! ✨',th:'วันนี้ทำครบแล้ว! ✨',ja:'きょうはぜんぶできた！✨'},
@@ -543,7 +544,7 @@
       else { topo = ''; lista = escolha.join('') + '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('verTudo', {n:sobra})) + '</button>'; }
     }
     return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
-      '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
+      '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + esc(thj('feitos', {f:feitos, t:tot})) + '</small></span></div>' +
       (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
       topo + lista + '</section>';
   }

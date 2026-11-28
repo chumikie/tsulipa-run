@@ -111,6 +111,7 @@ A revisão de jogabilidade traz treino de cabo e caixa de som no Center⭐Run!, 
 - Roupa como prêmio do nível 3 do bairro.
 
 **Código**
+- PR #135, Clean UI (28/11): pendentes a carga no iPhone 3× (Pet e Gacha), o Perfil com muitos cartões e a unificação de títulos (janelas centralizadas × abas à esquerda). Auditoria: `tools/auditoria-interface.cjs`.
 - PR #135, Identity Restoration: desenho dos personagens voltou ao da main. Próximo passo é a **arte desenhada à mão** seguindo `docs/arte/MOLDE-AVATAR.md` (prévia com `?arte=<pacote>`); depois, folhas de pose, vista de lado e mecha bicolor no motor `tw-avatar-camadas.js`. iPhone físico pendente.
 - Conferir com a conta real a pasta "Mais", o Gacha em Jogos e o Esta semana no Calendário (#130).
 - `tests/atalhos-calendario.browser.cjs` falha também na main (espera os atalhos fixados `cafe` e `cal`, que a #130 tirou do Início). Fora do CI; atualizar ou aposentar o teste.

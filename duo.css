@@ -88,3 +88,6 @@
 #duoTabC .duocard.trava{opacity:1}
 #duoTabC .duocard.trava>i,#duoTabC .duocard.trava>span:not(.duopreco){opacity:.55}
 #duoTabC .duocard .duopreco{position:static;order:3;margin-top:2px}
+
+/* Clean UI 28/11/2026: sugestões de dupla com 31 px de altura; agora no mínimo 40 px para o toque no iPhone. */
+.duochip{min-height:40px}

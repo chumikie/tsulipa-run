@@ -9,7 +9,7 @@ const sql=fs.readFileSync(path.join(root,'supabase/sql/karaoke_tickets_REVIEW_ON
 const karaoke=fs.readFileSync(path.join(root,'karaoke-time.html'),'utf8');
 const online=fs.readFileSync(path.join(root,'karaoke-online.js'),'utf8');
 const index=require('./site-source.js')();
-assert(index.includes('src="./karaoke-tickets.js?v=2"'),'módulo integrado na página principal');
+assert(index.includes('src="./karaoke-tickets.js?v=3"'),'módulo integrado na página principal');
 assert(index.includes('ktTicketInventory')&&index.includes('ktTicketAdminSlot'),'inventário e moderação integrados');
 assert(index.includes("r.tipo === 'ticket'")&&index.includes('window.ktTickets.acceptBalance(r)'),'Gacha mostra ticket e atualiza saldo');
 assert(karaoke.includes('Deseja gastar 1 ticket de Karaoke?'),'confirmação explícita antes de cobrar');

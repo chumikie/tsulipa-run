@@ -191,3 +191,41 @@ Pendente: corpo (Chibi Anatomy: tronco arredondado, mãos pequenas, pernas mais 
 - Versões: `tw-avatar-roupa.js?v=28`, `tw-avatar-rosto.js?v=13`, `tw-lado.js?v=14`, `centerrun.js?v=56`, `tw-avatar-camadas.js?v=1`.
 
 **Pendente:** a arte de verdade (dona, ilustrador encomendado ou kit licenciado), seguindo o guia. Depois, segunda etapa do motor: folhas de pose (Studio e Camarim), vista de lado e mecha bicolor. Karaokê e Sora ainda não carregam o motor. iPhone físico continua pendente.
+
+## Clean UI — auditoria e acabamento da interface (28/11/2026)
+
+A dona deixou o visual dos personagens para depois e pediu as quatro frentes de interface: Clean UI, experiência, qualidade e atividades.
+
+**Auditoria** (`tools/auditoria-interface.cjs`): 23 telas (Início, Jogos, TsuLiPa, Ajustes, Calendário, News, Novidades, Álbum, Mapa, Perfil, Loja, Pet e as atividades) em iPhone 390 px (3×), iPhone 320 px e computador 1440 px, claro e escuro, mais os cinco outros idiomas. Mede rolagem lateral, toques menores que 32 px, erros de JavaScript, títulos repetidos, cartões, tempo de carga e textos iguais ao português.
+
+**Resultado antes:** nenhuma rolagem lateral e nenhum erro de JavaScript em nenhum tamanho ou tema. Achados reais:
+- barra de baixo 10% transparente, com o conteúdo embaralhado atrás de Voltar e Início;
+- títulos de seção em cartão-bandeira de 86% com sombra e estrelinhas, mais uma caixa competindo com o conteúdo;
+- estrelinhas "✦ ♡ ✧" piscando sem parar nos cantos da Loja, News, Álbum, Pedido de fã e Handshake;
+- no Studio, "Enquadramento" quebrava no meio da palavra;
+- toques pequenos: som (13 px) e volume (16 px) nos Ajustes, 🌷 (28 px) e privacidade (16 px) no Center⭐Run!, sugestões do Moon⭐Duo! (31 px);
+- o "Hoje" mostrava "0/5" sem dizer o quê;
+- traduções: o item de inventário do Perfil sem indonésio e "Ver a loja" sem tradução.
+
+**Implementado**
+- `tw-celular.css`: barra de baixo opaca; título de seção direto no fundo (claro e escuro); som e volume com área de toque de 44 e 36 px.
+- `atualizacao2.css`: saíram as estrelinhas piscando (fica o coraçãozinho dos títulos internos).
+- `hub-polish.css`: categorias do Studio em 3 colunas a 390 px e 2 a 320 px, quebrando só entre palavras.
+- `hub.css`, `centerrun.css`, `duo.css`: 🌷 com 40 px, link de privacidade com área maior, sugestões com 40 px.
+- `tw-celular.js`: "0 de 5 feitos" no Hoje, nos seis idiomas.
+- `karaoke-tickets.js`: dicionário indonésio completo (23 textos); `shop.js`: "Ver a loja" nos seis idiomas.
+- Versões: `tw-celular.css?v=66`, `tw-celular.js?v=81`, `hub-polish.css?v=65`, `atualizacao2.css?v=9`, `hub.css?v=13`, `centerrun.css?v=21`, `duo.css?v=9`, `shop.js?v=18`, `karaoke-tickets.js?v=3`.
+
+**Avaliado e mantido:**
+- O caminho até as atividades já é de dois toques (porta Jogos → jogo).
+- Os jogos com cadeado abrem "Entre para jogar" ao toque.
+- "Team" no Perfil é a faixa de ranking (450–999), não um erro.
+- As frases da ficha do trio são citações do blog oficial e ficam no original.
+- Missões não têm porta própria no Menu nesse estado e ficam dentro do Hoje.
+
+**Depois:** sem rolagem, sem erros e sem toques pequenos no iPhone; resta o "Ver ranking" de 28 px só no computador. Pranchas em `docs/qa/clean-ui-20261128/`.
+
+**Pendente:**
+- Carga no iPhone 3× com mais tarefas longas no Pet e no Gacha (medição local; investigar sem mexer em mecânica).
+- Perfil ainda com muitos cartões coloridos.
+- Janelas com título centralizado e abas com título à esquerda: duas linguagens que convém unificar numa próxima rodada.

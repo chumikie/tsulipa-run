@@ -33,7 +33,7 @@ test('ML1.5: sentar de verdade — quadril sobre o assento, coxas, joelhos e per
   assert.match(pet, /var limite = \(PET_FLOOR \+ 2\) \* \(1-pose\.sit\) \+ Math\.min\(PET_LIFE_ASSENTO,quadril\.y\+barra\)\*pose\.sit;/);
   const sofa = pet.slice(pet.indexOf('function petLifeSofa('), pet.indexOf('function petLifeSofaBracos('));
   assert.match(sofa, /x\.fillStyle=petLifeCorColo;/, 'coxas na cor da roupa lida do próprio avatar');
-  assert.match(sofa, /x\.fillRect\(px-6,q\.y\+6,12,15\+bal\)/, 'canela igual à perna do avatar: retângulo 12 px (5u), sem pé redondo');
+  assert.match(sofa, /x\.fillRect\(px-6,topo,12,altura\)/, 'canela igual à perna do avatar: retângulo 12 px (5u), sem pé redondo');
   assert.doesNotMatch(sofa, /roundRect\(px/, 'pernas e coxas retas como no drawChar');
   assert.doesNotMatch(sofa, /roundRect\(84,190,17,5,2\)/, 'sem os sapatos soltos antigos');
   assert.match(pet, /if\(!petLifePose && !pose\) petLifeSofa\(x, true\);/, 'em pé: Idol na frente do sofá');

@@ -13,6 +13,10 @@
 .petlife-poses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:-3px 0 9px}
 .petlife-poses button{min-width:0;min-height:44px;padding:7px 4px;border:1px solid rgba(155,48,217,.28);border-radius:12px;background:#f8ebfa;color:#682d90;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
 .petlife-poses button[aria-pressed="true"]{background:#e9c8ef;border-color:#9b30d9;box-shadow:inset 0 0 0 1px #9b30d9}
+.petlife-poses button[aria-pressed="true"] span{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px}
+.petlife-poses button:active:enabled{box-shadow:inset 0 2px 4px rgba(82,37,94,.28)}
+:root[data-theme="dark"] .petlife-poses button{background:#3e304d;color:#f8eafa;border-color:#816791}
+:root[data-theme="dark"] .petlife-poses button[aria-pressed="true"]{background:#614072;border-color:#e5afe8;box-shadow:inset 0 0 0 1px #e5afe8}
 .petlife-poses button:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
 .petlife-poses button:disabled{opacity:.55;cursor:default}
 .petlife-voltar{min-height:44px;padding:8px 13px;border:1px solid rgba(155,48,217,.35);border-radius:999px;background:#f7e9ff;color:#6324ad;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
@@ -44,6 +48,7 @@
 .petren{border:0;background:none;cursor:pointer;font-size:15px;padding:0 4px;vertical-align:middle}
 .petrenbox{display:inline-flex;gap:4px;align-items:center;margin-left:4px}.petrenbox[hidden]{display:none}.petrenbox .nick{width:120px;padding:4px 8px;font-size:14px}.petrenbox .btn{padding:4px 10px}
 #petov{z-index:23!important}
+body.tw-cel:has(#petov:not([hidden])) .twc-moldura-topo{visibility:hidden}
 .petph{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .petph[hidden]{display:none}
 .petph div{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
@@ -263,3 +268,20 @@
 .petrank{flex-wrap:wrap}
 .petrank .petsemana{flex-basis:100%;white-space:normal;font-size:10.5px;color:var(--sub)}
 .petrank .petsemana em{font-style:normal;font-weight:800;color:var(--b1)}
+
+/* Memórias Eternas: passe-partout e foto inteira, sem refazer os PNGs históricos. */
+.petphone-momentos-grid{gap:10px}
+.petphone-momento{border-width:1px;padding:6px;box-shadow:none}
+.petphone-momento-print{display:grid;place-items:center;aspect-ratio:4/5;padding:5px 5px 11px;border-bottom:4px solid var(--momento-cor)}
+.petphone-momento img{height:100%;max-height:100%;object-fit:contain;min-height:0}
+.petphone-momento b{font-size:11px;line-height:1.4}
+.petphone-momento-polaroid{padding:8px 8px 14px;border-width:1px;border-bottom:5px solid var(--momento-cor)}
+.petphone-momento-revisao .petphone-momento-polaroid img{max-height:min(46dvh,320px);object-fit:contain}
+.petphone-momento-revisao :is(a,button):focus-visible{outline:3px solid var(--petphone-oshi);outline-offset:2px}
+@media(max-width:340px){.petphone-momentos-grid{gap:6px}.petphone-momento{padding:4px}}
+
+/* Álbum e celular: fotografias em primeiro plano; foco e toque permanecem acessíveis. */
+.petphone-momento{gap:6px}
+.petphone-momento a{box-shadow:none;border-width:1px}
+.petphone-momento-polaroid{border-radius:6px;box-shadow:0 2px 4px rgba(55,33,82,.14)}
+.petphone-momento-polaroid figcaption{line-height:1.45}

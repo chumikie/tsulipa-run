@@ -238,11 +238,13 @@ function cfEscolher(tipo, i){
   if(cf.fase !== 'pedido') return;
   if(tipo === 'lixo'){ cf.monta = { base:-1, cob:-1, enf:-1, doce:-1 }; cfUI(); return; }
   if(tipo !== 'doce' && tipo !== 'base' && cf.monta.base < 0) return;   // primeiro a base no copo
-  cf.monta[tipo] = cf.monta[tipo] === i && tipo === 'doce' ? -1 : i;
+  cf.monta[tipo] = cf.monta[tipo] === i && (tipo === 'doce' || tipo === 'cob') ? -1 : i;
   if(tipo === 'doce') cf.doceT = cfT;
   cf.aviso = '';
   cfSom('toque','card');
   cfUI();
+  var botao=$('cfCorpo').querySelector('[data-cf="'+tipo+':'+i+'"]');
+  if(botao&&typeof botao.focus==='function')botao.focus({preventScroll:true});
 }
 // O reencontro não altera perguntas, recompensas nem a memória do Handshake.
 function cfCidadeReencontro(f,conta,comprovante){
@@ -411,8 +413,8 @@ function cfBarraPedido(sufixo,fracao,nome){
     escHtml(tr('Paciência do cliente') + (nome ? ' · ' + nome : '')) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pc +
     '"><b id="cfPacEmo'+sufixo+'" aria-hidden="true">😊</b><i id="cfPac'+sufixo+'" style="width:'+pc+'%"></i></div>';
 }
-function cfRetornoPedido(indice,nome){
-  return '<div class="cf-retorno">' + cfConfirmacaoHtml(indice,nome) + cfMissaoHtml() + '</div>';
+function cfRetornoPedido(indice,nome,detalhe){
+  return '<div class="cf-retorno">' + (detalhe||'') + cfConfirmacaoHtml(indice,nome) + cfMissaoHtml() + '</div>';
 }
 function cfConfirmacaoHtml(indice,nome){
   var mensagem = (CF_CONFIRMACAO[LANG] || CF_CONFIRMACAO.pt)[indice];
@@ -563,7 +565,10 @@ function cfCopo(x, cx, by, m, k){   // k = tamanho de 1 unidade (o mesmo do Idol
   if(m.base >= 0){ var cor = CF_BASES[m.base][2]; x.fillStyle = cor; T([-6.2, -17, 6.2, -17, 5, -1, -5, -1]); x.fillStyle = cfEscurece(cor, -40); T([2.5, -17, 6.2, -17, 5, -1, 1.8, -1]); }
   x.fillStyle = 'rgba(255,255,255,.7)'; R(-5.5, -19, 1.2, 16);   // brilho do vidro
   x.fillStyle = '#ff9ccf'; T([-6.6, -12, 6.6, -12, 6.3, -8.5, -6.3, -8.5]); x.fillStyle = '#fff'; R(-2.5, -11, 5, 1.4);   // faixa TsuLiPa
-  x.fillStyle = '#ffffff'; R(-7.6, -22, 15.2, 1.6);   // borda
+  // A borda elíptica dá profundidade ao copo sem mudar os ingredientes.
+  x.fillStyle = '#d7c6e3'; E(0,-21.5,7.6,1.65);
+  x.fillStyle = m.base>=0 ? CF_BASES[m.base][2] : '#edf4fa'; E(0,-21.65,6.3,.85);
+  x.fillStyle = 'rgba(255,255,255,.65)'; E(-3.4,-22.1,2,.35);
   var topo = -22;
   if(m.cob === 0 || m.cob === 2){ x.fillStyle = '#f1e6da'; E(0, -22, 7.5, 2.6); x.fillStyle = '#fffaf2'; E(0, -23.5, 7, 2.6); E(0, -26, 5, 2.4); E(0, -28.3, 3, 2); x.fillStyle = '#fffaf2'; T([-1, -29.5, 1, -29.5, 0, -32]); topo = -30;
     if(m.cob === 2){ [['#ff6fb5', -4, -24], ['#7b3ff0', 2, -25], ['#ffd23f', -1, -27], ['#3fc1ff', 4, -23], ['#5fd18b', -3, -26.5], ['#ff6fb5', 1, -29], ['#ffd23f', 5, -24.5], ['#3fc1ff', -5, -23]].forEach(function(p){ x.fillStyle = p[0]; R(p[1], p[2], 1.2, .6); }); } }
@@ -634,6 +639,15 @@ function cfDesenhar(){
   x.strokeStyle = '#d9b3ff'; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 18); x.quadraticCurveTo(W2 / 2, 44, W2, 18); x.stroke();
   for(var l = 0; l < 14; l++){ var lx = l * W2 / 13, ly = 18 + Math.sin(l / 13 * Math.PI) * 13; x.fillStyle = ['#ff6fb5', '#ffd23f', '#7b3ff0', '#3fc1ff'][l % 4]; x.globalAlpha = .6 + .4 * Math.sin(t / 12 + l); x.beginPath(); x.arc(lx, ly + 6, 5, 0, 7); x.fill(); }
   x.globalAlpha = 1;
+  // Janela de atendimento recuada no vão lateral, com soleira voltada ao balcão.
+  x.save(); x.translate(W2*.075,H2*.16); x.scale(W2*.42,H2*.38);
+  x.fillStyle='#c5a0ad'; x.fillRect(0,0,1,1);
+  x.fillStyle='#9c859b'; x.fillRect(.035,.045,.925,.9);
+  x.fillStyle='#b9d5df'; x.fillRect(.09,.095,.86,.795);
+  x.fillStyle='#dec1ca'; x.beginPath(); x.moveTo(.035,.945); x.lineTo(.09,.89);
+  x.lineTo(.95,.89); x.lineTo(.96,.945); x.closePath(); x.fill();
+  x.fillStyle='#fff1df'; x.fillRect(.51,.095,.018,.80); x.fillRect(.09,.38,.86,.027);
+  x.fillStyle='#c59384'; x.fillRect(-.025,.96,1.05,.075); x.restore();
   // Quadro com moldura de madeira, borda interna e brilho discreto (mantém o mesmo menu).
   x.save(); var mx = W2 * .6, my = 40, mw = W2 * .36, mh = 96;
   x.shadowColor = 'rgba(53,20,76,.28)'; x.shadowBlur = 10; x.shadowOffsetY = 5;
@@ -649,14 +663,23 @@ function cfDesenhar(){
   x.fillStyle = '#fff'; x.font = '900 16px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.fillText('☕ Happy⭐Cafe!', W2 * .78, 62);
   x.font = '800 12px "M PLUS Rounded 1c",sans-serif'; x.fillStyle = '#ffe2f1'; x.fillText('Shakes · Frappés · Lattes', W2 * .78, 82); x.fillStyle = '#c8e3fb'; x.fillText('Cookies · Brownies · Waffles', W2 * .78, 100);
   x.fillStyle = '#ffe47c'; x.fillText('ハッピー・カフェ', W2 * .78, 120); x.restore();
+  // Lambris baixos com painel de madeira: plano físico atrás dos clientes.
+  x.save();x.fillStyle='#edd0dc';x.fillRect(0,H2*.57,W2,H2*.17);
+  x.fillStyle='#d5a5bc';x.fillRect(0,H2*.57,W2,3);
+  x.strokeStyle='#dbb4c6';x.lineWidth=1.5;
+  for(var painel=0;painel<6;painel++){x.strokeRect(painel*W2/6+5,H2*.59,W2/6-10,H2*.13);}
+  x.restore();
   // cliente no balcão
   var c = cf && !cf.duplo && cf.cli;
   if(cf && cf.duplo && typeof cfDuploClientes === 'function') cfDuploClientes(x, W2, H2, t);   // modo Dois no balcão (cafe-duplo.js)
   if(c){
-    var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.min(1, dt / 14) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
+    var dt = t - cf.t0, entra = cf.fase === 'pedido' ? Math.max(0,Math.min(1, dt / 14)) : 1, sai = cf.fase === 'reacao' && dt > 50 ? (dt - 50) / 40 : 0;
+    var reduzCliente=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var passoCliente=reduzCliente?0:Math.sin(entra*Math.PI*3)*Math.sin(entra*Math.PI)*2.4;
+    entra=reduzCliente?1:1-Math.pow(1-entra,3);
     var visita = cf.visitaAlvo === c && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono ? cf.visitaComunidade : null;
     var gesto = visita ? null : cfClienteReencontro(c, dt, cf.fase) || cfClienteImpaciente(c, dt, cfPaciencia(), cf.fase) || cfClienteGesto(c, dt, cf.fase);
-    try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5 + (gesto ? gesto.dx : 0), H2 * .26 + (gesto ? gesto.dy : 0)); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:visita ? visita.avatar : c.c, pose:visita ? 'tchau' : cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : gesto ? gesto.pose : c.pose, expr:visita ? 3 : cf.fase === 'reacao' && !cf.ok ? 0 : gesto && gesto.expr != null ? gesto.expr : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
+    try{ x.save(); x.translate(-W2 * .2 + entra * W2 * .24 - sai * W2 * .5 + (gesto&&!reduzCliente ? gesto.dx : 0), H2 * .26 + passoCliente + (gesto&&!reduzCliente ? gesto.dy : 0)); perfDesenharIdol(x, W2 * .36, H2 * .74, { c:visita ? visita.avatar : c.c, pose:visita ? 'tchau' : cf.fase === 'reacao' ? (cf.ok ? 'coracao' : '') : gesto ? gesto.pose : c.pose, expr:visita ? 3 : cf.fase === 'reacao' && !cf.ok ? 0 : gesto && gesto.expr != null ? gesto.expr : c.expr, fundo:'' }, false, false, t); x.restore(); }catch(e){}
     if(gesto){ x.save(); x.globalAlpha = gesto.alfa * .86;
       x.font = '23px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#cf5b9d';
       if(gesto.reencontro){
@@ -672,6 +695,13 @@ function cfDesenhar(){
   }
   // balcão de madeira
   hsBalcaoArte(x, 0, H2 * .74, W2, H2 * .26);
+  // Frente do balcão em painéis de marcenaria; os objetos continuam no tampo.
+  x.save();x.fillStyle='#a96c49';x.fillRect(0,H2*.976,W2,H2*.024);
+  x.strokeStyle='rgba(104,58,40,.25)';x.lineWidth=Math.max(1,W2/480);
+  for(var painel=0;painel<4;painel++){
+    var ax=W2*(painel+.5)/4,aw=W2*.21;
+    x.strokeRect(ax-aw/2,H2*.843,aw,H2*.112);
+  }x.restore();
   cfDecor(x, W2, H2, H2 * .74 / 82 * 1.25, t);
   if(typeof eventoPetDesenhar === 'function'){ var rb = cf ? cfT - cf.rouboT : 999, kk = H2 * .74 / 82 * 1.25;
     eventoPetDesenhar(x, W2, H2 * .74 - 8, t, 1.7, rb < 80 ? W2 * .6 + 14 * kk + (rb > 40 ? (rb - 40) * 6 : 0) : W2 * (.74 + .06 * Math.sin(t / 120)), 'cafe');
@@ -697,9 +727,9 @@ function cfDesenhar(){
     cf.hearts = cf.hearts.filter(function(h){ h.t++; h.y -= h.v; x.globalAlpha = Math.max(0, 1 - h.t / 70); x.fillText(h.e, W2 * h.x + Math.sin(h.t / 6) * 8, H2 * h.y); return h.t < 70; }); x.restore(); }
 }
 function cfBotoes(tipo, lista, tit, montado){
-  var m = montado || cf.monta, trava = tipo !== 'base' && tipo !== 'doce' && m.base < 0;
+  var m = montado || cf.monta, trava = (!montado && cf.fase === 'reacao') || (tipo !== 'base' && tipo !== 'doce' && m.base < 0);
   return '<div class="cfgrupo"><b>' + escHtml(tr(tit)) + '</b><div class="cfops">' + lista.map(function(o, i){
-    return '<button type="button" class="cfop' + (m[tipo] === i ? ' on' : '') + '" data-cf="' + tipo + ':' + i + '"' + (trava ? ' disabled' : '') + '><span>' + o[0] + '</span><small>' + escHtml(tr(o[1])) + '</small></button>';
+    return '<button type="button" class="cfop' + (m[tipo] === i ? ' on' : '') + '" data-cf="' + tipo + ':' + i + '" aria-pressed="' + (m[tipo] === i) + '"' + (trava ? ' disabled' : '') + '><span>' + o[0] + '</span><small>' + escHtml(tr(o[1])) + '</small></button>';
   }).join('') + '</div></div>';
 }
 var CF_FALA_REENCONTRO = {
@@ -710,6 +740,19 @@ var CF_FALA_REENCONTRO = {
   th:'คุณจำของขวัญของฉันได้! วันนี้ฉันมาลองสูตรของคุณ',
   ja:'プレゼントを覚えてくれてたね！今日はあなたのレシピを味わいに来たよ。'
 };
+// As três regiões do turno ficam no fluxo, sem sobreposição. Preserva a rolagem dos ingredientes durante atualizações.
+function cfRenderCorpo(c,h){
+  var anterior=c.querySelector&&c.querySelector('.cf-turno'), lista=anterior&&anterior.querySelector('.cf-montagem'), y=lista?lista.scrollTop:0;
+  var topo=anterior&&anterior.getBoundingClientRect?anterior.getBoundingClientRect().top:null;
+  var overlay=typeof cfOv!=='undefined'&&cfOv, painel=overlay&&overlay.querySelector&&overlay.querySelector('.cfp');
+  var rolo=overlay&&typeof getComputedStyle==='function'&&getComputedStyle(overlay).overflowY==='auto'?overlay:painel;
+  c.innerHTML=h;
+  var turno=c.querySelector&&c.querySelector('.cf-turno');if(!turno)return;
+  var nova=turno.querySelector('.cf-montagem');if(nova)nova.scrollTop=y;
+  if(typeof matchMedia!=='function'||!matchMedia('(max-width:680px) and (min-height:480px)').matches)return;
+  if(topo!==null&&rolo&&turno.getBoundingClientRect){rolo.scrollTop+=turno.getBoundingClientRect().top-topo;}
+  else if(turno.scrollIntoView)turno.scrollIntoView({block:'end',inline:'nearest',behavior:'instant'});
+}
 function cfUI(){
   var c = $('cfCorpo'); if(!c || !cf) return;
   if(cf.fase === 'fim' && cf.pratica){ c.innerHTML = cfPraticaHtml(); return; }
@@ -725,9 +768,9 @@ function cfUI(){
     (typeof twLinkBotao === 'function' ? twLinkBotao('cafe') : '') + '</div>';
   else if(cf.fase === 'pedido' || cf.fase === 'reacao'){
     // Pedido também em letra grande (no desenho o balão fica pequeno no celular).
-    h += '<section class="cf-comanda"><p class="cfpedidotxt"><b>' + escHtml(tr('Pedido')) + ':</b> ' +
+    h += '<div class="cf-turno"><section class="cf-comanda"><p class="cfpedidotxt"><b>' + escHtml(tr('Pedido')) + ':</b> ' +
       escHtml(cfPedidoIlustrativo(cf.cli.pedido).replace(/^☕ /, '')) + '</p>' +
-      cfBarraPedido('',cf.fase === 'pedido' ? 1-(cfT-cf.t0)/cfPaciencia() : 0) + '</section>';
+      cfBarraPedido('',cf.fase === 'pedido' ? 1-(cfT-cf.t0)/cfPaciencia() : 0) + '</section><div class="cf-montagem">';
     if(cf.visitaAlvo === cf.cli && cf.visitaComunidade && hsVisitaDono() === cf.visitaComunidade.dono) h += '<p class="hsdica">✨ Visita⭐Surpresa! · <b>' + escHtml(cf.visitaComunidade.nick) + '</b></p>';
     if(cf.cli && cf.cli.hsLembranca && cf.fase === 'pedido') h += cfSaudacaoFa(cf.cli.hsLembranca);
     if(cf.fase === 'reacao'){
@@ -748,8 +791,8 @@ function cfUI(){
         '📒 ' + escHtml(tr('Usar assinatura: base + enfeite')) + '</button></div>';
     }
     h += cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)') +
-      '<div class="cf-rodape"><div class="btns cfacoes"><button type="button" class="btn sec" data-cf="lixo:0">🗑️ ' + escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" id="cfServir"' + (cf.monta.base < 0 || cf.monta.enf < 0 || cf.fase !== 'pedido' ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>' +
-      cfRetornoPedido(cf.fase === 'reacao' ? cf.confirmacaoPedido : null) + '</div>';
+      '</div><div class="cf-rodape"><div class="btns cfacoes"><button type="button" class="btn sec" data-cf="lixo:0"' + (cf.fase !== 'pedido' ? ' disabled' : '') + '>🗑️ ' + escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" id="cfServir"' + (cf.monta.base < 0 || cf.monta.enf < 0 || cf.fase !== 'pedido' ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>' +
+      cfRetornoPedido(cf.fase === 'reacao' ? cf.confirmacaoPedido : null) + '</div></div>';
   }
   else if(cf.fase === 'fim'){
     h += '<p class="hsfim">' + (cf.novoRec ? '🏆 ' + escHtml(tr('Novo recorde!')) + ' ' : '') + escHtml(tr('O café fechou!')) + ' <b>' + cf.pontos.toLocaleString('pt-BR') + '</b> ' + escHtml(tr('pts')) + '</p>' +
@@ -766,7 +809,7 @@ function cfUI(){
     if(cf.erroPratica) h += '<div class="btns"><button type="button" class="btn alt" data-cf-pratica="abrir">' + escHtml(cfPraticaTexto(0)) + '</button></div>';
     h += cfCaderno(rec) + '<div class="btns"><button type="button" class="btn" id="cfJogar">🔁 ' + escHtml(tr('Jogar de novo')) + '</button></div>';
   }
-  c.innerHTML = h;
+  cfRenderCorpo(c,h);
 }
 function cfCaderno(rec){
   rec = rec || {};

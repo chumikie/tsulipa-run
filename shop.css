@@ -41,3 +41,8 @@ body.tw-cel .shopp .shopprov{top:calc(76px + env(safe-area-inset-top))}
 .cmfavs .cmfav-importar,.cmfavs .cmfav-status{grid-column:1/-1}
 .cmfavs .cmfav input{box-sizing:border-box;width:100%;min-width:0;min-height:32px}
 .cmfavs .cmfavvestir[aria-pressed="true"]{outline:2px solid currentColor}
+
+/* A saudação e a prévia seguem a mesma moldura, sem alterar a proporção do palco. */
+.shop-saudacao summary{min-height:36px;line-height:1.35;overflow-wrap:anywhere;display:list-item;padding:7px 6px;box-sizing:border-box}
+.shop-saudacao summary:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:10px}
+#shopCv{box-sizing:border-box;border:1px solid var(--tw-modal-edge,#d9c7f1)}

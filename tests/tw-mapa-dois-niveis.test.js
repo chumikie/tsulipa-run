@@ -52,7 +52,7 @@ const sec=node('section'),menu=node('menu'),cards=node('hubCards'),roll=node('ro
 roll.scrollWidth=1600;roll.clientWidth=500;roll.scrollHeight=1000;roll.clientHeight=400;
 const button=node('abrir'),back=node('voltar'),title=node('titulo'),subtitle=node('subtitulo'),hint=node('dica');
 sec.querySelector=(selector)=>({
- 'canvas':canvas,'.tw-mapa-rolo':roll,'.tw-mapa-voltar':back,
+ 'canvas':canvas,'.tw-mapa-recarregar':node('recarregar'),'.tw-mapa-rolo':roll,'.tw-mapa-voltar':back,
  '.tw-mapa-botao':button,'.tw-mapa-dica':hint
 })[selector]||null;
 sec.getAttribute=()=>null;
@@ -183,15 +183,26 @@ console.log('OK: mundo/ruas, avatares, pets, alertas, horário BR, card original
 
 // Arrastar o mapa não deve visitar o bairro sob o ponto onde o dedo foi solto.
 const beforeDrag=pushes;
-eventHandlers['canvas:pointerdown']({clientX:760,clientY:420});
-eventHandlers['canvas:pointermove']({clientX:800,clientY:420});
-eventHandlers['canvas:pointerup']();
+eventHandlers['canvas:pointerdown']({pointerId:1,clientX:760,clientY:420});
+eventHandlers['canvas:pointermove']({pointerId:1,clientX:800,clientY:420});
+eventHandlers['canvas:pointerup']({pointerId:1});
 eventHandlers['canvas:click']({clientX:800,clientY:420});
 assert.equal(pushes,beforeDrag,'arrasto não abre bairro');
 state.window.testMapTransition();
 const pending=[];
 state.setTimeout=(fn,ms)=>{if(ms===420)pending.push(fn);return pending.length;};
-eventHandlers['canvas:pointerdown']({clientX:800,clientY:420});
+eventHandlers['canvas:pointerdown']({pointerId:1,clientX:800,clientY:420});
+eventHandlers['canvas:pointerdown']({pointerId:2,isPrimary:false,clientX:801,clientY:420});
+eventHandlers['canvas:pointerup']({pointerId:2});
+eventHandlers['window:pointerup']({pointerId:1});
+eventHandlers['canvas:click']({clientX:800,clientY:420});
+assert.equal(pushes,beforeDrag,'multitoque não abre bairro');
+eventHandlers['canvas:pointerdown']({pointerId:3,clientX:800,clientY:420});
+eventHandlers['window:pointercancel']({pointerId:3});
+eventHandlers['canvas:click']({clientX:800,clientY:420});
+assert.equal(pushes,beforeDrag,'cancelamento fora do canvas não abre bairro');
+eventHandlers['canvas:pointerdown']({pointerId:3,clientX:800,clientY:420});
+eventHandlers['canvas:pointerup']({pointerId:3});
 eventHandlers['canvas:click']({clientX:800,clientY:420});
 eventHandlers['canvas:click']({clientX:800,clientY:420});
 assert.equal(pushes,beforeDrag+1,'duplo toque durante a transição cria só uma entrada');

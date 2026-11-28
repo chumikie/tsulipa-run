@@ -733,9 +733,12 @@ async function cafeAlternado(browser){
     if(await cafe.locator('[data-cfd-aceitar]').isVisible()) await cafe.locator('[data-cfd-aceitar]').click();
     const clientes=cafe.locator('[data-cfd-cliente]:enabled');
     assert.equal(await clientes.count(),1);
+    assert.equal(await clientes.first().getAttribute('aria-pressed'),'true');
+    assert.equal(await cafe.locator('.cfpedidotxt b').innerText(),await clientes.first().innerText());
     const inicial=await page.evaluate(()=>({tempo:cf.fila[0].t0,modo:cf.modoServidor,caderno:cfLer(CF_RECEITAS_KEY,{})}));
     assert.equal(inicial.modo,'treino');
     await clientes.nth(1).waitFor();
+    assert.equal(await clientes.first().getAttribute('aria-pressed'),'true');
     assert(await page.evaluate(t=>cf.fila[1].t0-t>=180,inicial.tempo));
     for(const lado of [0,1]){
       await cafe.locator('[data-cfd-cliente="'+lado+'"]').click();
@@ -790,6 +793,9 @@ async function leituraHandshake(browser){
       const resposta=await page.evaluate(()=>hs.ops.indexOf(hs.quiz[hs.qi].pres));
       await h.locator('[data-hs="'+resposta+'"]').click();
       await page.evaluate(()=>{hsT+=90;});
+      await h.getByRole('button',{name:'Continuar',exact:true}).waitFor();
+      assert.equal(await page.evaluate(()=>hs.fase),'resposta','resposta manual permanece até confirmar');
+      await h.getByRole('button',{name:'Continuar',exact:true}).click();
     }
     await h.getByRole('button',{name:'Repetir com o tempo padrão'}).click();
     assert.deepEqual(await page.evaluate(()=>hs.fila.map(f=>[f.nome,f.pres])),fila);
@@ -874,6 +880,9 @@ async function reencontroDeUmaPista(browser){
     const pos=await page.evaluate(()=>hs.ops.indexOf(hs.quiz[0].pres));
     await painel.locator('[data-hs="'+pos+'"]').click();
     await page.evaluate(()=>{hsT+=90;});
+    await painel.getByRole('button',{name:'Continuar',exact:true}).waitFor();
+    assert.equal(await page.evaluate(()=>hs.fase),'resposta','o treino manual não avança sozinho');
+    await painel.getByRole('button',{name:'Continuar',exact:true}).click();
     await painel.getByText(/Agora você lembrou/).waitFor();
     assert.equal(await page.evaluate(()=>hsPistaPendente()),null);
     assert.deepEqual(erros,[]);

@@ -518,6 +518,11 @@ html body #hub #hubCards .hubcard.tw-hubnovo-studio{--hc1:#c9a2ff;--hc2:#8250e6}
 html body #hub #hubCards .hubcard.tw-hubnovo-battle{--hc1:#ffb056;--hc2:#f0558f}
 
 
+/* Polish 2: hierarquia sem alterar dimensões ou áreas de toque. */
+html body #hub #hubCards .hubcard:not(.tw-alert-pink){box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 rgba(30,16,90,.22),0 9px 18px -12px rgba(10,5,40,.5);transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease}
+html body #hub #hubCards .hubcard:not(.tw-alert-pink)::before{opacity:.14}
+@media(prefers-reduced-motion:reduce){html body #hub #hubCards .hubcard:not(.tw-alert-pink){transition:none;transform:none}}
+
 /* Mapa Vivo⭐ — lote pequeno de legibilidade e toque móvel, após PR #88.
    Mantém o panorama, as áreas clicáveis do Canvas e a navegação do Hub. */
 html body #hub .tw-mapa-botao:focus-visible{
@@ -654,14 +659,14 @@ html body .stselo{display:inline-block;margin-right:6px;padding:1px 7px;border-r
 .bloomestado small{font:inherit}
 .bloomcard:has(.bloomestado[data-rega-estado="amanha"]){grid-template-areas:"ic tx" "estado estado"}
 #studioVisor[data-fase="monta"],#studioVisor[data-fase="contagem"]{position:sticky;top:0;z-index:2;background:var(--card,#fff8fc);padding:6px 10px;border:1px solid var(--tw-modal-edge,#eadcff);border-radius:14px}
-#studioVisor[data-fase="monta"] #studioCv,#studioVisor[data-fase="contagem"] #studioCv{height:clamp(120px,30dvh,300px);width:auto;max-width:100%;margin:0 auto}
+#studioVisor[data-fase="monta"] #studioCv,#studioVisor[data-fase="contagem"] #studioCv{width:min(100%,clamp(85px,21.176dvh,212px));height:auto;aspect-ratio:12/17;margin:0 auto}
 body.tw-cel #studioOv{scroll-padding-block:calc(76px + 24dvh + 64px) calc(96px + env(safe-area-inset-bottom))}
 body.tw-cel #studioVisor[data-fase="monta"],body.tw-cel #studioVisor[data-fase="contagem"]{top:calc(76px + env(safe-area-inset-top))}
 #studioPauta{margin:6px 0}
 #studioPauta>summary{min-height:32px;cursor:pointer;text-align:center;color:var(--ink);font-weight:800}
 #studioAcao{margin:4px auto 0}
 #studioAcao .stclique{min-height:44px}
-#studioVisor[data-fase="foto"] #studioCv{height:min(40dvh,400px);width:auto;max-width:100%;margin:0 auto}
+#studioVisor[data-fase="foto"] #studioCv{width:min(100%,28.235dvh,282px);height:auto;aspect-ratio:12/17;margin:0 auto}
 #studioAcao .stresultado-acoes{margin:4px auto}
 .stcategorias{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin:6px auto}
 .stcategorias .stabab{min-height:36px;padding:4px 9px}
@@ -670,7 +675,7 @@ body.tw-cel #studioVisor[data-fase="monta"],body.tw-cel #studioVisor[data-fase="
   .studiop{width:min(94vw,860px);max-width:860px}
   .stbancada{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
   .stbancada #studioVisor{align-self:start}
-  #studioVisor[data-fase="monta"] #studioCv,#studioVisor[data-fase="contagem"] #studioCv{height:min(40dvh,400px)}
+  #studioVisor[data-fase="monta"] #studioCv,#studioVisor[data-fase="contagem"] #studioCv{width:min(100%,28.235dvh,282px);height:auto}
 }
 .stgrupo .stchip{white-space:normal;overflow-wrap:anywhere}
 .stchip .stcheck{flex:none;font-style:normal;font-weight:900;visibility:hidden}
@@ -695,3 +700,169 @@ body.tw-cel #studioVisor[data-fase="monta"],body.tw-cel #studioVisor[data-fase="
 .tw-piloto-vitrine{display:flex;gap:.5em;padding:.5em;border:2px solid #b075bd;border-radius:12px;background:#fff1f7;font-size:1.5rem}
 .tw-piloto-vitrine img{width:80px;border:4px solid #fff;border-radius:4px;transform:rotate(-3deg)}
 .tw-piloto-vitrine span{color:#693366;align-self:center;font-size:1rem}
+
+.bloomarranjo [data-bloom="arranjo-flor"]{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px}
+.bloomarranjo .bloomic{width:28px;height:28px;flex:none}
+
+.tw-mapa-recarregar:not([hidden]){display:block;position:sticky;left:0;top:0;z-index:1;min-height:44px;padding:8px 14px;border:2px solid currentColor;border-radius:12px;background:var(--card,#fff);color:var(--ink,#432675);font:inherit;cursor:pointer}
+
+/* Jardineiro: a escolha de sementes não fica escondida atrás da barra do celular. */
+body.tw-cel #bloomOv .bloompick{scroll-margin-block:calc(84px + env(safe-area-inset-top)) calc(100px + env(safe-area-inset-bottom))}
+#bloomOv .bloomnao{min-height:44px}
+
+/* Mural: moldura fotográfica clara preservada; legenda e controles seguem o tema. */
+#studioMural .stpost{min-width:0;background:var(--card,#fff);border:1px solid var(--tw-modal-edge,#eadcff)}
+#studioMural .stpost figcaption{color:var(--ink,#3c2a8f);min-width:0;gap:6px}
+#studioMural .stpost figcaption b{min-width:0;max-width:100%;overflow-wrap:anywhere}
+#studioMural .stcoracao{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+#studioMural .stcoracao:focus-visible{outline:3px solid #b889f5;outline-offset:2px}
+html[data-theme="dark"] #studioMural .stcoracao{background:#322348;color:#ffd5ec;border-color:#a86ba7}
+html[data-theme="dark"] #studioMural .stcoracao.on{background:#552d50;color:#ffe4f4;border-color:#e98abf}
+@media(prefers-color-scheme:dark){
+  html:not([data-theme="light"]) #studioMural .stcoracao{background:#322348;color:#ffd5ec;border-color:#a86ba7}
+  html:not([data-theme="light"]) #studioMural .stcoracao.on{background:#552d50;color:#ffe4f4;border-color:#e98abf}
+}
+
+/* Polish & Personality: superfícies de estado usam tons próprios no tema escuro,
+   sem alterar os desenhos pastel nem a semântica dos estados. */
+html[data-theme="dark"] body .sttema{background:#382b50;border-color:#a18ac9;color:#eedfff}
+html[data-theme="dark"] body .sttema.ok{background:#233e32;border-color:#7eb99a;color:#c7f2d7}
+html[data-theme="dark"] .bloomestado{background:#203b50;color:#d4edff}
+html[data-theme="dark"] .bloomestado[data-rega-estado="amanha"]{background:#3c2e52;color:#eadcff}
+html[data-theme="dark"] .bloomestado[data-rega-estado="colher"]{background:#254335;color:#cef5d7}
+html[data-theme="dark"] .tw-piloto-vitrine{background:#38263f;border-color:#b68bc6}
+html[data-theme="dark"] .tw-piloto-vitrine span{color:#f3d6f0}
+@media(prefers-color-scheme:dark){
+  html:not([data-theme="light"]) body .sttema{background:#382b50;border-color:#a18ac9;color:#eedfff}
+  html:not([data-theme="light"]) body .sttema.ok{background:#233e32;border-color:#7eb99a;color:#c7f2d7}
+  html:not([data-theme="light"]) .bloomestado{background:#203b50;color:#d4edff}
+  html:not([data-theme="light"]) .bloomestado[data-rega-estado="amanha"]{background:#3c2e52;color:#eadcff}
+  html:not([data-theme="light"]) .bloomestado[data-rega-estado="colher"]{background:#254335;color:#cef5d7}
+  html:not([data-theme="light"]) .tw-piloto-vitrine{background:#38263f;border-color:#b68bc6}
+  html:not([data-theme="light"]) .tw-piloto-vitrine span{color:#f3d6f0}
+}
+
+/* A captura real do perfil escuro mostrou a legenda violeta escura sobre azul.
+   Mantém a vitrine e o botão existentes, com contraste de leitura. */
+:root[data-theme="dark"] #perfCorpo .twp-vazia p{color:#e6d6ff}
+:root[data-theme="dark"] #perfCorpo .twp-vazia [data-twp="vitrine-editar"]{color:#f0e1ff;background:#443066;border:1px solid #b39ad8}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #perfCorpo .twp-vazia p{color:#e6d6ff}
+  :root:not([data-theme="light"]) #perfCorpo .twp-vazia [data-twp="vitrine-editar"]{color:#f0e1ff;background:#443066;border:1px solid #b39ad8}
+}
+#perfCorpo .twp-vazia [data-twp="vitrine-editar"]{min-height:44px;white-space:normal;overflow-wrap:anywhere}
+
+/* Polish & Personality: controles com um único contorno de seleção e
+   resposta ao toque sem deslocar layout, inclusive nas seis línguas. */
+.stgrupo .stchip.on{box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.stgrupo .stchip{min-height:44px;box-sizing:border-box;text-align:center;line-height:1.3}
+.stgrupo .stchip:not(:disabled):active{box-shadow:inset 0 2px 5px rgba(48,26,81,.18)}
+.stgrupo .stchip:focus-visible{outline-offset:2px}
+@media(max-width:360px){
+  .stgrupo .stchip{padding-inline:5px;gap:3px}
+}
+/* A resposta é imediata, sem acrescentar transições ao lote do mapa. */
+
+/* Remaster 3.0: hierarquia de edição e leitura sem novos controles. */
+html body .studiop .stgrupo>b{color:var(--ink,#432675);letter-spacing:.01em;margin:8px 0 4px}
+#studioVisor[data-fase="monta"],#studioVisor[data-fase="contagem"]{padding:4px 8px}
+#studioPauta>summary{min-height:44px;display:flex;align-items:center;justify-content:center}
+.stcategorias .stabab{min-height:44px}
+#perfCorpo .twp-vazia{color:var(--ink,#432675)}
+#twMapa .tw-mapa-vitrine{box-shadow:none}
+@media(max-width:360px){.stcategorias .stabab{padding-inline:6px}}
+
+/* Remaster: provador protagonista, áreas de toque e hierarquia. */
+#shopAbas{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+#shopAbas [data-shop-aba]{min-height:44px;white-space:normal;overflow-wrap:anywhere}
+#shopAbas [aria-pressed="true"]{outline:2px solid currentColor;outline-offset:-3px}
+.shopprov{border:1px solid var(--tw-modal-edge,#eadcff);border-radius:16px;padding:8px;box-shadow:none}
+.shopprov .shop-comparar{gap:8px}
+.shopprov .shop-comparar figure{min-width:0;margin:0}
+.shopprov .shop-comparar canvas{width:clamp(84px,29vw,156px);max-width:100%;height:auto;aspect-ratio:1}
+.shopprov figcaption{color:var(--ink,#432675);font-weight:700;line-height:1.35}
+.shopprov .btns :is(button,a){min-height:44px;white-space:normal}
+#studioVisor[data-fase="monta"]{border-radius:12px}
+#studioAcao .stclique{box-shadow:0 2px 0 rgba(43,27,88,.22)}
+@media(max-width:359px){#shopAbas [data-shop-aba]{padding-inline:8px;flex:1 1 0}.shopprov{padding:6px}}
+
+/* Identity & Soul: grupos de decisão em vez de pílulas visualmente soltas. */
+.stgrupo{min-width:0}
+.stgrupo .stchip{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.stgrupo .stchip span{min-width:0;overflow-wrap:anywhere}
+.stgrupo .stchip[aria-pressed="true"]{border-width:2px}
+.stcategorias{gap:6px;flex-wrap:wrap}
+.stcategorias .stabab{min-width:0;white-space:normal;overflow-wrap:anywhere}
+@media(max-width:360px){
+  .stcategorias .stabab{flex:1 1 30%;max-width:100%}
+  .stgrupo .stchip{padding-inline:7px}
+}
+
+/* Studio: controles secundários agrupados, espaço reservado à fotografia e textos longos. */
+#studioVisor[data-fase="monta"] .stclique{min-height:44px;line-height:1.3}
+.stgrupo .stchip{flex:0 1 auto}
+.stgrupo .stchip[aria-pressed="true"]{outline:1px solid currentColor;outline-offset:-3px}
+@media(max-width:360px){.stgrupo{margin-block:6px}.stcategorias .stabab{min-height:44px;line-height:1.25}}
+
+/* Signature World — hierarquia, não uma nova camada decorativa. */
+#perfCorpo .twp-vazia{box-shadow:none;border-radius:12px;padding:14px;line-height:1.5}
+#perfCorpo .twp-vazia [data-twp="vitrine-editar"]{box-shadow:none;border-width:1px;font-size:13px}
+.studiop .stgrupo{border-top:1px solid var(--twc-borda,rgba(130,100,180,.2));padding-top:8px}
+.studiop .stgrupo>b{letter-spacing:0;text-transform:none}
+.stgrupo .stchip{border-width:1px;box-shadow:none}
+.stgrupo .stchip.on{box-shadow:none;font-weight:800}
+.shopprov{border-radius:12px;box-shadow:none}
+@media(max-width:390px){#perfCorpo .twp-vazia{padding:12px}.studiop .stgrupo>div{gap:5px}}
+
+/* Signature World 5.15 — hierarquia editorial, sem ocultar controles. */
+#studioVisor[data-fase="monta"],#studioVisor[data-fase="contagem"]{padding:8px 4px;box-shadow:none;border-radius:12px}
+html body .studiop .stgrupo>b{text-align:start;font-size:12px;font-weight:800;margin:8px 0 6px}
+.studiop .stgrupo>div{justify-content:flex-start}
+#shopAbas [data-shop-aba]{box-shadow:none;border-width:1px}
+#shopAbas [aria-pressed="true"]{outline-offset:-2px}
+#perfCorpo .twp-vazia{border-radius:10px}
+@media(max-width:390px){.studiop .stgrupo .stchip{flex:1 1 auto;min-width:0}.shopprov .shop-comparar{gap:6px}}
+
+/* Bancada do Studio. A foto e o disparador formam uma superfície contínua. */
+.studiop #studioVisor:is([data-fase="monta"],[data-fase="contagem"]){
+  border:0;
+  border-bottom:1px solid var(--tw-modal-edge,#eadcff);
+  border-radius:0;
+}
+.studiop .stcategorias{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,6.3em),1fr));
+  align-items:stretch;
+  gap:0;
+  margin:8px 0 0;
+}
+.studiop .stcategorias .stabab{
+  border:0;
+  border-bottom:2px solid transparent;
+  border-radius:0;
+  background:transparent;
+  color:var(--ink,currentColor);
+  box-shadow:none;
+  line-height:1.25;
+}
+.studiop .stcategorias [aria-pressed="true"]{
+  outline:0;
+  border-bottom-color:currentColor;
+}
+.studiop .stcategorias button:focus-visible{
+  outline:2px solid currentColor;
+  outline-offset:-3px;
+}
+.studiop #studioCorpo .stgrupo{
+  border:0;
+  padding:0;
+  margin:10px 0;
+}
+@media(min-width:850px){
+  .studiop .stbancada{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px}
+}
+
+/* Clean UI 28/11/2026: no iPhone, "Enquadramento" não cabia na coluna de 6,3em e quebrava no meio ("Enquadrament/o").
+   Colunas um pouco mais largas (3 por linha a 390 px, 2 a 320 px; 7,3em = 117 px) e quebra só entre palavras. */
+.studiop .stcategorias{grid-template-columns:repeat(auto-fit,minmax(min(100%,7.3em),1fr))}
+.studiop .stcategorias .stabab{font-size:13px;padding-inline:4px;overflow-wrap:normal;word-break:normal;hyphens:auto}

@@ -40,7 +40,7 @@ function criar(o){
     var old=player;player=null;playingId='';
     if(old){try{old.pause();old.removeAttribute('src');old.load();}catch(e){}}
     updateButtons();
-    if(status&&message)status.textContent=message;
+    if(status && (message || old))status.textContent=message||'';
   }
   function play(id,restart){
     if(!allowed[id]||!root)return;
@@ -55,7 +55,7 @@ function criar(o){
       next.preload='none';next.volume=.6;if(window.TW_AUDIO)window.TW_AUDIO.midia(next,.6);player=next;playingId=id;
     }catch(e){if(status)status.textContent=tr('Não foi possível preparar este áudio.');return;}
     updateButtons();
-    if(status){var voiceStatus={pt:'♪ Voz de personagem reproduzindo',en:'♪ Character voice playing',es:'♪ Voz de personaje en reproducción',th:'♪ กำลังเล่นเสียงตัวละคร',ja:'♪ キャラクター音声を再生中'};status.textContent=voiceStatus[LANG]||voiceStatus.pt;}
+    if(status){var voiceStatus={pt:'♪ Voz de personagem reproduzindo',en:'♪ Character voice playing',id:'♪ Suara karakter sedang diputar',es:'♪ Voz de personaje en reproducción',th:'♪ กำลังเล่นเสียงตัวละคร',ja:'♪ キャラクター音声を再生中'};status.textContent=voiceStatus[LANG]||voiceStatus.pt;}
     function finish(message){if(player!==next)return;stop(message);}
     next.addEventListener('ended',function(){finish('');},{once:true});
     next.addEventListener('error',function(){finish(tr('Não foi possível reproduzir este áudio.'));},{once:true});
@@ -108,7 +108,7 @@ function criar(o){
     var frame=Math.floor(now/16.6667);
     [].forEach.call(root.querySelectorAll('[data-kt-voice-group]'),function(button){
       var group=button.dataset.ktVoiceGroup,index=avatarIndex[group],canvas=button.querySelector('canvas');
-      button.setAttribute('aria-label',tr('Falar com')+' '+group.charAt(0).toUpperCase()+group.slice(1));
+      if(!button.hasAttribute('aria-label'))button.setAttribute('aria-label',tr('Falar com')+' '+group.charAt(0).toUpperCase()+group.slice(1));
       if(index===undefined||!canvas||!CH[index])return;
       var ctx=canvas.getContext('2d');if(!ctx)return;
       /* Cópia visual exclusiva da vitrine: preserva cabelo/rosto e não altera CH. */
@@ -167,8 +167,6 @@ function criar(o){
     });
     drawHeads();
   }
-  document.addEventListener('visibilitychange',function(){if(document.hidden)stopHeadAnimation();else startHeadAnimation();});
-  window.addEventListener('pagehide',stopHeadAnimation);
   var songSelector=$('ktSong');if(songSelector)songSelector.addEventListener('change',syncTracks);
   if(root)root.addEventListener('click',function(event){
     var libraryStart=event.target.closest&&event.target.closest('[data-kt-library-start]');

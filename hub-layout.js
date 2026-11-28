@@ -10,7 +10,7 @@
   function t(k){var L=(typeof LANG==='string'&&T[LANG])?LANG:'pt';return T[L][k];}
   function esc(s){return typeof escHtml==='function'?escHtml(String(s)):String(s).replace(/[&<>"']/g,function(c){return '&#'+c.charCodeAt(0)+';';});}
   function hub(){return document.getElementById('hub');}
-  function card(k){var c=document.getElementById('hubCards');return c&&c.querySelector('[data-ir="'+k+'"]');}
+  function card(k){var c=document.getElementById('hubCards');return c&&(c.querySelector('[data-ir="'+k+'"]')||c.querySelector('[data-twnovo="'+k+'"]'));}
   function rankNome(){try{var n=(typeof RANKS!=='undefined'&&typeof rankOf==='function')?RANKS[rankOf(+best||0)][1]:'';return n&&typeof tr==='function'?tr(n):n;}catch(e){return '';}}
 
   /* 1) barra fixa com você */
@@ -40,8 +40,8 @@
     var alvo=cards.querySelector('.hubcard.tw-alert-pink'), hojeBtn=null;
     if(!alvo){hojeBtn=document.querySelector('#hubHoje .hubenc');}
     var fonte=alvo||hojeBtn; var el=document.getElementById('twDestaque');
-    if(!fonte){if(el)el.remove();return;}
-    var ir=alvo?alvo.dataset.ir:'enc';
+    if(!fonte){if(el)el.remove();passeioUI(null);return;}
+    var ir=alvo?(alvo.dataset.ir||alvo.dataset.twnovo):'enc';
     var emo=(fonte.querySelector('i')||{}).textContent||'⭐';
     var tit=(fonte.querySelector('b')||fonte).textContent.trim();
     var smalls=[].slice.call(fonte.querySelectorAll('small')).filter(function(s){return !s.classList.contains('tw-hubgame-jp')&&!s.hasAttribute('lang');});
@@ -52,6 +52,24 @@
     el.dataset.ir=ir; el.className='tw-destaque tw-destaque-'+ir;
     el.innerHTML='<span class="tw-destaque-tag">✨ '+esc(t('hoje'))+'</span><span class="tw-destaque-emo" aria-hidden="true">'+esc(emo)+'</span>'+
       '<span class="tw-destaque-txt"><b>'+esc(tit)+'</b>'+(desc?'<small>'+esc(desc)+'</small>':'')+'</span><span class="tw-destaque-ir" aria-hidden="true">▶</span>';
+    passeioUI(el,ir);
+  }
+  function passeioUI(el,k){
+    var bloco=document.getElementById('twPasseioHoje');
+    var html=el && window.TW_RITMO && TW_RITMO.passeioHoje(k,function(chave){
+      var c=card(chave), nome=c && c.querySelector('b'); return nome && nome.textContent.trim();
+    });
+    if(!html){if(bloco)bloco.remove();return;}
+    if(!bloco){
+      bloco=document.createElement('div');bloco.id='twPasseioHoje';el.after(bloco);
+      bloco.addEventListener('click',function(e){
+        var botao=e.target.closest('[data-passeio]'), destino=botao && card(botao.dataset.passeio);
+        if(destino)destino.click();
+      });
+    }
+    if(bloco.dataset.conteudo!==html){
+      bloco.innerHTML=html;bloco.dataset.conteudo=html;
+    }
   }
 
   /* 5) barra de navegação no celular */

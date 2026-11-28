@@ -111,8 +111,14 @@ else:
         G['cloud'](bx, by, sc, 1)
 # calçada (piso de ladrilhos) e rua de pedrinha
 A(f"<rect x='0' y='560' width='{W}' height='90' fill='#fff1d8'/>")
-for i in range(0, W, 64):
-    A(f"<path d='M{i},560 v90' stroke='#f0dcb4' stroke-width='3'/>")
+if bairro == 'praca':
+    for i in range(-128, W + 128, 84):
+        A(f"<path d='M{800+(i-800)*.78:.1f},560 L{i},650' stroke='#dfc9a9' stroke-width='2'/>")
+    for linha in (575, 600, 635):
+        A(f"<path d='M0,{linha}H1600' stroke='#dfc9a9' stroke-width='2'/>")
+else:
+    for i in range(0, W, 64):
+        A(f"<path d='M{i},560 v90' stroke='#f0dcb4' stroke-width='3'/>")
 A(f"<rect x='0' y='560' width='{W}' height='8' fill='#ffffff' opacity='.7'/>")
 A(f"<rect x='0' y='650' width='{W}' height='{H-650}' fill='#efe3cf'/>")
 for i in range(140):
@@ -146,6 +152,38 @@ def sora_ilha(cx):
 for indice, (cab, cx) in enumerate(zip(lugares, (300, 800, 1300))):
     if cab and 'Sora' in cab:
         sora_ilha(cx)
+    elif bairro == 'praca' and cab:
+        # A caixa e a banca conservam placas e acessos. Os planos laterais
+        # das duas construções recuam em direção ao centro da praça.
+        A(f"<g transform='translate({cx},566) scale(2.05)'>")
+        if indice == 0:
+            A("""<g id="varanda-correio">
+              <path d="M-82 0H78L96 -12H-61Z" fill="#d4b6a6"/>
+              <path d="M-79 -7H76V0H-79Z" fill="#c99989"/>
+              <path d="M-79 -7L-61 -19H94L76 -7Z" fill="#f6ddc6"/>
+              <path d="M-69 -19V-108H80V-19Z" fill="#f2ceb9"/>
+              <path d="M-69 -19L-78 -8V-104L-69 -108Z" fill="#cda995"/>
+              <path d="M-55 -21V-67Q-55 -90 -34 -90Q-13 -90 -13 -67V-21Z" fill="#bb8e92"/>
+              <path d="M-48 -21V-66Q-48 -83 -32 -83Q-18 -83 -18 -65V-21Z" fill="#785d79"/>
+              <path d="M18 -81H69V-41H18Z" fill="#b08786"/>
+              <path d="M22 -78H65V-46H22Z" fill="#b8d7df"/>
+              <path d="M43 -78V-44M22 -65H65" stroke="#fff0d3" stroke-width="3"/>
+              <path d="M-81 -103L-60 -119H96L76 -103Z" fill="#dc9fa9"/>
+              <path d="M76 -103L96 -119V-111L76 -96Z" fill="#986979"/>
+              <path d="M-81 -103H76V-96H-81Z" fill="#f7c3bf"/>
+              <path d="M-76 -96H-70V-8H-76ZM66 -96H72V-8H66Z" fill="#fff0d3"/>
+            </g>""")
+        else:
+            A("""<g id="lateral-banca">
+              <path d="M-46 -70L-70 -83V-13L-46 0Z" fill="#a7bacc"/>
+              <path d="M-51 -59L-64 -66V-32L-51 -25Z" fill="#657d98"/>
+              <path d="M-53 -57L-62 -62V-47L-53 -42Z" fill="#f9d397"/>
+              <path d="M-58 -92L-79 -105H32L58 -92Z" fill="#b8b5e5"/>
+              <path d="M-58 -92L-79 -105V-97L-58 -80Z" fill="#8682b9"/>
+              <path d="M-52 -22L-69 -31V-14L-52 1Z" fill="#b28567"/>
+            </g>""")
+        bloco(cab, 0, 0)
+        A('</g>')
     elif cab:
         predio(cab, cx)
     elif bairro == 'praca' and indice == 1:
@@ -249,6 +287,15 @@ for px in (550, 1050):
 for vx in (40, 1560):
     A(f"<rect x='{vx-16}' y='{580}' width='32' height='26' rx='6' fill='#ff9bd0'/>")
     G['arvore'](vx, 584, .7)
+# Signature 5.13: estruturas estáticas nas próprias artes, sem duplicar a camada Canvas.
+SIGNATURE_FACHADAS = {
+    'praca': '''<g id="signature-praca"><path d="M598 577H1002L1031 608H569Z" fill="#e8d4bd"/><path d="M598 577H1002L1009 584H591Z" fill="#fff1da"/><path d="M600 584L576 608 M650 584L632 608 M700 584L688 608 M750 584L744 608 M800 584V608 M850 584L856 608 M900 584L912 608 M950 584L968 608 M1000 584L1024 608" stroke="#c8af9c" stroke-width="1.2" fill="none"/><path d="M786 507H814V548H786Z" fill="#bb9dc8"/><path d="M789 507H798V548H789Z" fill="#ebd9f3"/><ellipse cx="800" cy="552" rx="27" ry="9" fill="#a78bb8"/><ellipse cx="800" cy="548" rx="26" ry="7" fill="#efe0f9"/><rect x="774" y="548" width="52" height="6" fill="#d5bbeb"/><path d="M770 557Q800 566 830 557" fill="none" stroke="#a98eb5" stroke-width="2"/></g>''',
+    'palco': '''<g id="signature-palco"><g fill="#ac598d"><path d="M448 275L465 291V542L448 551Z"/><path d="M1152 275L1135 291V542L1152 551Z"/></g><g fill="#efb3b9"><rect x="436" y="275" width="12" height="276"/><rect x="1152" y="275" width="12" height="276"/></g><g fill="#c48788"><rect x="431" y="544" width="37" height="10"/><rect x="1132" y="544" width="37" height="10"/></g><g fill="#c27d99"><path d="M448 275H570L560 291H458Z"/><path d="M1030 275H1152L1142 291H1040Z"/></g><path d="M436 278H570M1030 278H1164M431 546H468M1132 546H1169" stroke="#ffe0ad" stroke-width="5" fill="none"/><path d="M441 292V539M1159 292V539" stroke="#f9d2ca" stroke-width="2" fill="none"/><path d="M431 552H468M1132 552H1169" stroke="#a45c82" stroke-width="2"/></g>''',
+    'arena': '''<g id="signature-arena"><g fill="#9e6ccf"><path d="M649 438L633 436L617 539H649Z"/><path d="M951 438L967 436L983 539H951Z"/></g><g fill="#d7b5f1"><path d="M649 438L642 441L632 535H649Z"/><path d="M951 438L958 441L968 535H951Z"/></g><g fill="#7651a8"><rect x="615" y="539" width="34" height="8"/><rect x="951" y="539" width="34" height="8"/></g><path d="M627 537L640 442M973 537L960 442" stroke="#f1d9ff" stroke-width="2" fill="none"/><path d="M615 547H649M951 547H985" stroke="#4d3278" stroke-width="2" fill="none"/></g>''',
+    'ceu': '''<g id="signature-ceu" transform="translate(800,566) scale(2.05)"><path d="M-63 -23H63L73 -13H-73Z" fill="#7771c4"/><path d="M-63 -24H63L67 -18H-67Z" fill="#d9c9fa"/><g fill="#a89bdc"><rect x="-53" y="-89" width="14" height="66"/><rect x="39" y="-89" width="14" height="66"/></g><g fill="#f5efff"><rect x="-53" y="-89" width="9" height="66"/><rect x="39" y="-89" width="9" height="66"/></g><path d="M-44 -86V-29M48 -86V-29" stroke="#d8cbf6" stroke-width="4"/><g fill="#ece2ff"><rect x="-56" y="-27" width="20" height="5" rx="1.5"/><rect x="36" y="-27" width="20" height="5" rx="1.5"/></g><g fill="#b2a3e4"><rect x="-56" y="-92" width="20" height="5" rx="1.5"/><rect x="36" y="-92" width="20" height="5" rx="1.5"/></g><path d="M-74 -92Q0 -158 74 -92H55Q0 -148 -55 -92Z" fill="#9381df"/><path d="M-38 -94Q-25 -120 0 -125M0 -94V-125M38 -94Q25 -120 0 -125" stroke="#cfc0f7" stroke-width="1.6" fill="none"/><path d="M-57 -13H57V-9H-57Z" fill="#b6a5e4"/><path d="M-57 -13H57" stroke="#efdcff" stroke-width="1.4"/><path d="M-53 -9H53V-6H-53Z" fill="#a18fd2"/></g>''',
+}
+if bairro in SIGNATURE_FACHADAS:
+    A(SIGNATURE_FACHADAS[bairro])
 # topo: título do bairro e volta para o mapa
 titulo_largura = max(280, min(450, len(titulo) * 15 + 55))
 A(f"<g transform='translate(30,26)'><rect width='{titulo_largura}' height='56' rx='28' fill='#fff' opacity='.92'/><text x='{titulo_largura/2:.0f}' y='37' text-anchor='middle' font-family='Mochiy Pop One' font-size='{21 if bairro == 'palco' else 24}' fill='{cor_tema}'>{titulo}</text></g>")

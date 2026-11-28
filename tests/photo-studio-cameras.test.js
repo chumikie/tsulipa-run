@@ -32,6 +32,25 @@ test('Photo Studio: rosto, meio and inteiro have genuinely different crops', () 
   assert.ok(cut[0] > 20 && cut[0] < 31, 'portrait ends around the shoulders');
   assert.ok(cut[1] > 34 && cut[1] < 44, 'half-body ends around the shorts');
   assert.ok(cut[2] > 46, 'full-body fits through the shoes and shadow');
+  for(const pose of ['', 'v', 'tchau', 'coracao']){
+    const close=scope.paintIdol(canvas,432,540,{pose},false,false,0,'rosto',true);
+    const meio=scope.paintIdol(canvas,432,540,{pose},false,false,0,'meio',true);
+    assert.ok(close.y+34*close.scale<=540,'punho inteiro no retrato');
+    if(pose==='v'||pose==='tchau'){
+      assert.ok(close.x+40*close.scale<=432,'dedos da pose dentro do retrato');
+      assert.ok(close.x-3*close.scale>=0,'mão esquerda não corta');
+    }
+    assert.ok(close.scale>meio.scale,'retrato deve ser maior que meio corpo, mesmo com aceno/objeto');
+    if(pose==='v'||pose==='tchau'){
+      for(const t of [0,26,78]){
+        const livre=scope.paintIdol(canvas,432,540,{pose},false,false,t,'rosto',false);
+        const meioLivre=scope.paintIdol(canvas,432,540,{pose},false,false,t,'meio',false);
+        assert.ok(livre.x+40*livre.scale<=432,'aceno sem objeto mantém os dedos dentro da foto');
+        assert.ok(livre.x-3*livre.scale>=0,'mão oposta dentro do quadro');
+        assert.ok(livre.scale>meioLivre.scale,'retrato sem objeto não vira meio-corpo');
+      }
+    }
+  }
 });
 
 test('Studio photo and mural reuse the same camera and props renderer', () => {
@@ -91,4 +110,15 @@ test('Studio controls keep the color sample, name and selected indicator togethe
   assert.match(html,/aria-pressed="false"><i class="stsw"><\/i><span>suave/);
   const css=fs.readFileSync(path.join(root,'hub-polish.css'),'utf8');
   assert.match(css,/#studioVisor\[data-fase="monta"\][^\{]*\{position:sticky/);
+});
+
+test('Enquanto aguarda a nota, o visor exibe somente a captura do disparo', () => {
+  const src=fs.readFileSync(path.join(root,'studio.js'),'utf8');
+  const captura={}, imagens=[];
+  const x={save(){},restore(){},clearRect(){},fillRect(){},drawImage(...args){imagens.push(args);}};
+  const ctx={ov:{querySelector:()=>({width:480,height:680,getContext:()=>x})},
+    performance:{now:()=>2700},fase:'contagem',foto:{cena:captura}};
+  vm.runInNewContext(src.slice(src.indexOf('  function desenhar(){'),src.indexOf('  function laco()')),ctx);
+  ctx.desenhar();
+  assert.deepEqual(imagens,[[captura,24,24,432,540]]);
 });

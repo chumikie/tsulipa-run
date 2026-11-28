@@ -299,7 +299,7 @@
   var MEMBROS = [['tsu', 'Tsu', '#9b30d9'], ['lirika', 'Lirika', '#3cb043'], ['pati', 'Pati', '#4169e1']];
   function membroAv(k){
     if(typeof HUB_TRIO === 'undefined' || typeof HUB_TRIO_DRAW_CHARS === 'undefined' || typeof CH === 'undefined' || !HUB_TRIO[k]) return null;
-    var m = HUB_TRIO[k], c = JSON.parse(JSON.stringify(HUB_TRIO_DRAW_CHARS[k])), base = CH[m[0]];
+    var m = HUB_TRIO[k], c = typeof perfCopiarCharOficial==='function'?perfCopiarCharOficial(HUB_TRIO_DRAW_CHARS[k]):JSON.parse(JSON.stringify(HUB_TRIO_DRAW_CHARS[k])), base = CH[m[0]];
     if(base){ c.out = base.out; c.outcol = base.outcol; }
     return {c:c, pose:'', expr:m[4], fundo:'basico'};
   }
@@ -399,6 +399,7 @@
     maisAniv1:{pt:'+1 aniversário hoje',en:'+1 more birthday today',es:'+1 cumpleaños más hoy',id:'+1 ulang tahun lagi hari ini',th:'+1 วันเกิดวันนี้',ja:'きょうの誕生日 +1'},
     maisAniv:{pt:'+{n} aniversários hoje',en:'+{n} more birthdays today',es:'+{n} cumpleaños más hoy',id:'+{n} ulang tahun lagi hari ini',th:'+{n} วันเกิดวันนี้',ja:'きょうの誕生日 +{n}'},
     verLista:{pt:'Ver lista',en:'See list',es:'Ver lista',id:'Lihat daftar',th:'ดูรายการ',ja:'リストを見る'},
+    feitos:{pt:'{f} de {t} feitos',en:'{f} of {t} done',es:'{f} de {t} hechos',id:'{f} dari {t} selesai',th:'เสร็จแล้ว {f}/{t}',ja:'{f}/{t} 完了'},   // 28/11: o "0/5" solto não dizia o que contava
     verTudo:{pt:'Ver tudo (+{n})',en:'See all (+{n})',es:'Ver todo (+{n})',id:'Lihat semua (+{n})',th:'ดูทั้งหมด (+{n})',ja:'ぜんぶ見る（+{n}）'},
     recolher:{pt:'Recolher',en:'Collapse',es:'Recoger',id:'Tutup',th:'ย่อ',ja:'とじる'},
     tudo:{pt:'Tudo feito por hoje! ✨',en:'All done for today! ✨',es:'¡Todo listo por hoy! ✨',id:'Semua beres hari ini! ✨',th:'วันนี้ทำครบแล้ว! ✨',ja:'きょうはぜんぶできた！✨'},
@@ -522,6 +523,7 @@
     // o "Também hoje" (outros eventos) entra na lista do "Ver tudo": um lugar só para tudo do dia
     var al = pendencias(), extra = al.length ? '<button type="button" class="twc-hj-mais" data-ir="' + esc(chaveDe(al[0])) + '"><small>' + esc(thj('tambem')) + '</small><b translate="no">' + esc(titulo(al[0])) + '</b>' +
       (al.length > 1 ? '<em>+' + (al.length - 1) + '</em>' : '') + ico('seta', 16) + '</button>' : '';
+    if(extra) extra += passeioHoje(al[0]);
     var todos = extra ? itens.concat([extra]) : itens, fechar = '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('recolher')) + '</button>';
     var topo = continuar + festival;
     if(feitos === tot) lista = hojeAberto ? todos.join('') : extra;   // tudo feito: a lista recolhe (abre no "Ver lista"); o próximo evento fica à vista
@@ -542,7 +544,7 @@
       else { topo = ''; lista = escolha.join('') + '<button type="button" class="twc-hj-ver twc-hj-ver-bx" data-hjver="1">' + esc(thj('verTudo', {n:sobra})) + '</button>'; }
     }
     return '<section class="twc-hj" aria-labelledby="twcHjT"><div class="twc-hj-cab"><h2 id="twcHjT">' + esc(thj('tit')) + '</h2>' +
-      '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + feitos + '/' + tot + '</small></span></div>' +
+      '<span class="twc-prog"><span class="twc-barra" role="progressbar" aria-valuemin="0" aria-valuemax="' + tot + '" aria-valuenow="' + feitos + '" aria-label="' + esc(thj('tit')) + '"><i style="width:' + pc + '%"></i></span><small>' + esc(thj('feitos', {f:feitos, t:tot})) + '</small></span></div>' +
       (feitos === tot ? '<p class="twc-hj-tudo">' + esc(thj('tudo')) + ' <button type="button" class="twc-hj-ver" data-hjver="1">' + esc(hojeAberto ? thj('recolher') : thj('verLista')) + '</button></p>' : '') +
       topo + lista + '</section>';
   }
@@ -647,6 +649,9 @@
     som(); desenhar();
   }
 
+  function passeioHoje(c){
+    return c && window.TW_RITMO ? TW_RITMO.passeioHoje(chaveDe(c),function(k){return titulo(card(k));}) : '';
+  }
   function telaInicio(){
     var al = pendencias(), d = al[0];
     var destaque = d
@@ -661,6 +666,7 @@
       return app(k, nomeCurto(c, k), 'data-ir="' + k + '"', c);
     }).join('');
     var hjHtml = hojeHtml();   // a lista do dia; sem nada para mostrar, fica o destaque de antes
+    if(!hjHtml && d)destaque += passeioHoje(d);
     // celular: palco, Hoje e portas um embaixo do outro; computador: palco e portas à esquerda, o Hoje inteiro à direita
     return '<div class="twc-pag twc-inicio"><div class="twc-lado twc-ini-palco">' + palco() + estreiaHtml() + (window.TW_CONQ && logado() ? TW_CONQ.cartaoHtml() : '') + '</div>' +
       '<div class="twc-lado twc-ini-hoje">' + (hjHtml || destaque) + '</div><div class="twc-lado twc-ini-portas">' + pinHtml() + portas() + '</div></div>';
@@ -1853,6 +1859,7 @@
       return;
     }
     var rolagem=chave===ultimaTela?tela.scrollTop:0;
+    var passeioAnterior=chave===ultimaTela && tela.querySelector('.tw-ritmo-hoje[open] [data-passeio]');
     var focoAnterior=chave===ultimaTela&&tela.contains(document.activeElement)?pontoAtual():null;
     ultimaTela = chave;
     tela.setAttribute('data-tela', v);
@@ -1862,6 +1869,10 @@
     var serie = v === 'album' && tela.querySelector('details.album-fotos[open]');
     tela.innerHTML =
       (v === 'abre' ? telaInicial() : barraTopo() + (v === 'ritmo' && window.TW_RITMO ? TW_RITMO.html() : v === 'menu' ? telaMenu() : v === 'jogos' ? telaJogos() : v === 'ajustes' ? telaAjustes() : v === 'album' ? telaAlbum() : v === 'trio' ? telaTrio() : v === 'cal' ? telaCal() : v === 'tour' ? telaTour() : v.indexOf('tour:') === 0 ? telaTourVer(v.slice(5)) : v.indexOf('dentro:') === 0 ? telaDentro(v.slice(7)) : v.indexOf('emb:') === 0 ? telaEmb(v.slice(4)) : telaInicio()));
+    if(passeioAnterior){
+      var passeio=tela.querySelector('.tw-ritmo-hoje');
+      if(passeio && passeio.querySelector('[data-passeio]').dataset.passeio===passeioAnterior.dataset.passeio)passeio.open=true;
+    }
     var novaSerie = serie && tela.querySelector('details.album-fotos');
     if(novaSerie) novaSerie.replaceWith(serie);
     if(window.TW_ALBUM_FOTOS) TW_ALBUM_FOTOS.conferir();
@@ -1886,7 +1897,7 @@
     var el=alvo||document.activeElement, seletor='';
     if(el && cel.contains(el)){
       if(el.id)seletor='#'+CSS.escape(el.id);
-      else ['data-a','data-ir','data-v','data-n','data-twpa','data-estreia','data-pin','data-pin-ir','data-piloto-bairro','data-cald','data-calmes','data-cal-ics','data-cal-cap','data-tw-bairro'].some(function(a){
+      else ['data-passeio','data-a','data-ir','data-v','data-n','data-twpa','data-estreia','data-pin','data-pin-ir','data-piloto-bairro','data-cald','data-calmes','data-cal-ics','data-cal-cap','data-tw-bairro'].some(function(a){
         if(!el.hasAttribute(a))return false;
         seletor='['+a+'="'+CSS.escape(el.getAttribute(a))+'"]';return true;
       });
@@ -1952,6 +1963,12 @@
     if(a === 'menuMais'){ folhaMais(); return; }
     if(a === 'comecar'){
       if(typeof hubComecar === 'function')hubComecar();
+      // O primeiro quadro já contém os atalhos restaurados, inclusive em telas de baixa frequência.
+      if(cel && redesenhoRaf){
+        cancelAnimationFrame(redesenhoRaf);
+        redesenhoRaf = 0;
+        try{ desenhar(); }catch(e){ falhaInicializacao(e); }
+      }
       requestAnimationFrame(function(){if(cel&&!$id('hub').hidden&&folha.hidden&&!janelas().length)focarTitulo();});
       return;
     }
@@ -2013,7 +2030,19 @@
 
   function clique(e){
     var b = e.target.closest && e.target.closest('button'); if(!b || !cel.contains(b) || b.disabled) return;
-    if(b.dataset.ritmo && window.TW_RITMO){ var focoRitmo=b.dataset.ritmo; if(TW_RITMO.agir(focoRitmo)){desenhar();var focoNovo=cel.querySelector('[data-ritmo="'+focoRitmo+'"]');if(focoNovo)focoNovo.focus();}return;}
+    if(b.dataset.passeio){ abrirCard(b.dataset.passeio); return; }
+    if(b.dataset.ritmo && window.TW_RITMO){
+      var escolha = b.dataset.ritmo;
+      if(TW_RITMO.agir(escolha)){
+        desenhar();
+        var seletor = escolha === 'pular' || escolha === 'retomar'
+          ? '[data-ritmo="pular"],[data-ritmo="retomar"]'
+          : '[data-ritmo="' + escolha + '"]';
+        var proximo = tela.querySelector(seletor);
+        if(proximo) proximo.focus();
+      }
+      return;
+    }
     if(b.dataset.f){ var f = b.dataset.f;
       if(f === 'tutOk'){ tutI++; som(); if(tutI > 2) tutFim(); else tutMostrar(); return; }
       if(f === 'tutPular'){ tutFim(); return; }
@@ -2279,7 +2308,17 @@
   window.TW_CELULAR = {visitar:function(k){
       if(k==='mapa'){acao('mapa');return;}
       if(k==='tour'){ir('tour');return;}
-      if(k==='fotos'){ir('album');return;}
+      if(k==='fotos'){
+        acao('album');
+        if(!logado()) return;
+        var fotos = tela.querySelector('details.album-fotos');
+        if(fotos){
+          fotos.open = true;
+          fotos.querySelector('summary').focus();
+          fotos.scrollIntoView({block:'nearest'});
+        }
+        return;
+      }
       if(['run','sora','karaoke','loja','studio','pet'].indexOf(k)>=0)abrirCard(k);
     },toast:toast, tutContaChegou:tutContaChegou, txt:T, jogos:JOGOS, pedeLogin:PEDE_LOGIN, chave:CHAVE, ligar:ligar, desligar:desligar, rotaPronta:function(){return tutVisto()&&!classico&&(!folha||folha.hidden);}, pontoAtual:pontoAtual, restaurarPonto:restaurarPonto, estreiaEtapa:estreiaEtapa, estreiaMedidas:estreiaMedidas};
 })();

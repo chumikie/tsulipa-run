@@ -55,9 +55,30 @@ function petLifeSofa(x, frente, visual){
   if(!frente){
     x.fillStyle = 'rgba(88,44,112,.18)'; x.beginPath(); x.ellipse(95,199,57,6,0,0,7); x.fill();
     x.fillStyle='#b77bc4';x.fillRect(49,186,7,13);x.fillRect(136,186,7,13);
-    x.fillStyle='#c68bd0';x.beginPath();x.roundRect(40,147,110,46,13);x.fill();
-    x.fillStyle='#f4c9e8';x.beginPath();x.roundRect(46,151,98,30,11);x.fill();
-    x.fillStyle='#e6b5e4';x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
+    // Carcaça estofada com lateral e base estruturais; as âncoras do assento não mudam.
+    x.fillStyle='#a96ab7';x.beginPath();x.moveTo(40,160);x.quadraticCurveTo(37,153,45,148);
+    x.lineTo(147,148);x.quadraticCurveTo(155,151,155,162);x.lineTo(155,187);
+    x.quadraticCurveTo(151,196,140,196);x.lineTo(49,196);x.quadraticCurveTo(40,194,40,186);x.closePath();x.fill();
+    // Encosto em duas peças estofadas, com topo arredondado e base dentro da carcaça.
+    x.fillStyle='#c68bd0';x.beginPath();x.moveTo(40,171);x.lineTo(40,160);
+    x.quadraticCurveTo(40,147,54,147);x.lineTo(136,147);x.quadraticCurveTo(150,147,150,161);
+    x.lineTo(150,185);x.quadraticCurveTo(146,193,136,193);x.lineTo(54,193);
+    x.quadraticCurveTo(40,193,40,181);x.closePath();x.fill();
+    [46,95].forEach(function(l){
+      x.fillStyle='#f4c9e8';x.beginPath();x.moveTo(l+3,176);x.quadraticCurveTo(l,170,l,161);
+      x.quadraticCurveTo(l,151,l+10,151);x.lineTo(l+38,151);
+      x.quadraticCurveTo(l+47,151,l+47,162);x.lineTo(l+44,176);
+      x.quadraticCurveTo(l+23,179,l+3,176);x.closePath();x.fill();
+    });
+    var tecido=x.createLinearGradient(0,161,0,183);tecido.addColorStop(0,'#f2cbe9');tecido.addColorStop(.55,'#e6b5e4');tecido.addColorStop(1,'#cb94d0');x.fillStyle=tecido;x.beginPath();x.roundRect(51,161,88,22,8);x.fill();
+    // Encosto capitonê: costuras e botões permanecem atrás dos ombros.
+    for(var botao = 59; botao <= 131; botao += 24){
+      x.strokeStyle = '#dfaad5'; x.lineWidth = 1;
+      x.beginPath(); x.moveTo(botao-8,153); x.lineTo(botao,159);
+      x.lineTo(botao+8,153); x.stroke();
+      x.fillStyle = '#cb92c4'; x.beginPath(); x.ellipse(botao,159,2,1.7,0,0,7); x.fill();
+      x.fillStyle = '#fff1f8'; x.fillRect(botao-1,157.8,1.6,1);
+    }
     var apoio=petLifeSofaApoio(visual);
     if(apoio){
       // Sombra e dobra curtas na almofada, atrás do avatar, sem alterar o quadril.
@@ -68,7 +89,13 @@ function petLifeSofa(x, frente, visual){
       x.quadraticCurveTo(apoio.x,174+apoio.afunda,apoio.x+25,170+apoio.afunda);x.stroke();
       x.restore();
     }
-    x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=2;x.strokeRect(60,163,70,14);
+    // A almofada única tem costura contínua e uma face frontal em tecido.
+    x.fillStyle='#d7a1d3';x.beginPath();x.moveTo(52,173);x.quadraticCurveTo(95,179,138,173);
+    x.lineTo(137,180);x.quadraticCurveTo(95,185,53,180);x.closePath();x.fill();
+    x.strokeStyle='#ffe6f5'; x.lineWidth=1.4;
+    x.beginPath(); x.roundRect(52,162,86,18,7); x.stroke();
+    x.strokeStyle='rgba(130,75,150,.23)';x.lineWidth=.8;
+    x.beginPath();x.moveTo(54,174);x.quadraticCurveTo(95,181,136,174);x.stroke();
   }else if(!visual || visual.sit <= .001){
     // Em pé: a frente do sofá é desenhada ANTES do Idol, que fica de pé no chão, à frente.
     x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,181,97,13,6);x.fill();
@@ -79,31 +106,108 @@ function petLifeSofa(x, frente, visual){
     // da almofada (na cor da roupa do avatar), os joelhos passam da borda e as
     // canelas descem até o chão. Cada pose tem lugar e postura próprios.
     var q = petLifeQuadril(visual), roupa = petLifeRoupaSaia();
-    x.fillStyle='#d7a0d9';x.beginPath();x.roundRect(47,174,97,12,6);x.fill();   // borda do assento
-    x.fillStyle='#e8b8e3';x.fillRect(62,176,67,2);
+    var borda=x.createLinearGradient(0,174,0,186);borda.addColorStop(0,'#e8b8e3');borda.addColorStop(1,'#c48dcc');x.fillStyle=borda;x.beginPath();x.roundRect(47,174,97,12,6);x.fill();   // borda do assento
+    x.fillStyle='#e8b8e3';x.beginPath();x.moveTo(62,176);
+    x.quadraticCurveTo(q.x,176+visual.sit*1.6,129,176);x.lineTo(129,178);
+    x.quadraticCurveTo(q.x,178+visual.sit*1.6,62,178);x.closePath();x.fill();
     x.fillStyle='rgba(60,25,90,.13)';x.beginPath();x.ellipse(q.x+1,198,20,2.5,0,0,7);x.fill();
     x.save();x.globalAlpha *= visual ? visual.sit : 1;
+    // O quadril continua apoiado enquanto cada Idol escolhe onde firmar os pés.
+    var abertura = sel === 0 ? 1.4 : sel === 1 ? -1.4 : sel === 2 ? .4 : 0;
+    // O descanso recolhe a perna de dentro; Conviver transfere o peso para o lado do Pet.
+    var tecido = CH[sel] || {}, look = tecido.out || '';
     [-8.4, 10.8].forEach(function(o){
-      var px = q.x + o;
-      // Mesmo desenho das pernas do avatar (drawChar): retângulos 5×8 escuros, sem pé
-      // separado. Só a altura encurta, porque a coxa vem para frente.
-      var bal = Math.sin(petT * .05 + (o > 0 ? 1.6 : 0)) * (petLifePose === 'sentar' ? 1.2 : 0);
-      x.fillStyle=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || '')) ? CH[sel].legcol : '#1c1c30';
-      x.fillRect(px-6,q.y+6,12,15+bal);                               // canela 5u de largura
-      petLifeCanelaRoupa(x, px, q.y + 6 + 15 + bal);                  // polainas da roupa (ex.: Nagareboshi) também sentado
-      if(!roupa){ x.fillStyle=petLifeCorColo;
-        x.fillRect(px-7,q.y-3,14,10); }                              // bermuda: coxas retas
+      var lado = o < 0 ? -1 : 1;
+      var raiz = q.x + o * .7;
+      var joelho = q.x + o + lado * abertura * visual.sit + visual.rot * 8;
+      var topo = q.y + 6 + visual.sit * (8 + lado * visual.rot * 7);
+      var px = joelho - lado * (sel===1 ? 2 : 1.2) * visual.sit + visual.rot * 10;
+      var sola = PET_FLOOR - Math.max(0,-visual.rot) * (o<0 ? 24 : 0);
+      var altura = Math.max(8,sola-topo);
+      // Cisalhamento ao redor do tornozelo: o joelho avança e a sola fica horizontal.
+      var inclinacao = (px-joelho)/altura;
+      x.save(); x.transform(1,0,inclinacao,1,-inclinacao*sola,0);
+      x.beginPath(); x.moveTo(px-6,topo);
+      x.quadraticCurveTo(px-6.7,topo+altura*.4,px-4.7,sola);
+      x.lineTo(px+4.8,sola); x.quadraticCurveTo(px+5.9,topo+altura*.35,px+6,topo);
+      x.closePath(); x.clip();
+      x.fillStyle = /^#[0-9a-f]{6}$/i.test(tecido.legcol || '') ? tecido.legcol : '#1c1c30';
+      x.fillRect(px-6,topo,12,altura);
+      petLifeCanelaRoupa(x, px, sola);
+      x.restore();
+      // Sapatos na ponta das canelas, paleta igual à do avatar em pé.
+      var hex=(CH[sel] && /^#[0-9a-f]{6}$/i.test(CH[sel].legcol || ''))?CH[sel].legcol:'#1c1c30';
+      var rgb=parseInt(hex.slice(1),16), claro=((rgb>>16&255)*.299+(rgb>>8&255)*.587+(rgb&255)*.114)/255<.5;
+      var fimPe=sola, esqPe=px-6.7;
+      x.fillStyle=claro?'#f6f1ff':'#3a2a4a';x.beginPath();x.roundRect(esqPe,fimPe-5.5,13.4,5.5,[2.2,2.2,1.1,1.1]);x.fill();
+      x.fillStyle=claro?'#bfb1e3':'#1f1528';x.fillRect(esqPe+.8,fimPe-1.1,11.8,1.1);
+      x.fillStyle=claro?'#ff8fc8':'rgba(255,255,255,.35)';x.fillRect(px-3,fimPe-4,6,.8);
+      x.fillStyle=petLifeCorColo;
+      // A coxa liga o quadril ao joelho deslocado, em vez de dois blocos paralelos.
+      if(roupa==='zipper') x.fillStyle='#fff';
+      x.save(); x.beginPath(); x.moveTo(raiz-6,q.y-3);
+      x.quadraticCurveTo(joelho-8,q.y,joelho-7,topo);
+      x.quadraticCurveTo(joelho,topo+4,joelho+7,topo-.5);
+      x.quadraticCurveTo(joelho+7,q.y+2,raiz+6,q.y-3);
+      x.closePath(); x.fill(); x.clip();
+      x.strokeStyle=look==='estrelado'?'#a5d8ff':look==='zipper'||look==='sweet'?'#fff':'rgba(40,26,66,.32)';
+      x.lineWidth=look==='estrelado'?2:1.1; x.beginPath();
+      x.moveTo(joelho-7,topo-2); x.quadraticCurveTo(joelho,topo+1.6,joelho+7,topo-2.5); x.stroke();
+      x.restore();
     });
     if(roupa){ // mesma silhueta trapezoidal do figurino; tecido repousa sobre as coxas
       var largura = roupa === 'sweet' ? 31 : roupa === 'zipper' ? 27 : 23;
+      // Tecido sobra sobre a coxa que recebe o peso. A cintura continua no quadril.
+      var deslocamento = visual.rot * 20;
       x.fillStyle=petLifeCorSaia;
       x.beginPath();x.moveTo(q.x-17,q.y-3);x.lineTo(q.x+17,q.y-3);
-      x.lineTo(q.x+largura,q.y+12);x.lineTo(q.x-largura,q.y+12);x.closePath();x.fill();
+      x.quadraticCurveTo(q.x+largura-4,q.y+5,q.x+largura+deslocamento,q.y+11-deslocamento*.45);
+      // A barra acompanha cada coxa, em vez de uma única linha horizontal.
+      x.quadraticCurveTo(q.x+largura*.52,q.y+13.6,q.x+4+deslocamento,q.y+10.5);
+      x.quadraticCurveTo(q.x-largura*.42,q.y+14,q.x-largura+deslocamento,q.y+11+deslocamento*.45);
+      x.quadraticCurveTo(q.x-largura+4,q.y+5,q.x-17,q.y-3);x.closePath();x.fill();
+      x.save();x.clip();var caimento=x.createLinearGradient(0,q.y-3,0,q.y+13);
+      caimento.addColorStop(0,'rgba(40,10,70,.12)');caimento.addColorStop(.42,'rgba(255,255,255,.12)');caimento.addColorStop(1,'rgba(40,10,70,.17)');
+      x.fillStyle=caimento;x.fillRect(q.x-largura,q.y-3,largura*2,16);
+      x.strokeStyle='rgba(255,255,255,.19)';x.lineWidth=1;
+      [-10,-3,5,12].forEach(function(d){var dx=d*largura/23+deslocamento;
+        x.fillStyle='rgba(65,35,90,.10)';x.beginPath();x.moveTo(q.x+d*.65,q.y-2);
+        x.quadraticCurveTo(q.x+dx*.85,q.y+4,q.x+dx,q.y+12);
+        x.lineTo(q.x+dx+1.6,q.y+12);x.quadraticCurveTo(q.x+dx*.85+1,q.y+4,q.x+d*.65,q.y-2);
+        x.closePath();x.fill();
+      });
+      if(roupa==='zipper'){
+        // A abertura entre as duas abas deixa ver o short branco do look.
+        x.fillStyle='#fff'; x.beginPath(); x.moveTo(q.x-3,q.y-2);
+        x.quadraticCurveTo(q.x-7,q.y+7,q.x-17+deslocamento,q.y+14);
+        x.lineTo(q.x+17+deslocamento,q.y+14); x.quadraticCurveTo(q.x+7,q.y+7,q.x+3,q.y-2);
+        x.closePath(); x.fill();
+      }
+      if(roupa==='sweet'){x.fillStyle='rgba(255,255,255,.72)';
+        for(var fr=-largura+3;fr<largura;fr+=6){x.beginPath();x.ellipse(q.x+fr,q.y+11.4,3.2,1.8,0,0,7);x.fill();}
+      }
+      x.restore();
     }
     if(petLifePose === 'descansar'){   // mantinha no colo na cor do Oshi
       var ac = { tsu:'#c58cf0', lirika:'#8fdca7', pati:'#9dbcf5' }[OSHI] || '#ffb3d6';
-      x.fillStyle=ac;x.beginPath();x.roundRect(q.x-22,q.y-2,46,20,[5,5,9,9]);x.fill();
-      x.fillStyle='rgba(255,255,255,.45)';for(var m=q.x-18;m<q.x+22;m+=9)x.fillRect(m,q.y-2,4,20);
+      // A manta acompanha os dois joelhos e cai mais pela borda livre.
+      x.save(); x.beginPath(); x.moveTo(q.x-22,q.y);
+      x.quadraticCurveTo(q.x-10,q.y-5,q.x+2,q.y-1);
+      x.quadraticCurveTo(q.x+15,q.y-3,q.x+22,q.y+2);
+      x.lineTo(q.x+25,q.y+20); x.quadraticCurveTo(q.x+16,q.y+24,q.x+5,q.y+17);
+      x.quadraticCurveTo(q.x-8,q.y+13,q.x-22,q.y+16); x.closePath();
+      x.fillStyle=ac; x.fill(); x.clip();
+      x.strokeStyle='rgba(255,255,255,.48)'; x.lineWidth=2;
+      for(var m=-17; m<24; m+=9){
+        x.beginPath(); x.moveTo(q.x+m,q.y-4);
+        x.lineTo(q.x+m+4,q.y+22); x.stroke();
+      }
+      x.strokeStyle='rgba(99,54,110,.19)'; x.lineWidth=1.5;
+      for(var faixa=5; faixa<=17; faixa+=6){
+        x.beginPath(); x.moveTo(q.x-23,q.y+faixa);
+        x.quadraticCurveTo(q.x+1,q.y+faixa-6,q.x+25,q.y+faixa+2); x.stroke();
+      }
+      x.restore();
       x.fillStyle='rgba(255,255,255,.7)';x.font='9px sans-serif';x.textAlign='center';x.fillText('♥',q.x+1,q.y+12);
     }
     x.restore();
@@ -113,10 +217,21 @@ function petLifeSofa(x, frente, visual){
 }
 //←petLifeSofaBracos
 function petLifeSofaBracos(x){
-  x.fillStyle='#c38acb';x.beginPath();x.roundRect(38,166,18,29,8);x.fill();
-  x.beginPath();x.roundRect(136,166,18,29,8);x.fill();
-  x.fillStyle='#f4c6e5';x.beginPath();x.roundRect(42,167,12,15,6);x.fill();
-  x.beginPath();x.roundRect(138,167,12,15,6);x.fill();
+  var tecido=x.createLinearGradient(0,166,0,195);tecido.addColorStop(0,'#e3addc');tecido.addColorStop(.45,'#cd94d1');tecido.addColorStop(1,'#b87dc1');
+  // Braços com superfície superior recuada e frente arredondada; mantêm a mesma extensão e oclusão.
+  [1,-1].forEach(function(k){
+    var a=k===1?38:154;function X(v){return a+k*v;}
+    x.fillStyle='#b87dc1';x.beginPath();x.moveTo(X(0),177);x.quadraticCurveTo(X(0),166,X(7),166);
+    x.lineTo(X(13),166);x.quadraticCurveTo(X(18),167,X(18),175);x.lineTo(X(18),188);
+    x.quadraticCurveTo(X(18),195,X(10),195);x.quadraticCurveTo(X(0),195,X(0),187);x.closePath();x.fill();
+    x.fillStyle=tecido;x.beginPath();x.moveTo(X(1),177);x.quadraticCurveTo(X(2),171,X(9),171);
+    x.quadraticCurveTo(X(16),171,X(17),178);x.lineTo(X(17),187);
+    x.quadraticCurveTo(X(16),194,X(9),194);x.quadraticCurveTo(X(1),194,X(1),187);x.closePath();x.fill();
+    x.fillStyle='#f4c6e5';x.beginPath();x.moveTo(X(2),176);x.quadraticCurveTo(X(3),168,X(9),167);
+    x.quadraticCurveTo(X(15),168,X(16),175);x.quadraticCurveTo(X(10),172,X(2),176);x.closePath();x.fill();
+    x.strokeStyle='#d29bd0';x.lineWidth=.75;x.beginPath();x.moveTo(X(3),178);
+    x.quadraticCurveTo(X(9),174,X(15),178);x.stroke();
+  });
 }
 //←petLifeMovimentoReduzido
 function petLifeMovimentoReduzido(){
@@ -128,7 +243,7 @@ function petLifePoseDesenho(t){
   var alvo = PET_LIFE_POSES[petLifePose] || PET_LIFE_EM_PE;
   var ate = {x:alvo.x, y:alvo.y, rot:alvo.rot, sit:petLifePose ? 1 : 0};
   if(!petLifePoseOrigem || petLifeMovimentoReduzido()) return ate;
-  var p = Math.max(0,Math.min(1,(t-petLifePoseInicio)/24));p=p*p*(3-2*p);
+  var p = Math.max(0,Math.min(1,(t-petLifePoseInicio)/24));p=p*p*p*(p*(p*6-15)+10); // aceleração suave nas duas extremidades; mesma duração
   var de = petLifePoseOrigem;
   return {x:de.x+(ate.x-de.x)*p,y:de.y+(ate.y-de.y)*p,
     rot:de.rot+(ate.rot-de.rot)*p,sit:de.sit+(ate.sit-de.sit)*p};
@@ -144,7 +259,8 @@ function petLifePetAproximar(quer, delta){
 function petLifeRoupaSaia(){
   var c = CH[sel];if(!c)return '';
   var out = c.out || '';
-  if(out === 'sweet' || out === 'zipper') return out;
+  if(out === 'sweet' || out === 'zipper') return c.baixo==='bermuda'?'':out;
+  if(out==='estrelado')return c.baixo==='saia'?'saia':'';
   if(['','y2k','seifuku','citypop'].indexOf(out) < 0) return '';
   return typeof TWAvatarRoupa !== 'undefined' && TWAvatarRoupa.qual(c,out) === 'saia' ? 'saia' : '';
 }
@@ -165,6 +281,12 @@ function petLifeCanelaRoupa(x, px, base){
 }
 //←petLifeLerCorColo
 function petLifeLerCorColo(x, q){   // 1 pixel do quadril: as coxas usam a mesma cor da roupa
+  var tecido = CH[sel] || {}, look = tecido.out || '';
+  var catalogo = typeof TWAvatarRoupa !== 'undefined' && TWAvatarRoupa.BAIXO;
+  var corTecido = catalogo && Object.prototype.hasOwnProperty.call(catalogo,look) ? catalogo[look].cor : '';
+  if(look==='sweet' || look==='zipper') corTecido = tecido.outcol || '#ffffff';
+  if(look==='estrelado') corTecido = !tecido.outcol || /^#?f{6}$/i.test(tecido.outcol) ? '#3b5bdb' : tecido.outcol;
+  if(corTecido){ petLifeCorColo=corTecido; petLifeCorSaia=corTecido; return; }
   var saia = petLifeRoupaSaia();petLifeCorSaia = petLifeCorColo;
   try{
     var extra = saia ? Math.round(8*petDpr) : 0;
@@ -316,10 +438,14 @@ function petArrumoAbaixo(lx, ly){
   return true;   // no modo arrumar, o toque não vira carinho nem abre objetos
 }
 //←petArrumoSoltar
-function petArrumoSoltar(){
+function petArrumoSoltar(ev){
   var A = petArrumoLer(), a = petArrastando;
   if(!a) return false;
   petArrastando = null;
+  if(ev && ev.type !== 'pointerup'){
+    if(a.dono===petArrumoDono){if(a.antes===undefined)delete A[a.tipo][a.k];else A[a.tipo][a.k]=a.antes;petBg=null;}
+    return true;
+  }
   if(a.dono === petArrumoDono && JSON.stringify(a.antes) !== JSON.stringify(A[a.tipo][a.k])){
     petArrumoAnterior = {tipo:a.tipo, k:a.k, antes:a.antes, dono:a.dono};
     petArrumoSalvar();
@@ -333,6 +459,12 @@ function petArrumoSoltar(){
 //←petArrumoModo
 function petArrumoModo(on){   // liga/desliga o modo e o gesto de arrastar no toque
   petArrumoLer();
+  // Apenas pointerup confirma a mudança. Fechar o modo durante o gesto desfaz o deslocamento.
+  if(petArrastando)petArrumoSoltar({type:'pointercancel'});
+  if(typeof petArrumoPointer!=='undefined' && petArrumoPointer!==null){
+    var id=petArrumoPointer;petArrumoPointer=null;
+    if(typeof petCv!=='undefined'&&petCv&&petCv.releasePointerCapture)try{petCv.releasePointerCapture(id);}catch(e){}
+  }
   petArrumando = !!on; petArrastando = null; petArrumoAnterior = null;
   if(!on) petArrumoSalvar();
   if(typeof petCv !== 'undefined' && petCv && petCv.style) petCv.style.touchAction = on ? 'none' : '';
@@ -428,7 +560,11 @@ function petMakeBg(){
   // Penteadeira + espelho de camarim (moldura e vidro; as lâmpadas piscam no loop)
   x.fillStyle = '#f7d9ea'; RR(18, 140, 132, 30, 6); x.fill();
   x.fillStyle = '#e9b8d3'; x.fillRect(18, 152, 132, 3);
-  x.fillStyle = '#ffe9a8'; RR(30, 40, 108, 96, 10); x.fill();
+  x.fillStyle = 'rgba(104,64,111,.18)'; RR(31,43,109,96,11); x.fill();
+  var moldura = x.createLinearGradient(30,40,137,133);
+  moldura.addColorStop(0,'#fff5ca'); moldura.addColorStop(.55,'#f6d19a'); moldura.addColorStop(1,'#db9fb5');
+  x.fillStyle = moldura; RR(30,40,108,96,10); x.fill();
+  x.strokeStyle = '#fff1cf'; x.lineWidth = 1.4; RR(33,43,102,90,8); x.stroke();
   var mg = x.createLinearGradient(40, 50, 128, 126); mg.addColorStop(0, '#dff3ff'); mg.addColorStop(.55, '#bfe3ff'); mg.addColorStop(1, '#e9dcff');
   x.fillStyle = mg; RR(40, 50, 88, 76, 6); x.fill();
   x.fillStyle = 'rgba(255,255,255,.6)'; x.beginPath(); x.moveTo(52, 56); x.lineTo(66, 56); x.lineTo(48, 92); x.lineTo(46, 80); x.closePath(); x.fill();
@@ -440,7 +576,19 @@ function petMakeBg(){
   var fg = x.createLinearGradient(0, 170, 0, 220); fg.addColorStop(0, '#f5c9dd'); fg.addColorStop(1, '#e4a9c6');
   x.fillStyle = fg; x.fillRect(0, 170, 360, 50);
   x.strokeStyle = 'rgba(255,255,255,.35)'; x.lineWidth = 1;
-  for(var py = 182; py < 220; py += 12){ x.beginPath(); x.moveTo(0, py); x.lineTo(360, py); x.stroke(); }
+  // As juntas das tábuas convergem sob o espelho.
+  var limites = [170, 176, 186, 200, 220];
+  x.beginPath();
+  for(var fila=1; fila<limites.length; fila++){
+    var tras=limites[fila-1], frente=limites[fila];
+    x.moveTo(0,frente); x.lineTo(360,frente);
+    for(var tabua=-140+(fila%2)*55; tabua<520; tabua+=110){
+      x.moveTo(126+(tabua-126)*(tras-92)/128,tras);
+      x.lineTo(126+(tabua-126)*(frente-92)/128,frente);
+    }
+  }
+  x.stroke();
+  x.fillStyle = '#edc4db'; x.fillRect(0,166,360,4);
   x.fillStyle = 'rgba(123,63,240,.18)'; x.fillRect(0, 170, 360, 2);
   // Meu Camarim⭐Life! ML1: objetos estáticos no mesmo fundo em cache.
   // Celular na mesinha lateral, sem cobrir o personagem nem os controles do pet.
@@ -451,6 +599,8 @@ function petMakeBg(){
   x.fillStyle = '#dfb1dc'; RR(152, 150, 28, 13, 3); x.fill();                           // gaveta
   x.fillStyle = '#c68dbd'; x.fillRect(155, 156, 22, 1.5);
   x.fillStyle = '#fff4c9'; x.beginPath(); x.arc(166, 159.5, 1.4, 0, 7); x.fill();
+  x.fillStyle='#ae77b0';x.beginPath();x.moveTo(178,150);x.lineTo(183,146);x.lineTo(183,159);x.lineTo(178,163);x.closePath();x.fill();
+  x.fillStyle='#f8ddf0';x.beginPath();x.moveTo(150,147);x.lineTo(155,143);x.lineTo(185,143);x.lineTo(181,147);x.closePath();x.fill();
   x.fillStyle = '#efc6ea'; RR(150, 147, 32, 4, 2); x.fill();                            // tampo
   // Celular em pé no suporte, proporcional à mesinha.
   x.fillStyle = '#b77bc4'; x.beginPath(); x.moveTo(160, 147); x.lineTo(172, 147); x.lineTo(170, 143); x.lineTo(162, 143); x.closePath(); x.fill();
@@ -472,6 +622,8 @@ function petMakeBg(){
   x.fillStyle = '#ffe37a'; RR(197, 152, 7, 10, 2); x.fill();
   x.fillStyle = '#9b30d9'; x.fillRect(207, 153, 8, 9);
   x.fillStyle = '#fff4c9'; x.font = '7px sans-serif'; x.fillText('★', 211, 160);
+  x.fillStyle='#a66bb0';x.beginPath();x.moveTo(216,149);x.lineTo(220,145);x.lineTo(220,173);x.lineTo(216,177);x.closePath();x.fill();
+  x.fillStyle='#efd0e9';x.beginPath();x.moveTo(181,144);x.lineTo(185,141);x.lineTo(222,141);x.lineTo(219,144);x.closePath();x.fill();
   x.fillStyle = '#bd82c1'; RR(181, 144, 38, 5, 2); x.fill();
   x.restore();
 
@@ -781,7 +933,8 @@ function petCartasHtml(){
 function petPhoneAgendaHtml(){
   if(!contaJ) return '<p class="petphone-dica">🔒 ' + escHtml(tr('Entre com Google para ver sua Agenda.')) + '</p>';
   if(petPhoneAgendaDono !== petPhoneContaChave()) return '<p class="petphone-dica">⌛ ' + escHtml(tr('Carregando...')) + '</p>';
-  if(petPhoneAgendaDados === null) return '<p class="petphone-dica">⌛ ' + escHtml(tr('Carregando...')) + '</p>';
+  if(petPhoneAgendaDados === null) return '<p class="petphone-dica" role="status">⌛ ' + escHtml(tr('Carregando...')) + '</p>';
+  if(petPhoneAgendaDados === false) return '<p class="petphone-dica" role="status">⚠️ ' + escHtml(tr('Não deu para falar com o servidor. Tente de novo.')) + '</p>';
   if(!petPhoneAgendaDados.length) return '<p class="petphone-dica">📅 ' + escHtml(tr('Nenhum compromisso disponível agora.')) + '</p>';
   var validas = petPhoneAgendaDados.filter(function(m){ return m && typeof m.k === 'string' && +m.meta > 0; }).slice(0, 6);
   if(!validas.length) return '<p class="petphone-dica">📅 ' + escHtml(tr('Nenhum compromisso disponível agora.')) + '</p>';
@@ -850,6 +1003,7 @@ function petPhoneMomentosRender(){
   var imagemQuadro = $('petPhoneQuadroImagem'), quadro = petVidaQuadroLer();
   if(imagemQuadro && quadro && quadro.url) imagemQuadro.src = quadro.url;
   petPhoneMomentos.forEach(function(f){
+    if(f.dono !== petPhoneFotoChave())return; // defesa também na pintura, após troca de conta
     var img = corpo.querySelector('[data-momento-id="' + f.id + '"]');
     var dl = corpo.querySelector('[data-momento-baixar="' + f.id + '"]');
     if(img) img.src = f.miniUrl || f.url;
@@ -1271,6 +1425,8 @@ function petPhoneChatResponder(opcao){
 function petPhoneRender(){
   if(!petPhoneOpen) return;
   var corpo = $('petPhoneCorpo'); if(!corpo) return;
+  var ativo=typeof document!=='undefined'&&document.activeElement;
+  var voltaFoco=ativo&&corpo.contains&&corpo.contains(ativo)&&ativo.getAttribute('data-phone')==='voltar';
   var nomes = PET_PHONE_APPS[LANG] || PET_PHONE_APPS.pt;
   if(petPhoneTela === 'home'){
     corpo.innerHTML = '<div class="petphone-capa"><canvas id="petPhoneCapa" width="520" height="280" aria-hidden="true"></canvas>' +
@@ -1297,6 +1453,7 @@ function petPhoneRender(){
   else if(petPhoneTela === 'fotos') conteudo = petPhoneFotosHtml();
   else if(petPhoneTela === 'cartas') conteudo = petCartasHtml();
   corpo.innerHTML = '<header class="petphone-pagetopo"><button type="button" data-phone="voltar" aria-label="Voltar">‹</button><h2>' + titulo + '</h2></header>' + conteudo;
+  if(voltaFoco&&corpo.querySelector){var voltar=corpo.querySelector('.petphone-pagetopo [data-phone="voltar"]');if(voltar)voltar.focus({preventScroll:true});}
   if(petPhoneTela === 'chat') petPhoneChatRetratos(corpo);
   if(petPhoneTela === 'cartas') petCartaFotoRender(corpo);
   if(petPhoneTela === 'fotos'){
@@ -1379,12 +1536,12 @@ function petPhoneAgendaCarregar(){
   if(cache && cache.dono === dono && Date.now() - cache.em < 30000){ petPhoneAgendaDados = cache.d; petPhoneAgendaDono = dono; petPhoneRender(); return; }
   petPhoneAgendaDados = null; petPhoneAgendaDono = dono; petPhoneRender();
   contaRpc('missoes').then(function(d){
-    if(Array.isArray(d)) petPhoneAgendaCache = {dono:dono, em:Date.now(), d:d};
     if(req !== petPhoneAgendaReq || !petPhoneOpen || petPhoneTela !== 'agenda' || dono !== petPhoneContaChave()) return;
-    petPhoneAgendaDados = Array.isArray(d) ? d : []; petPhoneAgendaDono = dono; petPhoneRender();
+    if(Array.isArray(d)) petPhoneAgendaCache = {dono:dono, em:Date.now(), d:d};
+    petPhoneAgendaDados = Array.isArray(d) ? d : false; petPhoneAgendaDono = dono; petPhoneRender();
   }).catch(function(){
     if(req === petPhoneAgendaReq && petPhoneOpen && petPhoneTela === 'agenda' && dono === petPhoneContaChave()){
-      petPhoneAgendaDados = []; petPhoneRender();
+      petPhoneAgendaDados = false; petPhoneRender();
     }
   });
 }
@@ -1762,7 +1919,10 @@ function petVidaLembrancaCenario(x){
     }else if(a.tipo==='foto'){
       x.rotate(-.04);
       x.fillStyle='rgba(67,40,84,.22)';x.fillRect(-11,-2,23,3);
+      // Moldura com cavalete e passe-partout; a foto original permanece intacta.
+      x.fillStyle='#815e93';x.beginPath();x.moveTo(3,-3);x.lineTo(10,0);x.lineTo(6,-14);x.closePath();x.fill();
       x.fillStyle='#633c72';x.fillRect(-10.5,-25,21,24);
+      x.fillStyle='#b98fc7';x.fillRect(-10.5,-25,21,2);x.fillRect(-10.5,-23,1.5,20);
       x.fillStyle='#ffe9bf';x.fillRect(-9,-24,18,21);
       x.fillStyle='#eee1fa';x.fillRect(-7.5,-22,15,16);
       if(fotoReal){
@@ -1839,7 +1999,8 @@ function petDrawRoom(){
     g = x; g.save();
     var quadril = pose ? petLifeQuadril(pose) : null;
     if(petLifePose === 'descansar'){   // almofadinha onde a cabeça encosta
-      g.fillStyle = '#ffd3ea'; g.beginPath(); g.roundRect(42, 128, 26, 20, 8); g.fill();
+      var almofada=g.createLinearGradient(42,128,68,148);almofada.addColorStop(0,'#fff0f8');almofada.addColorStop(1,'#e1a4d0');
+      g.fillStyle = almofada; g.beginPath(); g.roundRect(42, 128, 26, 20, 8); g.fill();
       g.fillStyle = '#ffffff'; g.globalAlpha = .55; g.beginPath(); g.roundRect(46, 131, 10, 5, 3); g.fill(); g.globalAlpha = 1;
     }
     if(pose){ // o recorte acompanha o sentar; saias mantêm a barra em vez de virar bermuda
@@ -1848,8 +2009,8 @@ function petDrawRoom(){
       g.beginPath();g.rect(0,0,360,limite);g.clip();
     }
     else { g.fillStyle = 'rgba(60,25,90,.18)'; g.beginPath(); g.ellipse(114, PET_FLOOR + 1, 21, 3.5, 0, 0, 7); g.fill(); }
-    g.translate(poseDesenho.x,
-      poseDesenho.y + Math.sin(petT * (petLifePose === 'descansar' ? .018 : .05)) * (pose ? .55 : 1.5) - (pose ? 0 : chop));
+    var bobIdol=petLifeMovimentoReduzido()||pose?0:Math.sin(petT*.05)*1.5;
+    g.translate(poseDesenho.x,poseDesenho.y+bobIdol-(pose||petLifeMovimentoReduzido()?0:chop));
     if(pose && pose.rot) g.rotate(pose.rot);
     // Olhar sugerido pelo corpo, sem editar olhos/pupilas ou a função drawChar compartilhada.
     if(petLifePose === 'conviver' && !sleepy && !petAnim && !petLifePhoneOlhar &&
@@ -1859,8 +2020,21 @@ function petDrawRoom(){
     }
     if(idolBrincando) g.rotate(idolBrincando.inclina);
     if(olharLembranca) g.rotate(olharLembranca);
+    if(pose){
+      // Inclinação a partir do quadril para manter o contato com a almofada.
+      // Três assinaturas corporais, sem inferir personalidade do Idol personalizado.
+      var atitude = sel === 0 ? .11 : sel === 1 ? -.07 : sel === 2 ? .045 : 0;
+      if(petLifePose==='descansar')atitude-=.045;
+      if(petLifePose==='conviver')atitude+=sel===1?.025:.055;
+      var respira=petLifeMovimentoReduzido()?0:Math.sin(petT*(sel===1?.022:sel===2?.028:.034))*.012;
+      g.translate(36,81.6); g.rotate((atitude+respira)*pose.sit); g.translate(-36,-81.6);
+    }
     g.scale(2.4, 2.4);
-    drawChar(CH[sel], 0, 0, 0, expr);
+    var poseAnterior = charPose;
+    try{
+      if(pose) charPose = pose;
+      drawChar(CH[sel], 0, 0, 0, expr);
+    }finally{ charPose = poseAnterior; }
     g.restore();
     if(pose) petLifeLerCorColo(x, quadril);
   } finally { g = og; }
@@ -1877,7 +2051,7 @@ function petDrawRoom(){
   petBrinquedoEspontaneo(x, petData.ativo, p.cfg, petT,
     !petLifePose && !petLifePhoneOlhar && !sleepy && !petAnim && !petGame && petHop <= 0);
   // Sombra + pet: o jeito aparece apenas quando está acordado e sem ação em andamento.
-  var hop = petHop > 0 ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
+  var hop = petHop > 0 && !petLifeMovimentoReduzido() ? Math.sin((20 - petHop) / 20 * Math.PI) * 14 : 0;
   var recebendo = petRecepcaoFrames > 0 && !sleepy && !petAnim && petHop <= 0;
   if(recebendo) hop += petRecepcaoPulo(petData.ativo, p.cfg, petRecepcaoFrames);
   var podeReagir = !sleepy && !petAnim && petHop <= 0 && p.fome >= 25 && p.humor >= 25 &&
@@ -1888,6 +2062,7 @@ function petDrawRoom(){
   var livre = podeReagir && !petLifePhoneOlhar && !companhia && petLifePose !== 'conviver' && petLifePetPerto < .1;
   var rotina = petRotinaVisual(petData.ativo, p.cfg, petT, livre);
   hop += rotina.pulo + (companhia ? companhia.pulo : 0);
+  if(petLifeMovimentoReduzido())hop=0;
   var jeito = petIdleJeito(petData.ativo, p.cfg, petT, livre);
   if(rotina.modo === 'descanso'){ jeito.x *= .25; jeito.y *= .25; }
   var passeio = petPasseioBrinquedo(petData.ativo, p.cfg, petT, livre);
@@ -1922,7 +2097,7 @@ function petDrawRoom(){
     var inclinacao = companhia ? companhia.inclina : 0;
     if(petLifePose === 'conviver' && podeReagir && !petLifePhoneOlhar){
       var aOlhar=petT-petLifePoseInicio, tipoOlhar=petRecepcaoJeito(petData.ativo,p.cfg);
-      if(!petLifeMovimentoReduzido() && aOlhar >= 30 && aOlhar < 100) inclinacao += Math.sin((aOlhar-30)/70*Math.PI)*(tipoOlhar === 'pati' ? -.04 : tipoOlhar === 'lirika' ? .012 : -.025);
+      if(!petLifeMovimentoReduzido() && aOlhar >= 30 && aOlhar < 100) inclinacao += Math.pow(Math.sin((aOlhar-30)/70*Math.PI),2)*(tipoOlhar === 'pati' ? -.04 : tipoOlhar === 'lirika' ? .012 : -.025);
     }
     if(atencaoLembranca) inclinacao -= olharLembranca * atencaoLembranca.inclina;
     x.rotate(inclinacao);
@@ -2730,7 +2905,10 @@ function petDrawDecor(x){
     else if(st === 'quadro'){ x.fillStyle = '#f4c96b'; x.fillRect(-w / 2 - 3, -h / 2 - 3, w + 6, h + 6); }
     else { x.fillStyle = '#fff'; x.fillRect(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2); }
     x.shadowColor = 'transparent';
-    if(st === 'quadro'){ x.fillStyle = '#c8963e'; x.fillRect(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2); }
+    if(st === 'quadro'){
+      x.fillStyle='#ffe2a8';x.fillRect(-w/2-2.5,-h/2-2.5,w+5,1);
+      x.fillStyle='#b57d54';x.fillRect(-w/2-2.5,h/2+1.5,w+5,1);
+      x.fillStyle = '#c8963e'; x.fillRect(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2); }
     x.drawImage(im, -w / 2, -h / 2, w, h);
     if(st === 'poster'){   // fitas nos cantos
       x.fillStyle = 'rgba(255,111,181,.55)';

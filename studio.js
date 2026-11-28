@@ -173,6 +173,11 @@
   function sessaoAtiva(sess, dono){
     return sess === sessao && ov && !ov.hidden && dono === donoFoto();
   }
+  var CONFIRMANDO = {
+    pt:'Foto tirada. Aguardando a nota…', en:'Photo taken. Waiting for your score…',
+    es:'Foto tomada. Esperando la puntuación…', id:'Foto diambil. Menunggu nilai…',
+    th:'ถ่ายรูปแล้ว กำลังรอคะแนน…', ja:'撮影しました。採点中…'
+  };
   var MOMENTOS = {
     pt:['Guardar em Momentos','Guardada em Momentos!'],en:['Keep in Moments','Saved to Moments!'],
     es:['Guardar en Momentos','¡Guardada en Momentos!'],id:['Simpan di Momen','Tersimpan di Momen!'],
@@ -344,18 +349,25 @@
   function clicar(){
     if(referenciaCarregando)return;
     var sess = sessao, dono = donoFoto();
+    tempoDaPrevia = null;
     fase = 'contagem'; cont = performance.now(); ocupado = true; ui();
     if(pilotoStudio && esc_.fundo === pilotoStudio.fundo) TW_PILOTO_BAIRRO.iniciar('studio',pilotoStudio);
     if(window.TW_CELULAR && typeof window.TW_CELULAR.estreiaEtapa === 'function') window.TW_CELULAR.estreiaEtapa('studio', false);
-    if(typeof twJogoSom === 'function'){ twJogoSom('toque'); setTimeout(function(){ twJogoSom('toque'); }, 600); setTimeout(function(){ twJogoSom('toque'); }, 1200); }
+    if(typeof twJogoSom === 'function'){ twJogoSom('toque'); setTimeout(function(){ if(sessaoAtiva(sess,dono)) twJogoSom('toque'); }, 600); setTimeout(function(){ if(sessaoAtiva(sess,dono)) twJogoSom('toque'); }, 1200); }
     setTimeout(function(){
       if(sess !== sessao) return;
       if(dono !== donoFoto()){ fase = 'monta'; ocupado = false; ui(); return; }
       var ac = acertos(), n = Math.max(1, ac.filter(Boolean).length);
-      if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
+      if(typeof twJogoSom === 'function'){ twJogoSom('flash'); setTimeout(function(){ if(sessaoAtiva(sess,dono) && foto === capturada) twJogoSom(n >= 3 ? 'vitoria' : 'ponto'); }, 450); }
       else if(typeof beep === 'function') try{ beep(1760, .05, 'square', .03); }catch(e){}
-      foto = {avatar:JSON.parse(JSON.stringify(meuAv() || {})),estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), dia:hojeBR(), legenda:pauta ? t('t_' + pauta.detalhe.tipo) : '', dono:dono, verificada:false, premio:0};
-      foto.retrato = retratoSeguro({v:1,avatar:foto.avatar,tempo:foto.t0 / 1000});
+      var originalAv = meuAv() || {};
+      var avatarFoto = JSON.parse(JSON.stringify(originalAv));
+      if(originalAv.c && typeof perfIdentidadeOficial==='function'){
+        var oficial = perfIdentidadeOficial(originalAv.c);
+        if(oficial) perfMarcarIdentidadeLocal(avatarFoto.c,oficial);
+      }
+      foto = {avatar:avatarFoto,estrelas:n, escolhas:JSON.parse(JSON.stringify(esc_)), t0:performance.now(), dia:hojeBR(), legenda:pauta ? t('t_' + pauta.detalhe.tipo) : '', dono:dono, verificada:false, premio:0};
+      foto.retrato = retratoSeguro({v:1,avatar:foto.avatar,tempo:tempoDaPrevia === null ? (calmo?0:foto.t0 / 1000) : tempoDaPrevia});
       // PNG local conserva o avatar original; somente o retrato público é filtrado.
       var capturada = foto;
       try{ capturarCena(capturada); }catch(e){ foto = null; fase = 'monta'; ocupado = false; msg = t('erro'); ui(); return; }
@@ -369,6 +381,7 @@
         fase='foto';ocupado=false;msg=referenciaT()[4];ui();return;
       }
       if(lookTemporario || !logado() || !servidor){ fase = 'foto'; ocupado = false; msg = logado() ? '' : t('treino'); ui(); return; }
+      ui();
       contaRpc('studio_clique', {p:capturada.escolhas}).then(function(r){
         if(sess !== sessao || dono !== donoFoto() || foto !== capturada) return;
         if(r && r.ok){
@@ -380,9 +393,20 @@
       }).catch(function(){ if(sess === sessao && dono === donoFoto()) msg = t('erro'); }).then(function(){ if(sess !== sessao) return; if(dono !== donoFoto()){ foto = null; fase = 'monta'; } else fase = 'foto'; ocupado = false; ui(); });
     }, 1900);
   }
+  // O Mural armazena as escolhas, sem versão da lente. As fotos publicáveis
+  // mantêm a projeção histórica em todas as etapas, da prévia à capa.
+  function lenteDeEnsaio(){
+    return !!(lookTemporario || pilotoStudio || !logado() || !servidor || arranjoFlores(esc_.objeto).length);
+  }
   function capturarCena(f){
     var cv = document.createElement('canvas'); cv.width = 432; cv.height = 540;
-    cena(cv.getContext('2d'), cv.width, cv.height, f.escolhas, f.t0 / 1000, f.avatar);
+    var escala = Math.min(3, Math.max(2, Math.round(window.devicePixelRatio || 1)));
+    var original = document.createElement('canvas');
+    original.width = cv.width * escala; original.height = cv.height * escala;
+    var pincel = original.getContext('2d'); pincel.scale(escala, escala);
+    cena(pincel, cv.width, cv.height, f.escolhas, f.retrato ? f.retrato.tempo : f.t0 / 1000, f.avatar, lenteDaPrevia);
+    cv.getContext('2d').drawImage(original, 0, 0, cv.width, cv.height);
+    f.original = original;
     f.cena = cv;
   }
   function polaroidLimpa(f){
@@ -407,7 +431,7 @@
     var f0 = foto;
     if(window.TW_CAMERA && TW_CAMERA.abrir({titulo:'Photo⭐Studio!', arquivo:'photo-studio-' + f0.dia + '.png', W:432, H:540, foco:[216, 270],
         legenda:['⭐'.repeat(f0.estrelas) + '☆'.repeat(3 - f0.estrelas) + ' Photo⭐Studio!', f0.legenda + ' · ' + f0.dia.split('-').reverse().slice(0, 2).join('/')],
-        desenhar:function(x2, W2, H2){ cena(x2, W2, H2, f0.escolhas, f0.t0 / 1000, f0.avatar); }})) return;
+        desenhar:function(x2, W2, H2){ x2.drawImage(f0.original, 0, 0, W2, H2); }})) return;
     try{ var a = document.createElement('a'); a.download = 'photo-studio-' + foto.dia + '.png'; a.href = (window.twMarcaPng ? window.twMarcaPng(polaroidLimpa(foto)) : fotoUrl(foto)); document.body.appendChild(a); a.click(); a.remove(); }catch(e){ msg = t('erro'); ui(); }
   }
   function guardar(){
@@ -439,6 +463,13 @@
   }
   function ui(){
     if(!ov) return;
+    var ativo=document.activeElement, foco=ativo&&ov.contains(ativo)&&ativo.getAttribute('data-st');
+    var valorFoco=foco&&ativo.getAttribute('data-v');
+    function restaurarFoco(){
+      if(!foco||ativo.isConnected)return;
+      var alvos=ov.querySelectorAll('[data-st]');
+      for(var i=0;i<alvos.length;i++)if(alvos[i].getAttribute('data-st')===foco&&alvos[i].getAttribute('data-v')===valorFoco&&!alvos[i].disabled&&alvos[i].getClientRects().length){alvos[i].focus({preventScroll:true});break;}
+    }
     ov.querySelector('#studioTit').textContent = t('tit');
     var abas = ov.querySelector('#studioAbas'), noMural = aba === 'mural';
     abas.innerHTML = logado() ? ['estudio','mural'].map(function(k, i){ return '<button type="button" class="stabab' + (aba === k ? ' on' : '') + '" data-st="aba" data-v="' + k + '" aria-pressed="' + (aba === k) + '">' + esc(t(i ? 'aba2' : 'aba1')) + '</button>'; }).join('') : '';
@@ -449,7 +480,7 @@
     pautaBox.hidden=noMural || (!pauta && !temaHtml(esc_));
     pautaBox.open=pautaAberta;
     ov.querySelector('#studioMural').hidden = !noMural;
-    if(noMural){ muralUI(); return; }
+    if(noMural){ muralUI(); restaurarFoco(); return; }
     var ac = acertos(), d = pauta && pauta.detalhe;
     pautaBox.querySelector('summary').textContent=pauta?t('pauta')+' · '+ac.filter(Boolean).length+'/3':t('pauta');
     pautaBox.querySelector('div').innerHTML = pauta ? '<div class="stpauta"><b>' + esc(t('pauta')) + ': ' + esc(t('t_' + d.tipo)) + '</b><span>' +
@@ -463,7 +494,16 @@
       obturador=document.createElement('button');obturador.type='button';obturador.className='btn stclique';
       obturador.dataset.st='clique';acao.appendChild(obturador);
     }
-    obturador.hidden=fase==='foto';
+    var aviso=acao.querySelector('.stconfirmando');
+    if(!aviso){
+      aviso=document.createElement('p');aviso.className='stmsg stconfirmando';
+      aviso.setAttribute('role','status');acao.appendChild(aviso);
+    }
+    var confirmando=fase==='contagem' && !!(foto && foto.cena);
+    aviso.hidden=!confirmando;
+    var mensagem=confirmando ? CONFIRMANDO[L()] : '';
+    if(aviso.textContent!==mensagem) aviso.textContent=mensagem;
+    obturador.hidden=fase==='foto' || confirmando;
     obturador.textContent=t('clique');
     obturador.disabled=ocupado||referenciaCarregando;
     var c = ov.querySelector('#studioCorpo'), hh = '';
@@ -475,7 +515,7 @@
       // As estrelas já estão na polaroid: aqui vai o que faltou na pauta (ou que ela ficou completa).
       var fa = pauta ? [[ac[0], nomeOpc('fundo', pauta.fundo)], [ac[1], nomeOpc('pose', pauta.pose)], [ac[2], nomeOpc(d.tipo, d.valor)]].filter(function(p){ return !p[0]; }).map(function(p){ return p[1]; }) : [];
       resultados.innerHTML=(window.TW_ALBUM_FOTOS&&!foto.serie&&!foto.seriePendente?TW_ALBUM_FOTOS.botao('data-st="serie"'):'')+
-        '<button type="button" class="btn" data-st="salvar">💾 '+esc(t('salvar'))+'</button>';
+        '<button type="button" class="btn" data-st="salvar">'+esc(window.TW_CAMERA ? TW_CAMERA.t('abrir') : t('salvar'))+'</button>';
       if(foto.verificada && !publicou) hh += '<p class="stdica">' + esc(PARTILHA[L()]) + '</p>';
       hh += '<p class="stres">' + esc(t('estrelas').replace('{n}', foto.estrelas)) + '</p>' +
         (pauta ? '<p class="stfalta' + (fa.length ? '' : ' ok') + '">' + esc(fa.length ? t('falta').replace('{x}', fa.join(' · ')) : '✓ ' + t('perfeita')) + '</p>' : '') +
@@ -496,8 +536,8 @@
       }
       if(!logado()) hh += '<p class="stdica">' + esc(t('treino')) + '</p>';
     }
-    c.innerHTML = hh; desenhar();
-    if(fase === 'foto' && visorAnterior === 'contagem' && visor.scrollIntoView) visor.scrollIntoView({block:'nearest'});
+    c.innerHTML = hh; desenhar(); restaurarFoco();
+    if(fase === 'foto' && visorAnterior === 'contagem' && visor.scrollIntoView){visor.scrollIntoView({block:'nearest',behavior:'instant'});var salvar=acao.querySelector('[data-st="salvar"]');if(salvar&&(!document.activeElement||document.activeElement===document.body||document.activeElement===obturador))salvar.focus({preventScroll:true});}
   }
   // ---------- Mural da revista (v2) ----------
   function publicar(){
@@ -573,7 +613,8 @@
     x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
     x.save(); x.beginPath(); x.rect(left, m, fw, fh); x.clip(); x.translate(left, m); cena(x, fw, fh, e, typeof tempo === 'number' ? tempo : 1, av); x.restore();
     x.fillStyle = '#3c2a8f'; x.textAlign = 'center'; x.font = Math.round(W * .07) + 'px "Mochiy Pop One",sans-serif';
-    x.fillText('⭐'.repeat(est) + '☆'.repeat(3 - est), W / 2, H - m * 2.2);
+    var nota=Math.max(0,Math.min(3,Math.floor(Number(est)||0)));
+    x.fillText('⭐'.repeat(nota) + '☆'.repeat(3 - nota), W / 2, H - m * 2.2);
     if(legenda){ x.font = Math.round(W * .05) + 'px "Mochiy Pop One",sans-serif'; x.fillStyle = '#b83a9e'; x.fillText(legenda, W / 2, H - m * .8); }
   }
   window.studioPolaroid = polaroid;
@@ -586,10 +627,35 @@
   function fundo(x, W, H, f, tm){
     var g;
     if(f === 'rosa'){ g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#ffd6ea'); g.addColorStop(.75, '#ffeef6'); g.addColorStop(1, '#f7c5dd'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+      // Fundo infinito curvo, com encontro parede/piso suave e duas abas de ciclorama.
+      x.fillStyle='#f1bbd4';x.beginPath();x.moveTo(0,H*.71);x.quadraticCurveTo(W*.5,H*.8,W,H*.71);x.lineTo(W,H);x.lineTo(0,H);x.closePath();x.fill();
+      x.fillStyle='#fbe1ed';x.beginPath();x.moveTo(W*.08,H*.12);x.lineTo(W*.14,H*.17);x.lineTo(W*.14,H*.72);x.lineTo(W*.08,H*.75);x.closePath();x.fill();
       x.fillStyle = 'rgba(255,255,255,.5)'; x.beginPath(); x.ellipse(W / 2, H * .9, W * .55, H * .08, 0, 0, 7); x.fill(); }
     else if(f === 'cortina'){ x.fillStyle = '#fff4e6'; x.fillRect(0, 0, W, H); x.fillStyle = '#bfe9ff'; x.fillRect(W * .2, H * .1, W * .6, H * .45); x.fillStyle = '#fff'; x.fillRect(W * .495, H * .1, W * .01, H * .45); x.fillRect(W * .2, H * .32, W * .6, H * .01);
-      x.fillStyle = '#ff9bd0'; for(var s = 0; s < 2; s++){ x.beginPath(); x.moveTo(s ? W * .8 : W * .2, H * .06); x.quadraticCurveTo(s ? W * .62 : W * .38, H * .3, s ? W * .74 : W * .26, H * .62); x.lineTo(s ? W * .86 : W * .14, H * .62); x.lineTo(s ? W * .86 : W * .14, H * .06); x.fill(); }
-      x.fillStyle = '#f3d3b8'; x.fillRect(0, H * .82, W, H * .18); }
+      for(var s = 0; s < 2; s++){
+        x.save();if(s){x.translate(W,0);x.scale(-1,1);}
+        x.beginPath();x.moveTo(W*.14,H*.06);x.lineTo(W*.38,H*.06);
+        x.quadraticCurveTo(W*.36,H*.28,W*.22,H*.39);
+        x.quadraticCurveTo(W*.24,H*.49,W*.28,H*.66);
+        x.quadraticCurveTo(W*.18,H*.68,W*.12,H*.66);
+        x.quadraticCurveTo(W*.15,H*.4,W*.14,H*.06);x.closePath();
+        x.fillStyle='#ff9bd0';x.fill();x.clip();
+        x.fillStyle='#dc6eb0';
+        [.16,.21,.26,.31].forEach(function(u){
+          x.beginPath();x.moveTo(W*u,H*.06);x.quadraticCurveTo(W*(u-.01),H*.27,W*.2,H*.39);
+          x.quadraticCurveTo(W*(u*.8),H*.53,W*(u*.77),H*.66);
+          x.lineTo(W*(u*.77+.012),H*.66);x.quadraticCurveTo(W*(u*.8+.013),H*.53,W*.21,H*.39);
+          x.quadraticCurveTo(W*(u+.015),H*.27,W*(u+.019),H*.06);x.closePath();x.fill();
+        });
+        x.restore();
+        x.save();if(s){x.translate(W,0);x.scale(-1,1);}
+        x.fillStyle='#f2c67e';x.beginPath();x.ellipse(W*.205,H*.395,W*.043,H*.009,-.12,0,7);x.fill();x.restore();
+      }
+      x.fillStyle='#d7ad98';x.fillRect(0,H*.8,W,H*.02);
+      x.fillStyle = '#f3d3b8'; x.fillRect(0, H * .82, W, H * .18);
+      x.strokeStyle='#dfb59e';x.lineWidth=1.2;x.beginPath();
+      for(var j=0;j<7;j++){var u=W*j/6;x.moveTo(W*.5+(u-W*.5)*.55,H*.82);x.lineTo(u,H);}
+      x.stroke(); }
     else if(f === 'nuvens'){ g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#9fd8ff'); g.addColorStop(1, '#fbe7ff'); x.fillStyle = g; x.fillRect(0, 0, W, H);
       x.fillStyle = '#fff'; [[.2, .2, 1], [.75, .32, .8], [.35, .78, 1.3], [.85, .85, 1]].forEach(function(n, i){ var cx = W * n[0] + Math.sin(tm / 2 + i) * W * .0125, cy = H * n[1], r = W * .0625 * n[2];
         x.beginPath(); x.arc(cx, cy, r, 0, 7); x.arc(cx - r, cy + W / 60, r * .7, 0, 7); x.arc(cx + r, cy + W / 80, r * .75, 0, 7); x.fill(); }); }
@@ -617,6 +683,7 @@
       pose === 'v' || pose === 'tchau' ? [3,31,-.35] : [27,31,.30];
     var arranjo=arranjoFlores(item), flor = item.indexOf('flor_') === 0 || arranjo.length>0, angulo = mao[2];
     // Em retratos próximos, incline a haste para dentro sem mover a mão da pose.
+    if(flor && pose === 'coracao') angulo = .78;
     if(flor && quadro !== 'inteiro' && pose !== 'coracao'){
       angulo = mao[0] < 15 ? .46 : -.46;
     }
@@ -624,11 +691,19 @@
     x.translate(corpo.x + mao[0] * corpo.scale, corpo.y + mao[1] * corpo.scale);
     x.scale(corpo.scale, corpo.scale);
     x.rotate(angulo);
+    // A palma e o polegar acompanham o lado anatômico da mão que segura o objeto.
+    var espelhoMao=mao[0]<15;
+    x.save();if(espelhoMao)x.scale(-1,1);
     x.lineCap = 'round';
     // Mão: palma arredondada na largura do braço; a haste passa entre a palma e os dedos (desenhados depois).
     x.fillStyle=corpo.skin;x.beginPath();
-    if(x.roundRect)x.roundRect(-2.35,-2.3,4.7,5,1.7);else x.rect(-2.35,-2.3,4.7,5);
-    x.fill();
+    x.moveTo(-1.7,-2.45);x.quadraticCurveTo(-2.4,-1.3,-2.25,.45);
+    x.quadraticCurveTo(-2.2,2.5,-.35,2.6);x.quadraticCurveTo(1.8,2.7,2.15,.75);
+    x.quadraticCurveTo(2.45,-1.35,1.65,-2.35);x.closePath();x.fill();
+    x.save();x.clip();var palma=x.createLinearGradient(-2.35,0,2.35,0);
+    palma.addColorStop(0,'rgba(255,255,255,.10)');palma.addColorStop(.58,'rgba(255,255,255,0)');palma.addColorStop(1,'rgba(70,35,65,.19)');
+    x.fillStyle=palma;x.fillRect(-2.5,-2.5,5,5.3);x.restore();
+    x.restore(); // o arranjo permanece na ordem escolhida; apenas a mão é espelhada
     if(arranjo.length && typeof window.bloomDesenharFlor === 'function'){
       var pos = arranjo.length===2 ? [[-2.8,-8],[2.5,-9]] : [[-3.4,-8],[0,-11],[3.4,-8.6]];
       arranjo.forEach(function(k,i){
@@ -653,9 +728,11 @@
       x.strokeStyle = '#49375f'; x.lineWidth = 1.55;
       x.beginPath(); x.moveTo(0,1.6); x.lineTo(0,-4.4); x.stroke();
       if(mic){
-        x.fillStyle = '#746980'; x.beginPath(); x.ellipse(0,-5.3,1.85,2.15,0,0,7); x.fill();
+        x.fillStyle='#544960';x.beginPath();x.moveTo(-1,-3.5);x.quadraticCurveTo(-1.8,-4.4,-1.8,-5.4);x.quadraticCurveTo(-1.8,-7.3,0,-7.4);x.quadraticCurveTo(1.8,-7.3,1.8,-5.4);x.quadraticCurveTo(1.8,-4.4,1,-3.5);x.closePath();x.fill();
         x.strokeStyle = '#ded6e4'; x.lineWidth = .46;
         x.beginPath(); x.moveTo(-1.3,-5.3); x.lineTo(1.3,-5.3); x.stroke();
+        x.fillStyle='#c6a4c8'; x.fillRect(-.64,-3.3,1.28,.7);
+        x.fillStyle='#5b4260'; x.fillRect(-.66,1.3,1.32,1.4);
       } else {
         x.strokeStyle = cor || '#ef83bb'; x.lineWidth = 2.4;
         x.beginPath(); x.moveTo(0,-2.8); x.lineTo(0,-7.6); x.stroke();
@@ -663,20 +740,50 @@
         x.beginPath(); x.moveTo(-.4,-3.2); x.lineTo(-.4,-7); x.stroke();
       }
     }
-    // Punho simples sobre a haste: uma faixa arredondada de dedos e o polegar por cima.
-    x.lineCap='round';x.strokeStyle=corpo.skin;x.lineWidth=2.6;
-    x.beginPath();x.moveTo(-1.5,.2);x.lineTo(1.5,.2);x.stroke();
-    x.lineWidth=1.2;x.beginPath();x.moveTo(1.4,1.2);x.quadraticCurveTo(.2,-.2,-.7,-1.7);x.stroke();
+    if(espelhoMao)x.scale(-1,1);
+    // Dedos fechados por cima do cabo, com polegar arredondado.
+    if(flor){
+      x.fillStyle=corpo.skin; x.beginPath(); x.moveTo(-1.9,.45);
+      x.quadraticCurveTo(-1.8,-1.4,-.3,-1.75); x.quadraticCurveTo(.6,-1.95,.8,-1.2);
+      x.quadraticCurveTo(.9,-.65,-.15,-.3); x.lineTo(-.55,.25);
+      x.quadraticCurveTo(1.25,-.55,1.65,.2); x.quadraticCurveTo(1.9,.95,.65,1.5);
+      x.quadraticCurveTo(-1.2,2.2,-1.9,.45); x.closePath(); x.fill();
+      x.restore(); return;
+    }
+    // Duas curvas suaves dão volume sem separar a mão do braço.
+    x.fillStyle=corpo.skin;x.beginPath();
+    x.moveTo(-1.9,-.65);x.quadraticCurveTo(-1.9,-1.45,-.8,-1.45);
+    x.lineTo(1.1,-1.25);x.quadraticCurveTo(2.15,-1.1,2.15,.1);
+    x.quadraticCurveTo(2.15,1.35,1.05,1.7);x.lineTo(-.95,1.45);
+    x.quadraticCurveTo(-2,1.2,-1.9,-.65);x.closePath();x.fill();
+    x.lineCap='round';x.strokeStyle='rgba(105,56,50,.17)';x.lineWidth=.45;
+    [-.45,.35,1.02].forEach(function(d){
+      x.beginPath();x.moveTo(-1.42,d);x.quadraticCurveTo(-.1,d+.24,1.1,d);x.stroke();
+    });
+    // O polegar envolve a haste, conectado à base da palma, sem contorno solto.
+    x.fillStyle=corpo.skin;x.beginPath();x.moveTo(1.8,1.3);
+    x.quadraticCurveTo(1.05,.8,.05,-.65);x.quadraticCurveTo(-.55,-1.55,-1.05,-.95);
+    x.quadraticCurveTo(-1.45,-.4,-.7,.55);x.quadraticCurveTo(.15,1.75,1.2,2);
+    x.quadraticCurveTo(1.85,1.95,1.8,1.3);x.closePath();x.fill();
+    x.strokeStyle='rgba(105,56,50,.20)';x.lineWidth=.35;x.beginPath();
+    x.moveTo(-.65,.45);x.quadraticCurveTo(.1,1.3,.85,1.55);x.stroke();
     x.restore();
   }
-  function cena(x, W, H, e, tm, avOutro){
+  function cena(x, W, H, e, tm, avOutro, ensaio){
+    // A câmera aproxima também o cenário e os balões, em torno da linha dos olhos.
+    // As reconstruções do Mural conservam a projeção com que foram publicadas.
+    var lente = !ensaio ? 1 : e.quadro === 'rosto' ? 1.58 : e.quadro === 'meio' ? 1.22 : 1;
+    x.save();
+    x.translate(W*.5*(1-lente), H*.29*(1-lente));
+    x.scale(lente,lente);
     fundo(x, W, H, e.fundo, tm);
-    var av = JSON.parse(JSON.stringify(avOutro || meuAv() || {})); av.pose = e.pose === 'normal' ? '' : e.pose; av.fundo = '';
     if(e.objeto === 'balao') baloes(x, W, H, tm);
+    x.restore();
+    var av = Object.assign({}, avOutro || meuAv() || {}); av.pose = e.pose === 'normal' ? '' : e.pose; av.fundo = '';
     var corpo;
-    var quadro = e.quadro || 'inteiro', comFlor = (String(e.objeto || '').indexOf('flor_') === 0 || arranjoFlores(e.objeto).length>0);
+    var quadro = e.quadro || 'inteiro', comObjeto = !!e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao';
     if(typeof perfDesenharIdol === 'function'){
-      corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro, comFlor);
+      corpo = perfDesenharIdol(x, W, H, av, false, false, tm * 60, quadro, comObjeto);
     }
     if(corpo && e.objeto && e.objeto !== 'nenhum' && e.objeto !== 'balao'){
       objetoNaMao(x, e.objeto, av.pose, corpo, av.cor, quadro);
@@ -684,6 +791,7 @@
     luz(x, W, H, e.luz);
   }
   // Foto perfeita: estrelinhas que piscam em volta da polaroid (paradas com "reduzir movimento").
+  var tempoDaPrevia = null, lenteDaPrevia = false;
   var calmo = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   function brilhos(x, W, H, s){
     var P = [[.1,.08],[.88,.12],[.06,.6],[.93,.52],[.18,.9],[.82,.86],[.5,.04]];
@@ -702,12 +810,17 @@
     x.save(); x.clearRect(0, 0, W, H);
     if(fase === 'foto' && foto){   // polaroid: moldura branca, foto, estrelas e data
       x.drawImage(polaroidLimpa(foto), 0, 0);
-      var fl = Math.max(0, 1 - (performance.now() - foto.t0) / 500); if(fl > 0){ x.fillStyle = 'rgba(255,255,255,' + fl + ')'; x.fillRect(0, 0, W, H); }
+      var fl = calmo ? 0 : Math.max(0, 1 - (performance.now() - foto.t0) / 500); if(fl > 0){ x.fillStyle = 'rgba(255,255,255,' + fl + ')'; x.fillRect(0, 0, W, H); }
       if(foto.estrelas >= 3) brilhos(x, W, H, (performance.now() - foto.t0) / 1000);
+    } else if(fase === 'contagem' && foto && foto.cena){
+      x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+      x.drawImage(foto.cena, 24, 24, W-48, (W-48)*1.25);
     } else {
       x.fillStyle = '#fff'; x.fillRect(0,0,W,H);
       x.save(); x.beginPath(); x.rect(24,24,W-48,(W-48)*1.25); x.clip(); x.translate(24,24);
-      cena(x, W-48, (W-48)*1.25, esc_, tm); x.restore();
+      tempoDaPrevia = calmo?0:tm;
+      lenteDaPrevia = lenteDeEnsaio();
+      cena(x, W-48, (W-48)*1.25, esc_, tempoDaPrevia, null, lenteDaPrevia); x.restore();
       x.strokeStyle = 'rgba(255,255,255,.38)'; x.lineWidth = 1;
       var fw = W-48, fh = fw*1.25;
       x.beginPath();
@@ -721,7 +834,7 @@
     }
     x.restore();
   }
-  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; if(donoSessao !== donoFoto()){ fechar(); return; } if(!document.hidden && aba === 'estudio') desenhar(); anim = requestAnimationFrame(f); })(); }
+  function laco(){ cancelAnimationFrame(anim); (function f(){ if(!ov || ov.hidden) return; if(donoSessao !== donoFoto()){ fechar(); return; } if(!document.hidden && aba === 'estudio' && !(fase === 'contagem' && foto && foto.cena)) desenhar(); anim = requestAnimationFrame(f); })(); }
   // Capa da semana no Idol⭐News! (aba Jogadores e eventos): a foto mais curtida do mural
   function capaNews(){
     var painel = document.getElementById('jnAbaComunidade'); if(!painel || !logado() || document.getElementById('jnCapaStudio')) return;

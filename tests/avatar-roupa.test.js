@@ -37,13 +37,13 @@ for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
   assert(s.includes('g.fillRect(x+7, y+22, 4, 11); g.fillRect(x+19, y+22, 4, 11)')&&!s.includes('g.fillRect(x+2, y+22, 6, 5)'),f+': City Pop só desenha abas do paletó, sem segunda manga');
   assert(/\{n:'Tsu',[^}]*baixo:'bermuda'\}/.test(s)&&/\{n:'Lirika',[^}]*baixo:'saia'\}/.test(s)&&/\{n:'Pati',[^}]*baixo:'bermuda'\}/.test(s),f+': Tsu bermuda, Lirika saia, Pati bermuda');
 }
-for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(ler(f).includes('<script src="./tw-avatar-roupa.js?v=12"></script>'),f+' carrega tw-avatar-roupa.js');
+for(const f of ['index.html','karaoke-time.html','sora-jump.html'])assert(/<script src="\.\/tw-avatar-roupa\.js\?v=\d+"><\/script>/.test(ler(f)),f+' carrega tw-avatar-roupa.js');
 const perfil=ler('perfil.js'),index=ler('index.html');
 assert(perfil.includes('data-m="baixo"')&&perfil.includes("if(v === 'saia' || v === 'bermuda') c.baixo = v;"),'Montar Idol tem Saia/Bermuda e o perfil só aceita esses valores');
 assert(index.includes("'outcol', 'legcol', 'baixo', 'hat'")&&index.includes("item.baixo === 'saia' || item.baixo === 'bermuda'"),'campo salvo no avatar e no save dos personagens');
 assert(ler('centerrun.js').includes("baixo: c.baixo||''"),'saveCu guarda a parte de baixo de cada personagem');
 // Braço levantado: a manga gira com o braço (não fica um bloco parado no ombro).
-{ const pts=[];const gg=Object.assign(fake(),{moveTo:(a,b)=>pts.push([a,b]),lineTo:(a,b)=>pts.push([a,b]),arc(){}});
+{ const pts=[];const gg=Object.assign(fake(),{moveTo:(a,b)=>pts.push([a,b]),lineTo:(a,b)=>pts.push([a,b]),quadraticCurveTo:(cx,cy,a,b)=>pts.push([a,b]),arc(){}});
   R.ombro(gg,{outcol:'#ffb3d6'},0,0,'','banzai');
   assert(pts.some(p=>p[1]<21.5&&p[0]>24),'manga direita sobe junto com o braço no banzai');
   assert(pts.some(p=>p[1]<21.5&&p[0]<6),'manga esquerda sobe junto com o braço no banzai'); }
@@ -57,7 +57,7 @@ for(const [vw,vh] of [[320,640],[390,844]]){
     }
     assert(!gg.shapes.some(r=>r[2]===6),'não existe manga externa fixa sob a manga móvel');
     assert(altura*escala<vh,'geometria permanece proporcional no visor móvel');
-    const pts=[],ombros=[];const raised=Object.assign(fake(),{moveTo:(x,y)=>pts.push([x,y]),lineTo:(x,y)=>pts.push([x,y]),arc:(x,y,r,inicio,fim,anti)=>ombros.push([x,y,r,anti])});
+    const pts=[],ombros=[];const raised=Object.assign(fake(),{moveTo:(x,y)=>pts.push([x,y]),lineTo:(x,y)=>pts.push([x,y]),quadraticCurveTo:(cx,cy,x,y)=>pts.push([x,y]),arc:(x,y,r,inicio,fim,anti)=>ombros.push([x,y,r,anti])});
     R.ombro(raised,{outcol:'#b3d6ff'},0,0,look,'v');
     assert(pts.some(p=>p[0]>26)&&pts.some(p=>p[1]<22),'manga direita acompanha o braço em V em '+vw+'×'+vh);
     assert.equal(ombros.length,2,'a mesma manga participa das passagens de cor e sombra');
@@ -76,7 +76,7 @@ assert(R.luzPropria('estrelado')&&R.luzPropria('zipper')&&R.luzPropria('sweet')&
 { const gg=fake();R.parte(gg,0,0,'sweet-tronco');assert(gg.log.includes('clip'),'luz da Sweet recortada no vestido'); }
 // Sentado no sofá do Camarim, a canela repete as polainas da Nagareboshi (Estrelado) em vez de virar meia preta.
 const pet=require('./pet-fonte.js')();   // pet.js + pet-sala.js na ordem original
-assert(pet.includes('petLifeCanelaRoupa(x, px, q.y + 6 + 15 + bal);')&&/function petLifeCanelaRoupa[\s\S]{0,200}c\.out !== 'estrelado'[\s\S]{0,300}#ff9ccd[\s\S]{0,120}#ffe14d[\s\S]{0,120}#4dd8ff/.test(pet),'polainas listradas também sentado');
+assert(pet.includes('petLifeCanelaRoupa(x, px, sola);')&&/function petLifeCanelaRoupa[\s\S]{0,200}c\.out !== 'estrelado'[\s\S]{0,300}#ff9ccd[\s\S]{0,120}#ffe14d[\s\S]{0,120}#4dd8ff/.test(pet),'polainas listradas também sentado');
 console.log('avatar-roupa: ok');
 
 // V3.1 (06/11/2026): pele com a luz contínua, costas do chanel/longo emendadas, sombra da franja, franja da Tsu e gravata.
@@ -91,3 +91,12 @@ for(const f of ['centerrun.js','karaoke-time.html','sora-jump.html']){
   for(const k of ['TWR.bracos(g,x,y)','TWR.rosto(g,x,y)','TWAvatarRoupa.cabelo(g,H,HD,y,b,0)','TWAvatarRoupa.costas(g,x,y,b)','TWR.sombraFranja(','TWR.bagunca(g,x,y)','TWR.gravata(g,x,y)'])assert(s.includes(k),f+' usa '+k);
 }
 
+
+// Identity Restoration (27/11/2026): a dona escolheu o desenho da main. Nas três cópias, pernas, camisa e braços
+// parados voltam aos retângulos originais e o módulo não sobrepõe mais esse desenho.
+for(const nome of ['centerrun.js','karaoke-time.html','sora-jump.html']){
+ const src=ler(nome);
+ assert(src.includes('g.fillRect(x+9,y+36+(up?0:-2),5,8+(up?0:2));g.fillRect(x+17,y+36+(up?-2:0),5,8+(up?2:0));'));
+ assert(!/TWAvatarRoupa\.pernas|TWR\.bracosBase|TWR\.camisa/.test(src));
+}
+for(const k of ['pernas','bracosBase','camisa','pescoco','coques','pixie','reta'])assert.equal(R[k],undefined,k);

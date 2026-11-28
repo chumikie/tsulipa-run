@@ -86,3 +86,16 @@ test('Karaoke no site: a altura avisada é a do conteúdo e pode diminuir', () =
   assert.doesNotMatch(bloco, /documentElement\.scrollHeight/, 'documentElement nunca fica menor que o iframe');
   assert.match(bloco, /b\.scrollHeight/);
 });
+
+
+test('Gacha e Loja: tablet vertical recebe pixels físicos suficientes sem aumentar o teto dos jogos',()=>{
+ const src=funcao(ler('perfil.js'),'twNitido');
+ for(const id of ['gachaCv','shopCv','cfCv']){
+  const {cv,Cv,real}=canvasFalso(640,420,711);cv.id=id;cv.getBoundingClientRect=()=>({width:713});
+  const sb={window:{devicePixelRatio:2,HTMLCanvasElement:Cv},HTMLCanvasElement:Cv,Math,Object,cv};
+  vm.runInNewContext(src+'\\n'.replace('\\n','\n')+'twNitido(cv);',sb);
+  assert.equal(cv.width,640);assert.equal(cv.height,420);
+  assert.equal(real().w,id==='cfCv'?1280:1440);
+  if(id!=='cfCv')assert.ok(real().w/(713*2)>=1);
+ }
+});

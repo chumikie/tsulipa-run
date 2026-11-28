@@ -17,12 +17,23 @@ function duoFundoDesenhar(x, W2, H2, f, t, corOshi){
     x.fillStyle = '#bfe9ff'; x.fillRect(W2 * .62, H2 * .1, 90 * u, 70 * u); x.fillStyle = '#fff'; x.fillRect(W2 * .62 + 43 * u, H2 * .1, 4 * u, 70 * u); x.fillRect(W2 * .62, H2 * .1 + 33 * u, 90 * u, 4 * u);
     x.strokeStyle = '#d9a7c7'; x.lineWidth = 3 * u; x.strokeRect(W2 * .62, H2 * .1, 90 * u, 70 * u);
     x.fillStyle = 'rgba(255,255,255,.8)'; x.beginPath(); x.arc(W2 * .62 + 22 * u + Math.sin(t * .01) * 4 * u, H2 * .1 + 18 * u, 7 * u, 0, 7); x.arc(W2 * .62 + 30 * u + Math.sin(t * .01) * 4 * u, H2 * .1 + 16 * u, 8 * u, 0, 7); x.fill();
+    x.fillStyle='#ac7554';x.beginPath();x.moveTo(W2*.08,H2*.28);x.lineTo(W2*.08+8*u,H2*.28-5*u);x.lineTo(W2*.08+98*u,H2*.28-5*u);x.lineTo(W2*.08+90*u,H2*.28);x.closePath();x.fill();
     x.fillStyle = '#c98b55'; x.fillRect(W2 * .08, H2 * .28, 90 * u, 5 * u);
+    x.fillStyle='#986445';[8,79].forEach(function(a){x.beginPath();x.moveTo(W2*.08+a*u,H2*.28+5*u);x.lineTo(W2*.08+(a+5)*u,H2*.28+5*u);x.lineTo(W2*.08+a*u,H2*.28+15*u);x.closePath();x.fill();});
     ['#ff6fb5', '#4dd8ff', '#b6ff3b', '#ffe14d'].forEach(function(cc, j){ var cx = W2 * .08 + (12 + j * 22) * u, cy = H2 * .28; x.fillStyle = cc; x.fillRect(cx, cy - 12 * u, 12 * u, 12 * u); x.strokeStyle = cc; x.lineWidth = 2 * u; x.beginPath(); x.arc(cx + 13 * u, cy - 6 * u, 3.5 * u, -1.4, 1.4); x.stroke(); });
     [W2 * .3, W2 * .5].forEach(function(lx, j){ x.strokeStyle = '#8a6a7a'; x.lineWidth = 1.5 * u; x.beginPath(); x.moveTo(lx, 0); x.lineTo(lx, H2 * .14); x.stroke(); x.fillStyle = j ? '#ffe14d' : '#ff9ccd'; x.beginPath(); x.arc(lx, H2 * .16, 9 * u, Math.PI, 0); x.fill();
       var lg = x.createRadialGradient(lx, H2 * .18, 2, lx, H2 * .18, 50 * u); lg.addColorStop(0, 'rgba(255,240,180,.45)'); lg.addColorStop(1, 'rgba(255,240,180,0)'); x.fillStyle = lg; x.fillRect(lx - 50 * u, H2 * .16, 100 * u, 80 * u); });
     x.fillStyle = '#f3d3b8'; x.fillRect(0, H2 * .72, W2, H2 * .28);
-    x.fillStyle = 'rgba(201,139,85,.25)'; for(i = 0; i < 16; i++) for(var j = 0; j < 4; j++) if((i + j) % 2) x.fillRect(i * 20 * u, H2 * .72 + j * 20 * u, 20 * u, 20 * u);
+    // Ladrilhos em perspectiva: os intervalos crescem na direção dos dois Idols.
+    x.save();x.fillStyle='rgba(201,139,85,.25)';
+    var corte=H2*.72;for(var linha=0;linha<4;linha++){
+      var a=linha/4,b=(linha+1)/4,ya=corte+(H2-corte)*a*a,yb=corte+(H2-corte)*b*b;
+      var wa=W2*(.64+.36*a),wb=W2*(.64+.36*b);
+      for(var j=-12;j<12;j++){if((j+linha)%2===0)continue;
+        x.beginPath();x.moveTo(W2/2+j*wa/12,ya);x.lineTo(W2/2+(j+1)*wa/12,ya);
+        x.lineTo(W2/2+(j+1)*wb/12,yb);x.lineTo(W2/2+j*wb/12,yb);x.closePath();x.fill();
+      }
+    }x.restore();
     perfEnfeites(x, W2, H2 * .7, ['#ff9ccd', '#ffd36b', '#c4a5ff'], 10, 7, t, .6);
     return;
   }
@@ -111,7 +122,7 @@ function duoJogoCarregar(depois){
   if(depois) duoJogoFila.push(depois);
   if(duoJogoPedido) return; duoJogoPedido = true;
   // duo.js redeclara duoFechar; o index.html já embrulhou o duoFechar desta página (música), então guardamos o embrulho
-  var embrulho = window.duoFechar, arqs = ['./duo.js?v=13', './duo-tela.js?v=7', './duo-pedido.js?v=4'], i = 0;
+  var embrulho = window.duoFechar, arqs = ['./duo.js?v=19', './duo-tela.js?v=10', './duo-pedido.js?v=4'], i = 0;
   (function proximo(){
     if(i >= arqs.length){
       if(window.duoFechar !== embrulho){ duoFecharJogo = window.duoFechar; window.duoFechar = embrulho; }

@@ -130,7 +130,8 @@ function conferir(viewport, capturas) {
     const { before, after } = capturas[language], onde = language + ' ' + width + 'x' + height;
     const a = after.snapshot, b = before.snapshot;
     // 1) idioma aplicado
-    if (a.language !== b.language) falhas.push(onde + ': <html lang> é "' + a.language + '", esperado "' + b.language + '"');
+    const esperado = language === 'id' ? 'id' : b.language; // o marco histórico antecede a tradução indonésia
+    if (a.language !== esperado) falhas.push(onde + ': <html lang> é "' + a.language + '", esperado "' + esperado + '"');
     // 2) erros de JavaScript novos
     const errosNovos = after.errors.filter(erro => !before.errors.includes(erro));
     if (errosNovos.length) falhas.push(onde + ': erros de JavaScript novos: ' + errosNovos.join(' | '));
@@ -171,7 +172,7 @@ async function main() {
     const beforePort = await listen(beforeServer);
     const afterPort = await listen(afterServer);
     browser = await chromium.launch({ headless:true, args:['--no-sandbox'] });
-    const report = { baseSha, languages:['pt','en','es','th','ja'], viewports:[[1280,900],[390,844]], captures:[], checks:[] };
+    const report = { baseSha, languages:['pt','en','es','id','th','ja'], viewports:[[1280,900],[390,844]], captures:[], checks:[] };
     const falhas = [], avisos = [];
     for (const [width,height] of report.viewports) {
       const capturas = {};

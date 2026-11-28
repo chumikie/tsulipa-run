@@ -10,7 +10,8 @@
 'use strict';
 const {chromium}=require('playwright');
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
-const root=path.join(__dirname,'..'),out=process.argv[2]||'/tmp/telas-qa';
+const root=path.resolve(process.env.TW_VISUAL_ROOT||path.join(__dirname,'..')),out=process.argv[2]||'/tmp/telas-qa';
+const visualOnly=process.env.TW_VISUAL_ONLY==='1';
 fs.mkdirSync(out,{recursive:true});
 
 // servidor falso: dados inventados, só o necessário para as telas abrirem cheias
@@ -18,6 +19,8 @@ const FALSO=`window.__instalarFalso=function(){
   var av={v:1,expr:2,pose:'v',fundo:'basico',visual:'',c:{hair:'#7b3ff0',skin:'#f1c9a5',eye:'#5a3b2e',back:'chanel',front:'reta',out:'',outcol:'#ffffff',legcol:'#444466'}};
   var hoje=new Date().toISOString();
   var R={
+    jardim_estado:{ok:true,flores:{tulipa:1}},
+    meu_perfil:{nick:'Idol QA',best:900,avatar:av,visuais:[],oshi:'tsu',coracoes:12},
     news_posts:[{titulo:'Ensaio aberto no palco',legenda:'Teste automático: post inventado.',criado:hoje,imagem:''}],
     duo_sugestoes:[{nick:'Teste A',best:120},{nick:'Teste B',best:80}],
     ranking:[{nick:'Teste A',score:900,avatar:av}],
@@ -36,23 +39,105 @@ const server=http.createServer((req,res)=>{
   });
 });
 
-const TELAS=[['v','jogos'],['v','trio'],['a','news'],['a','nov'],['a','album'],['a','mapa'],['ir','perfil'],['ir','gacha'],['ir','loja']];
+const TELAS=[['v','jogos','.twc-jogos'],['v','trio','#twcTela [data-trioaba]'],['a','news','#jornalOv'],['a','nov','#twcEmbSlot .twc-nov-tem'],['a','album','.twc-album'],['a','mapa','#twcEmbSlot #twMapa canvas'],['ir','perfil','#perfOv #perfFoto'],['ir','gacha','#gachaOv'],['ir','loja','#shopOv']];
+const CONTA=new Set(['album','perfil','gacha','loja']);
+
+const CH_NOMES=['tsu','lirika','pati'];
+const FIGURINOS=['zipper','sweet','estrelado'];
+async function silhuetas320(p){
+  const png=await p.evaluate(()=>{
+    const cv=document.createElement('canvas'); cv.width=320; cv.height=238;
+    const ctx=cv.getContext('2d'), anterior=g, estado=state, acessorio=accSel;
+    try{
+      g=ctx; state='menu'; accSel='';
+      CH.slice(0,3).forEach((c,i)=>{
+        ctx.save(); ctx.translate(28+i*100,22); ctx.scale(1.95,1.95);
+        drawChar(c,0,0,0,0); ctx.restore();
+        ctx.save(); ctx.translate(28+i*100,132); ctx.scale(1.95,1.95);
+        TW_LADO.partes(ctx,c,0,0,0,0,null,'',{}); ctx.restore();
+      });
+      ctx.globalCompositeOperation='source-in'; ctx.fillStyle='#382d46'; ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.globalCompositeOperation='destination-over'; ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height);
+    }finally{g=anterior;state=estado;accSel=acessorio;}
+    return cv.toDataURL();
+  });
+  fs.writeFileSync(path.join(out,'compacto-silhuetas-trio.png'),Buffer.from(png.split(',')[1],'base64'));
+}
+async function conferirFotos(p){
+  const selecionar=async(tipo,valor)=>{
+    await p.locator('#studioOv [data-st="categoria"][data-v="'+tipo+'"]').click();
+    await p.locator('#studioOv [data-st="'+tipo+'"][data-v="'+valor+'"]').click();
+  };
+  await selecionar('objeto','flor_tulipa');
+  await selecionar('pose','coracao');
+  const pares=[];
+  for(const modo of ['rosto','meio','inteiro']){
+    await selecionar('quadro',modo);
+    const previa=await p.locator('#studioCv').evaluate(cv=>cv.toDataURL());
+    await p.locator('#studioOv [data-st="clique"]').click();
+    await p.locator('#studioOv [data-st="salvar"]').click();
+    const png=await p.locator('#twCamera .twcam-salvar').getAttribute('href');
+    assert.match(png,/^data:image\/png;base64,/);
+    fs.writeFileSync(path.join(out,'foto-'+modo+'.png'),Buffer.from(png.split(',')[1],'base64'));
+    pares.push([modo,previa,png]);
+    await p.locator('#twCamera .twcam-x').click();
+    await p.locator('#studioOv [data-st="outra"]').click();
+  }
+  const folha=await p.evaluate(async pares=>{
+    const cv=document.createElement('canvas');cv.width=720;cv.height=680;
+    const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,720,680);
+    for(const [i,[modo,...urls]] of pares.entries()){
+      for(const [j,url] of urls.entries()){
+        const im=new Image();im.src=url;await im.decode();
+        const k=Math.min(232/im.width,306/im.height);
+        x.drawImage(im,240*i+(240-im.width*k)/2,340*j+24,im.width*k,im.height*k);
+        x.fillStyle='#472c61';x.font='16px sans-serif';
+        x.fillText(modo+' · '+(j?'PNG salvo':'visor'),240*i+8,340*j+19);
+      }
+    }
+    return cv.toDataURL();
+  },pares);
+  fs.writeFileSync(path.join(out,'studio-tres-enquadramentos.png'),Buffer.from(folha.split(',')[1],'base64'));
+  for(const [i,look] of FIGURINOS.entries()){
+    await p.evaluate(([i,look])=>{
+      CH[i].out=look; CH[i].baixo=i===2?'bermuda':'saia';
+      studioAbrir({dono:petPhoneFotoChave(),look:{c:CH[i],expr:2},flor:'tulipa'});
+    },[i,look]);
+    await selecionar('objeto','flor_tulipa');
+    await selecionar('pose','coracao');
+    await selecionar('quadro','inteiro');
+    await p.locator('#studioOv [data-st="clique"]').click();
+    await p.locator('#studioOv [data-st="salvar"]').click();
+    const url=await p.locator('#twCamera .twcam-salvar').getAttribute('href');
+    assert.match(url,/^data:image\/png;base64,/);
+    fs.writeFileSync(path.join(out,'figurino-'+look+'-tulipa.png'),Buffer.from(url.split(',')[1],'base64'));
+    await p.locator('#twCamera .twcam-x').click();
+    await p.locator('#studioOv [data-st="outra"]').click();
+  }
+}
 
 async function rodar(browser,base,nome,opcoes){
   const ctx=await browser.newContext(opcoes);
-  await ctx.route(/supabase\.co|jsdelivr|googleapis|gstatic|youtube/,r=>r.abort());
+  await ctx.route('**/*',r=>new URL(r.request().url()).origin===base?r.continue():r.abort());
   const p=await ctx.newPage(),erros=[];
   p.on('pageerror',e=>erros.push(String(e.message||e).slice(0,200)));
-  await p.addInitScript(()=>{try{localStorage.setItem('tw_cel_tut_v1','1');localStorage.setItem('tw_index2_tut_v2','1');}catch(e){}});
-  await p.goto(base+'/index.html');await p.waitForTimeout(1500);
-  await p.addScriptTag({content:FALSO});
-  const abrirInicio=()=>p.evaluate(()=>{__instalarFalso();TW_CELULAR.desligar();TW_CELULAR.ligar();var c=document.querySelector('[data-a="comecar"]');if(c)c.click();});
-  await abrirInicio();await p.waitForTimeout(1000);
+  await p.addInitScript(()=>{try{localStorage.setItem('brs48cr_celular','1');localStorage.setItem('tw_cel_tut_v1','1');localStorage.setItem('tw_index2_tut_v2','1');}catch(e){}});
+  async function abrirInicio(conta){
+    await p.goto(base+'/index.html?lang=pt',{waitUntil:'domcontentloaded'});
+    await p.waitForFunction(()=>!!window.TW_CELULAR);
+    await p.addScriptTag({content:FALSO});
+    await p.evaluate(id=>{__instalarFalso();contaJ=id?{id:'qa-visual',nick:'Idol QA'}:null;contaAuthUserId=id?'qa-visual':'';},conta);
+    for(const sel of ['[data-f="manutTentar"]','[data-a="comecar"]','[data-f="tutPular"]']){
+      const b=p.locator(sel+':visible').first();if(await b.isVisible())await b.click();
+    }
+    await p.locator('#twcTela .twc-inicio').waitFor({state:'visible',timeout:10000});
+  }
+  await abrirInicio(false);await p.waitForTimeout(500);
   const falhas=[];
   const conferir=async tela=>{
     const r=await p.evaluate(()=>{
       const P=Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype,'width'),borrados=[];
-      document.querySelectorAll('canvas').forEach(c=>{const R=c.getBoundingClientRect();if(R.width<60||R.height<40||R.bottom<0||R.top>innerHeight||getComputedStyle(c).visibility==='hidden')return;
+      document.querySelectorAll('canvas').forEach(c=>{if(c.closest('details:not([open])')||c.closest('[hidden]'))return;const R=c.getBoundingClientRect();if(R.width<60||R.height<40||R.bottom<0||R.top>innerHeight||getComputedStyle(c).visibility==='hidden')return;
         const q=P.get.call(c)/(R.width*devicePixelRatio),teto=window.TW_NITIDEZ&&(TW_NITIDEZ.escala(c)>=2||(TW_NITIDEZ.limitado&&TW_NITIDEZ.limitado(c)));if(q<0.9&&!teto)borrados.push((c.id||c.className||'canvas')+' '+q.toFixed(2));});
       const tela=document.getElementById('twcTela')||document.body,slot=document.getElementById('twcEmbSlot');
       const texto=(slot||tela).innerText.trim().length,graficos=(slot||tela).querySelectorAll('canvas,img,svg').length;
@@ -62,16 +147,123 @@ async function rodar(browser,base,nome,opcoes){
     if(r.texto<20&&r.graficos===0)falhas.push(nome+' · '+tela+': tela vazia');
   };
   await conferir('inicio');await p.screenshot({path:path.join(out,nome+'-inicio.png')});
-  for(const [t,v] of TELAS){
-    await abrirInicio();await p.waitForTimeout(400);
-    const abriu=await p.evaluate(([t,v])=>{const sel='[data-'+t+'="'+v+'"]';let e=document.querySelector(sel);
-      if(!e){const m=document.querySelector('[data-n="menu"]');if(m)m.click();e=document.querySelector(sel);}
-      if(!e){const f=document.querySelector('[data-a="menuMais"]');if(f)f.click();e=document.querySelector(sel);}   // pasta "Mais" do Menu (poda de 22/11)
-      if(!e){const j=document.querySelector('[data-v="jogos"]');if(j)j.click();e=document.querySelector(sel);}
-      if(e){e.click();return true;}return false;},[t,v]);
-    if(!abriu){falhas.push(nome+' · '+v+': botão não encontrado');continue;}
-    await p.waitForTimeout(1600);
-    await conferir(v);await p.screenshot({path:path.join(out,nome+'-'+v+'.png')});
+  for(const [t,v,alvo] of TELAS.concat(visualOnly?[['ir','studio','#studioOv #studioCv'],['ir','cafe','#cfOv #cfCv'],['ir','handshake','#hsOv #hsCv']]:[])){
+    try{
+      await abrirInicio(CONTA.has(v) || visualOnly && ['studio','mapa'].includes(v));
+      const sel='[data-'+t+'="'+v+'"]:visible';
+      const achar=()=>p.locator('#twcTela '+sel+',#twcNav '+sel+',#twcFolha '+sel).first();
+      let e=achar();
+      if(['gacha','studio','cafe','handshake'].includes(v)){
+        const jogos=p.locator('#twcTela [data-v="jogos"]:visible').first();
+        await jogos.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+        await jogos.click({timeout:8000});
+        await p.locator('#twcTela .twc-jogos').waitFor({state:'visible'});
+        e=p.locator('#twcTela .twc-jogos '+sel).first();
+      }
+      if(!await e.isVisible()&&!['perfil','loja'].includes(v)){await p.locator('#twcNav [data-n="menu"]:visible').click();e=achar();}
+      if(!await e.isVisible()){const m=p.locator('[data-a="menuMais"]:visible').first();if(await m.isVisible())await m.click();e=achar();}
+      if(!await e.isVisible()){const j=p.locator('[data-v="jogos"]:visible').first();if(await j.isVisible())await j.click();e=achar();}
+      if(!await e.isVisible())e=p.locator(sel).first();
+      await e.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}),undefined,{timeout:6000});
+      await e.click({timeout:8000});
+      await p.locator(alvo).first().waitFor({state:'visible',timeout:8000});
+      await p.waitForTimeout(500);
+      const identidade=await p.evaluate(sel=>{
+        const esperado=document.querySelector(sel);if(!esperado)return false;
+        const r=esperado.getBoundingClientRect(),top=document.elementFromPoint(Math.max(0,Math.min(innerWidth-1,r.x+r.width/2)),Math.max(0,Math.min(innerHeight-1,r.y+Math.min(r.height/2,80))));
+        const ov=esperado.closest('.tw-window-overlay');
+        return !!top&&(ov?ov.contains(top):esperado.contains(top)||!!top.closest('#twcTela')&&!top.closest('.tw-window-overlay'));
+      },alvo);
+      if(!identidade)throw Error('tela esperada encoberta ou ausente: '+alvo);
+      await conferir(v);await p.screenshot({path:path.join(out,nome+'-'+v+'.png')});
+      if(visualOnly && nome==='iphone' && v==='studio') await conferirFotos(p);
+      if(visualOnly && nome==='compacto' && v==='mapa'){
+        await p.evaluate(()=>window.TW_BAIRRO?.pularGuia());
+        const rua=p.locator('#twMapa .tw-mapa-rolo');
+        for(const bairro of ['praca','palco','arena','ceu']){
+          await p.locator('[data-tw-bairro="'+bairro+'"]').click();
+          await p.locator('#twMapa[data-cena="'+bairro+'"]').waitFor();
+          await p.waitForFunction(id=>performance.getEntriesByType('resource').some(r=>r.name.includes('mapa-rua-'+id+'.svg') && r.responseEnd>0),bairro);
+          await rua.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+          await p.waitForTimeout(400);
+          await rua.screenshot({path:path.join(out,'compacto-'+bairro+'.png')});
+          if(bairro==='praca'){
+            await rua.evaluate(el=>{el.scrollLeft=el.scrollWidth-el.clientWidth;});
+            await p.waitForTimeout(350);
+            await rua.screenshot({path:path.join(out,'compacto-praca-banca.png')});
+          }
+          await p.locator('#twMapa .tw-mapa-voltar').click();
+        }
+      }
+      if(v==='loja'){
+        // O cenário só desenha quando aberto. Confere também a saudação da atendente,
+        // em vez de medir um canvas escondido e ainda não pintado.
+        const abrir=p.locator('#shopOv .shop-saudacao summary');
+        await abrir.click({timeout:8000});
+        const cena=p.locator('#shopCv');
+        await cena.waitFor({state:'visible'});
+        await cena.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+        await p.waitForTimeout(800);
+        await conferir('loja-cenario');
+        await p.screenshot({path:path.join(out,nome+'-loja-cenario.png')});
+      }
+    }catch(e){falhas.push(nome+' · '+v+': '+String(e.message||e).split('\n').slice(0,12).join('\n'));}
+  }
+  if(visualOnly){
+    try{
+      await abrirInicio(true);
+      await p.evaluate(async()=>{await petSalaCarregar();$('nick').value='Idol QA';petOpenUI();});
+      await p.locator('#petov').waitFor({state:'visible',timeout:8000});
+      if(await p.locator('#petPick').isVisible()){
+        await p.locator('#petPick [data-k="tsu"]').click();
+        await p.locator('#petName').fill('Teste');await p.locator('#petGo').click();
+      }
+      const cv=p.locator('#petov #petc');await cv.waitFor({state:'visible'});
+      for(const pose of ['sentar','descansar','conviver']){
+        const botao=p.locator('#petLifePoses [data-pose="'+pose+'"]');
+        await botao.click({timeout:8000});await p.waitForFunction(k=>petLifePose===k,pose);
+        await p.waitForTimeout(750);await cv.screenshot({path:path.join(out,nome+'-camarim-'+pose+'.png')});
+      }
+      if(nome==='compacto') await silhuetas320(p);
+      if(nome==='iphone'){
+        for(const [i,look] of FIGURINOS.entries()){
+          await p.evaluate(([i,look])=>{sel=i;CH[i].out=look;CH[i].baixo=i===2?'bermuda':'saia';if(petLifePose)petLifePoseEscolher(petLifePose);},[i,look]);
+          await p.waitForFunction(()=>!petLifePose && petLifePoseDesenho(petT).sit===0);
+          await cv.screenshot({path:path.join(out,'figurino-'+look+'-em-pe.png')});
+          await p.locator('#petLifePoses [data-pose="sentar"]').click();
+          await p.waitForFunction(()=>petLifePose==='sentar' && petLifePoseDesenho(petT).sit===1);
+          await cv.screenshot({path:path.join(out,'figurino-'+look+'-sentado.png')});
+        }
+        for(const [i,look] of [[0,''],[1,'sweet'],[2,'estrelado']]){
+          await p.evaluate(([i,look])=>{sel=i;CH[i].out=look;CH[i].baixo=i===1?'saia':'bermuda';},[i,look]);
+          for(const pose of ['sentar','descansar','conviver']){
+            if(await p.evaluate(()=>petLifePose)!==pose) await p.locator('#petLifePoses [data-pose="'+pose+'"]').click();
+            await p.waitForTimeout(650);
+            await cv.screenshot({path:path.join(out,CH_NOMES[i]+'-'+pose+'.png')});
+          }
+        }
+        await cv.evaluate(canvas=>{
+          const stream=canvas.captureStream(24), recorder=new MediaRecorder(stream);
+          const partes=[];
+          window.videoPosturas=new Promise(resolve=>{
+            recorder.ondataavailable=e=>partes.push(e.data);
+            recorder.onstop=async()=>{
+              stream.getTracks().forEach(t=>t.stop());
+              const reader=new FileReader();
+              reader.onload=()=>resolve(reader.result.split(',')[1]);
+              reader.readAsDataURL(new Blob(partes,{type:recorder.mimeType}));
+            };
+          });
+          window.pararVideo=()=>recorder.stop();recorder.start();
+        });
+        for(const [pose,pausa] of [['sentar',700],['descansar',850],['conviver',800],['conviver',800],['sentar',70],['descansar',800]]){
+          await p.locator('#petLifePoses [data-pose="'+pose+'"]').click();await p.waitForTimeout(pausa);
+        }
+        const video=await p.evaluate(()=>{pararVideo();return videoPosturas;});
+        fs.writeFileSync(path.join(out,'camarim-posturas.webm'),Buffer.from(video,'base64'));
+      }
+      if(nome==='desktop')await p.screenshot({path:path.join(out,'desktop-camarim-completo.png')});
+    }catch(e){falhas.push(nome+' · camarim: '+String(e.message||e).split('\n')[0]);}
   }
   if(erros.length)falhas.push(nome+': erro de JavaScript → '+[...new Set(erros)].slice(0,4).join(' | '));
   await ctx.close();
@@ -110,8 +302,8 @@ async function conferirEstreia(browser, base){
   console.log('✓ estreia: visitante conclui corrida e foto, com tempos de escolha, início e conclusão');
 }
 
-async function conferirCafe(browser,base){
-  const ctx=await browser.newContext({viewport:{width:320,height:640},isMobile:true,hasTouch:true});
+async function conferirCafe(browser,base,width=320,height=640){
+  const ctx=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true});
   try{
     await ctx.route(/supabase\.co|jsdelivr|googleapis|gstatic|youtube/,r=>r.abort());
     const page=await ctx.newPage();
@@ -160,7 +352,7 @@ async function conferirCafe(browser,base){
         if(indice>=0)await page.locator('#cfOv [data-cf="'+tipo+':'+indice+'"]').click();
       }
       const visivel=await comanda.boundingBox();
-      assert.ok(visivel && visivel.y>=0 && visivel.y+visivel.height<=640);
+      assert.ok(visivel && visivel.y>=0 && visivel.y+visivel.height<=height);
       await servir.click();
       await page.getByText(/Confirmando com o servidor/).waitFor();
       const antes=await servir.boundingBox();
@@ -171,10 +363,10 @@ async function conferirCafe(browser,base){
       await page.getByText(lado===0?'1 de 2 pedidos confirmados':'Missão do Café concluída').waitFor();
       const depois=await servir.boundingBox();
       assert.ok(antes && depois && Math.abs(antes.y-depois.y)<=1,'a resposta online não desloca o botão Servir');
-      assert.ok(depois.x>=0 && depois.x+depois.width<=320,'Servir cabe na tela de 320 px');
+      assert.ok(depois.x>=0 && depois.x+depois.width<=width,'Servir cabe na tela móvel');
     }
-    await page.screenshot({path:path.join(out,'cafe-320.png')});
-    console.log('✓ Café em 320 px: dois copos independentes, prioridade e progresso da missão sem salto.');
+    await page.screenshot({path:path.join(out,'cafe-'+width+'.png')});
+    console.log('✓ Café em '+width+'×'+height+': dois copos independentes, prioridade e progresso da missão sem salto.');
   }finally{await ctx.close();}
 }
 
@@ -183,14 +375,21 @@ async function conferirCafe(browser,base){
   const base='http://127.0.0.1:'+server.address().port,browser=await chromium.launch();
   let falhas=[];
   try{
+    if(visualOnly){
+      for(const [nome,width,height,colorScheme] of [['compacto',320,640,'light'],['iphone',390,844,'light'],['iphone-escuro',390,844,'dark'],['desktop',1280,800,'light']]){
+        falhas=falhas.concat(await rodar(browser,base,nome,{viewport:{width,height},deviceScaleFactor:width<500?2:1,isMobile:width<500,hasTouch:width<500,colorScheme}));
+      }
+    }else{
     await conferirEstreia(browser,base);
     await conferirCafe(browser,base);
+    await conferirCafe(browser,base,390,844);
     falhas=falhas.concat(await rodar(browser,base,'celular',{viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true}));
     falhas=falhas.concat(await rodar(browser,base,'computador',{viewport:{width:1280,height:800},deviceScaleFactor:1.25}));
     // tablets Android (Galaxy Tab, Xiaomi Pad e parecidos): em pé e deitado, com toque
     const ua='Mozilla/5.0 (Linux; Android 14; SM-X710) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
     falhas=falhas.concat(await rodar(browser,base,'tablet-em-pe',{viewport:{width:800,height:1280},deviceScaleFactor:2,isMobile:true,hasTouch:true,userAgent:ua}));
     falhas=falhas.concat(await rodar(browser,base,'tablet-deitado',{viewport:{width:1280,height:800},deviceScaleFactor:2,isMobile:true,hasTouch:true,userAgent:ua}));
+    }
   }finally{await browser.close();server.close();}
   fs.writeFileSync(path.join(out,'resultado.txt'),falhas.length?falhas.join('\n'):'ok');
   assert.equal(falhas.length,0,'Telas com problema:\n'+falhas.join('\n'));

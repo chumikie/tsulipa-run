@@ -40,7 +40,7 @@ function shopHtml(){
     '<button type="button" class="perfx tw-window-control tw-window-close" id="shopX" aria-label="' + escHtml(tr('Fechar')) + '">✕</button>' +
     '<h2 class="tw-modal-title" id="shopTit" translate="no">🛍️ Zipper<span class="tw-modal-star">⭐</span>Shop!</h2><small class="tw-modal-jp" lang="ja">ジッパー・ショップ</small>' +
     '<p class="tw-modal-lede" id="shopLede"></p>' +
-    '<details class="shop-saudacao"><summary>'+escHtml(tr('Ver a loja'))+'</summary><canvas id="shopCv" width="640" height="380" aria-hidden="true"></canvas></details>' +
+    '<details class="shop-saudacao"><summary>'+escHtml(({pt:'Ver a loja',en:'See the shop',es:'Ver la tienda',id:'Lihat toko',th:'ดูร้าน',ja:'お店を見る'})[window.LANG]||'Ver a loja')+'</summary><canvas id="shopCv" width="640" height="380" aria-hidden="true"></canvas></details>' +
     '<p class="shopsaldo" id="shopSaldo"></p>' +
     '<div id="shopCorpo"></div></div>';
 }
@@ -253,7 +253,10 @@ function shopAbrir(){
   if(window.TWMotionLifecycle)shopCenaGate=TWMotionLifecycle.watchLoop(cena,function(){return !shopOv.hidden&&painel.open;},function(){
     if(!shopAnim)shopAnim=requestAnimationFrame(shopLoop);
   },function(){cancelAnimationFrame(shopAnim);shopAnim=0;});
-  painel.ontoggle=function(){if(shopCenaGate)shopCenaGate.refresh();};
+  painel.ontoggle=function(){
+    if(painel.open&&!shopOv.hidden)shopDesenhar(); // primeiro quadro nítido, sem esperar o relógio da animação
+    if(shopCenaGate)shopCenaGate.refresh();
+  };
 }
 function shopFechar(){ if(shopCenaGate){shopCenaGate.destroy();shopCenaGate=null;} shopOv.hidden = true; perfProva = ''; perfMiniaturasLiberar($('shopCorpo')); $('shopCorpo').innerHTML = ''; if(!petLifeRetornar('espelho')) hubMostrar(); }
 function shopLoop(ms){
@@ -265,15 +268,25 @@ function shopLoop(ms){
 function shopDesenhar(){
   var cv = $('shopCv'); if(!cv) return; if(typeof twNitido === 'function') twNitido(cv);
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height, t = shopT, i, chao = H2 * .9, a = shopAtendente();
+  var reduz=typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches, visualT=reduz?0:t;
   x.clearRect(0, 0, W2, H2);
   if(typeof KaraokeRoomViews === 'object' && KaraokeRoomViews){   // a rua de Harajuku ao fundo
-    x.save(); try{ KaraokeRoomViews.draw(x, -20, -20, W2 + 40, H2 * .82 + 20, t, 'harajuku', KaraokeRoomViews.isNight(Date.now())); }catch(e){} x.restore();
-  } else perfFundo(x, W2, H2, 'temporada', '#ff6fb5', t);
+    x.save(); try{ KaraokeRoomViews.draw(x, -20, -20, W2 + 40, H2 * .82 + 20, visualT, 'harajuku', KaraokeRoomViews.isNight(Date.now())); }catch(e){} x.restore();
+  } else perfFundo(x, W2, H2, 'temporada', '#ff6fb5', visualT);
   x.fillStyle = '#f6e7ff'; x.fillRect(0, chao - 6, W2, H2 - chao + 6); x.fillStyle = '#e3cdf7'; x.fillRect(0, chao - 6, W2, 4);
   var bx = W2 * .66;
+  // Sombra de contato da fachada e do balcão na mesma direção do piso.
+  x.fillStyle='rgba(74,45,107,.12)';x.beginPath();x.ellipse(bx,chao+2,184,9,0,0,Math.PI*2);x.fill();
   // fachada: toldo listrado nas cores do TsuLiPa e letreiro
   x.fillStyle = '#fff'; x.fillRect(bx - 170, 62, 340, chao - 62);
   x.fillStyle = '#ffe3f2'; x.fillRect(bx - 160, 108, 320, chao - 170);
+  // Laterais e piso da loja recuam para a parede atrás da arara e do caixa.
+  x.fillStyle='#d1b6d4'; x.beginPath(); x.moveTo(bx-160,100);
+  x.lineTo(bx-133,116); x.lineTo(bx-133,chao-20); x.lineTo(bx-160,chao); x.closePath(); x.fill();
+  x.fillStyle='#eed6de'; x.beginPath(); x.moveTo(bx+160,100);
+  x.lineTo(bx+133,116); x.lineTo(bx+133,chao-20); x.lineTo(bx+160,chao); x.closePath(); x.fill();
+  x.fillStyle='#e3c9bc'; x.beginPath(); x.moveTo(bx-133,chao-20);
+  x.lineTo(bx+133,chao-20); x.lineTo(bx+160,chao); x.lineTo(bx-160,chao); x.closePath(); x.fill();
   for(i = 0; i < 8; i++){ x.fillStyle = ['#9b30d9', '#ffffff', '#5cc72c', '#ffffff', '#4169e1', '#ffffff', '#ff6fb5', '#ffffff'][i]; x.beginPath(); x.moveTo(bx - 172 + i * 43, 70); x.lineTo(bx - 129 + i * 43, 70); x.lineTo(bx - 129 + i * 43, 104); x.quadraticCurveTo(bx - 150 + i * 43, 116, bx - 172 + i * 43, 104); x.fill(); }
   x.fillStyle = '#ff6fb5'; x.fillRect(bx - 178, 44, 356, 28);
   x.fillStyle = '#fff'; x.font = '900 17px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('ZIPPER ⭐ SHOP!', bx, 59);
@@ -281,28 +294,36 @@ function shopDesenhar(){
   x.strokeStyle = '#8a6a9e'; x.lineWidth = 4; x.beginPath(); x.moveTo(bx - 150, 132); x.lineTo(bx - 30, 132); x.stroke();
   x.beginPath(); x.moveTo(bx - 146, 132); x.lineTo(bx - 146, chao - 70); x.moveTo(bx - 34, 132); x.lineTo(bx - 34, chao - 70); x.stroke();
   ['#ff6fb5', '#4dd8ff', '#ffe14d', '#b6ff3b', '#9b30d9'].forEach(function(cor, j){
-    var hx = bx - 132 + j * 23, sw = Math.sin(t * .05 + j) * 1.5;
+    var hx = bx - 132 + j * 23, sw = reduz?0:Math.sin(t * .05 + j) * 1.5;
     x.strokeStyle = '#8a6a9e'; x.lineWidth = 2; x.beginPath(); x.arc(hx, 138, 4, Math.PI, 0); x.stroke();
-    x.fillStyle = cor; x.beginPath(); x.moveTo(hx - 9 + sw, 144); x.lineTo(hx + 9 + sw, 144); x.lineTo(hx + 11 + sw, 182); x.lineTo(hx - 11 + sw, 182); x.closePath(); x.fill();
-    x.fillStyle = 'rgba(255,255,255,.55)'; x.fillRect(hx - 9 + sw, 150, 18, 3);
+    // Silhueta de figurino no cabide: ombros, mangas e gola em vez de uma faixa retangular.
+    x.save();x.translate(hx+sw,144);
+    x.fillStyle='rgba(83,48,111,.14)';x.fillRect(-7,4,16,37);
+    x.fillStyle=cor;x.beginPath();x.moveTo(-5,0);x.lineTo(-10,3);x.lineTo(-11,12);x.lineTo(-7,13);x.lineTo(-7,38);x.lineTo(7,38);x.lineTo(7,13);x.lineTo(11,12);x.lineTo(10,3);x.lineTo(5,0);x.quadraticCurveTo(0,5,-5,0);x.closePath();x.fill();
+    x.strokeStyle='rgba(83,48,111,.27)';x.lineWidth=.85;x.stroke();
+    x.strokeStyle='rgba(255,255,255,.65)';x.beginPath();x.moveTo(-5,1);x.quadraticCurveTo(0,7,5,1);x.moveTo(-5,25);x.lineTo(5,25);x.stroke();
+    x.restore();
   });
   // atendente do dia atrás do balcão
-  var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oA = accSel, oF = frame, sc = 2.6;
+  var oS = state, oPw = pw, oDpw = dpw, oR = rankI, oSa = sash, oA = accSel, oF = frame, oP=charPose,oAnt=perfAntena, sc = 2.6;
   try{
-    state = 'play'; pw = null; dpw = null; rankI = 0; sash = false; accSel = ''; frame = t;
-    var ax = bx + 80, bob = Math.sin(t * .06) * 1.2;
+    state = 'play'; pw = null; dpw = null; rankI = 0; sash = false; accSel = ''; frame = visualT;
+    var ax = bx + 80, bob = reduz?0:Math.sin(t * .06) * 1.2;
     perfCharContorno(x, ax - 15 * sc, chao - 70 - 34 * sc + bob, sc, function(){ charPose = 'v'; drawChar(CH[a[1]], 0, 0, 0, t - shopFala.t0 < 150 && t > shopFala.t0 ? 3 : 2, false); });
     charPose = ''; perfAntena = '';
     x.fillStyle = '#c98b55'; x.fillRect(bx + 10, chao - 70, 150, 70); x.fillStyle = '#a0673a'; x.fillRect(bx + 10, chao - 70, 150, 8);   // balcão
+    x.fillStyle='#efd2ac'; x.beginPath(); x.moveTo(bx+4,chao-70);
+    x.lineTo(bx+17,chao-81); x.lineTo(bx+149,chao-81); x.lineTo(bx+162,chao-70); x.closePath(); x.fill();
+    x.fillStyle='#e4ac84'; x.fillRect(bx+20,chao-54,130,42);
     x.font = '22px sans-serif'; x.fillText('🛍️', bx + 50, chao - 84); x.fillText('🎀', bx + 128, chao - 82);
     // o seu Idol entra pela esquerda (com a roupa que estiver provando)
     var c = Object.assign({}, CU); if(perfProva) c.out = perfProva;   // na loja é sempre o seu Idol (o que você monta aqui)
-    var psc = 3, alvo = bx - 230, px = Math.min(alvo, -30 + t * 3), anda = px < alvo;
+    var psc = 3, alvo = bx - 230, px = reduz?alvo:Math.min(alvo, -30 + t * 3), anda = px < alvo;
     accSel = typeof perfAvAtual === 'function' ? (perfAvAtual().a || '') : '';
     x.fillStyle = 'rgba(30,10,60,.25)'; x.beginPath(); x.ellipse(px, chao, 14 * psc, 2.4 * psc, 0, 0, 7); x.fill();
     perfCharContorno(x, px - 15 * psc, chao - 44 * psc - (anda ? Math.abs(Math.sin(t * .3)) * 4 : 0), psc, function(){ charPose = anda ? '' : (perfProva ? 'v' : ''); drawChar(c, 0, 0, anda ? 1 : 0, perfProva ? 3 : 2, false); });
   }catch(e){}
-  finally{ state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; accSel = oA; frame = oF; charPose = ''; perfAntena = ''; }
+  finally{ state = oS; pw = oPw; dpw = oDpw; rankI = oR; sash = oSa; accSel = oA; frame = oF; charPose = oP; perfAntena = oAnt; }
   // balão da atendente
   var rg = t - shopFala.t0;
   if(shopFala.txt && rg >= 0 && rg < 220){

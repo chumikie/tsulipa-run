@@ -3,9 +3,9 @@
 // poses só do Moon⭐Duo! (pegam carona no "V" e trocam os braços aqui)
 var DUO_POSE_FN = {
   dmao: function(c, x, y){ duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 36, y + 30); duoMao(x + 37, y + 30.5, c); },
-  dhigh: function(c, x, y){ duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 34.5, y + 12); g.fillStyle = c.skin; g.beginPath(); g.arc(x + 35.5, y + 10.5, 3, 0, 7); g.fill(); },
+  dhigh: function(c, x, y){ duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 34.5, y + 12); duoMao(x + 35.5, y + 10.5, c, -1); },
   dguarda: function(c, x, y){ duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 33, y + 15.5); duoMao(x + 33.6, y + 14.8, c); },
-  dsegura: function(c, x, y){ duoBraco(x + 3, y + 26, x + 11, y + 28.5); duoBraco(x + 27, y + 26, x + 19, y + 28.5); g.fillStyle = c.skin; g.fillRect(x + 1, y + 24, 4, 3); g.fillRect(x + 25, y + 24, 4, 3); },
+  dsegura: function(c, x, y){ duoBraco(x + 3, y + 26, x + 11, y + 28.5); duoBraco(x + 27, y + 26, x + 19, y + 28.5); duoMao(x + 11, y + 28.5, c, .15); duoMao(x + 19, y + 28.5, c, Math.PI-.15); },
   dselfie: function(c, x, y){
     duoBraco(x + 3, y + 25.5, x + 1, y + 33); duoBraco(x + 27, y + 25.5, x + 36, y + 13.5);
     g.fillStyle = '#ff6fb5'; g.fillRect(x + 34, y + 5, 6.5, 10.5); g.fillStyle = '#2a2438'; g.fillRect(x + 34.8, y + 5.8, 4.9, 8.9);
@@ -42,26 +42,36 @@ duoOv.addEventListener('input',function(e){
   if(e.target.id!=='duoBusca')return;
   duoBuscaCancelar();
   var inp=e.target,q=inp.value.trim(),seq=duoBuscaSeq;
-  if(q.length<2){$('duoRes').innerHTML='';return;}
+  var box=$('duoRes'), dono=petPhoneContaChave();
+  function buscaAtual(){
+    return !(seq!==duoBuscaSeq||duoOv.hidden||!inp.isConnected||!box.isConnected||inp.value.trim()!==q||dono!==petPhoneContaChave());
+  }
+  function aviso(chave){ box.innerHTML='<p class="perfcarr">'+escHtml(tr(chave))+'</p>'; }
+  if(q.length<2){box.innerHTML='';return;}
+  aviso('Carregando...');
   duoBuscaT=setTimeout(function(){
     duoBuscaT=0;
-    if(seq!==duoBuscaSeq||duoOv.hidden||!inp.isConnected||inp.value.trim()!==q)return;
+    if(!buscaAtual())return;
     contaRpc('buscar_perfis',{p_q:q}).then(function(L){
-      var box=$('duoRes');
-      if(seq!==duoBuscaSeq||duoOv.hidden||!inp.isConnected||inp.value.trim()!==q||!box||!box.isConnected)return;
-      box.innerHTML=Array.isArray(L)&&L.length?L.filter(function(p){return !contaJ||p.nick.toLowerCase()!==contaJ.nick.toLowerCase();}).map(duoNickBtn).join(''):'<p class="perfcarr">'+escHtml(tr('Ninguém com esse nome.'))+'</p>';
-    }).catch(function(){});
+      if(!buscaAtual())return;
+      var lista=duoOutrosPerfis(L);
+      if(lista.length) box.innerHTML=lista.map(duoNickBtn).join('');
+      else aviso('Ninguém com esse nome.');
+    }).catch(function(){
+      if(buscaAtual()) aviso('Não deu para falar com o servidor. Tente de novo.');
+    });
   },280);
 });
 duoOv.addEventListener('keydown', function(e){ if(e.target.id === 'duoBusca') e.stopPropagation(); });
 $('duoCv').addEventListener('click', function(e){
   if(!duoGu) return;
-  var cv = this, r = cv.getBoundingClientRect(), px = (e.clientX - r.left) * cv.width / r.width, py = (e.clientY - r.top) * cv.height / r.height;
-  var inf=duoInfo(),U=duoGeo(duoMeuAv(),duoT).sc,chao=cv.height*.9,q=duoQuadroGeo(cv.width,cv.height,U,inf),sxE=q.eu,sxG=q.gu;
+  var cv = this, r = cv.getBoundingClientRect();if(!r.width||!r.height)return;
+  var px = (e.clientX - r.left) * cv.width / r.width, py = (e.clientY - r.top) * cv.height / r.height;
+  var inf=duoInfo(),U=duoGeo(duoMeuAv(),duoT).sc,UG=duoGeo(duoGuAv(),duoT+37).sc,chao=cv.height*.9,q=duoQuadroGeo(cv.width,cv.height,U,inf);
   px=cv.width/2+(px-cv.width/2)/q.zoom;py=q.pivo+(py-q.pivo)/q.zoom;
-  if(py < chao - 52 * U || py > chao + 10) return;
-  if(Math.abs(px - sxG) < 20 * U){ duoBalao = { txt:duoFala(), t0:duoT }; duoPulo = { quem:'gu', t0:duoT }; [1319, 1568, 2093].forEach(function(f, i){ beep(f, .09, 'triangle', .035, i * .07); }); }
-  else if(Math.abs(px - sxE) < 20 * U){ duoPulo = { quem:'eu', t0:duoT }; beep(988, .08, 'triangle', .04); }
+  var alvo=duoAlvoToque(px,py,chao,q,U,UG);
+  if(alvo==='gu'){ duoBalao = { txt:duoFala(), t0:duoT }; duoPulo = { quem:'gu', t0:duoT }; [1319, 1568, 2093].forEach(function(f, i){ beep(f, .09, 'triangle', .035, i * .07); }); }
+  else if(alvo==='eu'){ duoPulo = { quem:'eu', t0:duoT }; beep(988, .08, 'triangle', .04); }
 });
 // ---------- Painel organizado em abas: Cena · Cenário · Expressões · Presente ----------
 duoOv.addEventListener('click', function(e){
@@ -70,9 +80,9 @@ duoOv.addEventListener('click', function(e){
   if((b = t.closest('[data-dtrava]'))){ duoTravaUI(b.dataset.dtrava); return; }
   if((b = t.closest('[data-dcomprar]'))){ duoComprar(b.dataset.dcomprar, b); return; }
   if(t.id === 'duoEntrar'){ contaEntrar(); return; }
-  if(t.id === 'duoTrocar'){ duoGu = null; duoEscolhaUI(); return; }
+  if(t.id === 'duoTrocar'){ duoBuscaCancelar();duoLoadSeq++;duoGu = null;duoBalao=duoPulo=null;duoEscolhaUI();var busca=$('duoBusca');if(busca)busca.focus({preventScroll:true});return; }
   if((b = t.closest('[data-dnick]'))){ duoCarregar(b.dataset.dnick); return; }
-  if((b = t.closest('[data-dcena]'))){ duoCena = b.dataset.dcena; duoBalao = null; duoT = 0; duoPalcoUI(); duoRegistrar(); beep(1175, .05, 'triangle', .04); return; }
+  if((b = t.closest('[data-dcena]'))){ duoCena = b.dataset.dcena; duoBalao = duoPulo = null; duoT = 0; duoPalcoUI(); duoRegistrar(); beep(1175, .05, 'triangle', .04); return; }
   if((b = t.closest('[data-dfundo]'))){ duoFundo = b.dataset.dfundo; $('duoPresBox').hidden = true; duoPalcoUI(); duoTemaGuardarUI(duoFundo); beep(988, .05, 'triangle', .04); return; }
   if((b = t.closest('[data-dexeu]'))){ duoExEu = b.dataset.dexeu; duoPalcoUI(); return; }
   if((b = t.closest('[data-dexgu]'))){ duoExGu = b.dataset.dexgu; duoPalcoUI(); return; }
@@ -81,15 +91,19 @@ duoOv.addEventListener('click', function(e){
   if((b = t.closest('[data-dqt]'))){ duoPresQt = +b.dataset.dqt; duoPresUI(); return; }
   if(t.id === 'duoPresOk'){
     t.disabled = true;
-    contaRpc('duo_presente', { p_nick: duoGu.nick, p_emoji: duoPresEmo, p_estrelas: duoPresQt }).then(function(r){
+    var dono=petPhoneContaChave(), convidado=duoGu, emoji=duoPresEmo, sessao=duoLoadSeq;
+    function presenteVisivel(){ return !duoOv.hidden && sessao===duoLoadSeq && convidado===duoGu && dono===petPhoneContaChave(); }
+    contaRpc('duo_presente', { p_nick: convidado.nick, p_emoji: emoji, p_estrelas: duoPresQt }).then(function(r){
       t.disabled = false;
+      if(dono!==petPhoneContaChave()) return;
       if(r && r.ok){
         if(typeof r.stars === 'number'){ starT = r.stars; try{ localStorage.setItem('brs48cr_st', starT); }catch(er){} setBest(); }
-        duoTab = 'cena'; duoTabUI(); duoMsg(duoPresEmo + ' ' + tr('Presente enviado! {nick} vai receber quando entrar no jogo.').replace('{nick}', duoGu.nick));
-        duoBalao = { txt:tr('Obrigado pelo presente! {emo}').replace('{emo}', duoPresEmo), t0:duoT }; duoPulo = { quem:'gu', t0:duoT };
+        if(!presenteVisivel()) return;
+        duoTab = 'cena'; duoTabUI(); duoMsg(emoji + ' ' + tr('Presente enviado! {nick} vai receber quando entrar no jogo.').replace('{nick}', convidado.nick));
+        duoBalao = { txt:tr('Obrigado pelo presente! {emo}').replace('{emo}', emoji), t0:duoT }; duoPulo = { quem:'gu', t0:duoT };
         [1047, 1319, 1568, 2093].forEach(function(f, i){ beep(f, .14, 'triangle', .04, i * .08); });
-      } else duoMsg(tr(DUO_PRES_ERRO[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.'));
-    }).catch(function(){ t.disabled = false; duoMsg(tr('Não deu para falar com o servidor. Tente de novo.')); });
+      } else if(presenteVisivel()) duoMsg(tr(DUO_PRES_ERRO[r && r.erro] || 'Não deu para falar com o servidor. Tente de novo.'));
+    }).catch(function(){ t.disabled = false; if(presenteVisivel()) duoMsg(tr('Não deu para falar com o servidor. Tente de novo.')); });
     return;
   }
   // 23/11: "Salvar PNG" com o cenário abre a câmera no jeito do Center⭐Run! (tw-camera.js): nítida, moldura e "de perto".

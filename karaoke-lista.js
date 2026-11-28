@@ -35,14 +35,25 @@
   function semana(){ try{ return root.KaraokeRoomViews ? root.KaraokeRoomViews.songFor(Date.now()) : ''; }catch(e){ return ''; } }
   function recorde(k){ var b = document.querySelector('[data-kt-song-best="' + k + '"]'); return b ? b.textContent.trim() : ''; }
   var box = null;
+  function sincronizarPrevia(){
+    var botao=box && box.querySelector('[data-ktl-ouvir]');
+    if(!botao)return;
+    var origem=document.querySelector('[data-kt-song-preview="'+botao.dataset.ktlOuvir+'"]');
+    if(!origem)return;
+    if(botao.textContent!==origem.textContent)botao.textContent=origem.textContent;
+    botao.setAttribute('aria-pressed',origem.getAttribute('aria-pressed')||'false');
+    botao.disabled=origem.disabled;
+  }
   function desenhar(){
     if(!box) return;
     var sel = $('ktSong'), atual = sel ? sel.value : '', sem = semana(), lista = trilhas(), a = lista.filter(function(x){ return x.k === atual; })[0] || lista[0];
     var bloqueado = !!(sel && sel.disabled), cont = $('ktLimitCount'), pips = $('ktLimitPips');
-    var rec = $('ktSongRecord');
+    var rec = $('ktSongRecord'), iniciar=$('ktStart'), cantarBloqueado=bloqueado || !iniciar || iniciar.disabled;
     // só refaz quando algo que aparece mudou (o motor do karaoke mexe nesses textos o tempo todo)
-    var assinatura = [atual, sem, bloqueado, cont && cont.textContent, pips && pips.textContent, rec && rec.textContent, lista.length, idioma()].join('|');
+    var assinatura = [atual, sem, bloqueado, cantarBloqueado, cont && cont.textContent, pips && pips.textContent, rec && rec.textContent, lista.length, idioma()].join('|');
     if(assinatura === box.getAttribute('data-k')) return; box.setAttribute('data-k', assinatura);
+    var gradeAnterior=box.querySelector('.ktl-grade'), rolagem=gradeAnterior?gradeAnterior.scrollTop:0;
+    var foco=document.activeElement, seletorFoco=box.contains(foco)&&foco.dataset?(foco.dataset.ktl?'[data-ktl="'+esc(foco.dataset.ktl)+'"]':foco.dataset.ktlOuvir?'[data-ktl-ouvir]':foco.dataset.ktlCantar?'[data-ktl-cantar]':''):'';
     box.innerHTML =
       '<div class="ktl-cab"><h2 class="ktl-aba">' + esc(t('musicas')) + '</h2>' +
         '<span class="ktl-pt"><b>' + esc(t('shows')) + '</b><span>' + esc(cont ? cont.textContent : '') + '</span><i aria-hidden="true">' + esc(pips ? pips.textContent : '') + '</i></span></div>' +
@@ -56,7 +67,10 @@
           '<h3 translate="no">' + esc(a.nome) + '</h3><p>' + esc([a.bpm, a.estrelas].filter(Boolean).join(' · ')) + '</p>' +
           '<p class="ktl-rec">' + esc(rec ? rec.textContent.replace(/\s*·\s*⭐.*$/, '') : recorde(a.k)) + '</p></div>' +
         '<div class="ktl-acoes"><button type="button" class="ktl-ouvir" data-ktl-ouvir="' + esc(a.k) + '">▶ ' + esc(t('ouvir')) + '</button>' +
-          '<button type="button" class="ktl-cantar" data-ktl-cantar="1"' + (bloqueado ? ' disabled' : '') + '>🎤 ' + esc(t('cantar')) + '</button></div></div>' : '');
+          '<button type="button" class="ktl-cantar" data-ktl-cantar="1"' + (cantarBloqueado ? ' disabled' : '') + '>🎤 ' + esc(t('cantar')) + '</button></div></div>' : '');
+    var gradeNova=box.querySelector('.ktl-grade');if(gradeNova)gradeNova.scrollTop=rolagem;
+    if(seletorFoco){var novoFoco=box.querySelector(seletorFoco);if(novoFoco&&!novoFoco.disabled)novoFoco.focus({preventScroll:true});}
+    sincronizarPrevia();
   }
   function clique(e){
     var b = e.target.closest && e.target.closest('button'); if(!b || !box.contains(b) || b.disabled) return;
@@ -89,5 +103,5 @@
     desenhar();
   }
   if(document.readyState !== 'loading') setTimeout(montar, 0); else document.addEventListener('DOMContentLoaded', function(){ setTimeout(montar, 0); });
-  root.KaraokeLista = {montar:montar, txt:TX};
+  root.KaraokeLista = {montar:montar, sincronizarPrevia:sincronizarPrevia, txt:TX};
 })(typeof window !== 'undefined' ? window : globalThis);

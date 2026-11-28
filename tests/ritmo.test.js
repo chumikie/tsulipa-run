@@ -5,7 +5,15 @@ const ctx={LANG:'pt',contaJ:{id:'A'},contaAuthUserId:'A',localStorage:{getItem:k
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../tw-ritmo.js'),'utf8'),ctx);
 const R=ctx.TW_RITMO;
 for(const l of ['pt','en','es','id','th','ja']){ctx.LANG=l;for(let i=0;i<39;i++)assert.equal(typeof R.t(i),'string',l+' '+i);assert(!R.html().includes('undefined'));}
-ctx.LANG='pt';assert(R.html().includes('data-ritmo="run"'));assert.equal((R.html().match(/data-ritmo="karaoke"/g)||[]).length,1);
+for(const l of R.idiomas){
+  ctx.LANG=l;
+  const guia=R.passeioHoje('handshake',k=>({handshake:'Handshake',cafe:'Café'})[k]);
+  for(const i of [0,2,3]) assert(guia.includes(R.t(i)));
+  const longa=guia.slice(guia.lastIndexOf('<div>'));
+  assert(longa.indexOf('data-passeio="handshake"')>=0 && longa.indexOf('data-passeio="cafe"')>longa.indexOf('data-passeio="handshake"'));
+}
+assert.equal(R.passeioHoje('bloom',k=>k==='bloom'?'Bloom':''),'');
+ctx.LANG='pt';assert.equal(R.html().split(R.t(29)).length-1,1,'uma orientação comum por página');assert(R.html().includes('data-ritmo="run"'));assert.equal((R.html().match(/data-ritmo="karaoke"/g)||[]).length,1);
 R.agir('tempo-3');assert(R.html().includes('data-ritmo="karaoke"'));assert.equal(storage.size,0,'time choice does not mark progress');
 R.agir('pular');assert(R.html().includes('data-ritmo="retomar"'));
 ctx.contaJ={id:'B'};ctx.contaAuthUserId='B';assert(!R.html().includes('data-ritmo="retomar"'),'guidance is scoped to owner');

@@ -34,7 +34,7 @@
     var textos={pt:['Posar na praça','Observar a fonte','Rever a vida no bairro'],en:['Pose in the square','Watch the fountain','Revisit neighborhood life'],es:['Posar en la plaza','Observar la fuente','Volver a la vida del barrio'],id:['Berpose di alun-alun','Lihat air mancur','Lihat kehidupan lingkungan'],th:['โพสท่าที่จัตุรัส','ชมน้ำพุ','ดูชีวิตในย่าน'],ja:['広場でポーズ','噴水を眺める','街の暮らしを見る']}[lang()];
     barra.innerHTML='';textos.forEach(function(txt,i){var b=document.createElement('button');b.type='button';b.textContent=txt;b.onclick=function(){
       if(i===2){if(window.TW_BAIRRO)TW_BAIRRO.abrir();return;}
-      if(i===1){tocarRua(800,570);return;}
+      if(i===1){observarFonte(performance.now()/1000);return;}
       var meu=ultimos.find(function(q){return q.dono;});if(!meu)return;
       pausaEscolhida={dono:donoPausa(),ate:performance.now()/1000+8,x:meu.x};meuPasseio=null;desenhar();
     };barra.appendChild(b);});
@@ -105,20 +105,25 @@
   function montar(){
     var menu=document.getElementById('hubMenu');if(!menu)return;if(document.getElementById('twMapa')){posicionar();return;}
     var sec=document.createElement('section');sec.id='twMapa';sec.className='tw-mapa';
-    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-visao" hidden><button type="button" class="tw-mapa-zoom" aria-pressed="false">🔎 Aproximar</button></div><div class="tw-mapa-rolo" hidden><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><p class="tw-mapa-recado-rosa" hidden></p><nav class="tw-mapa-bairros" aria-label="Explorar bairros" hidden></nav><section class="tw-mapa-vitrine" hidden></section><span class="tw-mapa-dica" aria-hidden="true"></span>';
+    sec.innerHTML='<button type="button" class="tw-mapa-botao" aria-expanded="false"><span class="tw-mapa-ico">🗺️</span><span class="tw-mapa-txt"><b></b><small></small></span><span class="tw-mapa-seta">▼</span></button><button type="button" class="tw-mapa-voltar" hidden>◀ Mapa</button><div class="tw-mapa-visao" hidden><button type="button" class="tw-mapa-zoom" aria-pressed="false">🔎 Aproximar</button></div><div class="tw-mapa-rolo" hidden><button class="tw-mapa-recarregar" type="button" hidden></button><canvas width="'+MW+'" height="'+MH+'" role="img"></canvas></div><p class="tw-mapa-recado-rosa" hidden></p><nav class="tw-mapa-bairros" aria-label="Explorar bairros" hidden></nav><section class="tw-mapa-vitrine" hidden></section><span class="tw-mapa-dica" aria-hidden="true"></span>';
     menu.appendChild(sec);posicionar();
     cv=sec.querySelector('canvas');ctx=cv.getContext('2d');
+    sec.querySelector('.tw-mapa-recarregar').addEventListener('click',function(){mostrarCena(cena);});
     mostrarCena('mundo');
-    cv.addEventListener('mousemove',function(e){var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
+    cv.addEventListener('mousemove',function(e){if(toque&&arrastou)return;var l=achar(e);if(l!==hover){hover=l;cv.style.cursor=l?'pointer':'';desenhar();}});
     var rolo=sec.querySelector('.tw-mapa-rolo');['pointerdown','touchstart','wheel'].forEach(function(ev){rolo.addEventListener(ev,function(){sec.classList.add('mexeu');},{passive:true,once:true});});
     cv.addEventListener('mouseleave',function(){hover=null;desenhar();});
     var toque=null,arrastou=false;
-    cv.addEventListener('pointerdown',function(e){toque={x:e.clientX,y:e.clientY};arrastou=false;hover=achar(e);desenhar();},{passive:true});
+    cv.addEventListener('pointerdown',function(e){if(toque||e.isPrimary===false){arrastou=true;hover=null;desenhar();return;}toque={id:e.pointerId,x:e.clientX,y:e.clientY};arrastou=false;hover=achar(e);desenhar();},{passive:true});
     cv.addEventListener('pointermove',function(e){
-      if(toque&&Math.hypot(e.clientX-toque.x,e.clientY-toque.y)>10){arrastou=true;hover=null;desenhar();}
+      if(toque&&e.pointerId===toque.id&&!arrastou&&Math.hypot(e.clientX-toque.x,e.clientY-toque.y)>10){arrastou=true;hover=null;desenhar();}
     },{passive:true});
-    cv.addEventListener('pointercancel',function(){toque=null;arrastou=true;hover=null;desenhar();});
-    cv.addEventListener('pointerup',function(){toque=null;});
+    function soltarMapa(e){if(toque&&e.pointerId===toque.id)toque=null;}
+    function cancelarMapa(e){if(!toque||e.pointerId!==toque.id)return;soltarMapa(e);arrastou=true;hover=null;desenhar();}
+    cv.addEventListener('pointercancel',cancelarMapa);
+    cv.addEventListener('pointerup',soltarMapa);
+    window.addEventListener('pointerup',soltarMapa);
+    window.addEventListener('pointercancel',cancelarMapa);
     cv.addEventListener('click',function(e){
       if(arrastou){arrastou=false;return;}
       if(!mapaAtivo()||mergulho)return;
@@ -213,6 +218,25 @@
     var z=sec.querySelector('.tw-mapa-zoom');if(z)z.textContent=sec.classList.contains('tw-mapa-zoomed')?ui('geral'):ui('zoom');
     var nv=sec.querySelector('.tw-mapa-bairros');if(nv)nv.setAttribute('aria-label',ui('bairros'));
     if(sec.querySelectorAll)[].forEach.call(sec.querySelectorAll('[data-tw-rotulo]'),function(el){el.textContent=rotulo(el.getAttribute('data-tw-rotulo'));});}
+  // Na chegada à Praça, preserve o Idol e prefira placas inteiras ou fora da janela.
+  function enquadrarPraca(px, largura) {
+    var limite=Math.max(0,1600-largura);
+    var margem=Math.min(85,largura/4);
+    var min=Math.max(0,Math.min(limite,px-largura+margem));
+    var max=Math.max(min,Math.min(limite,px-margem));
+    function ajustar(v){return Math.max(min,Math.min(max,v));}
+    var base=ajustar(px-largura/2),melhor=base,menor=Infinity;
+    // Limites das placas desenhadas em mapa-rua-praca.svg, com respiro para a borda.
+    var placas=[[52,505],[1100,1500]],opcoes=[base,min,max];
+    placas.forEach(function(p){opcoes.push(p[0]-largura,p[1],p[0],p[1]-largura);});
+    opcoes.forEach(function(v){
+      var inicio=ajustar(v),fim=inicio+largura,cortes=0;
+      placas.forEach(function(p){if(inicio>p[0]&&inicio<p[1])cortes++;if(fim>p[0]&&fim<p[1])cortes++;});
+      var custo=cortes*1600+Math.abs(inicio-base);
+      if(custo<menor){menor=custo;melhor=inicio;}
+    });
+    return melhor;
+  }
   function centralizar(){var r=document.querySelector('#twMapa .tw-mapa-rolo');
     if(centrado||!r||!cv)return;
     var sec=document.getElementById('twMapa');
@@ -222,7 +246,14 @@
       r.scrollLeft=0;r.scrollTop=0;centrado=true;return;
     }
     var k=cv.getBoundingClientRect().width/MW;
-    var px=cena==='mundo'?800:800,py=cena==='mundo'?610:450;
+    var px=800,py=cena==='mundo'?610:450;
+    if(cena==='praca' && window.matchMedia && window.matchMedia('(max-width:760px)').matches){
+      var dono=ultimos.find(function(p){return p.dono;});
+      if(dono&&k>0&&r.clientWidth>0){
+        var largura=r.clientWidth/k;
+        px=enquadrarPraca(dono.x,largura)+largura/2;py=dono.y-50;
+      }
+    }
     r.scrollLeft=Math.max(0,(px-OX)*k-r.clientWidth/2);
     r.scrollTop=Math.max(0,(py-OY)*k-r.clientHeight/2);centrado=true;
   }
@@ -322,17 +353,27 @@
       if(rolo){rolo.scrollLeft=0;rolo.scrollTop=0;}
     }
     atualizarVitrine();
+    var tentar=sec&&sec.querySelector('.tw-mapa-recarregar');
+    if(tentar)tentar.hidden=true;
     var arquivo=destino==='mundo'?'mapa-mundo.svg':CENAS_RUA[destino];
     if(!imagens[destino]){
       var img=new Image();imagens[destino]=img;
       img.onload=function(){if(cena===destino){arte=img;desenhar();centralizar();}};
-      img.onerror=function(){if(window.TW_MAPA_DEBUG)console.warn('Arte do mapa indisponível:',arquivo);};
-      img.src='./'+arquivo+'?v=5';
+      img.onerror=function(){
+        if(imagens[destino]!==img)return;
+        delete imagens[destino];
+        if(cena===destino&&tentar){
+          var rotulos={pt:'Recarregar imagem do mapa',en:'Reload map image',es:'Volver a cargar la imagen del mapa',id:'Muat ulang gambar peta',th:'โหลดภาพแผนที่อีกครั้ง',ja:'地図の画像を再読み込み'};
+          tentar.textContent=rotulos[lang()]||rotulos.pt;
+          tentar.hidden=false;
+        }
+        if(window.TW_MAPA_DEBUG)console.warn('Arte do mapa indisponível:',arquivo);};
+      img.src='./'+arquivo+'?v=7';
     }
     arte=imagens[destino];if(arte.complete&&arte.naturalWidth){desenhar();centralizar();}
     textos();atualizarVitrine();recadoRosa();
   }
-  function achar(e){var r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*MW/r.width+OX,y=(e.clientY-r.top)*MH/r.height+OY;
+  function achar(e){var r=cv.getBoundingClientRect();if(!r.width||!r.height)return null;var x=(e.clientX-r.left)*MW/r.width+OX,y=(e.clientY-r.top)*MH/r.height+OY;
     if(cena==='mundo'){
       var achado=null,area=Infinity;
       Object.keys(BAIRROS).forEach(function(id){var b=BAIRROS[id].box;
@@ -637,7 +678,7 @@
     for(var k=0;k<seg.length;k++){var g=seg[k],xa=PORTAS[g[0]]+(i%2?-34:34)*(i>1?.5:1),xb=PORTAS[g[1]]+(i%2?-34:34)*(i>1?.5:1);
       if(t<PARA)return {x:xa,dir:xb>=xa?1:-1,mov:0,porta:g[0],volta:k,pausa:t};
       t-=PARA;
-      if(t<g[2]){var u=t/g[2];u=u*u*(3-2*u);return {x:xa+(xb-xa)*u,dir:xb>=xa?1:-1,mov:1,volta:k};}
+      if(t<g[2]){var u=t/g[2],passo=Math.min(1,u*8,(1-u)*8);u=u*u*(3-2*u);return {x:xa+(xb-xa)*u,dir:xb>=xa?1:-1,mov:1,passo:passo,volta:k};}
       t-=g[2];}
     return {x:PORTAS[0],dir:1,mov:0,porta:0,volta:0,pausa:0};
   }
@@ -1076,6 +1117,11 @@
       ctx.restore();return true;});
   }
   var FALA_TOQUE={pt:'✨ Desejo feito!',en:'✨ Wish made!',es:'✨ ¡Deseo pedido!',id:'✨ Harapan dibuat!',th:'✨ ขอพรแล้ว!',ja:'✨ ねがいごと!'};
+  function observarFonte(tm){
+    somMapa('regar');
+    toques.push({tipo:'agua',x:800,y:560,t0:tm,dur:reduzMov?1.2:1.4,txt:FALA_TOQUE[lang()]||FALA_TOQUE.pt});
+    desenhar();
+  }
   function tocarRua(x,y){
     var tm=performance.now()/1000;
     if(semanaPos&&Math.abs(x-semanaPos.x)<30*ESCALA_RUA&&y<=semanaPos.y+10&&y>=semanaPos.y-semanaPos.h-30){   // o bicho da Bagunça da semana: abre a Vida no bairro
@@ -1093,8 +1139,7 @@
     var ch=CHAO[cena],cp=chaoPos[cena];
     if(ch&&cp&&Math.abs(x-cp.x)<60&&y>cp.y-70&&y<cp.y+30){pulos[ch]=tm;somMapa('toque');if(!reduzMov)toques.push({x:cp.x,y:cp.y-60,t0:tm,dur:.9,sim:['♡','❤','✦']});desenhar();return;}
     // 3) fonte da Praça: espirra água e faz um desejo
-    if(cena==='praca'&&Math.hypot((x-800)/260,(y-570)/120)<1){somMapa('regar');
-      toques.push({tipo:'agua',x:800,y:560,t0:tm,dur:reduzMov?1.2:1.4,txt:FALA_TOQUE[lang()]||FALA_TOQUE.pt});desenhar();return;}
+    if(cena==='praca'&&Math.hypot((x-800)/260,(y-570)/120)<1){observarFonte(tm);return;}
     // 4) chão: o seu Idol caminha até lá, para um pouco e volta ao passeio
     if(y>=650&&ultimos.some(function(o){return o.dono;})){
       var meu=ultimos.find(function(o){return o.dono;}),alvo=Math.max(60,Math.min(1540,x));
@@ -1108,7 +1153,7 @@
   function passeioDoToque(q,tm){
     var m=meuPasseio;if(!m)return q;var t=tm-m.t0;
     if(t<0||t>m.ida+MEU_PARA+1.2){meuPasseio=null;return q;}
-    if(t<m.ida){var u=t/m.ida;u=u*u*(3-2*u);return {x:m.x0+(m.x1-m.x0)*u,dir:m.x1>=m.x0?1:-1,mov:1,volta:0};}
+    if(t<m.ida){var u=t/m.ida,passo=Math.max(0,Math.min(1,u*8,(1-u)*8));u=u*u*(3-2*u);return {x:m.x0+(m.x1-m.x0)*u,dir:m.x1>=m.x0?1:-1,mov:1,passo:passo,volta:0};}
     if(t<m.ida+MEU_PARA){
       if(!m.humor && Math.abs(m.x1-m.x0)>=40){m.humor=true;if(window.TW_HUMOR)window.TW_HUMOR.evento('mapa');}
       // Parou perto da fonte da Praça: joga uma moedinha e faz um desejo.
@@ -1116,9 +1161,21 @@
         toques.push({tipo:'agua',x:800,y:560,t0:tm,dur:reduzMov?1.2:1.4,txt:FALA_TOQUE[lang()]||FALA_TOQUE.pt});}
       return {x:m.x1,dir:m.x1>=m.x0?1:-1,mov:0,porta:-1,volta:0,pausa:t-m.ida,toque:true};
     }
-    var v=(t-m.ida-MEU_PARA)/1.2;v=v*v*(3-2*v);return {x:m.x1+(q.x-m.x1)*v,dir:q.x>=m.x1?1:-1,mov:1,volta:0};
+    var v=Math.max(0,Math.min(1,(t-m.ida-MEU_PARA)/1.2)),passo=Math.min(1,v*8,(1-v)*8);v=v*v*(3-2*v);return {x:m.x1+(q.x-m.x1)*v,dir:q.x>=m.x1?1:-1,mov:1,passo:passo,volta:0};
   }
   var ESCALA_RUA=1.75;   // Idols maiores só nas ruas; o mapa geral continua de longe.
+  function acessorioPasseante(av){
+    var a=av&&av.a;
+    return typeof a==='string'&&typeof ACC!=='undefined'&&Array.isArray(ACC)&&ACC.some(function(item){return item[0]===a;})?a:'';
+  }
+  // Contato no mesmo plano dos pés; ao saltar, a sombra fica no piso e se suaviza.
+  function sombraPasseante(x,y,sc,bob){
+    var altura=Math.max(0,-bob),proximidade=1-Math.min(1,altura/(18*sc));
+    ctx.save();ctx.fillStyle='rgba(43,27,70,'+(.06+.06*proximidade)+')';ctx.beginPath();ctx.ellipse(x+2*sc,y,12*sc,3.2*sc,0,0,7);ctx.fill();ctx.fillStyle='rgba(43,27,70,'+(.07+.07*proximidade)+')';
+    ctx.beginPath();ctx.ellipse(x+1.2*sc,y, (9.2+2*(1-proximidade))*sc,2.25*sc,0,0,7);ctx.fill();
+    ctx.fillStyle='rgba(43,27,70,'+(.14*proximidade)+')';
+    ctx.beginPath();ctx.ellipse(x,y,6.2*sc,1.35*sc,0,0,7);ctx.fill();ctx.restore();
+  }
   function andar(tm){
     if(typeof perfChar!=='function'||typeof drawChar!=='function'||typeof perfCharContorno!=='function')return;
     // Escala dos Idols nas ruas (era 1.45). Os enfeites em volta acompanham por k.
@@ -1139,7 +1196,7 @@
         var noPalco=false;
         if(p.oshi){var pd=visitaPorta(p.oshiK);noPalco=cena==='palco'&&pd===1;   // no Star Stage, quem visita a porta do meio canta em cima do palco, no microfone
           q={x:noPalco?800:PORTAS[pd]+(pd===2?-95:95),dir:pd===2?-1:1,mov:0,porta:pd,volta:0,pausa:1,ativo:visitaAtividade(p.oshiK)};}
-        q.p=p;q.i=i;q.y=noPalco?474:744+(i%3)*6;return q;/* abaixo das placas; o chão acaba em 760 */
+        q.p=p;q.i=i;q.y=noPalco?474:730+(i%3)*8;return q;/* abaixo das placas; o chão acaba em 760 */
       });
       var fa=rua.find(function(q){return q.p.nomeFa;});
       var meuIdol=rua.find(function(q){return q.p.dono;});
@@ -1148,13 +1205,15 @@
       var despedindo=reencontro&&!reduzMov&&meuIdol.pausa>PARA-.65;
       if(fa){
         // O fã espera na Praça. O gesto acontece quando o Idol para por perto.
-        fa.x=900;fa.y=756;fa.mov=0;fa.dir=-1;
+        fa.x=900;fa.y=746;fa.mov=0;fa.dir=-1;
         if(reencontro)meuIdol.dir=1;
       }
       ultimos=[];visitaEtiquetas=[];falas=[];diamantes=[];
       rua.sort(function(a,b){return a.y-b.y;})   // quem está mais embaixo fica na frente
         .forEach(function(q){
-        var p=q.p,c=p.oshiChar||perfChar(p.av),bob=q.mov?-Math.abs(Math.sin(tm*8+q.i))*2.4*sc:0;
+        var p=q.p,c=p.oshiChar||perfChar(p.av),bob=q.mov&&!reduzMov?-Math.abs(Math.sin(tm*8+q.i))*1.8*sc*(q.passo==null?1:q.passo):0;
+        // Fase individual: os passeantes não repetem a mesma passada ao mesmo tempo.
+        frame=reduzMov?0:tm*60+q.i*13;accSel=acessorioPasseante(p.av);
         var pulo=pulos[q.i];if(pulo!=null){var up=(tm-pulo)/.5;if(up>=0&&up<1&&!reduzMov)bob-=Math.sin(up*Math.PI)*16*k;if(tm-pulo>1.6)delete pulos[q.i];}
         ultimos.push({x:q.x,y:q.y,i:q.i,dono:!!p.dono,oshi:p.oshi||'',oshiK:p.oshiK});
         var segurando=!q.mov&&objeto&&q.porta===objeto.porta&&
@@ -1167,10 +1226,16 @@
           if(!reencontro||reconhecendo)pose='';
           else if(despedindo)pose=p.jeitoFa==='timido'?'':'tchau';
         }
-        var expressao=p.nomeFa?(reencontro&&!reconhecendo?p.av.expr:2):(+p.av.expr||2);
-        ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(q.x,q.y,8*sc,1.8*sc,0,0,7);ctx.fill();
+        var expr=Number(p.av.expr),expressao=p.nomeFa?(reencontro&&!reconhecendo?p.av.expr:2):(p.av.expr!=null&&Number.isInteger(expr)&&expr>=0&&expr<=6?expr:2);
+        if(cena==='praca' && p.dono){
+          // Marca de piso sob o próprio Idol, visível mesmo com o cristal ativo.
+          ctx.save();ctx.beginPath();ctx.ellipse(q.x,q.y,15*sc,3.8*sc,0,0,Math.PI*2);
+          ctx.strokeStyle='#543277';ctx.lineWidth=3.4*sc;ctx.stroke();
+          ctx.strokeStyle='#f8efbb';ctx.lineWidth=1.5*sc;ctx.stroke();ctx.restore();
+        }
+        sombraPasseante(q.x,q.y,sc,bob);
         ctx.save();if(q.dir<0){ctx.translate(q.x,0);ctx.scale(-1,1);ctx.translate(-q.x,0);}
-        perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=pose;drawChar(c,0,0,q.mov?1:0,expressao,false);});
+        perfCharContorno(ctx,q.x-15*sc,q.y-44*sc+bob,sc,function(){charPose=pose;drawChar(c,0,0,q.mov&&!reduzMov?1:0,expressao,false);});
         ctx.restore();
         // O seu Idol ganha uma estrelinha por cima, para achar você entre os passeantes.
         if(p.dono&&!(reencontro&&q===meuIdol&&!reconhecendo)){
@@ -1294,17 +1359,89 @@
   }
   // Sinais das três entradas, ancorados na arte e desenhados também em movimento reduzido.
   function marcosDaRua(tm,bairro){
-    if(bairro!=='fofo'&&bairro!=='harajuku'&&bairro!=='arena')return;
+    if(!CORES_BAIRROS[bairro])return;
     ctx.save();
-    if(bairro==='fofo'){
+    // Rodapé da calçada (rua.py: base y=560); juntas em perspectiva abaixo das fachadas.
+    ctx.fillStyle='rgba(83,55,105,.09)';ctx.fillRect(0,567,1600,5);
+    ctx.strokeStyle='rgba(123,88,123,.12)';ctx.lineWidth=1.3;
+    [588,625].forEach(function(py){ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(1600,py);ctx.stroke();});
+    [300,800,1300].forEach(function(px){
+      ctx.fillStyle='rgba(73,43,97,.11)';ctx.beginPath();ctx.ellipse(px,576,91,6,0,0,7);ctx.fill();
+    });
+    if(cena !== 'mundo'){
+      // Juntas convergem para o fundo da rua; ficam abaixo das entradas.
+      ctx.beginPath();
+      for(var junta=0;junta<=1600;junta+=160){
+        ctx.moveTo(junta,572);ctx.lineTo(junta+(junta-800)*.08,625);
+      }
+      ctx.stroke();
+    }
+    if(bairro==='praca'){
+      // Bancos de praça, com encosto e assento em dois planos.
+      [540,1020].forEach(function(bx){
+        ctx.fillStyle='#91716d';ctx.fillRect(bx+3,554,4,23);ctx.fillRect(bx+32,554,4,23);
+        ctx.fillStyle='#bf876c';rr(bx,550,40,9,2);ctx.fill();
+        ctx.fillStyle='#e7b494';ctx.fillRect(bx+1,551,38,2);
+        ctx.fillStyle='#dba183';ctx.beginPath();ctx.moveTo(bx,562);ctx.lineTo(bx+40,562);ctx.lineTo(bx+43,568);ctx.lineTo(bx-3,568);ctx.closePath();ctx.fill();
+        ctx.fillStyle='#ad785e';ctx.fillRect(bx-3,568,46,3);
+      });
+      // Volume da cuba da fonte: mantém água e jatos livres.
+      var pedra=ctx.createLinearGradient(0,565,0,608);pedra.addColorStop(0,'rgba(159,124,217,0)');pedra.addColorStop(.6,'rgba(119,91,180,.22)');pedra.addColorStop(1,'rgba(112,76,174,.32)');
+      ctx.fillStyle=pedra;ctx.beginPath();ctx.moveTo(626,565);ctx.bezierCurveTo(650,618,950,618,974,565);ctx.quadraticCurveTo(800,640,626,565);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.ellipse(800,565,172,39,0,.18,Math.PI-.18);ctx.stroke();
+    }else if(bairro==='ceu'){
+      ctx.fillStyle='rgba(103,115,175,.11)';ctx.beginPath();ctx.ellipse(300,571,116,7,0,0,7);ctx.fill();
+      // Jardineiras com espessura: o bordo recebe as folhas, em vez de deixá-las flutuar na entrada.
+      [196,363].forEach(function(px){
+        ctx.fillStyle='#9f9cc4';rr(px-16,554,61,17,5);ctx.fill();
+        ctx.fillStyle='#e5deee';rr(px-18,551,65,7,3);ctx.fill();
+        ctx.fillStyle='#766f91';rr(px-13,553,55,3,2);ctx.fill();
+      });
+      // Folhagens baixas em torno do acesso ao jardim.
+      [196,216,363,385].forEach(function(px,i){
+        ctx.fillStyle=i%2?'#97bbab':'#b2c8ae';
+        ctx.beginPath();ctx.ellipse(px,562,15,8,-.15,0,7);ctx.fill();
+        ctx.fillStyle='#ffe4ee';ctx.beginPath();ctx.arc(px-5,558,2.4,0,7);ctx.arc(px+4,560,2,0,7);ctx.fill();
+      });
+      // Studio: pilastra da fachada no sistema de coordenadas de rua.py.
+      ctx.save();ctx.translate(1300,558);ctx.scale(1.28,1.28);ctx.translate(-1300,-558);
+      var pilastra=ctx.createLinearGradient(1440,0,1458,0);pilastra.addColorStop(0,'#f4eaff');pilastra.addColorStop(1,'#bca8dc');
+      ctx.fillStyle=pilastra;rr(1440,455,18,94,5);ctx.fill();ctx.fillStyle='rgba(255,255,255,.56)';ctx.fillRect(1442,459,4,86);ctx.fillStyle='#bba2d3';rr(1436,543,25,6,2);ctx.fill();ctx.restore();
+    }else if(bairro==='palco'){
+      [300,800,1300].forEach(function(px){ctx.fillStyle='rgba(244,197,255,.20)';ctx.beginPath();ctx.ellipse(px,597,75,8,0,0,7);ctx.fill();});
+      // As cortinas assentam no tablado; pregas verticais fazem a moldura parecer tecido.
+      [1,-1].forEach(function(lado){var a=lado===1?470:1130;
+        ctx.fillStyle='rgba(112,38,92,.24)';ctx.beginPath();ctx.moveTo(a,295);
+        ctx.quadraticCurveTo(a+lado*26,418,a+lado*8,539);ctx.lineTo(a+lado*19,539);
+        ctx.quadraticCurveTo(a+lado*39,418,a+lado*12,295);ctx.closePath();ctx.fill();
+      });
+      // Luzes de ribalta embutidas na borda do palco.
+      for(var lamp=468;lamp<=1132;lamp+=48){
+        ctx.fillStyle='#9e718a';rr(lamp,553,12,6,2);ctx.fill();
+        ctx.fillStyle='#fff0ba';ctx.fillRect(lamp+2,554,8,2);
+      }
+      // Rebordo do tablado central, ancorado na base 566 da rua.
+      var palco=ctx.createLinearGradient(0,545,0,565);palco.addColorStop(0,'rgba(255,219,188,.20)');palco.addColorStop(1,'rgba(103,43,96,.27)');
+      ctx.fillStyle=palco;rr(420,545,760,20,5);ctx.fill();ctx.fillStyle='rgba(255,235,190,.5)';ctx.fillRect(432,546,736,2);
+    }else if(bairro==='fofo'){
+      [1208,1300,1392].forEach(function(px){
+        ctx.fillStyle='rgba(113,73,48,.23)';ctx.beginPath();ctx.ellipse(px,516,35,9,0,0,7);ctx.fill();
+        ctx.strokeStyle='#e1b489';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(px,510,37,16,0,.1,Math.PI-.1);ctx.stroke();
+      });
       [1208,1300,1392].forEach(function(x,i){
         ctx.save();ctx.translate(x,491);
-        ctx.rotate(Math.sin(tm*1.8+i)*.08);
+        ctx.fillStyle='rgba(48,72,64,.16)';ctx.beginPath();ctx.ellipse(1,1,14,3.2,0,0,7);ctx.fill();
+        ctx.rotate(Math.sin(tm*1.8+i)*.055);
         ctx.fillStyle='#3e805d';ctx.fillRect(-2,-19,4,20);
+        ctx.fillStyle='#6cae79';ctx.beginPath();ctx.moveTo(0,-3);ctx.quadraticCurveTo(-12,-3,-11,-15);ctx.quadraticCurveTo(-2,-13,0,-3);ctx.fill();
+        ctx.beginPath();ctx.moveTo(1,-7);ctx.quadraticCurveTo(12,-9,11,-19);ctx.quadraticCurveTo(3,-17,1,-7);ctx.fill();
         ctx.fillStyle=['#f176a8','#c48cf1','#f2bc53'][i];
         ctx.beginPath();ctx.moveTo(-13,-35);ctx.quadraticCurveTo(-4,-35,0,-27);
         ctx.quadraticCurveTo(4,-35,13,-35);ctx.quadraticCurveTo(12,-15,0,-16);
         ctx.quadraticCurveTo(-12,-15,-13,-35);ctx.fill();
+        ctx.strokeStyle='rgba(255,255,255,.32)';ctx.lineWidth=1.6;ctx.lineCap='round';ctx.beginPath();
+        ctx.moveTo(-8,-31);ctx.quadraticCurveTo(-8,-22,-2,-20);ctx.stroke();
         ctx.restore();
       });
     }else if(bairro==='harajuku'){
@@ -1319,17 +1456,37 @@
         ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=3;ctx.strokeRect(x+18,406,9,10);
         ctx.fillStyle='#fff3d6';ctx.fillRect(x-3,424,27,3);
       });
-      ctx.globalAlpha=.23+.08*Math.sin(tm*1.4);
+      // Montantes da vitrine e peitoril.
+      ctx.fillStyle='#c38b80';[334,379].forEach(function(px){ctx.fillRect(px,377,3,48);});
+      ctx.fillStyle='#ffe5c2';rr(289,431,143,5,2);ctx.fill();
+      // Vidro com dois planos de reflexo e caixilho; o interior permanece legível.
+      ctx.strokeStyle='rgba(255,227,201,.72)';ctx.lineWidth=2;rr(291,367,139,76,6);ctx.stroke();
+      ctx.globalAlpha=.20+.04*Math.sin(tm*1.4);
       ctx.fillStyle='#fffaf0';ctx.beginPath();ctx.moveTo(296,376);ctx.lineTo(319,376);ctx.lineTo(293,422);ctx.closePath();ctx.fill();
-    }else{
+      ctx.globalAlpha=.12;ctx.beginPath();ctx.moveTo(374,376);ctx.lineTo(383,376);ctx.lineTo(354,425);ctx.lineTo(346,425);ctx.closePath();ctx.fill();
+    }else if(bairro==='arena'){
       ctx.fillStyle='#662f9c';ctx.beginPath();ctx.moveTo(681,410);ctx.quadraticCurveTo(800,338,919,410);
       ctx.lineTo(949,536);ctx.quadraticCurveTo(800,509,651,536);ctx.closePath();ctx.fill();
       ctx.strokeStyle='#fff1b9';ctx.lineWidth=5;ctx.stroke();
-      ctx.fillStyle='#a067d5';
+      // A cobertura tem uma face inferior e duas longarinas, que explicam o balanço da marquise.
+      ctx.fillStyle='#4c286f';ctx.beginPath();ctx.moveTo(681,410);ctx.quadraticCurveTo(800,360,919,410);
+      ctx.lineTo(924,426);ctx.quadraticCurveTo(800,383,676,426);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#eac6f3';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(679,413);ctx.quadraticCurveTo(800,364,921,413);ctx.stroke();
+      // Vidraças inclinadas acompanham a cobertura da arena.
+      ctx.fillStyle='#41326f';ctx.beginPath();ctx.moveTo(704,423);ctx.quadraticCurveTo(800,374,896,423);
+      ctx.lineTo(904,461);ctx.quadraticCurveTo(800,432,696,461);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#acbadf';ctx.lineWidth=3;
+      [720,760,800,840,880].forEach(function(px){
+        var dist=Math.abs(px-800);ctx.beginPath();ctx.moveTo(px,401+dist*.21);
+        ctx.lineTo(px+(px-800)*.08,446+dist*.12);ctx.stroke();
+      });
       for(var i=0;i<3;i++){
-        var degrau=122+i*37;
-        rr(800-degrau/2,489+i*17,degrau,11,3);ctx.fill();
+        var degrau=122+i*37,dy=489+i*17;
+        var piso=ctx.createLinearGradient(0,dy,0,dy+11);piso.addColorStop(0,'#b989e3');piso.addColorStop(.45,'#a067d5');piso.addColorStop(1,'#7846b1');
+        ctx.fillStyle=piso;rr(800-degrau/2,dy,degrau,11,3);ctx.fill();
       }
+      var coluna=ctx.createLinearGradient(0,420,0,534);coluna.addColorStop(0,'#d5b8f5');coluna.addColorStop(1,'#8756c2');
+      [674,908].forEach(function(px){ctx.fillStyle=coluna;rr(px,420,16,105,6);ctx.fill();ctx.fillStyle='#f5dfae';rr(px-3,418,22,7,3);ctx.fill();rr(px-3,521,22,6,3);ctx.fill();});
       [705,752,800,848,895].forEach(function(x,j){
         ctx.globalAlpha=.65+.25*Math.sin(tm*2+j*.66);
         ctx.fillStyle='#ffefa4';ctx.beginPath();ctx.arc(x,385+Math.abs(x-800)*.23,7,0,7);ctx.fill();
@@ -1408,9 +1565,9 @@
       [300,800,1300].forEach(function(px,i){
         // Reflexo baixo: mantém as fachadas, placas e passantes legíveis.
         ctx.save();ctx.translate(px,590);ctx.scale(1,.22);
-        var r=105+(reduzMov?0:Math.sin(tm*.65+i)*5);
+        var r=105+(reduzMov?0:Math.sin(tm*.65+i)*3);
         var luz=ctx.createRadialGradient(0,0,3,0,0,r);
-        luz.addColorStop(0,cor);luz.addColorStop(1,'rgba(255,255,255,0)');
+        luz.addColorStop(0,cor);luz.addColorStop(.42,cor+'99');luz.addColorStop(1,cor+'00');
         ctx.globalAlpha=noite?.30:.12;ctx.fillStyle=luz;ctx.fillRect(-r,-r,r*2,r*2);
         ctx.restore();
       });
@@ -1489,10 +1646,10 @@
       gente.push({av:av,x:ps.x,y:ps.y,dir:(f<1?1:-1)*(ps.dx>=0?1:-1),i:i});});
     gente.sort(function(a,b){return a.y-b.y;});
     try{state='play';pw=null;dpw=null;rankI=0;sash=false;accSel='';
-      gente.forEach(function(g){var c=perfChar(g.av),bob=reduzMov?0:-Math.abs(Math.sin(tm*7+g.i))*1.6;frame=reduzMov?0:tm*60+g.i*13;
+      gente.forEach(function(g){var c=perfChar(g.av),bob=reduzMov?0:-Math.abs(Math.sin(tm*7+g.i))*1.6;frame=reduzMov?0:tm*60+g.i*13;accSel=acessorioPasseante(g.av);
         ctx.fillStyle='rgba(30,10,60,.2)';ctx.beginPath();ctx.ellipse(g.x,g.y,7,1.6,0,0,7);ctx.fill();
         ctx.save();if(g.dir<0){ctx.translate(g.x,0);ctx.scale(-1,1);ctx.translate(-g.x,0);}
-        perfCharContorno(ctx,g.x-15*sc,g.y-44*sc+bob,sc,function(){charPose='';drawChar(c,0,0,reduzMov?0:1,+g.av.expr||2,false);});ctx.restore();});
+        perfCharContorno(ctx,g.x-15*sc,g.y-44*sc+bob,sc,function(){charPose='';drawChar(c,0,0,reduzMov?0:1,g.av.expr!=null&&Number.isInteger(+g.av.expr)&&+g.av.expr>=0&&+g.av.expr<=6?+g.av.expr:2,false);});ctx.restore();});
     }catch(e){if(window.TW_MAPA_DEBUG)console.warn('mapa gente',e);}finally{state=oS;pw=oPw;dpw=oDpw;rankI=oR;sash=oSa;accSel=oA;frame=oF;charPose=oP;}
   }
   // o TsuLiPa (trio) com os pets na praça, desenhado com as mesmas funções do palco (drawChar + contorno de adesivo)

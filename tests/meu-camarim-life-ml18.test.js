@@ -75,7 +75,8 @@ test('ML1.8-A: joelho de Conviver não cruza o braço; saia mantém volume, berm
   assert.ok(q.x+10.8+7<136,'coxa direita termina antes do braço direito');
   for(const [out,baixo,esperado] of [
     ['seifuku','saia','saia'],['seifuku','bermuda',''],['citypop','bermuda',''],
-    ['','saia','saia'],['sweet',undefined,'sweet'],['zipper',undefined,'zipper']
+    ['','saia','saia'],['sweet',undefined,'sweet'],['zipper',undefined,'zipper'],
+    ['sweet','bermuda',''],['zipper','bermuda',''],['estrelado','saia','saia'],['estrelado','bermuda','']
   ]){
     ctx.CH[0]={out,baixo};
     assert.equal(ctx.petLifeRoupaSaia(),esperado,out+'/'+baixo);
@@ -104,7 +105,7 @@ test('ML1.8-A: 320×640 e 390×844 preservam Canvas 360:220 e botões acessívei
 test('ML1.8-A: sofá desenha saia, vestido e bermuda sem erro nos dois visores simulados',()=>{
   for(const [largura,altura] of [[320,640],[390,844]]){
     const {ctx}=quarto(), op=[];
-    const x={globalAlpha:1,save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},
+    const x={globalAlpha:1,transform(){},createLinearGradient(){return {addColorStop(){}}},save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},clip(){},quadraticCurveTo(){},
       fillRect(a,b,w,h){op.push(['ret',a,b,w,h]);},moveTo(){},lineTo(){},closePath(){},
       fill(){op.push(['preenche']);},stroke(){},strokeRect(){},fillText(){}};
     for(const out of ['seifuku','sweet','zipper']){
@@ -131,12 +132,15 @@ test('ML1.8-A: levantar mantém canelas e saia até completar a transição em 3
       assert.equal(ctx.petLifePose,'');
       function desenho(t){
         const retangulos=[],poligonos=[];
-        const x={globalAlpha:1,save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},
+        const x={globalAlpha:1,transform(){},createLinearGradient(){return {addColorStop(){}}},save(){},restore(){},beginPath(){},ellipse(){},roundRect(){},clip(){},quadraticCurveTo(){},
           fillRect(a,b,w,h){retangulos.push([a,b,w,h]);},moveTo(a,b){poligonos.push([a,b]);},
           lineTo(){},closePath(){},fill(){},stroke(){},strokeRect(){},fillText(){}};
         const visual=ctx.petLifePoseDesenho(t);
         ctx.petLifeSofa(x,true,visual);
-        return {visual,canela:retangulos.filter(r=>r[2]===12),saia:poligonos.length};
+        const q=ctx.petLifeQuadril(visual);
+        // Somente o contorno da saia, não os novos contornos curvos de canelas/coxa.
+        const saia=poligonos.filter(([x,y])=>Math.abs(x-(q.x-17))<1e-6&&Math.abs(y-(q.y-3))<1e-6).length;
+        return {visual,canela:retangulos.filter(r=>r[2]===12),saia};
       }
       const inicio=desenho(100),meio=desenho(112),fim=desenho(124);
       assert.equal(inicio.canela.length,2,`${largura}px: ${out} mantém canelas ao levantar`);
@@ -149,4 +153,21 @@ test('ML1.8-A: levantar mantém canelas e saia até completar a transição em 3
       assert.ok(escala>0);
     }
   }
+});
+
+test('Living Canvas: a coxa segue a peça vestida mesmo quando a camisa cobre a cintura',()=>{
+  const {ctx,calls}=quarto();
+  const canvas={getImageData(){calls.push('leitura');return {data:new Uint8ClampedArray([127,61,95,255])};}};
+  for(const [out,outcol,esperada] of [
+    ['', '#fafafa', roupa.BAIXO[''].cor], ['citypop','#123456',roupa.BAIXO.citypop.cor],
+    ['sweet','#bc54dd','#bc54dd'],['zipper','#4170cb','#4170cb'],['estrelado','#ffffff','#3b5bdb']
+  ]){
+    ctx.CH[0]={out,outcol};ctx.petLifeLerCorColo(canvas,{x:90,y:165});
+    assert.equal(ctx.petLifeCorColo,esperada);
+    assert.equal(ctx.petLifeCorSaia,esperada);
+  }
+  assert.deepEqual(calls,[]);
+  ctx.petDpr=1;ctx.CH[0]={out:'espacial'};ctx.petLifeLerCorColo(canvas,{x:90,y:165});
+  assert.deepEqual(calls,['leitura']);
+  assert.equal(ctx.petLifeCorColo,'rgb(127,61,95)');
 });

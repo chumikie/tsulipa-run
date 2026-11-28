@@ -32,8 +32,13 @@ var DUO_FALA_OSHI = 'Bora torcer por {oshi} juntos! 💖';
 var duoBalao = null, duoPulo = null, duoRegistrados = {}, duoPresEmo = '🧸', duoPresQt = 0, duoOff = null, duoPoseForce = ''; var duoOffS = 1;
 var DUO_OW = 680, DUO_OH = 560;   // largo para o brilho dos visuais não ficar cortado
 function duoBraco(x1, y1, x2, y2){ g.save(); g.lineCap = 'round'; g.strokeStyle = g.fillStyle; g.lineWidth = 4; g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.restore(); }
-function duoMao(x, y, c){ g.fillStyle = c.skin; g.beginPath(); g.arc(x, y, 2.4, 0, 7); g.fill(); }
-function duoGeo(av, t){ var big = av && av.visual === 'mega', sc = DUO_OH / (big ? 68 : 82), ch = DUO_OH * (big ? .95 : .9); return { sc:sc, ch:ch, tx:DUO_OW / 2 - 15 * sc, ty:ch - 44 * sc, bob:t ? Math.sin(t * .06) * 1.1 * sc : 0 }; }
+function duoMao(x, y, c, ang){
+  // Palma e polegar arredondados, na mesma escala do braço; a pose continua no ponto original.
+  g.save();g.translate(x,y);g.rotate(ang||0);g.fillStyle=c.skin;
+  g.beginPath();g.ellipse(0,0,2.65,2.25,0,0,Math.PI*2);g.ellipse(-1.35,-1.6,1.15,1.45,-.4,0,Math.PI*2);g.fill();
+  g.restore();
+}
+function duoGeo(av, t){ var big = av && av.visual === 'mega', sc = DUO_OH / (big ? 68 : 82), ch = DUO_OH * (big ? .95 : .9); return { sc:sc, ch:ch, tx:DUO_OW / 2 - 15 * sc, ty:ch - 44 * sc, bob:t && !(typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches) ? Math.sin(t * .06) * .85 * sc : 0 }; }
 function duoIdolEm(x, av, sx, chao, pose, expr, t, espelho){
   // duoOffS: a câmera (tw-camera.js) desenha a foto em 2×/3×; o rascunho de cada Idol acompanha para não borrar
   var S = duoOffS || 1;
@@ -63,8 +68,17 @@ function duoQuadroGeo(w,h,unidade,cena){
   var deslocamento=cena[5]*unidade/2*(duoInvertido?-1:1);
   return {eu:w/2-deslocamento,gu:w/2+deslocamento,pivo:h*.42,zoom:duoQuadro==='perto'?1.13:1};
 }
+// Hitbox acompanha a escala real de cada Idol, inclusive quando só um usa o visual Mega.
+function duoAlvoToque(px,py,chao,q,escEu,escGu){
+  var alvos=[{k:'eu',x:q.eu,sc:escEu},{k:'gu',x:q.gu,sc:escGu}].filter(function(a){
+    return py>=chao-52*a.sc&&py<=chao+10&&Math.abs(px-a.x)<20*a.sc;
+  });
+  alvos.sort(function(a,b){return Math.abs(px-a.x)/a.sc-Math.abs(px-b.x)/b.sc;});
+  return alvos.length?alvos[0].k:'';
+}
 function duoRender(x, W2, H2, comFundo, comUI){
-  var t = duoT || 1, inf = duoInfo(), eu = duoMeuAv(), gu = duoGuAv();
+  var reduzDuo=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t = reduzDuo?1:(duoT || 1), inf = duoInfo(), eu = duoMeuAv(), gu = duoGuAv();
   var G = duoGeo(eu, t), U = G.sc, chao = H2 * .9, q=duoQuadroGeo(W2,H2,U,inf), sxE=q.eu, sxG=q.gu, i;
   var poseE = inf[3], poseG = inf[4], exE = duoExEu === '' ? inf[6] : +duoExEu, exG = duoExGu === '' ? inf[6] : +duoExGu;
   if(inf[0] === 'danca'){ poseE = poseG = DUO_DANCA[Math.floor(t / 46) % DUO_DANCA.length]; }
@@ -77,9 +91,18 @@ function duoRender(x, W2, H2, comFundo, comUI){
   if(inf[0] === 'luzes' || inf[0] === 'neon'){ for(i = 0; i < 26; i++){ var cc = ['#ff6fb5', '#4dd8ff', '#b6ff3b', '#9b30d9', '#ffe14d'][i % 5]; x.globalAlpha = .35 + .3 * Math.sin(t * .08 + i); x.fillStyle = cc; x.beginPath(); x.arc((cenaHash(i) * W2), H2 * .55 + cenaHash(i + 40) * H2 * .3, 5 + (i % 3) * 2, 0, 7); x.fill(); } x.globalAlpha = 1; }
   if(inf[0] === 'neon'){ x.save(); x.lineWidth = 6; x.shadowBlur = 18; ['#ff6fb5', '#4dd8ff', '#b6ff3b'].forEach(function(cc, j){ x.strokeStyle = cc; x.shadowColor = cc; x.globalAlpha = .55 + .35 * Math.sin(t * .1 + j * 2); x.beginPath(); x.moveTo(0, H2 * (.18 + j * .09)); x.lineTo(W2, H2 * (.3 + j * .09) + Math.sin(t * .05 + j) * 20); x.stroke(); }); x.restore(); }
   // os dois Idols (com pulinho ao tocar e passinho na dança)
-  function pulo(quem){ if(!duoPulo || duoPulo.quem !== quem) return 0; var p = (t - duoPulo.t0) / 22; if(p >= 1) return 0; return -Math.sin(p * Math.PI) * 34; }
-  var dz = inf[0] === 'danca' ? -Math.abs(Math.sin(t * .136)) * 14 : 0;
-  var chE = chao + pulo('eu') + dz, chG = chao + pulo('gu') + dz;
+  function pulo(quem){ if(reduzDuo||!duoPulo || duoPulo.quem !== quem) return 0; var p = (t - duoPulo.t0) / 22; if(p < 0 || p >= 1) return 0; return -Math.sin(p * Math.PI) * 34; }
+  // A dupla divide a batida, com resposta ligeiramente atrasada do convidado.
+  // As âncoras das mãos e adereços recebem exatamente a mesma altura.
+  var danca=inf[0]==='danca'&&!reduzDuo;
+  var dz=danca?-Math.pow(Math.max(0,Math.sin(t*.136)),2)*12:0;
+  var dzGu=danca?-Math.pow(Math.max(0,Math.sin((t-3)*.136)),2)*10:0;
+  var chE = chao + pulo('eu') + dz, chG = chao + pulo('gu') + dzGu;
+  // Sombras de contato da dupla mantêm a referência do chão durante os passos.
+  if(danca){
+    x.save();x.fillStyle='rgba(51,27,79,.13)';
+    [sxE,sxG].forEach(function(px){x.beginPath();x.ellipse(px,chao,28,5,0,0,7);x.fill();});x.restore();
+  }
   if(inf[0] === 'guarda') duoGuardaChuva(x, eu, sxE, chE, t, duoInvertido);
   duoIdolEm(x, eu, sxE, chE, poseE, exE, t, duoInvertido);
   duoIdolEm(x, gu, sxG, chG, poseG, exG, t + 37, !duoInvertido);
@@ -154,12 +177,12 @@ function duoLoop(ms){
 }
 function duoRotulo(k){
   var L = {
-    pt:['Salvar foto','Álbum e atividades','Mais cenas'],
-    en:['Save photo','Album and activities','More scenes'],
-    es:['Guardar foto','Álbum y actividades','Más escenas'],
-    ja:['写真を保存','アルバムとアクティビティ','ほかのシーン'],
-    th:['บันทึกภาพ','อัลบั้มและกิจกรรม','ฉากเพิ่มเติม'],
-    id:['Simpan foto','Album dan aktivitas','Adegan lainnya']
+    pt:['Salvar foto','Álbum e atividades','Mais cenas','Abrir câmera'],
+    en:['Save photo','Album and activities','More scenes','Open camera'],
+    es:['Guardar foto','Álbum y actividades','Más escenas','Abrir cámara'],
+    ja:['写真を保存','アルバムとアクティビティ','ほかのシーン','カメラを開く'],
+    th:['บันทึกภาพ','อัลบั้มและกิจกรรม','ฉากเพิ่มเติม','เปิดกล้อง'],
+    id:['Simpan foto','Album dan aktivitas','Adegan lainnya','Buka kamera']
   };
   return (L[typeof LANG === 'string' ? LANG : 'pt'] || L.pt)[k];
 }
@@ -168,7 +191,7 @@ function duoTexto(){
   $('duoExtraTitulo').textContent = duoRotulo(1);
   $('duoSub').textContent = tr('Monte cenas fofas com outro Idol do TsuLiPa⭐World!');
   $('duoTrocar').textContent = '🔁 ' + tr('Trocar dupla');
-  $('duoPng').textContent = '📸 ' + tr('Salvar PNG'); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo');
+  $('duoPng').textContent = '📸 ' + (window.TW_CAMERA ? duoRotulo(3) : tr('Salvar PNG')); $('duoPngSem').textContent = '🫥 ' + tr('PNG sem fundo');
   $('duoPhone').textContent = '💗 ' + petPhoneMomentoTexto(0);
   var rua=$('duoRuaFofa'),voltar=$('duoVoltarRua');
   rua.hidden=!duoPiloto||!duoGu;
@@ -221,10 +244,16 @@ function duoEscolhaUI(msg){
   $('duoEscolha').innerHTML = (msg ? '<p class="perfmsg">' + escHtml(msg) + '</p>' : '') + DUO_CENA_HTML +
     '<p class="duodica">' + escHtml(tr('Escolha com quem fazer a dupla:')) + '</p>' +
     '<input class="nick duobusca" id="duoBusca" maxlength="24" autocomplete="off" placeholder="🔍 ' + escHtml(tr('Procurar Idol pelo nome')) + '" aria-label="' + escHtml(tr('Procurar Idol pelo nome')) + '">' +
-    '<div class="duosug" id="duoRes"></div><p class="duodica"><b>✨ ' + escHtml(tr('Sugestões')) + '</b></p><div class="duosug" id="duoSug"><p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p></div>';
+    '<div class="duosug" id="duoRes" aria-live="polite"></div><p class="duodica"><b>✨ ' + escHtml(tr('Sugestões')) + '</b></p><div class="duosug" id="duoSug"><p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p></div>';
   duoCenaDesenhar();
   // sem sugestões (ou sem rede), nunca um espaço vazio: o Tsu e a Lirika, que sempre topam uma dupla
-  function duoSugMostrar(L){ var b = $('duoSug'); if(!b) return; b.innerHTML = (Array.isArray(L) && L.length ? L : DUO_SUG_RESERVA).map(duoNickBtn).join(''); }
+  var sugestoes = $('duoSug'), dono = petPhoneContaChave();
+  function duoSugMostrar(L){
+    if(duoOv.hidden || !sugestoes.isConnected || dono !== petPhoneContaChave()) return;
+    var lista = duoOutrosPerfis(L);
+    if(!lista.length) lista = duoOutrosPerfis(DUO_SUG_RESERVA);
+    sugestoes.innerHTML = lista.map(duoNickBtn).join('');
+  }
   contaRpc('duo_sugestoes').then(duoSugMostrar).catch(function(){ duoSugMostrar(null); });
 }
 var DUO_SUG_RESERVA = [{nick:'Tsu'}, {nick:'Lirika'}];
@@ -246,19 +275,28 @@ function duoCenaDesenhar(){
   x.font = '400 64px "Mochiy Pop One","M PLUS Rounded 1c",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#fff'; x.fillText('?', cx, cy - 4);
   duoCoracao(x, W2 / 2, chao - 70, 18, '#ff6fb5');
 }
+function duoOutrosPerfis(lista){
+  var meuNick = contaJ && contaJ.nick.toLowerCase();
+  return Array.isArray(lista) ? lista.filter(function(p){ return p && typeof p.nick === 'string' && p.nick && p.nick.toLowerCase() !== meuNick; }) : [];
+}
 function duoNickBtn(p){ return '<button type="button" class="duochip" data-dnick="' + escHtml(p.nick) + '">🌙 ' + escHtml(p.nick) + (p.best != null ? ' <small>' + (+p.best || 0) + '</small>' : '') + '</button>'; }
 var duoBuscaT=0,duoBuscaSeq=0;
 function duoBuscaCancelar(){clearTimeout(duoBuscaT);duoBuscaT=0;duoBuscaSeq++;}
 var duoLoadSeq=0;
 function duoCarregar(nick,recriar){
   var seq=++duoLoadSeq, dono=petPhoneContaChave();
-  $('duoEscolha').innerHTML = '<p class="perfcarr">' + escHtml(tr('Carregando...')) + '</p>';
+  duoBuscaCancelar();
+  duoGu = null;
+  if(duoAnim){ cancelAnimationFrame(duoAnim); duoAnim = 0; }
+  $('duoPalco').hidden = true;
+  $('duoEscolha').hidden = false;
+  $('duoEscolha').innerHTML = '<p class="perfcarr" role="status">' + escHtml(tr('Carregando...')) + '</p>';
   contaRpc('duo_convidado', { p_nick: String(nick).slice(0, 24) }).then(function(r){
     if(seq!==duoLoadSeq||duoOv.hidden||dono!==petPhoneContaChave())return;
     if(!r || r.erro){ duoGu = null; duoEscolhaUI(tr(r && r.erro === 'eu' ? 'Escolha outra pessoa para a dupla 😉' : r && r.erro === 'off' ? 'Essa pessoa não está participando do Moon⭐Duo!' : 'Esse nome ainda não tem perfil (jogou sem conta).')); return; }
-    duoGu = r; duoBalao = null; if(recriar)duoAplicarCena(recriar); duoPalcoUI(); duoRegistrar();
+    duoGu = r; duoBalao = duoPulo = null; duoT = 0; if(recriar)duoAplicarCena(recriar); duoPalcoUI(); duoRegistrar();
     beep(1047, .08, 'triangle', .04); beep(1568, .1, 'triangle', .04, .08);
-  }).catch(function(){ if(seq===duoLoadSeq&&!duoOv.hidden)duoEscolhaUI(tr('Não deu para falar com o servidor. Tente de novo.')); });
+  }).catch(function(){ if(seq===duoLoadSeq&&!duoOv.hidden&&dono===petPhoneContaChave())duoEscolhaUI(tr('Não deu para falar com o servidor. Tente de novo.')); });
 }
 function duoRegistrar(){   // conta a cena para a missão do dia e a insígnia (o servidor não deixa contar repetido no mesmo dia)
   if(!duoGu || !contaJ) return;
@@ -291,7 +329,22 @@ function duoExRow(nome, sel, attr){
     return '<button type="button" class="duoexb' + (tv ? ' trava' : '') + '" ' + (tv ? 'data-dtrava="' + tv + '"' : attr + '="' + o[0] + '"') + ' aria-pressed="' + (!tv && o[0] === sel) + '" title="' + escHtml(tr(o[2]) + (tv ? ' · ★' + it[3] : '')) + '" aria-label="' + escHtml(tr(o[2])) + '">' + o[1] + (tv ? '<em>🔒</em>' : '') + '</button>';
   }).join('') + '</div><small>' + escHtml(tr((PET_PH_EXPRS.filter(function(o){ return o[0] === sel; })[0] || PET_PH_EXPRS[0])[2])) + '</small></div>';
 }
+// A aba é reconstruída ao escolher uma cena; mantém o alvo do teclado e a seção expandida.
+function duoFocoAtual(){
+  var b=document.activeElement;
+  if(!b||!duoOv.contains(b))return null;
+  var attrs=['data-dtab','data-dcena','data-dfundo','data-dexeu','data-dexgu','data-demo','data-dqt'];
+  for(var i=0;i<attrs.length;i++)if(b.hasAttribute(attrs[i]))return {attr:attrs[i],valor:b.getAttribute(attrs[i])};
+  return null;
+}
+function duoRestaurarFoco(f){
+  if(!f)return;
+  var botoes=duoOv.querySelectorAll('button['+f.attr+']');
+  for(var i=0;i<botoes.length;i++)if(botoes[i].getAttribute(f.attr)===f.valor&&!botoes[i].disabled){botoes[i].focus({preventScroll:true});break;}
+}
 function duoTabUI(){
+  var foco=typeof document!=='undefined'?duoFocoAtual():null;
+  var anterior=$('duoTabC'),mais=anterior.querySelector&&anterior.querySelector('.duo-mais-cenas'),aberto=mais&&mais.open;
   var tabs = [['cena', '🎬', 'Cena'], ['fundo', '🏞️', 'Cenário'], ['expr', '😊', 'Expressões'], ['pres', '🎁', 'Presente']];
   $('duoTabs').innerHTML = tabs.map(function(t){ return '<button type="button" role="tab" data-dtab="' + t[0] + '" aria-pressed="' + (duoTab === t[0]) + '"><span aria-hidden="true">' + t[1] + '</span> ' + escHtml(tr(t[2])) + '</button>'; }).join('');
   var c = $('duoTabC'), h = '';
@@ -299,7 +352,7 @@ function duoTabUI(){
     var livres = DUO_CENAS.filter(function(o){ return !duoTrava('data-dcena', o); });
     var principais = livres.slice(0, 6), outras = DUO_CENAS.filter(function(o){ return principais.indexOf(o) < 0; });
     h = duoCards(principais, duoCena, 'data-dcena');
-    if(outras.length) h += '<details class="duo-mais-cenas"' + (outras.some(function(o){return o[0] === duoCena;}) ? ' open' : '') + '><summary>' + escHtml(duoRotulo(2)) + ' (' + outras.length + ')</summary>' + duoCards(outras, duoCena, 'data-dcena') + '</details>';
+    if(outras.length) h += '<details class="duo-mais-cenas"' + (aberto||outras.some(function(o){return o[0] === duoCena;}) ? ' open' : '') + '><summary>' + escHtml(duoRotulo(2)) + ' (' + outras.length + ')</summary>' + duoCards(outras, duoCena, 'data-dcena') + '</details>';
   }
   else if(duoTab === 'fundo'){
     var perf = PERF_FUNDOS.filter(function(o){ return o[0] && o[0] !== 'temporada'; }), temas = [];
@@ -311,16 +364,19 @@ function duoTabUI(){
   else if(duoTab === 'expr') h = duoExRow(contaJ ? contaJ.nick : tr('Você'), duoExEu, 'data-dexeu') + duoExRow(duoGu.nick, duoExGu, 'data-dexgu');
   c.innerHTML = h;
   if(duoTab === 'pres') duoPresUI();
+  duoRestaurarFoco(foco);
   if(duoTab === 'fundo'){ var cor = perfChar(duoMeuAv()).hair; [].forEach.call(c.querySelectorAll('canvas[data-dthumb]'), function(cv){ try{ duoFundoDesenhar(cv.getContext('2d'), 160, 100, cv.dataset.dthumb, 40, cor); }catch(e){} }); }
 }
 function duoPresUI(){
   var box = $('duoTabC'); if(duoTab !== 'pres') return;
+  var foco=typeof document!=='undefined'?duoFocoAtual():null;
   box.innerHTML = '<b>🎁 ' + escHtml(tr('Presente para {nick}').replace('{nick}', duoGu.nick)) + '</b>' +
     '<div class="duopresemo">' + DUO_PRES_EMO.map(function(m){ return '<button type="button" class="duoexb" data-demo="' + m + '" aria-pressed="' + (m === duoPresEmo) + '">' + m + '</button>'; }).join('') + '</div>' +
     '<div class="duoseg">' + [0, 10, 30, 50].map(function(n){ return '<button type="button" data-dqt="' + n + '" aria-pressed="' + (n === duoPresQt) + '">' + (n ? '★' + n : escHtml(tr('Só carinho'))) + '</button>'; }).join('') + '</div>' +
     '<p class="duoresumo">' + escHtml(tr('Você vai enviar')) + ' <b>' + duoPresEmo + (duoPresQt ? ' + ★' + duoPresQt : '') + '</b> · ' + escHtml(tr('seu saldo')) + ' ★' + starT + '</p>' +
     '<small>' + escHtml(tr('As estrelas saem do seu saldo. 1 presente por pessoa por dia.')) + '</small>' +
     '<div class="btns"><button type="button" class="btn" id="duoPresOk">' + escHtml(tr('Enviar')) + ' ' + duoPresEmo + '</button></div>';
+  duoRestaurarFoco(foco);
 }
 var DUO_PRES_ERRO = { hoje:'Você já mandou um presente hoje para essa pessoa.', limite:'Você chegou ao limite de presentes de hoje.', saldo:'Estrelas insuficientes.', alvo:'Essa pessoa não está participando do Moon⭐Duo!', bloqueado:'Sua conta está bloqueada pela moderação.' };
 function duoMsg(t){var m=$('duoMsg');if(!m||duoOv.hidden)return;if(m._twTimeout){m._twTimeout.cancel();m._twTimeout=null;}m.textContent=t;m.hidden=!t;if(t)m._twTimeout=twTimeoutVisivel(m,function(){return !duoOv.hidden&&m.isConnected;},function(){m.hidden=true;m._twTimeout=null;},5000);}
@@ -331,7 +387,7 @@ function duoAbrir(nick,atalho){
   if(atalho&&window.TW_JANELAS)TW_JANELAS.preparar(duoOv,atalho.origem);
   duoVeioHub = !hubOv.hidden; lookSalvar();   // abre por cima da tela de início
   if(typeof perfOv !== 'undefined' && !perfOv.hidden) perfFechar();
-  duoOv.hidden = false; duoOv.scrollTop = 0; duoT = 0; duoBalao = null; duoTexto();
+  duoOv.hidden = false; duoOv.scrollTop = 0; duoT = 0; duoBalao = duoPulo = null; duoTexto();
   $('duoRuaStatus').textContent='';$('duoRuaFofa').disabled=false;
   if(duoTrava('data-dfundo', [duoFundo])){ var tk = typeof temaAtual === 'function' ? temaAtual() : ''; duoFundo = tk && tk !== 'halloween' && TEMA_INFO[tk] ? tk : 'basico'; }
   if(duoTrava('data-dcena', duoInfo())) duoCena = 'dueto';

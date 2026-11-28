@@ -226,7 +226,69 @@
     return true;
   }
 
-  var api = { tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
+  // ---- Identity Restoration (27/11/2026) ----
+  // A dona decidiu que o desenho da main é o melhor: este arquivo voltou a ser o da main (d2a3cb9).
+  // Fica só o que é funcionamento das poses do Camarim, do Studio e do Karaokê: assinatura, articulação e
+  // membro (sentar, segurar flor, microfone, coração). As poses usam a própria tabela, BRACOS_POSE; a manga
+  // continua seguindo a tabela BRACOS da main.
+  // Assinaturas dos personagens oficiais, nunca gravadas no avatar ou atribuídas por gênero.
+  // Os pés, punhos e ombros conservam as âncoras usadas nas poses e nas colisões.
+  var PERFIS=Object.freeze({
+    Tsu:Object.freeze({cintura:5.8,ombro:3.9,perna:.20,joelho:.25,assim:.15}),
+    Lirika:Object.freeze({cintura:6.5,ombro:4.3,perna:.15,joelho:.15,assim:0}),
+    Pati:Object.freeze({cintura:6.1,ombro:4.1,perna:.30,joelho:.20,assim:-.12})
+  });
+  var NEUTRO=Object.freeze({cintura:6.3,ombro:4.2,perna:0,joelho:0,assim:0});
+  function assinatura(c){
+    return c&&Object.prototype.hasOwnProperty.call(PERFIS,c.n)?PERFIS[c.n]:NEUTRO;
+  }
+  var BRACOS_POSE = {
+    v:{ R:[27, 25.5, 34, 15.5] }, tchau:{ R:[27, 25.5, 34, 15.5] }, luz:{ R:[27, 25.5, 33, 16.5] },
+    banzai:{ L:[3, 25.5, -3.5, 13.5], R:[27, 25.5, 33.5, 13.5] },
+    coracao:{L:[3,25.5,10.3,28.5],R:[27,25.5,20,28.5]}, mic:{R:[27,25.5,22.5,23.2]}, nyan:{}   // braços dobrados para dentro: a manga fica no ombro e o braço passa por cima
+  };
+  // Régua frontal 30 × 44. Os punhos das fotos continuam sob os dedos e os objetos.
+  // Cada segmento tem uma largura própria. O eixo da manga termina no cotovelo.
+  function articulacao(c, pose, lado){
+    var dir = lado === 'L' ? -1 : 1, ombro = 15 + dir * 12;
+    var estilo = assinatura(c), abertura = estilo.assim * 2.6 + estilo.perna;
+    var ex, ey, wx, wy;
+    if(typeof pose === 'object' && pose && Number.isFinite(pose.sit)){
+      var senta = pose.sit, repouso = Math.max(0, -pose.rot / .17);
+      var visita = Math.max(0, pose.rot / .13);
+      ex = ombro + dir * (1 + abertura + visita * 1.6) * senta;
+      ey = 29 + senta * (2.6 - repouso);
+      wx = ombro - dir * (5.3 - abertura) * senta;
+      wy = 32 + 1.4 * senta;
+      if(lado === 'L'){ wx -= 4 * repouso; wy -= 11 * repouso; }
+      else { wx += 12 * visita; wy -= 5 * visita; }
+    }else{
+      var alvo = BRACOS_POSE[pose] && BRACOS_POSE[pose][lado];
+      if(!alvo) return null;
+      wx = alvo[2]; wy = alvo[3];
+      var sobe = wy < 20;
+      ex = ombro + dir * (sobe ? 4.6 : 1.5) + dir * abertura;
+      ey = sobe ? (pose === 'banzai' ? 19.5 : 22.4) : 31.4;
+    }
+    return [ombro, 25.5, ex, ey, wx, wy];
+  }
+  function membro(g, c, x, y, pose, lado){
+    var a = articulacao(c, pose, lado);
+    if(!a) return;
+    g.save(); g.lineCap = 'round'; g.strokeStyle = c.skin;
+    // One soft silhouette rather than two visibly tapered sticks.
+    g.lineWidth = 4.1; g.lineJoin = 'round';
+    g.beginPath(); g.moveTo(x+a[0],y+a[1]);
+    g.lineTo(x+(a[0]+a[2])*.5,y+(a[1]+a[3])*.5);
+    g.quadraticCurveTo(x+a[2],y+a[3],x+(a[2]+a[4])*.5,y+(a[3]+a[5])*.5);
+    g.lineTo(x+a[4],y+a[5]); g.stroke();
+    if(typeof pose === 'object' || pose === 'coracao'){
+      g.fillStyle = c.skin; g.beginPath();
+      g.ellipse(x+a[4], y+a[5], 2.25, 1.6, Math.atan2(a[5]-a[3],a[4]-a[2]), 0, 2*Math.PI); g.fill();
+    }
+    g.restore();
+  }
+  var api = { assinatura:assinatura, articulacao:articulacao, membro:membro, BRACOS_POSE:BRACOS_POSE, tem:tem, qual:qual, baixo:baixo, tronco:tronco, ombro:ombro, parte:parte, luzPropria:luzPropria, BAIXO:BAIXO, BRACOS:BRACOS,
               bracos:bracos, rosto:rosto, cabelo:cabelo, costas:costas, sombraFranja:sombraFranja, bagunca:bagunca, gravata:gravata,
               cr:cr, crLook:crLook, CR_COR:CR_COR };
   root.TWAvatarRoupa = api;

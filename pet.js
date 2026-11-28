@@ -1078,17 +1078,22 @@ function petPhExprVal(padrao){ return petPhExpr === '' ? padrao : +petPhExpr; }
 function petPhCor(){ return (sel === 3 ? (CU && CU.hair) : (CH[sel] && CH[sel].img)) || '#ff6fb5'; }
 // Braços das poses (chamado pelo drawChar quando charPose está ligado; só nas fotos)
 function petPoseArms(c, x, y){
+  if(charPose && typeof charPose === 'object'){
+    TWAvatarRoupa.membro(g,c,x,y,charPose,'L');
+    TWAvatarRoupa.membro(g,c,x,y,charPose,'R');
+    return;
+  }
   if(perfPoseAtras(c, x, y)) return;   // V2.1.3: Microfone, Banzai, Nyan e Lightstick
   if(charPose !== 'coracao') g.fillRect(x + 1, y + 24, 4, 9);   // braço esquerdo normal (no coração os dois braços vão ao peito)
   g.save(); g.lineCap = 'round'; g.strokeStyle = c.skin; g.lineWidth = 4;
   if(charPose === 'coracao'){
     g.fillStyle = c.skin; g.fillRect(x + 1, y + 24, 4, 3); g.fillRect(x + 25, y + 24, 4, 3);
-    g.beginPath(); g.moveTo(x + 27, y + 26); g.lineTo(x + 20, y + 28.5); g.stroke();
-    g.beginPath(); g.moveTo(x + 3, y + 26); g.lineTo(x + 10.3, y + 28.5); g.stroke();
+    TWAvatarRoupa.membro(g,c,x,y,charPose,'L');
+    TWAvatarRoupa.membro(g,c,x,y,charPose,'R');
     g.fillStyle = '#ff4f9a'; g.beginPath(); g.arc(x + 13.7, y + 26.4, 1.9, 0, 7); g.arc(x + 16.6, y + 26.4, 1.9, 0, 7); g.fill();
     g.beginPath(); g.moveTo(x + 11.9, y + 27.2); g.lineTo(x + 15.15, y + 31); g.lineTo(x + 18.4, y + 27.2); g.fill();
   } else {
-    g.beginPath(); g.moveTo(x + 27, y + 25.5); g.lineTo(x + 34, y + 15.5); g.stroke();
+    TWAvatarRoupa.membro(g,c,x,y,charPose,'R');
     g.fillStyle = c.skin; g.beginPath(); g.arc(x + 34.5, y + 14.5, 2.4, 0, 7); g.fill();
     if(charPose === 'v'){ g.lineWidth = 1.5; g.beginPath(); g.moveTo(x + 33.6, y + 13); g.lineTo(x + 32.4, y + 9); g.moveTo(x + 35.4, y + 13); g.lineTo(x + 37.4, y + 9.4); g.stroke(); }
     else { g.lineWidth = 1.3; [-1.6, 0, 1.6].forEach(function(o){ g.beginPath(); g.moveTo(x + 34.5 + o, y + 13); g.lineTo(x + 34.5 + o * 1.6, y + 9.5); g.stroke(); });
@@ -1208,7 +1213,7 @@ function petCorridaChance(){   // chance do presente especial (card ou sorvete)
 // O quarto, o celular, a agenda, o camarim, o minijogo e a adoção baixam ao abrir o pet. Cada "//→nome" acima marca o
 // lugar de uma função que mora em pet-sala.js (lá ela vem depois de "//←nome"); tests/pet-fonte.js remonta a ordem.
 // Se mudar pet-sala.js, suba a versão em PET_SALA_ARQ.
-var PET_SALA_ARQ='./pet-sala.js?v=24',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
+var PET_SALA_ARQ='./pet-sala.js?v=43',PET_SALA_PRONTA=false,petSalaFila=[],petSalaP=null;
 function petSalaAoCarregar(f){if(PET_SALA_PRONTA)f();else petSalaFila.push(f);}
 function petSalaCarregar(){
   if(PET_SALA_PRONTA)return Promise.resolve();

@@ -136,6 +136,31 @@ function perfData(iso){
 function perfRot(o){ return o[1] + ' ' + tr(o[2]); }
 //→perfLogo
 function perfRgba(hex, a){ var c = parseInt(String(hex).replace('#', ''), 16) || 0; return 'rgba(' + (c >> 16) + ',' + ((c >> 8) & 255) + ',' + (c & 255) + ',' + a + ')'; }
+// Signature 5.10: somente referências locais ao elenco oficial podem carregar sua assinatura.
+ // WeakMap não viaja no JSON, não modifica avatares recebidos e não cria campos de save.
+var PERF_IDENTIDADE_LOCAL = null; // só aloca no primeiro retrato oficial, nunca durante o carregamento do módulo
+function perfMarcarIdentidadeLocal(c,n){
+  if(!PERF_IDENTIDADE_LOCAL)PERF_IDENTIDADE_LOCAL=new WeakMap();
+  PERF_IDENTIDADE_LOCAL.set(c,n);
+}
+function perfIdentidadeOficial(src){
+  if(!src || typeof src!=='object')return '';
+  var n=PERF_IDENTIDADE_LOCAL&&PERF_IDENTIDADE_LOCAL.get(src);
+  if(n)return n;
+  if(typeof CH!=='undefined'&&Array.isArray(CH)){
+    var idx=CH.indexOf(src);if(idx>=0&&idx<3)return ['Tsu','Lirika','Pati'][idx];
+  }
+  if(typeof HUB_TRIO_DRAW_CHARS!=='undefined'&&typeof HUB_TRIO!=='undefined'){
+    var i=HUB_TRIO_DRAW_CHARS.indexOf(src),m=HUB_TRIO[i];
+    if(i>=0&&m&&m[0]>=0&&m[0]<3)return ['Tsu','Lirika','Pati'][m[0]];
+  }
+  return '';
+}
+function perfCopiarCharOficial(src){
+  var c=JSON.parse(JSON.stringify(src||{})),n=perfIdentidadeOficial(src);
+  if(n)perfMarcarIdentidadeLocal(c,n);
+  return c;
+}
 function perfChar(av){
   var c = {}, src = (av && av.c && typeof av.c === 'object') ? av.c : {}, k;
   for(k in PERF_BASE) c[k] = PERF_BASE[k];
@@ -146,6 +171,8 @@ function perfChar(av){
     else if(f === 'baixo'){ if(v === 'saia' || v === 'bermuda') c.baixo = v; }   // saia ou bermuda; vazio = padrão da roupa
     else if(typeof v === 'string' && v.length <= 16) c[f] = v;
   });
+  var oficial=typeof perfIdentidadeOficial==='function'?perfIdentidadeOficial(src):'';
+  if(oficial){c.n=oficial;perfMarcarIdentidadeLocal(c,oficial);}
   c.img = c.hair;
   return c;
 }
@@ -498,16 +525,24 @@ function perfDesenharIdol(x, W2, H2, av, comFundo, zoom, t, camera, comFlor){
     // Medido na tela (unidades a partir de tx/ty): cabelo y≈-5,5, boca ≈17, ombros ≈22, bermuda ≈33,
     // pés ≈42 e sombra ≈46; largura x≈0..30. Cada enquadramento mostra uma faixa desse mesmo desenho:
     // rosto = cabelo até o peito · meio = até o quadril · inteiro = dos pés à cabeça (com o Pet).
-    var faixa = camera === 'rosto' ? [-7, comFlor ? 31 : 27] : camera === 'meio' ? [-7, 35] : [-7, 49];
-    var largura = camera === 'rosto' ? (comFlor ? 34 : 30) : camera === 'meio' ? 36 : (pet ? 76 : 44);
+    var aceno = av.pose === 'tchau' || av.pose === 'v';
+    // A mão baixa chega a y=33, e o punho do objeto continua até y≈34.
+    // No retrato com objeto, reserve a mesma margem para flor, microfone e lightstick.
+    var faixa = camera === 'rosto' ? [-7, comFlor ? (av.pose === 'coracao' ? 32 : 34) : 27] : camera === 'meio' ? [-7, 39] : [-7, 49];
+    var largura = camera === 'rosto' ? (aceno ? 44 : comFlor ? 34 : 30) : camera === 'meio' ? (aceno ? 48 : 38) : (pet ? 76 : 44);
     if(camera !== 'inteiro') pet = null; // no close o Pet fica de fora, para o Idol não encolher
     sc = Math.min(H2 * .92 / (faixa[1] - faixa[0]), W2 * .96 / largura);
-    var aceno = av.pose === 'tchau' || av.pose === 'v';
-    tx = W2 / 2 - (pet ? 25 : aceno && camera !== 'rosto' ? 18.5 : 15) * sc;
+    tx = W2 / 2 - (pet ? 25 : aceno ? 18.5 : 15) * sc;
     ty = (H2 - (faixa[1] - faixa[0]) * sc) / 2 - faixa[0] * sc;   // faixa centralizada na foto
+    // Em retratos estreitos a largura limita o zoom. Prenda o corte ao corpo:
+    // o espaço extra fica acima do cabelo, sem revelar os pés no meio-corpo.
+    if(camera !== 'inteiro') ty = H2 - (faixa[1] + 2) * sc;
     chao = ty + 44 * sc;
   }
-  var bob = t ? Math.sin(t * .06) * 1.1 * sc : 0;
+  // A câmera não desloca o corpo para fora dos limites definidos pelo enquadramento.
+  // Uma fotografia histórica usa a fase gravada, não a preferência atual de quem a visualiza.
+  var reduz = !camera && typeof matchMedia==='function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var bob = t && !reduz ? Math.sin(t * .06) * (camera ? .32 : .85) * sc : 0; // mesma fase de duoGeo e do retrato histórico
   var cx = tx + 15 * sc, cy = ty + 22 * sc + bob, i, gira = t * .012, pulso = t ? 1 + .05 * Math.sin(t * .08) : 1;
   // sombra no chão
   x.fillStyle = 'rgba(30,10,60,.25)'; x.beginPath(); x.ellipse(cx, chao, 15 * sc * (1 - bob / sc * .04), 2.6 * sc, 0, 0, 7); x.fill();
@@ -570,7 +605,7 @@ function perfFotoRedonda(cv, av, zoom){   // foto do perfil: o avatar recortado 
   var x = cv.getContext('2d'), W2 = cv.width, H2 = cv.height;
   if(window.TW_NITIDEZ) kn = TW_NITIDEZ.escala(cv) || kn;
   var tmp = document.createElement('canvas'); tmp.width = Math.round(W2 * kn); tmp.height = Math.round(H2 * kn);
-  if(av && !av.fundo){ av = JSON.parse(JSON.stringify(av)); av.fundo = 'basico'; }   // na foto redonda sempre tem fundo
+  if(av && !av.fundo){ var oficial=perfIdentidadeOficial(av.c), origem=av.c; av = JSON.parse(JSON.stringify(av)); if(oficial)av.c=perfCopiarCharOficial(origem); av.fundo = 'basico'; }   // na foto redonda sempre tem fundo
   var tx2 = tmp.getContext('2d'); tx2.scale(kn, kn);
   perfDesenharIdol(tx2, W2, H2, av, true, zoom !== false);
   x.clearRect(0, 0, W2, H2);
@@ -584,14 +619,14 @@ function perfPoseAtras(c, x, y){
   if(p === 'mic' || p === 'luz') g.fillRect(x + 1, y + 24, 4, 9);   // braço esquerdo normal
   if(p === 'banzai'){
     [[3, -3.5], [27, 33.5]].forEach(function(b){
-      g.strokeStyle = c.skin; g.lineWidth = 4; g.beginPath(); g.moveTo(x + b[0], y + 25.5); g.lineTo(x + b[1], y + 13.5); g.stroke();
+      g.strokeStyle = c.skin; g.lineWidth = 4; TWAvatarRoupa.membro(g,c,x,y,p,b[0] < 15 ? 'L' : 'R');
       g.fillStyle = c.skin; g.beginPath(); g.arc(x + b[1], y + 12.5, 2.4, 0, 7); g.fill();
       g.strokeStyle = '#ffe14d'; g.lineWidth = .9; var d = b[1] < 15 ? -1 : 1;
       g.beginPath(); g.moveTo(x + b[1] + d * 3, y + 9); g.lineTo(x + b[1] + d * 5.5, y + 6.5); g.moveTo(x + b[1] + d * 4, y + 12); g.lineTo(x + b[1] + d * 7, y + 11.5); g.moveTo(x + b[1], y + 8.5); g.lineTo(x + b[1], y + 5.5); g.stroke();
     });
   } else if(p === 'luz'){
     var cor = c.luz || c.hair || '#ff6fb5';   // lightstick: cor do perfil, senão a do cabelo
-    g.beginPath(); g.moveTo(x + 27, y + 25.5); g.lineTo(x + 33, y + 16.5); g.stroke();
+    TWAvatarRoupa.membro(g,c,x,y,p,'R');
     g.save(); g.shadowColor = cor; g.shadowBlur = 6; g.strokeStyle = cor; g.lineWidth = 2.8;
     g.beginPath(); g.moveTo(x + 34, y + 13.5); g.lineTo(x + 37, y + 2); g.stroke(); g.restore();
     g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 1; g.beginPath(); g.moveTo(x + 34.2, y + 12.5); g.lineTo(x + 36.8, y + 3); g.stroke();
@@ -633,7 +668,7 @@ function perfPoseFrente(c, x, y){
   if(ant && typeof temaAntena === 'function') temaAntena(ant, c, x, y);   // gorro, chifres de rena, flores... (módulo de temas)
   g.lineCap = 'round'; g.strokeStyle = c.skin; g.lineWidth = 4;
   if(p === 'mic'){
-    g.beginPath(); g.moveTo(x + 27, y + 26); g.lineTo(x + 22.5, y + 23.2); g.stroke();
+    TWAvatarRoupa.membro(g,c,x,y,p,'R');
     g.strokeStyle = '#2a2438'; g.lineWidth = 2; g.beginPath(); g.moveTo(x + 22.8, y + 24.8); g.lineTo(x + 19.6, y + 20.4); g.stroke();
     g.fillStyle = '#d7dbe4'; g.beginPath(); g.arc(x + 19, y + 19.4, 2.4, 0, 7); g.fill();
     g.strokeStyle = '#ff6fb5'; g.lineWidth = .8; g.beginPath(); g.arc(x + 19, y + 19.4, 2.4, 0, 7); g.stroke();
@@ -809,6 +844,11 @@ function perfMiniaturasLiberar(box){
 }
 function perfLojaUI(){
   var box = $('perfLoja'); if(!box) return;
+  var ativo=typeof document!=='undefined'&&document.activeElement;
+  var foco=null;
+  if(ativo&&box.contains&&box.contains(ativo)&&ativo.tagName==='BUTTON'){
+    ['data-provar','data-vestir','data-comprar'].some(function(a){if(ativo.hasAttribute(a)){foco={a:a,v:ativo.getAttribute(a)};return true;}return false;});
+  }
   var tmL = perfMeuAniverHoje ? 'aniversario' : (typeof temaAtual === 'function' ? temaAtual() : '');
   var lojaL = PERF_LOJA.filter(function(it){ return !it[4] || it[4] === tmL || perfLojaDono().indexOf(it[0]) >= 0; });
   lojaL.sort(function(a, b){ return (b[4] === tmL && !!tmL) - (a[4] === tmL && !!tmL); });   // a da temporada vem primeiro
@@ -827,6 +867,12 @@ function perfLojaUI(){
       escHtml(shopProvaTexto(0)+' · '+tr(it[2]))+'</button>' : '';
     return '<div class="perfroupa' + (prov ? ' on' : '') + (it[4] ? ' temp' : '') + '" data-provar="' + it[0] + '"><canvas width="160" height="160" data-roupa="' + it[0] + '"></canvas><b>' + it[1] + ' ' + escHtml(tr(it[2])) + '</b>' + tag + (window.TW_RITMO ? '<details class="tw-ritmo-origem"><summary>'+escHtml(TW_RITMO.origemTexto(0))+'</summary><p>'+escHtml(TW_RITMO.origemTexto(it[4]?2:1))+'</p><p>'+escHtml(TW_RITMO.t(28))+'</p></details>' : '') + provar + acao + '</div>';
   }).join('');
+  if(foco){
+    [].some.call(box.querySelectorAll('button['+foco.a+']'),function(b){
+      if(b.getAttribute(foco.a)!==foco.v||b.disabled)return false;
+      b.focus({preventScroll:true});return true;
+    });
+  }
   [].forEach.call(box.querySelectorAll('canvas[data-roupa]'), function(cv){
     perfMiniaturaLoja(cv,function(){
       var av=perfAvAtual({pose:'v',fundo:'basico'});av.c.out=cv.dataset.roupa;
@@ -1117,6 +1163,13 @@ function twNitido(cv){
   // que aparecem com ~390 px, eram pintados a 1760 px de largura — 2,5× mais pixels que a tela mostra, a cada quadro.)
   // Teto igual ao do tw-nitidez.js: 2× para palcos grandes (> 150 mil pixels lógicos), 3× para os pequenos.
   var z = window.devicePixelRatio || 1, vis = cv.clientWidth || st.w, teto = st.w * st.h > 150000 ? 2 : 3;
+  // As duas vitrines animadas de 640 px precisam de mais um degrau em tablets
+  // largos de alta densidade. Mantém o teto dos jogos e das demais cenas.
+  if((cv.id==='shopCv'||cv.id==='gachaCv')&&st.w===640&&st.w*st.h<=270000){
+    teto=2.25;
+    var rect=cv.getBoundingClientRect&&cv.getBoundingClientRect();
+    if(rect&&rect.width>0)vis=Math.max(vis,rect.width);
+  }
   var k = Math.min(teto, Math.max(1, Math.ceil(z * vis / st.w * 4) / 4));
   if(k !== st.k){
     st.k = k; st.dw.set.call(cv, Math.round(st.w * k)); st.dh.set.call(cv, Math.round(st.h * k));

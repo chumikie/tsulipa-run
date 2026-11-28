@@ -125,7 +125,9 @@
     }
     if(cf.alternado){
       if(cf.criados >= 12 || ladoLivre() < 0 || cfT < cf.proximaChegada) return;
-      entrar(novoFa(),null,0); cf.criados++;
+      entrar(novoFa(),null,0);
+      if(cf.criados === 0) selecionar(cf.fila[0]);
+      cf.criados++;
       cf.proximaChegada = cfT + 180;
       var foco = document.activeElement;
       var acao = foco && foco.closest('#cfCorpo [data-cf],#cfCorpo [data-cfd-servir],#cfCorpo [data-cfd-cliente]');
@@ -259,7 +261,7 @@
     var alvo = cf.alvoBalcao, primeiro = maisUrgente(esperando());
     if(cf.alternado) h += '<p class="hsdica">' + escHtml(turno(1)) + '</p>';
     else if(typeof cfMetaHtml==='function')h+=cfMetaHtml();
-    h += '<section class="cf-comanda"><div class="cfduplo-pac">' + [0, 1].map(function(l){
+    h += '<div class="cf-turno"><section class="cf-comanda"><div class="cfduplo-pac">' + [0, 1].map(function(l){
       var e = cf.fila.find(function(q){ return q.lado === l; });
       var espera = e && e.estado === 'espera', copo = e === alvo ? cf.monta : e && e.monta;
       return '<div class="cfduplo-p' + (e && e === alvo ? ' cf-atendendo' : '') + '">' +
@@ -271,16 +273,15 @@
         '<small class="cfduplo-urgente" id="cfUrgente' + l + '"' + (!espera || paciencia(e) >= .25 ? ' hidden' : '') + '>⏳ ' + escHtml(retorno(0)) + '</small>' + '</div>';
     }).join('') + '</div><p class="cfpedidotxt" aria-live="polite">' + (alvo ?
       '<b>'+escHtml(alvo.cli.nome)+'</b> · '+escHtml(cfPedidoIlustrativo(alvo.cli.pedido).replace(/^☕ /,'')) :
-      escHtml(ESCOLHA[LANG] || ESCOLHA.pt)) + '</p></section>';
+      escHtml(ESCOLHA[LANG] || ESCOLHA.pt)) + '</p></section><div class="cf-montagem">';
     if(cf.aviso) h += '<p class="cfaviso">' + escHtml(cf.aviso) + '</p>';
     h += cfBotoes('base', CF_BASES, '1. Base') + cfBotoes('cob', CF_COBERTURAS, '2. Cobertura (se pedir)') + cfBotoes('enf', CF_ENFEITES, '3. Enfeite') + cfBotoes('doce', CF_DOCES, 'Docinho (se pedir)');
     var pronto = cf.monta.base >= 0 && cf.monta.enf >= 0, ultimo = cf.ultimoAtendimento;
-    h += '<div class="cf-rodape"><div class="btns cfacoes cfduplo-acoes"><button type="button" class="btn sec" data-cf="lixo:0"' + (!alvo ? ' disabled' : '') + '>🗑️ ' +
+    h += '</div><div class="cf-rodape"><div class="btns cfacoes cfduplo-acoes"><button type="button" class="btn sec" data-cf="lixo:0"' + (!alvo ? ' disabled' : '') + '>🗑️ ' +
       escHtml(tr('Recomeçar copo')) + '</button><button type="button" class="btn" data-cfd-servir="' + (alvo ? alvo.lado : '') + '"' +
       (!alvo || !pronto ? ' disabled' : '') + '>🛎️ ' + escHtml(tr('Servir')) + '</button></div>' +
-      (ultimo && ultimo.resultado ? '<p class="cfpedidotxt" role="status"><b>' + escHtml(ultimo.cli.nome) + '</b> · ' + escHtml(ultimo.resultado) + '</p>' : '') +
-      cfRetornoPedido(ultimo ? ultimo.confirmacao : null,ultimo && ultimo.cli.nome) + '</div>';
-    corpo.innerHTML = h;
+      cfRetornoPedido(ultimo ? ultimo.confirmacao : null,ultimo && ultimo.cli.nome,ultimo && ultimo.resultado ? '<p class="hsdica" role="status"><b>' + escHtml(ultimo.cli.nome) + '</b> · ' + escHtml(ultimo.resultado) + '</p>' : '') + '</div></div>';
+    cfRenderCorpo(corpo,h);
   }
 
   // desenho (chamado pelo cfDesenhar, entre o fundo e o balcão / depois do copo)

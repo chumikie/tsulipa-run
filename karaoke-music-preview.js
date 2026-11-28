@@ -7,7 +7,7 @@
  "use strict";
  function create(options){
   options=options||{};
-  var current=null,timer=0,lastUi=0,DURATION=59000,volume=.7,outputNode=null,outputContext=null;
+  var armVersion=0,current=null,timer=0,lastUi=0,DURATION=59000,volume=.7,outputNode=null,outputContext=null;
   function el(id){return options.getElement?options.getElement(id):document.getElementById(id);}
   function tr(value){return options.translate?options.translate(value):value;}
   function output(ctx){
@@ -43,6 +43,7 @@
     button.setAttribute("aria-pressed",active&&playing?"true":"false");
     button.disabled=!!(options.isBusy&&options.isBusy());
    });
+   if(globalThis.KaraokeLista && globalThis.KaraokeLista.sincronizarPrevia)globalThis.KaraokeLista.sincronizarPrevia();
   }
   function stop(restoreAmbient,message){
    if(timer){clearInterval(timer);timer=0;}
@@ -62,9 +63,10 @@
   }
   function arm(target,fromMs){
    if(current!==target)return;
+   var version=++armVersion;
    var ctx=options.getContext?options.getContext():null;
    function begin(){
-    if(current!==target)return;
+    if(current!==target||version!==armVersion)return;
     if(!ctx||ctx.state!=="running"){stop(true,tr("Não foi possível iniciar a prévia musical."));return;}
     target.context=ctx;target.elapsed=Math.max(0,fromMs||0);
     target.audioOrigin=ctx.currentTime+.06-target.elapsed/1000;
@@ -94,12 +96,14 @@
   }
   function pause(){
    if(!current||current.paused)return false;
-   current.elapsed=elapsed();current.paused=true;
+   armVersion++;current.elapsed=elapsed();current.paused=true;
    if(timer){clearInterval(timer);timer=0;}
    if(options.silence)options.silence();
    render();return true;
   }
-  function resume(){if(!current||!current.paused||(options.isBusy&&options.isBusy()))return false;arm(current,current.elapsed);return true;}
+  function resume(){if(!current||!current.paused||(options.isBusy&&options.isBusy()))return false;
+   if(options.isMuted&&options.isMuted()){render(tr("O som está desativado. Ative o botão de som para ouvir."));return false;}
+   arm(current,current.elapsed);return true;}
   function toggle(key){
    if(current&&(!key||current.songKey===key)){if(current.paused)return resume();return pause();}
    return play(key||(options.currentSong?options.currentSong():"normal"));

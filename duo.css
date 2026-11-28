@@ -81,10 +81,13 @@
 #duoTabC .duocard{min-height:64px;box-shadow:none}
 #duoTabC .duocard i{font-size:22px}
 .duo-menu summary:focus-visible,.duo-mais-cenas summary:focus-visible{outline:3px solid #ff6fb5;outline-offset:2px}
-@media(max-width:520px){#duoTabC .duogrid:not(.thumbs){grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:520px){#duoTabC .duogrid:not(.thumbs){grid-template-columns:repeat(auto-fit,minmax(94px,1fr))}}
 @media(prefers-reduced-motion:reduce){#duoTabC .duocard{transition:none}}
 
 /* Cenas bloqueadas: o selo de preço fica abaixo do rótulo e não cobre o ícone. */
 #duoTabC .duocard.trava{opacity:1}
 #duoTabC .duocard.trava>i,#duoTabC .duocard.trava>span:not(.duopreco){opacity:.55}
 #duoTabC .duocard .duopreco{position:static;order:3;margin-top:2px}
+
+/* Clean UI 28/11/2026: sugestões de dupla com 31 px de altura; agora no mínimo 40 px para o toque no iPhone. */
+.duochip{min-height:40px}

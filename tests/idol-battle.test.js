@@ -93,6 +93,11 @@ const executar = src.replace(/\}\)\(\);\s*$/, `
   servidor=true; estado.tentativas=estado.max_tentativas; unit=estado.cards.map(function(c){return c.nick;});
   rodadas=treinoShow(); fase='fim';
   desenharMiniaturas=desenharPalco=desenharPolaroid=som=function(){};
+  window.prepararArena=function(){
+    ov.hidden=false;battleSessao++;battleDono=contaBattle();ocupado=false;
+    revanche=rodadas=null;fase='escalar';modo='arena';
+    arena={lista:[],minha:null};render();
+  };
   window.revancheTeste={estado:estado,original:rodadas,get atuais(){return rodadas;},virada:viradaRevanche};
 })();`);
 vm.runInNewContext(executar,local);
@@ -118,3 +123,42 @@ const troca={...rondaAnterior,meu:'Nova Idol',eu:rondaAnterior.eu > rondaAnterio
 assert.match(jogo.virada(troca,0),/battle-virada.+Nova Idol|battle-virada.*Nova Idol/);
 assert.equal(jogo.virada({...troca,meu:rondaAnterior.meu},0),'');
 assert.equal(jogo.virada({...troca,ganhou:rondaAnterior.eu > rondaAnterior.eles},0),'');
+
+async function conferirDefesa(){
+  local.gachaContaAtual=()=>local.contaJ.id;
+  let confirmar, enviada;
+  local.contaRpc=(nome,args)=>{
+    assert.equal(nome,'battle_unit_salvar');
+    enviada=Array.from(args.p_unit);
+    return new Promise(resolve=>{confirmar=resolve;});
+  };
+  local.prepararArena();
+  const corpo=areas['#battleCorpo'];
+  assert.equal((corpo.innerHTML.match(/data-battle="abrir-slot"/g)||[]).length,3);
+  acao('abrir-slot',{'data-slot':'1'});
+  assert.match(corpo.innerHTML,/class="battle-picks"/);
+  const nick=jogo.estado.cards[2].nick;
+  acao('slot',{'data-slot':'1','data-nick':nick});
+  acao('salvar-unit');
+  assert.equal(enviada[1],nick);
+  assert.equal(new Set(enviada).size,3);
+  local.contaJ={id:'b'};
+  const antes=corpo.innerHTML;
+  confirmar({ok:true,unit:jogo.estado.cards,fas:42});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(corpo.innerHTML,antes,'uma confirmação de outra conta não redesenha a Arena');
+  local.prepararArena();
+  acao('salvar-unit');
+  const pendente=confirmar;
+  acao('fechar');
+  local.prepararArena();
+  const reaberta=corpo.innerHTML;
+  pendente({ok:true,unit:jogo.estado.cards,fas:25});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(corpo.innerHTML,reaberta,'fechar e reabrir invalida a visita anterior');
+  acao('salvar-unit');
+  confirmar({ok:true,unit:jogo.estado.cards,fas:17});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.match(corpo.innerHTML,/Unit salva!/,'a defesa da visita atual aparece após confirmação');
+}
+conferirDefesa().catch(e=>{console.error(e);process.exitCode=1;});
